@@ -1,0 +1,1226 @@
+{% extends 'base.html' %}
+{% block title %}بازی‌های آموزشی - لرن کویست{% endblock %}
+{% block extra_css %}
+    <style>
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --accent: #36D1DC;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --dark: #2D3047;
+            --light: #F8F9FA;
+            --text: #333333;
+            --text-light: #6C757D;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .games-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .games-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .games-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .games-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* فیلتر دسته‌بندی بازی‌ها */
+        .games-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.4);
+        }
+
+        /* شبکه بازی‌ها */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .game-category {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .game-category:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .category-header i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .category-header h3 {
+            font-size: 1.6rem;
+            margin-bottom: 10px;
+        }
+
+        .category-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .games-list {
+            padding: 25px;
+        }
+
+        .game-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .game-item:hover {
+            background: var(--light);
+            border-color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        .game-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            margin-left: 15px;
+        }
+
+        .game-info {
+            flex: 1;
+        }
+
+        .game-info h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .game-info p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .game-stats {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .xp-badge {
+            background: linear-gradient(135deg, var(--success), #8BC34A);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* صفحه انتخاب سطح */
+        .level-selection {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .level-selection.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .level-header {
+            margin-bottom: 30px;
+        }
+
+        .level-header h2 {
+            color: var(--dark);
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .level-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .levels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .level-card {
+            background: var(--light);
+            border-radius: 15px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .level-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .level-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .level-card.locked::after {
+            content: '\f023';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: var(--text-light);
+        }
+
+        .level-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            margin: 0 auto 15px;
+        }
+
+        .level-card h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .level-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .level-xp {
+            background: var(--success);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        /* صفحه بازی */
+        .game-screen {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+        }
+
+        .game-screen.active {
+            display: block;
+            animation: slideInUp 0.5s ease;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            color: var(--dark);
+        }
+
+        .game-stats-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--light);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--light);
+            color: var(--text);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* بازی سودوکو */
+        .sudoku-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .sudoku-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 2px;
+            background: var(--dark);
+            border: 3px solid var(--dark);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .sudoku-cell {
+            background: white;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid #ddd;
+        }
+
+        .sudoku-cell:hover {
+            background: #f0f0f0;
+        }
+
+        .sudoku-cell.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .sudoku-cell.fixed {
+            background: var(--light);
+            font-weight: 700;
+        }
+
+        .sudoku-controls {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .number-btn {
+            background: var(--light);
+            border: none;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .number-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* بازی پازل */
+        .puzzle-container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            background: var(--dark);
+            border: 3px solid var(--dark);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-piece {
+            background: white;
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .puzzle-piece.empty {
+            background: transparent;
+            cursor: default;
+        }
+
+        .puzzle-piece:hover:not(.empty) {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* بازی ریاضی */
+        .math-game {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .math-problem {
+            font-size: 3rem;
+            margin: 30px 0;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .math-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .math-option {
+            background: var(--light);
+            border: 3px solid transparent;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .math-option:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        /* بازی حافظه */
+        .memory-game {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            transform-style: preserve-3d;
+        }
+
+        .memory-card.flipped {
+            background: white;
+            color: var(--dark);
+            transform: rotateY(180deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .levels-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .game-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .game-stats-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .math-options {
+                grid-template-columns: 1fr;
+            }
+
+            .memory-game {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <body>
+    <div class="games-container">
+        <div class="games-header">
+            <h1>بازی‌های آموزشی</h1>
+            <p>یادگیری را با بازی‌های جذاب و چالش‌برانگیز تجربه کنید</p>
+        </div>
+
+        <div class="games-filter">
+            <button class="filter-btn active" data-filter="all">همه بازی‌ها</button>
+            <button class="filter-btn" data-filter="puzzle">پازل و منطق</button>
+            <button class="filter-btn" data-filter="math">ریاضی و اعداد</button>
+            <button class="filter-btn" data-filter="memory">حافظه و تمرکز</button>
+        </div>
+
+        <div class="games-grid">
+            <!-- دسته پازل و منطق -->
+            <div class="game-category" data-category="puzzle">
+                <div class="category-header">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <h3>پازل و منطق</h3>
+                    <p>تقویت مهارت‌های حل مسئله و تفکر منطقی</p>
+                </div>
+                <div class="games-list">
+                    <div class="game-item" data-game="sudoku">
+                        <div class="game-icon">
+                            <i class="fas fa-grid"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>سودوکو</h4>
+                            <p>جدول اعداد ۹×۹ را کامل کنید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+50 XP</span>
+                        </div>
+                    </div>
+                    <div class="game-item" data-game="puzzle">
+                        <div class="game-icon">
+                            <i class="fas fa-shapes"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>پازل عددی</h4>
+                            <p>اعداد را به ترتیب صحیح مرتب کنید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+40 XP</span>
+                        </div>
+                    </div>
+                    <div class="game-item" data-game="iq-test">
+                        <div class="game-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>سوالات هوش</h4>
+                            <p>چالش‌های منطقی و تحلیلی</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+60 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- دسته ریاضی و اعداد -->
+            <div class="game-category" data-category="math">
+                <div class="category-header">
+                    <i class="fas fa-calculator"></i>
+                    <h3>ریاضی و اعداد</h3>
+                    <p>تقویت مهارت‌های محاسباتی و ریاضی</p>
+                </div>
+                <div class="games-list">
+                    <div class="game-item" data-game="math-challenge">
+                        <div class="game-icon">
+                            <i class="fas fa-plus-minus"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>چالش ریاضی</h4>
+                            <p>مسائل ریاضی را سریع حل کنید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+45 XP</span>
+                        </div>
+                    </div>
+                    <div class="game-item" data-game="number-memory">
+                        <div class="game-icon">
+                            <i class="fas fa-memory"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>حافظه عددی</h4>
+                            <p>اعداد را به خاطر بسپارید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+35 XP</span>
+                        </div>
+                    </div>
+                    <div class="game-item" data-game="equation-solver">
+                        <div class="game-icon">
+                            <i class="fas fa-equals"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>حل معادله</h4>
+                            <p>معادلات ریاضی را حل کنید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+55 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- دسته حافظه و تمرکز -->
+            <div class="game-category" data-category="memory">
+                <div class="category-header">
+                    <i class="fas fa-brain"></i>
+                    <h3>حافظه و تمرکز</h3>
+                    <p>تقویت حافظه و قدرت تمرکز</p>
+                </div>
+                <div class="games-list">
+                    <div class="game-item" data-game="memory-cards">
+                        <div class="game-icon">
+                            <i class="fas fa-clone"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>کارت‌های حافظه</h4>
+                            <p>جفت کارت‌های مشابه را پیدا کنید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+30 XP</span>
+                        </div>
+                    </div>
+                    <div class="game-item" data-game="sequence-memory">
+                        <div class="game-icon">
+                            <i class="fas fa-list-ol"></i>
+                        </div>
+                        <div class="game-info">
+                            <h4>حافظه ترتیبی</h4>
+                            <p>ترتیب صحیح را به خاطر بسپارید</p>
+                        </div>
+                        <div class="game-stats">
+                            <span class="xp-badge">+40 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه انتخاب سطح برای بازی‌ها -->
+        <div class="level-selection" id="level-selection">
+            <div class="level-header">
+                <h2 id="level-game-title">انتخاب سطح بازی</h2>
+                <p id="level-game-description">سطح مناسب خود را انتخاب کنید</p>
+            </div>
+            <div class="levels-grid" id="levels-container">
+                <!-- سطوح به صورت دینامیک اضافه می‌شوند -->
+            </div>
+            <button class="btn btn-secondary" id="back-to-games">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به لیست بازی‌ها
+            </button>
+        </div>
+
+        <!-- صفحه بازی سودوکو -->
+        <div class="game-screen" id="sudoku-game">
+            <div class="game-header">
+                <h2 class="game-title">سودوکو</h2>
+                <div class="game-stats-bar">
+                    <div class="stat">
+                        <i class="fas fa-clock"></i>
+                        <span id="timer">00:00</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-star"></i>
+                        <span id="score">0</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span>+50 XP</span>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="btn btn-secondary" id="hint-btn">
+                        <i class="fas fa-lightbulb"></i>
+                        راهنما
+                    </button>
+                    <button class="btn btn-primary" id="check-sudoku">
+                        <i class="fas fa-check"></i>
+                        بررسی
+                    </button>
+                </div>
+            </div>
+            <div class="sudoku-container">
+                <div class="sudoku-grid" id="sudoku-grid">
+                    <!-- سلول‌های سودوکو به صورت دینامیک اضافه می‌شوند -->
+                </div>
+                <div class="sudoku-controls">
+                    <!-- دکمه‌های اعداد -->
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه بازی پازل -->
+        <div class="game-screen" id="puzzle-game">
+            <div class="game-header">
+                <h2 class="game-title">پازل عددی</h2>
+                <div class="game-stats-bar">
+                    <div class="stat">
+                        <i class="fas fa-clock"></i>
+                        <span id="puzzle-timer">00:00</span>
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span id="moves">0</span> حرکت
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span>+40 XP</span>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="btn btn-secondary" id="reset-puzzle">
+                        <i class="fas fa-redo"></i>
+                        شروع مجدد
+                    </button>
+                </div>
+            </div>
+            <div class="puzzle-container">
+                <div class="puzzle-grid" id="puzzle-grid">
+                    <!-- قطعات پازل به صورت دینامیک اضافه می‌شوند -->
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه بازی ریاضی -->
+        <div class="game-screen" id="math-game">
+            <div class="game-header">
+                <h2 class="game-title">چالش ریاضی</h2>
+                <div class="game-stats-bar">
+                    <div class="stat">
+                        <i class="fas fa-check-circle"></i>
+                        <span id="correct-answers">0</span> صحیح
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-times-circle"></i>
+                        <span id="wrong-answers">0</span> غلط
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span>+45 XP</span>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="btn btn-secondary" id="next-math">
+                        <i class="fas fa-forward"></i>
+                        سؤال بعدی
+                    </button>
+                </div>
+            </div>
+            <div class="math-game">
+                <div class="math-problem" id="math-problem">
+                    ۱۲ + ۲۵ = ?
+                </div>
+                <div class="math-options">
+                    <div class="math-option">۳۷</div>
+                    <div class="math-option">۳۵</div>
+                    <div class="math-option">۴۰</div>
+                    <div class="math-option">۳۲</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- صفحه بازی حافظه -->
+        <div class="game-screen" id="memory-game">
+            <div class="game-header">
+                <h2 class="game-title">کارت‌های حافظه</h2>
+                <div class="game-stats-bar">
+                    <div class="stat">
+                        <i class="fas fa-clone"></i>
+                        <span id="pairs-found">0</span> جفت
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-arrows-alt"></i>
+                        <span id="attempts">0</span> تلاش
+                    </div>
+                    <div class="stat">
+                        <i class="fas fa-bolt"></i>
+                        <span>+30 XP</span>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="btn btn-secondary" id="reset-memory">
+                        <i class="fas fa-redo"></i>
+                        شروع مجدد
+                    </button>
+                </div>
+            </div>
+            <div class="memory-game" id="memory-cards-container">
+                <!-- کارت‌های حافظه به صورت دینامیک اضافه می‌شوند -->
+            </div>
+        </div>
+    </div>
+    </body>
+{% endblock %}
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // مدیریت فیلتر بازی‌ها
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const gameCategories = document.querySelectorAll('.game-category');
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const filter = this.getAttribute('data-filter');
+
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+
+                    gameCategories.forEach(category => {
+                        if (filter === 'all' || category.getAttribute('data-category') === filter) {
+                            category.style.display = 'block';
+                        } else {
+                            category.style.display = 'none';
+                        }
+                    });
+                });
+            });
+
+            // مدیریت کلیک روی بازی‌ها
+            const gameItems = document.querySelectorAll('.game-item');
+            const levelSelection = document.getElementById('level-selection');
+            const backToGames = document.getElementById('back-to-games');
+            const levelsContainer = document.getElementById('levels-container');
+            const levelGameTitle = document.getElementById('level-game-title');
+            const levelGameDescription = document.getElementById('level-game-description');
+
+            // اطلاعات سطوح برای هر بازی
+            const gameLevels = {
+                'sudoku': {
+                    title: 'سودوکو',
+                    description: 'سطح مناسب خود را انتخاب کنید',
+                    levels: [
+                        {name: 'آسان', difficulty: 1, xp: 25, locked: false},
+                        {name: 'متوسط', difficulty: 2, xp: 50, locked: false},
+                        {name: 'سخت', difficulty: 3, xp: 75, locked: true},
+                        {name: 'حرفه‌ای', difficulty: 4, xp: 100, locked: true}
+                    ]
+                },
+                'puzzle': {
+                    title: 'پازل عددی',
+                    description: 'سطح دشواری پازل را انتخاب کنید',
+                    levels: [
+                        {name: '۳×۳', difficulty: 1, xp: 20, locked: false},
+                        {name: '۴×۴', difficulty: 2, xp: 40, locked: false},
+                        {name: '۵×۵', difficulty: 3, xp: 60, locked: true},
+                        {name: '۶×۶', difficulty: 4, xp: 80, locked: true}
+                    ]
+                },
+                'math-challenge': {
+                    title: 'چالش ریاضی',
+                    description: 'سطح محاسباتی خود را انتخاب کنید',
+                    levels: [
+                        {name: 'جمع و تفریق', difficulty: 1, xp: 25, locked: false},
+                        {name: 'ضرب و تقسیم', difficulty: 2, xp: 45, locked: false},
+                        {name: 'کسر و اعشار', difficulty: 3, xp: 65, locked: true},
+                        {name: 'جبر و معادله', difficulty: 4, xp: 85, locked: true}
+                    ]
+                },
+                'memory-cards': {
+                    title: 'کارت‌های حافظه',
+                    description: 'تعداد کارت‌ها را انتخاب کنید',
+                    levels: [
+                        {name: '۸ کارت', difficulty: 1, xp: 20, locked: false},
+                        {name: '۱۲ کارت', difficulty: 2, xp: 30, locked: false},
+                        {name: '۱۶ کارت', difficulty: 3, xp: 40, locked: true},
+                        {name: '۲۰ کارت', difficulty: 4, xp: 50, locked: true}
+                    ]
+                }
+            };
+
+            let currentGame = '';
+
+            gameItems.forEach(item => {
+                item.addEventListener('click', function () {
+                    const gameType = this.getAttribute('data-game');
+                    currentGame = gameType;
+
+                    if (gameLevels[gameType]) {
+                        // نمایش صفحه انتخاب سطح
+                        showLevelSelection(gameType);
+                    } else {
+                        // اگر بازی سطح‌بندی ندارد، مستقیماً شروع شود
+                        startGame(gameType);
+                    }
+                });
+            });
+
+            function showLevelSelection(gameType) {
+                const game = gameLevels[gameType];
+                levelGameTitle.textContent = game.title;
+                levelGameDescription.textContent = game.description;
+
+                levelsContainer.innerHTML = '';
+
+                game.levels.forEach((level, index) => {
+                    const levelCard = document.createElement('div');
+                    levelCard.className = `level-card ${level.locked ? 'locked' : ''}`;
+                    levelCard.innerHTML = `
+                        <div class="level-icon">
+                            <i class="fas fa-${getLevelIcon(level.difficulty)}"></i>
+                        </div>
+                        <h3>${level.name}</h3>
+                        <p>سطح ${level.difficulty}</p>
+                        <div class="level-xp">+${level.xp} XP</div>
+                    `;
+
+                    if (!level.locked) {
+                        levelCard.addEventListener('click', () => {
+                            startGame(gameType, level.difficulty);
+                        });
+                    }
+
+                    levelsContainer.appendChild(levelCard);
+                });
+
+                // مخفی کردن لیست بازی‌ها و نمایش صفحه انتخاب سطح
+                document.querySelector('.games-grid').style.display = 'none';
+                document.querySelector('.games-filter').style.display = 'none';
+                levelSelection.classList.add('active');
+            }
+
+            function getLevelIcon(difficulty) {
+                switch (difficulty) {
+                    case 1:
+                        return 'seedling';
+                    case 2:
+                        return 'leaf';
+                    case 3:
+                        return 'tree';
+                    case 4:
+                        return 'mountain';
+                    default:
+                        return 'circle';
+                }
+            }
+
+            backToGames.addEventListener('click', function () {
+                levelSelection.classList.remove('active');
+                document.querySelector('.games-grid').style.display = 'grid';
+                document.querySelector('.games-filter').style.display = 'flex';
+            });
+
+            function startGame(gameType, level = 1) {
+                // مخفی کردن صفحه انتخاب سطح
+                levelSelection.classList.remove('active');
+
+                // مخفی کردن همه صفحات بازی
+                document.querySelectorAll('.game-screen').forEach(screen => {
+                    screen.classList.remove('active');
+                });
+
+                // نمایش صفحه بازی مربوطه
+                const gameScreen = document.getElementById(`${gameType}-game`);
+                if (gameScreen) {
+                    gameScreen.classList.add('active');
+
+                    // مقداردهی اولیه بازی
+                    initializeGame(gameType, level);
+                }
+            }
+
+            function initializeGame(gameType, level) {
+                switch (gameType) {
+                    case 'sudoku':
+                        initializeSudoku(level);
+                        break;
+                    case 'puzzle':
+                        initializePuzzle(level);
+                        break;
+                    case 'math-challenge':
+                        initializeMath(level);
+                        break;
+                    case 'memory-cards':
+                        initializeMemory(level);
+                        break;
+                }
+            }
+
+            // توابع مقداردهی اولیه بازی‌ها
+            function initializeSudoku(level) {
+                const grid = document.getElementById('sudoku-grid');
+                grid.innerHTML = '';
+
+                // ایجاد شبکه سودوکو
+                for (let i = 0; i < 81; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'sudoku-cell';
+                    cell.textContent = Math.random() > 0.7 ? Math.floor(Math.random() * 9) + 1 : '';
+                    if (cell.textContent) {
+                        cell.classList.add('fixed');
+                    }
+                    grid.appendChild(cell);
+                }
+
+                // ایجاد دکمه‌های اعداد
+                const controls = document.querySelector('.sudoku-controls');
+                controls.innerHTML = '';
+                for (let i = 1; i <= 9; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = 'number-btn';
+                    btn.textContent = i;
+                    controls.appendChild(btn);
+                }
+
+                // تایمر
+                startTimer('timer');
+            }
+
+            function initializePuzzle(level) {
+                const grid = document.getElementById('puzzle-grid');
+                grid.innerHTML = '';
+                const size = level + 2; // 3x3, 4x4, etc.
+
+                // ایجاد پازل
+                for (let i = 1; i < size * size; i++) {
+                    const piece = document.createElement('div');
+                    piece.className = 'puzzle-piece';
+                    piece.textContent = i;
+                    grid.appendChild(piece);
+                }
+
+                // خانه خالی
+                const empty = document.createElement('div');
+                empty.className = 'puzzle-piece empty';
+                grid.appendChild(empty);
+
+                // تنظیم اندازه گرید
+                grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+                startTimer('puzzle-timer');
+            }
+
+            function initializeMath(level) {
+                // تولید مسئله ریاضی بر اساس سطح
+                generateMathProblem(level);
+            }
+
+            function initializeMemory(level) {
+                const container = document.getElementById('memory-cards-container');
+                container.innerHTML = '';
+                const cardCount = (level + 1) * 4; // 8, 12, 16, etc.
+
+                // ایجاد کارت‌های حافظه
+                for (let i = 0; i < cardCount / 2; i++) {
+                    for (let j = 0; j < 2; j++) {
+                        const card = document.createElement('div');
+                        card.className = 'memory-card';
+                        card.textContent = i + 1;
+                        container.appendChild(card);
+                    }
+                }
+
+                // تنظیم اندازه گرید
+                const columns = cardCount <= 12 ? 4 : 5;
+                container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
+            }
+
+            function generateMathProblem(level) {
+                let problem = '';
+                let answer = 0;
+
+                switch (level) {
+                    case 1: // جمع و تفریق
+                        const a = Math.floor(Math.random() * 50) + 1;
+                        const b = Math.floor(Math.random() * 50) + 1;
+                        const op = Math.random() > 0.5 ? '+' : '-';
+                        problem = `${a} ${op} ${b} = ?`;
+                        answer = op === '+' ? a + b : a - b;
+                        break;
+                    case 2: // ضرب و تقسیم
+                        const x = Math.floor(Math.random() * 12) + 1;
+                        const y = Math.floor(Math.random() * 12) + 1;
+                        problem = `${x} × ${y} = ?`;
+                        answer = x * y;
+                        break;
+                }
+
+                document.getElementById('math-problem').textContent = problem;
+
+                // تولید گزینه‌ها
+                const options = [answer];
+                while (options.length < 4) {
+                    const wrongAnswer = answer + (Math.floor(Math.random() * 20) - 10);
+                    if (wrongAnswer !== answer && !options.includes(wrongAnswer) && wrongAnswer > 0) {
+                        options.push(wrongAnswer);
+                    }
+                }
+
+                // به هم ریختن گزینه‌ها
+                options.sort(() => Math.random() - 0.5);
+
+                const optionElements = document.querySelectorAll('.math-option');
+                optionElements.forEach((option, index) => {
+                    option.textContent = options[index];
+                    option.onclick = function () {
+                        if (parseInt(this.textContent) === answer) {
+                            this.style.background = 'var(--success)';
+                            this.style.color = 'white';
+                            // افزایش امتیاز
+                            const score = parseInt(document.getElementById('correct-answers').textContent) + 1;
+                            document.getElementById('correct-answers').textContent = score;
+                        } else {
+                            this.style.background = 'var(--secondary)';
+                            this.style.color = 'white';
+                            const wrong = parseInt(document.getElementById('wrong-answers').textContent) + 1;
+                            document.getElementById('wrong-answers').textContent = wrong;
+                        }
+                    };
+                });
+            }
+
+            function startTimer(elementId) {
+                let seconds = 0;
+                const timerElement = document.getElementById(elementId);
+
+                const timer = setInterval(() => {
+                    seconds++;
+                    const minutes = Math.floor(seconds / 60);
+                    const remainingSeconds = seconds % 60;
+                    timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+                }, 1000);
+
+                return timer;
+            }
+
+            // مدیریت کلیک روی کارت‌های حافظه
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('memory-card') && !e.target.classList.contains('flipped')) {
+                    e.target.classList.add('flipped');
+                }
+            });
+        });
+    </script>
+{% endblock %}

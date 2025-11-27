@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% block title %}ورود - لرن کویست{% endblock %}
+{% block extra_css %}
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+            background: white;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light);
+        }
+
+        .auth-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            display: block;
+            margin: 10px 0;
+        }
+
+        .auth-link:hover {
+            color: var(--accent);
+        }
+
+        .guest-message {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(54, 209, 220, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-top: 30px;
+            border-right: 4px solid var(--primary);
+        }
+
+        .guest-message h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .guest-message p {
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>ورود به حساب کاربری</h2>
+            <p>برای دسترسی به پلتفرم وارد شوید</p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="نام کاربری یا ایمیل" required
+                       value="{{ form.username.value|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <input type="password" name="password" class="form-control" placeholder="رمز عبور" required>
+            </div>
+
+            <button type="submit" class="btn-auth">
+                <i class="fas fa-sign-in-alt"></i>
+                ورود به حساب
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'password_reset' %}" class="auth-link">
+                <i class="fas fa-key"></i>
+                بازیابی رمز عبور
+            </a>
+            <span>حساب کاربری ندارید؟ <a href="{% url 'register' %}" class="auth-link">ثبت‌نام کنید</a></span>
+        </div>
+
+        <div class="guest-message">
+            <h3>💡 نکته مهم</h3>
+            <p>برای استفاده از تمام امکانات لرن کویست باید وارد حساب کاربری خود شوید</p>
+        </div>
+    </div>
+{% endblock %}

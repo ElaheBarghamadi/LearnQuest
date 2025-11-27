@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% block title %}ثبت‌نام - لرن کویست{% endblock %}
+{% block extra_css %}
+    <style>
+        .auth-container {
+            max-width: 450px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--light);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+            background: white;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light);
+        }
+
+        .auth-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .auth-link:hover {
+            color: var(--accent);
+        }
+
+        .error-message {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                margin: 30px auto;
+                padding: 30px 25px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>ایجاد حساب کاربری</h2>
+            <p>برای دسترسی به تمام امکانات ثبت‌نام کنید</p>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div style="background: rgba(255, 101, 132, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px; border-right: 4px solid var(--secondary);">
+                    <p style="color: var(--secondary); margin: 0; font-size: 0.9rem;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        لطفا خطاهای زیر را اصلاح کنید:
+                    </p>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <input type="text" name="username" class="form-control" placeholder="نام کاربری"
+                       value="{{ form.username.value|default:'' }}" required>
+                {% if form.username.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.username.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <input type="email" name="email" class="form-control" placeholder="آدرس ایمیل"
+                       value="{{ form.email.value|default:'' }}" required>
+                {% if form.email.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.email.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <input type="text" name="phone" class="form-control" placeholder="شماره تلفن (اختیاری)"
+                       value="{{ form.phone.value|default:'' }}">
+                {% if form.phone.errors %}
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.phone.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <input type="password" name="password1" class="form-control" placeholder="رمز عبور" required>
+                </div>
+
+                <div class="form-group">
+                    <input type="password" name="password2" class="form-control" placeholder="تکرار رمز عبور" required>
+                </div>
+            </div>
+
+            {% if form.password2.errors %}
+                <div class="error-message" style="margin-top: -10px; margin-bottom: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ form.password2.errors.0 }}
+                </div>
+            {% endif %}
+
+            <button type="submit" class="btn-auth">
+                <i class="fas fa-user-plus"></i>
+                ایجاد حساب کاربری
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <span>قبلاً حساب دارید؟ <a href="{% url 'login' %}" class="auth-link">وارد شوید</a></span>
+        </div>
+    </div>
+{% endblock %}

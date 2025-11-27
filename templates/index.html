@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+
+{% block title %}داشبورد - لرن کویست{% endblock %}
+
+{% block extra_css %}
+    <style>
+        /* استایل دشبورد */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .welcome-card {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            animation: slideInLeft 0.6s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .welcome-card h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+
+        .welcome-card p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .quick-access {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .access-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .access-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .access-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .access-card i {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .access-card h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 1.4rem;
+        }
+
+        .access-card p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .blog-section h2, .progress-section h2 {
+            color: white;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+
+        .blog-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .blog-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .blog-image {
+            height: 200px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .blog-content {
+            padding: 25px;
+        }
+
+        .blog-content h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-size: 1.3rem;
+            line-height: 1.4;
+        }
+
+        .blog-content p {
+            color: var(--text-light);
+            font-size: 1rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .blog-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-chart {
+            width: 280px;
+            height: 280px;
+            margin: 0 auto;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* رسپانسیو */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .progress-chart {
+                width: 250px;
+                height: 250px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .quick-access {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-cards {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+
+            .welcome-card {
+                padding: 25px;
+            }
+
+            .access-card {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2.2rem;
+            }
+
+            .page-header p {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .blog-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-chart {
+                width: 220px;
+                height: 220px;
+            }
+
+            .welcome-card h1 {
+                font-size: 1.8rem;
+            }
+
+            .access-card i {
+                font-size: 3rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <!-- داشبورد -->
+    <div class="welcome-card">
+        <h1>سلام، کاوه! 👋</h1>
+        <p>امروز چه چیزی می‌خواهید یاد بگیرید؟</p>
+    </div>
+
+    <div class="quick-access">
+        <a href="{% url 'english' %}" class="access-card">
+            <i class="fas fa-language"></i>
+            <h3>یادگیری زبان</h3>
+            <p>واژگان جدید یاد بگیرید و مهارت‌های زبانی خود را تقویت کنید</p>
+        </a>
+        <a href="{% url 'games' %}" class="access-card">
+            <i class="fas fa-gamepad"></i>
+            <h3>بازی‌های آموزشی</h3>
+            <p>با بازی‌های سرگرم‌کننده، یادگیری را تجربه کنید</p>
+        </a>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="blog-section">
+            <h2>آخرین مطالب وبلاگ</h2>
+            <div class="blog-cards">
+                <div class="blog-card">
+                    <div class="blog-image">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h3>۱۰ ترفند برای یادگیری سریع‌تر زبان</h3>
+                        <p>در این مقاله با روش‌های علمی برای تسریع فرآیند یادگیری زبان آشنا می‌شوید.</p>
+                        <div class="blog-meta">
+                            <span>یادگیری زبان</span>
+                            <span>۱۴۰۲/۰۵/۲۰</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-image">
+                        <i class="fas fa-puzzle-piece"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h3>چگونه با بازی بهتر یاد بگیریم؟</h3>
+                        <p>گیمیفیکیشن چگونه می‌تواند به فرآیند یادگیری کمک کند؟</p>
+                        <div class="blog-meta">
+                            <span>گیمیفیکیشن</span>
+                            <span>۱۴۰۲/۰۵/۱۸</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="blog-card">
+                    <div class="blog-image">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="blog-content">
+                        <h3>معرفی بهترین اپلیکیشن‌های آموزشی ۲۰۲۳</h3>
+                        <p>بررسی جامع برترین برنامه‌های آموزشی سال جاری</p>
+                        <div class="blog-meta">
+                            <span>تکنولوژی</span>
+                            <span>۱۴۰۲/۰۵/۱۵</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <h2>پیشرفت شما</h2>
+            <div class="progress-card">
+                <div class="progress-chart">
+                    <canvas id="progressChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // نمودار پیشرفت
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            const progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['واژگان', 'دستور زبان', 'مکالمه', 'خواندن'],
+                    datasets: [{
+                        data: [30, 25, 20, 25],
+                        backgroundColor: [
+                            '#6C63FF',
+                            '#FF6584',
+                            '#36D1DC',
+                            '#4CAF50'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            rtl: true,
+                            labels: {
+                                font: {
+                                    family: 'Vazirmatn',
+                                    size: 12
+                                },
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            rtl: true,
+                            bodyFont: {
+                                family: 'Vazirmatn'
+                            },
+                            titleFont: {
+                                family: 'Vazirmatn'
+                            }
+                        }
+                    },
+                    cutout: '70%',
+                    animation: {
+                        animateScale: true,
+                        animateRotate: true,
+                        duration: 2000
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

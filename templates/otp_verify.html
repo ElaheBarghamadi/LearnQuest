@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% block title %}تأیید کد - لرن کویست{% endblock %}
+{% block extra_css %}
+    <!-- استایل‌های مشابه صفحه اول -->
+    <style>
+        /* استایل‌های مشابه صفحه اول */
+        :root {
+            --primary: #6C63FF;
+            --secondary: #FF6584;
+            --accent: #36D1DC;
+            --success: #4CAF50;
+            --warning: #FF9800;
+            --dark: #2D3047;
+            --light: #F8F9FA;
+            --text: #333333;
+            --text-light: #6C757D;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .auth-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .auth-header p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid var(--light);
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Vazirmatn', sans-serif;
+            background: var(--light);
+            text-align: center;
+            letter-spacing: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
+            background: white;
+        }
+
+        .btn-auth {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        .btn-auth:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(108, 99, 255, 0.3);
+        }
+
+        .auth-links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid var(--light);
+        }
+
+        .auth-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .auth-link:hover {
+            color: var(--accent);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(105, 240, 174, 0.1));
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-right: 4px solid var(--success);
+        }
+
+        .info-box h4 {
+            color: var(--success);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-box p {
+            color: var(--text-light);
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .otp-timer {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .timer-active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .timer-expired {
+            color: var(--secondary);
+        }
+
+        .email-display {
+            background: var(--light);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .email-display strong {
+            color: var(--primary);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="auth-container">
+        <div class="auth-header">
+            <h2>تأیید کد</h2>
+            <p>کد ۶ رقمی ارسال شده را وارد کنید</p>
+        </div>
+
+        <div class="email-display">
+            کد به <strong>{{ email }}</strong> ارسال شد
+        </div>
+
+        <div class="info-box">
+            <h4>
+                <i class="fas fa-clock"></i>
+                زمان باقی‌مانده
+            </h4>
+            <p class="otp-timer timer-active" id="timer">
+                <i class="fas fa-stopwatch"></i>
+                <span id="time">۱۰:۰۰</span> دقیقه
+            </p>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <input type="text" name="otp_code" class="form-control" placeholder="ـــ ـــ ـــ" required
+                       maxlength="6" pattern="[0-9]{6}" title="لطفاً فقط عدد وارد کنید"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                {% if form.otp_code.errors %}
+                    <div style="color: var(--secondary); font-size: 0.9rem; margin-top: 5px;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        {{ form.otp_code.errors.0 }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn-auth">
+                <i class="fas fa-check-circle"></i>
+                تأیید کد
+            </button>
+        </form>
+
+        <div class="auth-links">
+            <a href="{% url 'password_reset_request' %}" class="auth-link">
+                <i class="fas fa-redo"></i>
+                ارسال مجدد کد
+            </a>
+            <span style="color: var(--text-light); margin: 0 10px;">|</span>
+            <a href="{% url 'login' %}" class="auth-link">
+                <i class="fas fa-arrow-right"></i>
+                بازگشت به ورود
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let timeLeft = 600; // 10 minutes in seconds
+            const timerElement = document.getElementById('time');
+
+            function updateTimer() {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+
+                timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    timerElement.parentElement.className = 'otp-timer timer-expired';
+                    timerElement.innerHTML = '<i class="fas fa-exclamation-triangle"></i> کد منقضی شده است';
+                }
+
+                timeLeft--;
+            }
+
+            const timerInterval = setInterval(updateTimer, 1000);
+            updateTimer(); // Initial call
+        });
+    </script>
+{% endblock %}
