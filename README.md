@@ -42,13 +42,13 @@ pip install -r requirements.txt
 
 ---
 
-## **مرحله 5: فایل .env**
+## **مرحله 5: تنظیمات (اختیاری)**
 
-فایل `.env` بساز و این رو بذار:
+پروژه به‌صورت پیش‌فرض با `DEBUG=True` و یک `SECRET_KEY` پیش‌فرض کار می‌کند و نیازی به فایل `.env` ندارد.
+برای تغییر، متغیرهای محیطی را ست کنید (یا فایل `.env` بسازید و مقدارش را در ترمینال export کنید):
 
-```env
-SECRET_KEY=django-insecure-your-secret-key-here
-DEBUG=True
+```bash
+export DJANGO_SECRET_KEY=your-secret-key-here
 ```
 
 ---
@@ -73,16 +73,18 @@ python manage.py createsuperuser
 ## **مرحله 8: اضافه کردن محتوا**
 
 ```bash
-# روش 1 - با runscript (پیشنهادی)
-python manage.py runscript seed_airport_chapter
+# روش 1 - اجرای اسکریپت کامل دیتا (پیشنهادی)
+python seed_data.py
 
-# روش 2 - با shell
-python manage.py shell
->>> exec(open('seed_airport_chapter.py', encoding='utf-8').read())
->>> exit()
+# روش 2 - دستور اختصاصی آکادمی
+python manage.py init_worlds
 
-# روش 3 - با redirect
-python manage.py shell < seed_airport_chapter.py
+# روش 3 - دیتای اقتصاد و فروشگاه
+python manage.py seed_economy
+python manage.py seed_shop
+
+# روش 4 - مقالات نمونه بلاگ
+python scripts/seed_blog.py
 ```
 
 ---
@@ -100,12 +102,12 @@ python manage.py collectstatic
 
 ### **ترمینال ۱ - اجرا با WebSocket:**
 ```bash
-daphne -p 8000 learnquest.asgi:application
+daphne -p 8000 Config.asgi:application
 ```
 
 ### **ترمینال ۲ - اجرای Celery (اختیاری):**
 ```bash
-celery -A learnquest worker --loglevel=info --pool=solo
+celery -A Config worker --loglevel=info --pool=solo
 ```
 
 ---
@@ -115,7 +117,7 @@ celery -A learnquest worker --loglevel=info --pool=solo
 | بخش | آدرس |
 |-----|------|
 | پنل ادمین کلی | `http://127.0.0.1:8000/admin/` |
-| پنل ادمین Academy | `http://127.0.0.1:8000/admin-panel/` |
+| پنل ادمین Academy | `http://127.0.0.1:8000/academy/manage/` |
 | صفحه اصلی | `http://127.0.0.1:8000/` |
 
 ---
@@ -130,7 +132,7 @@ pip install -r requirements.txt
 python manage.py makemigrations
 python manage.py migrate
 python manage.py createsuperuser
-python manage.py runscript seed_airport_chapter
+python seed_data.py
 python manage.py collectstatic
-daphne -p 8000 learnquest.asgi:application
+daphne -p 8000 Config.asgi:application
 ```

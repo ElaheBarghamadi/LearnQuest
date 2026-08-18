@@ -5,7 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.utils import timezone
@@ -160,9 +160,16 @@ def chapter_create(request, world_id):
         if form.is_valid():
             chapter = form.save(commit=False)
             chapter.world = world
-            chapter.save()
-            messages.success(request, f'Chapter "{chapter.name}" created!')
-            return redirect('admin_cms:world_edit', world_id=world.id)
+            if Chapter.objects.filter(world=world, order=chapter.order).exists():
+                form.add_error('order', f'فصلی با این ترتیب (order={chapter.order}) در این جهان وجود دارد.')
+            else:
+                try:
+                    chapter.save()
+                except IntegrityError:
+                    form.add_error('order', 'فصلی با این ترتیب در این جهان وجود دارد (تداخل در دیتابیس).')
+                else:
+                    messages.success(request, f'Chapter "{chapter.name}" created!')
+                    return redirect('admin_cms:world_edit', world_id=world.id)
     else:
         form = ChapterForm(initial={'order': world.chapters.count() + 1})
     return render(request, 'admin_cms/chapters/form.html', {'form': form, 'world': world})
@@ -174,9 +181,17 @@ def chapter_edit(request, chapter_id):
     if request.method == 'POST':
         form = ChapterForm(request.POST, request.FILES, instance=chapter)
         if form.is_valid():
-            form.save()
-            messages.success(request, f'Chapter "{chapter.name}" updated!')
-            return redirect('admin_cms:world_edit', world_id=chapter.world.id)
+            if Chapter.objects.filter(world=chapter.world, order=form.cleaned_data['order']) \
+                    .exclude(pk=chapter.pk).exists():
+                form.add_error('order', 'فصلی با این ترتیب در این جهان وجود دارد.')
+            else:
+                try:
+                    form.save()
+                except IntegrityError:
+                    form.add_error('order', 'فصلی با این ترتیب در این جهان وجود دارد (تداخل در دیتابیس).')
+                else:
+                    messages.success(request, f'Chapter "{chapter.name}" updated!')
+                    return redirect('admin_cms:world_edit', world_id=chapter.world.id)
     else:
         form = ChapterForm(instance=chapter)
     return render(request, 'admin_cms/chapters/form.html', {
@@ -224,10 +239,17 @@ def lesson_create(request, chapter_id):
             with transaction.atomic():
                 lesson = form.save(commit=False)
                 lesson.chapter = chapter
-                lesson.save()
-                _save_lesson_content(content_form, lesson)
-            messages.success(request, f'Lesson "{lesson.name}" created!')
-            return redirect('admin_cms:chapter_edit', chapter_id=chapter.id)
+                if Lesson.objects.filter(chapter=chapter, order=lesson.order).exists():
+                    form.add_error('order', f'درسی با این ترتیب (order={lesson.order}) در این فصل وجود دارد.')
+                else:
+                    try:
+                        lesson.save()
+                    except IntegrityError:
+                        form.add_error('order', 'درسی با این ترتیب در این فصل وجود دارد (تداخل در دیتابیس).')
+                    else:
+                        _save_lesson_content(content_form, lesson)
+                        messages.success(request, f'Lesson "{lesson.name}" created!')
+                        return redirect('admin_cms:chapter_edit', chapter_id=chapter.id)
     else:
         form = LessonForm(initial={'order': chapter.lessons.count() + 1})
         content_form = LessonContentForm()
@@ -245,10 +267,18 @@ def lesson_edit(request, lesson_id):
         content_form = LessonContentForm(request.POST, request.FILES, instance=content)
         if form.is_valid() and content_form.is_valid():
             with transaction.atomic():
-                form.save()
-                _save_lesson_content(content_form, lesson)
-            messages.success(request, f'Lesson "{lesson.name}" updated!')
-            return redirect('admin_cms:chapter_edit', chapter_id=lesson.chapter.id)
+                if Lesson.objects.filter(chapter=lesson.chapter, order=form.cleaned_data['order']) \
+                        .exclude(pk=lesson.pk).exists():
+                    form.add_error('order', 'درسی با این ترتیب در این فصل وجود دارد.')
+                else:
+                    try:
+                        form.save()
+                    except IntegrityError:
+                        form.add_error('order', 'درسی با این ترتیب در این فصل وجود دارد (تداخل در دیتابیس).')
+                    else:
+                        _save_lesson_content(content_form, lesson)
+                        messages.success(request, f'Lesson "{lesson.name}" updated!')
+                        return redirect('admin_cms:chapter_edit', chapter_id=lesson.chapter.id)
     else:
         form = LessonForm(instance=lesson)
         initial = {}
