@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}حافظه رنگی سایمون | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+<style>
+    .simon-wrap { max-width: 480px; margin: 0 auto; padding: 16px; text-align: center; }
+    .simon-card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .simon-header {
+        display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg, #3B82F6, #FF6584); color: white;
+        border-radius: 16px; padding: 10px 16px; margin-bottom: 14px;
+    }
+    .simon-header .stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: bold; }
+    #simonBoard {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+        width: 100%; max-width: 340px; margin: 14px auto;
+    }
+    .pad {
+        aspect-ratio: 1; border-radius: 18px; cursor: pointer; border: none;
+        transition: transform .08s, filter .08s; opacity: .55;
+    }
+    .pad.active { opacity: 1; transform: scale(1.04); filter: brightness(1.25); box-shadow: 0 0 22px rgba(255,255,255,.35); }
+    .p0 { background: linear-gradient(135deg, #4CAF50, #2E7D32); border-radius: 100% 18px 18px 18px; }
+    .p1 { background: linear-gradient(135deg, #FF6584, #C2185B); border-radius: 18px 100% 18px 18px; }
+    .p2 { background: linear-gradient(135deg, #FFD54F, #FF9800); border-radius: 18px 18px 18px 100%; }
+    .p3 { background: linear-gradient(135deg, #36D1DC, #1976D2); border-radius: 18px 18px 100% 18px; }
+    #simonMsg { min-height: 1.5em; font-weight: bold; color: #3B82F6; }
+    .simon-btn {
+        border: none; border-radius: 14px; padding: 10px 26px; font-weight: bold;
+        background: linear-gradient(135deg, #3B82F6, #FF6584); color: white;
+        cursor: pointer; font-size: 1rem; transition: .2s;
+    }
+    .simon-btn:active { transform: scale(.95); }
+    @media (max-width: 400px) { #simonBoard { gap: 7px; } }
+</style>
+
+<div class="simon-wrap">
+    <div class="simon-card">
+        <div class="simon-header">
+            <span class="stat">🧠 مرحله: <span id="level">0</span></span>
+            <span class="stat">🏆 رکورد: <span id="best">0</span></span>
+        </div>
+
+        <div id="simonBoard">
+            <button class="pad p0" data-pad="0" aria-label="سبز"></button>
+            <button class="pad p1" data-pad="1" aria-label="قرمز"></button>
+            <button class="pad p2" data-pad="2" aria-label="زرد"></button>
+            <button class="pad p3" data-pad="3" aria-label="آبی"></button>
+        </div>
+
+        <div id="simonMsg">دنباله رنگ‌ها رو حفظ و تکرار کن! 🌈</div>
+        <button class="simon-btn" id="startBtn">▶ شروع</button>
+        <div class="gp-xpline" id="simonXpLine"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const pads = [...document.querySelectorAll('.pad')];
+    const levelEl = document.getElementById('level');
+    const bestEl = document.getElementById('best');
+    const msgEl = document.getElementById('simonMsg');
+    const startBtn = document.getElementById('startBtn');
+
+    const FREQ = [329.6, 261.6, 392.0, 440.0];
+    let seq = [], userIdx = 0, level = 0, best = 0, lock = true, audioCtx = null;
+
+    function beep(idx, dur = 260) {
+        try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.value = FREQ[idx];
+            g.gain.setValueAtTime(.18, audioCtx.currentTime);
+            g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + dur/1000);
+            o.connect(g); g.connect(audioCtx.destination);
+            o.start(); o.stop(audioCtx.currentTime + dur / 1000);
+        } catch (e) {}
+    }
+
+    function flash(idx, dur = 320) {
+        pads[idx].classList.add('active');
+        beep(idx, dur);
+        setTimeout(() => pads[idx].classList.remove('active'), dur);
+    }
+
+    function playSeq() {
+        lock = true;
+        msgEl.textContent = '👀 تماشا کن...';
+        let i = 0;
+        const t = setInterval(() => {
+            flash(seq[i]);
+            i++;
+            if (i >= seq.length) {
+                clearInterval(t);
+                lock = false;
+                msgEl.textContent = '✋ حالا تو!';
+            }
+        }, Math.max(380, 650 - level * 30));
+    }
+
+    function start() {
+        seq = [Math.floor(Math.random() * 4)];
+        level = 1; userIdx = 0;
+        levelEl.textContent = level;
+        setTimeout(playSeq, 400);
+    }
+
+    pads.forEach(p => p.addEventListener('click', () => {
+        if (lock) return;
+        const idx = +p.dataset.pad;
+        flash(idx, 180);
+        if (idx === seq[userIdx]) {
+            userIdx++;
+            if (userIdx === seq.length) {
+                level++;
+                levelEl.textContent = level;
+                seq.push(Math.floor(Math.random() * 4));
+                userIdx = 0;
+                lock = true;
+                msgEl.textContent = '🎉 آفرین!';
+                setTimeout(playSeq, 800);
+            }
+        } else {
+            const reached = level;
+            if (reached > best) { best = reached; bestEl.textContent = best; }
+            msgEl.textContent = `💥 اشتباه شد! تا مرحله ${reached} رسیدی`;
+            lock = true;
+            GP.saveScore('/games/save-simon-score/', {score: reached, completed: true}, 'simonXpLine')
+                .then(d => { if (d.best_score) { best = d.best_score; bestEl.textContent = best; } });
+            setTimeout(() => { if (lock) msgEl.textContent = 'دوباره «شروع» رو بزن! 🌈'; }, 1500);
+        }
+    }));
+
+    startBtn.addEventListener('click', start);
+})();
+</script>
+{% endblock %}

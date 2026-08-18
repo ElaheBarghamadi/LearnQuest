@@ -1,0 +1,125 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Question Text *</label>
+                <textarea name="question_text" class="form-control" rows="3" required>{{ question.question_text|default:'' }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Question Type *</label>
+                    <select name="question_type" class="form-select" id="questionType" required>
+                        <option value="mcq" {% if question.question_type == 'mcq' %}selected{% endif %}>Multiple Choice</option>
+                        <option value="fill_blank" {% if question.question_type == 'fill_blank' %}selected{% endif %}>Fill in the Blank</option>
+                        <option value="true_false" {% if question.question_type == 'true_false' %}selected{% endif %}>True/False</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Points</label>
+                    <input type="number" name="points" class="form-control" value="{{ question.points|default:10 }}">
+                </div>
+            </div>
+            
+            <div id="fillBlankSection" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label">Correct Answer (for Fill in Blank)</label>
+                    <input type="text" name="blank_answer" class="form-control" value="{{ question.blank_answer|default:'' }}">
+                </div>
+            </div>
+            
+            <div id="mcqSection">
+                <label class="form-label">Choices</label>
+                <div id="choicesContainer">
+                    {% if question.choices.exists %}
+                        {% for choice in question.choices.all %}
+                        <div class="input-group mb-2">
+                            <input type="text" name="choice_text[]" class="form-control" placeholder="Choice text" value="{{ choice.choice_text }}">
+                            <div class="input-group-text">
+                                <input type="radio" name="correct_choice" value="{{ forloop.counter0 }}" {% if choice.is_correct %}checked{% endif %}> Correct
+                            </div>
+                            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="input-group mb-2">
+                            <input type="text" name="choice_text[]" class="form-control" placeholder="Choice 1">
+                            <div class="input-group-text">
+                                <input type="radio" name="correct_choice" value="0"> Correct
+                            </div>
+                        </div>
+                        <div class="input-group mb-2">
+                            <input type="text" name="choice_text[]" class="form-control" placeholder="Choice 2">
+                            <div class="input-group-text">
+                                <input type="radio" name="correct_choice" value="1"> Correct
+                            </div>
+                        </div>
+                        <div class="input-group mb-2">
+                            <input type="text" name="choice_text[]" class="form-control" placeholder="Choice 3">
+                            <div class="input-group-text">
+                                <input type="radio" name="correct_choice" value="2"> Correct
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addChoice()">
+                    <i class="fas fa-plus"></i> Add Choice
+                </button>
+            </div>
+            
+            <hr class="mt-4">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_cms:question_list' quiz.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Question</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.getElementById('questionType').addEventListener('change', function() {
+    const type = this.value;
+    const mcqSection = document.getElementById('mcqSection');
+    const fillBlankSection = document.getElementById('fillBlankSection');
+    
+    if (type === 'mcq') {
+        mcqSection.style.display = 'block';
+        fillBlankSection.style.display = 'none';
+    } else if (type === 'fill_blank') {
+        mcqSection.style.display = 'none';
+        fillBlankSection.style.display = 'block';
+    } else {
+        mcqSection.style.display = 'none';
+        fillBlankSection.style.display = 'none';
+    }
+});
+
+document.getElementById('questionType').dispatchEvent(new Event('change'));
+
+function addChoice() {
+    const container = document.getElementById('choicesContainer');
+    const choiceCount = container.children.length;
+    const newDiv = document.createElement('div');
+    newDiv.className = 'input-group mb-2';
+    newDiv.innerHTML = `
+        <input type="text" name="choice_text[]" class="form-control" placeholder="New choice">
+        <div class="input-group-text">
+            <input type="radio" name="correct_choice" value="${choiceCount}"> Correct
+        </div>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
+    `;
+    container.appendChild(newDiv);
+}
+</script>
+{% endblock %}

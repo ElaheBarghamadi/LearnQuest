@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}ضربه به موش | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+<style>
+    .whack-wrap { max-width: 480px; margin: 0 auto; padding: 16px; text-align: center; }
+    .whack-card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .whack-header {
+        display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg, #FF6584, #f7b733); color: white;
+        border-radius: 16px; padding: 10px 16px; margin-bottom: 14px;
+    }
+    .whack-header .stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: bold; }
+    #whackBoard {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        width: 100%; max-width: 360px; margin: 14px auto;
+    }
+    .hole {
+        aspect-ratio: 1; border-radius: 50%/40%;
+        background: linear-gradient(180deg, #8d6e63 0%, #5d4037 100%);
+        position: relative; border: none; overflow: hidden; cursor: default;
+    }
+    .hole .mole {
+        position: absolute; left: 50%; bottom: -15%; transform: translateX(-50%);
+        font-size: clamp(2rem, 12vw, 3.2rem); user-select: none;
+        transition: transform .12s; display: none;
+    }
+    .hole.up { cursor: pointer; }
+    .hole.up .mole { display: block; animation: popup .15s ease-out; }
+    .hole.hit .mole { transform: translateX(-50%) translateY(12px) scale(.85); opacity: .4; }
+    @keyframes popup { from { transform: translateX(-50%) translateY(100%); } to { transform: translateX(-50%) translateY(0); } }
+    #whackMsg { min-height: 1.5em; font-weight: bold; color: #FF6584; }
+    .whack-btn {
+        border: none; border-radius: 14px; padding: 10px 26px; font-weight: bold;
+        background: linear-gradient(135deg, #FF6584, #f7b733); color: white;
+        cursor: pointer; font-size: 1rem; transition: .2s;
+    }
+    .whack-btn:active { transform: scale(.95); }
+    @media (max-width: 400px) { #whackBoard { gap: 8px; } }
+</style>
+
+<div class="whack-wrap">
+    <div class="whack-card">
+        <div class="whack-header">
+            <span class="stat">🔨 ضربه: <span id="hits">0</span></span>
+            <span class="stat">⏱ زمان: <span id="time">30</span></span>
+            <span class="stat">🏆 رکورد: <span id="best">0</span></span>
+        </div>
+
+        <div id="whackBoard">
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+            <button class="hole"><span class="mole">🐹</span></button>
+        </div>
+
+        <div id="whackMsg">۳۰ ثانیه وقت داری، بزن به موش‌ها! 🔨</div>
+        <button class="whack-btn" id="startBtn">▶ شروع</button>
+        <div class="gp-xpline" id="whackXpLine"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const holes = [...document.querySelectorAll('.hole')];
+    const hitsEl = document.getElementById('hits');
+    const timeEl = document.getElementById('time');
+    const bestEl = document.getElementById('best');
+    const msgEl = document.getElementById('whackMsg');
+    const startBtn = document.getElementById('startBtn');
+
+    let hits = 0, best = 0, playing = false, timer = null, moleTimer = null, current = null;
+
+    function popMole() {
+        if (current) current.classList.remove('up', 'hit');
+        current = holes[Math.floor(Math.random() * holes.length)];
+        current.classList.add('up');
+    }
+
+    function scheduleMole() {
+        popMole();
+        const interval = Math.max(420, 850 - hits * 12);
+        moleTimer = setTimeout(scheduleMole, interval);
+    }
+
+    function start() {
+        hits = 0; hitsEl.textContent = 0;
+        timeEl.textContent = 30;
+        playing = true;
+        startBtn.disabled = true;
+        msgEl.textContent = 'بزن! 🔨';
+        scheduleMole();
+        let t = 30;
+        timer = setInterval(() => {
+            t--;
+            timeEl.textContent = t;
+            if (t <= 0) end();
+        }, 1000);
+    }
+
+    function end() {
+        playing = false;
+        clearInterval(timer);
+        clearTimeout(moleTimer);
+        if (current) current.classList.remove('up', 'hit');
+        startBtn.disabled = false;
+        if (hits > best) { best = hits; bestEl.textContent = best; }
+        msgEl.textContent = `⏰ وقتش تمومه! ${hits} ضربه زدی`;
+        GP.saveScore('/games/save-whack-score/', {score: hits, completed: true}, 'whackXpLine')
+            .then(d => { if (d.best_score) { best = d.best_score; bestEl.textContent = best; } });
+    }
+
+    holes.forEach(h => h.addEventListener('pointerdown', () => {
+        if (!playing || !h.classList.contains('up') || h.classList.contains('hit')) return;
+        h.classList.add('hit');
+        hits++;
+        hitsEl.textContent = hits;
+        h.classList.remove('up');
+    }));
+
+    startBtn.addEventListener('click', start);
+})();
+</script>
+{% endblock %}

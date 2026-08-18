@@ -1,0 +1,623 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    تحلیل آماری | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .stats-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .stats-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 35px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.12);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .stats-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stats-header::before {
+            content: '📊';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .stats-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .stats-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .stats-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+        }
+
+        /* فرم */
+        .stats-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1rem;
+        }
+
+        .stats-input {
+            width: 100%;
+            padding: 14px 50px 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .stats-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .help-text {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed rgba(76, 175, 80, 0.3);
+        }
+
+        .result-header i {
+            font-size: 1.5rem;
+            color: #4CAF50;
+        }
+
+        .result-header h3 {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box.full-width {
+            grid-column: span 2;
+        }
+
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #3B82F6;
+        }
+
+        .stat-formula {
+            font-size: 0.65rem;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
+        .numbers-list {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .numbers-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .number-tag {
+            display: inline-block;
+            background: #f0f0ff;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 3px;
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        /* خطا */
+        .error-card {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            border-right: 5px solid #f44336;
+        }
+
+        .error-card i {
+            font-size: 2rem;
+            color: #f44336;
+            margin-bottom: 10px;
+        }
+
+        /* مثال‌ها */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-item {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .example-item:hover {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .stats-container {
+                padding: 15px;
+            }
+
+            .stats-header {
+                padding: 25px 20px;
+            }
+
+            .stats-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .stats-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-box.full-width {
+                grid-column: span 1;
+            }
+
+            .stat-value {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge-group {
+                flex-wrap: wrap;
+            }
+
+            .examples-grid {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="stats-container">
+        <div class="stats-card">
+            <div class="stats-header">
+                <h1>
+                    <i class="fas fa-chart-line"></i>
+                    تحلیل آماری
+                    <i class="fas fa-calculator"></i>
+                </h1>
+                <p>محاسبه شاخص‌های آماری مجموعه اعداد شما</p>
+                <div class="badge-group">
+                    <span class="badge"><i class="fas fa-chart-pie"></i> میانگین</span>
+                    <span class="badge"><i class="fas fa-chart-simple"></i> میانه</span>
+                    <span class="badge"><i class="fas fa-chart-bar"></i> نما</span>
+                </div>
+            </div>
+
+            <form method="post" class="stats-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-list-ol"></i>
+                        اعداد خود را وارد کنید:
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-hashtag"></i>
+                        {{ form.numbers }}
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        اعداد را با کاما، فاصله یا خط تیره جدا کنید (حداکثر ۱۰۰ عدد)
+                    </div>
+                </div>
+
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-chart-simple"></i>
+                    تحلیل آماری
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            {% if error %}
+                <div class="result-section">
+                    <div class="error-card">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>{{ error }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if number_list %}
+                <div class="result-section">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>نتایج تحلیل آماری</h3>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div class="stat-icon">📊</div>
+                                <div class="stat-label">مجموع</div>
+                                <div class="stat-value">{{ sum|floatformat:2 }}</div>
+                                <div class="stat-formula">Σ = a₁ + a₂ + ... + aₙ</div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div class="stat-icon">⚖️</div>
+                                <div class="stat-label">میانگین</div>
+                                <div class="stat-value">{{ mean|floatformat:2 }}</div>
+                                <div class="stat-formula">μ = مجموع / تعداد</div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div class="stat-icon">📏</div>
+                                <div class="stat-label">میانه</div>
+                                <div class="stat-value">{{ median|floatformat:2 }}</div>
+                                <div class="stat-formula">عدد وسط پس از مرتب‌سازی</div>
+                            </div>
+
+                            <div class="stat-box">
+                                <div class="stat-icon">⭐</div>
+                                <div class="stat-label">نما (مُد)</div>
+                                <div class="stat-value">{{ mode }}</div>
+                                <div class="stat-formula">پرتکرارترین مقدار</div>
+                            </div>
+                        </div>
+
+                        <div class="numbers-list">
+                            <div class="numbers-title">
+                                <i class="fas fa-list-ul"></i>
+                                اعداد وارد شده ({{ number_list|length }} عدد):
+                            </div>
+                            <div>
+                                {% for num in number_list %}
+                                    <span class="number-tag">{{ num|floatformat:0 }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- نمودار -->
+                <div style="margin-top: 20px; background: white; border-radius: 25px; padding: 20px;">
+                    <canvas id="statsChart" style="max-height: 300px;"></canvas>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- مثال‌ها -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📊 مثال‌های آماده
+            </div>
+            <div class="examples-grid">
+                <div class="example-item" data-numbers="10,20,30,40,50">
+                    <i class="fas fa-chart-line"></i> 10, 20, 30, 40, 50
+                </div>
+                <div class="example-item" data-numbers="5,10,15,20,25,30">
+                    <i class="fas fa-chart-bar"></i> 5, 10, 15, 20, 25, 30
+                </div>
+                <div class="example-item" data-numbers="2,4,4,4,6,8,10">
+                    <i class="fas fa-chart-pie"></i> 2, 4, 4, 4, 6, 8, 10
+                </div>
+                <div class="example-item" data-numbers="15,22,18,15,30,22,15">
+                    <i class="fas fa-chart-simple"></i> 15, 22, 18, 15, 30, 22, 15
+                </div>
+            </div>
+        </div>
+
+        <!-- توضیحات -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 شاخص‌های آماری چیست؟
+            </div>
+            <div style="font-size: 0.8rem; color: #555; line-height: 1.8;">
+                <p><strong>📊 مجموع:</strong> حاصل جمع تمام اعداد وارد شده</p>
+                <p><strong>⚖️ میانگین:</strong> مجموع اعداد تقسیم بر تعداد آن‌ها</p>
+                <p><strong>📏 میانه:</strong> بعد از مرتب کردن اعداد، مقداری که در وسط قرار می‌گیرد</p>
+                <p><strong>⭐ نما (مُد):</strong> عددی که بیشترین تکرار را در مجموعه دارد</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // کلیک روی مثال‌ها برای پر کردن خودکار
+        document.querySelectorAll('.example-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const numbers = this.getAttribute('data-numbers');
+                const textarea = document.querySelector('#id_numbers');
+                if (textarea) {
+                    textarea.value = numbers;
+                    // اختیاری: ارسال خودکار فرم
+                    // this.closest('form').submit();
+                }
+            });
+        });
+
+        {% if number_list %}
+            // رسم نمودار
+            const numbers = {{ numbers|safe }};
+            const mean = {{ mean }};
+            const labels = numbers.map((_, i) => `${i + 1}`);
+
+            const ctx = document.getElementById('statsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'مقادیر',
+                        data: numbers,
+                        backgroundColor: numbers.map(n =>
+                            Math.abs(n - mean) < (Math.max(...numbers) - Math.min(...numbers)) * 0.1
+                                ? '#ff7043'
+                                : '#4db6ac'
+                        ),
+                        borderColor: '#00796b',
+                        borderWidth: 1,
+                        borderRadius: 8,
+                        barPercentage: 0.7,
+                        categoryPercentage: 0.9
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `مقدار: ${context.parsed.y.toLocaleString('fa-IR')}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'مقدار اعداد',
+                                font: {size: 12}
+                            },
+                            grid: {
+                                color: '#e0e0e0'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'شاخص داده‌ها',
+                                font: {size: 12}
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        {% endif %}
+    </script>
+{% endblock %}

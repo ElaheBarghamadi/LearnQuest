@@ -1,0 +1,5033 @@
+[
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "a",
+      "persian_meaning": "یک",
+      "level": "A1",
+      "example_sentence": "I have a book."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "abandon",
+      "persian_meaning": "رها کردن",
+      "level": "A1",
+      "example_sentence": "Don't abandon your dreams."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ability",
+      "persian_meaning": "توانایی",
+      "level": "A1",
+      "example_sentence": "She has the ability to learn fast."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "able",
+      "persian_meaning": "قادر، توانا",
+      "level": "A1",
+      "example_sentence": "I am able to do it."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "about",
+      "persian_meaning": "درباره",
+      "level": "A1",
+      "example_sentence": "Tell me about yourself."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "above",
+      "persian_meaning": "بالا",
+      "level": "A1",
+      "example_sentence": "The sun is above the clouds."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "abroad",
+      "persian_meaning": "خارج از کشور",
+      "level": "A1",
+      "example_sentence": "I want to study abroad."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "absent",
+      "persian_meaning": "غایب",
+      "level": "A1",
+      "example_sentence": "He was absent today."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "accept",
+      "persian_meaning": "پذیرفتن",
+      "level": "A1",
+      "example_sentence": "Please accept my apology."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "accident",
+      "persian_meaning": "تصادف",
+      "level": "A1",
+      "example_sentence": "He had a car accident."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "account",
+      "persian_meaning": "حساب",
+      "level": "A1",
+      "example_sentence": "I have a bank account."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "accuse",
+      "persian_meaning": "متهم کردن",
+      "level": "A1",
+      "example_sentence": "They accused him of lying."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "achieve",
+      "persian_meaning": "به دست آوردن",
+      "level": "A1",
+      "example_sentence": "You can achieve anything."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "across",
+      "persian_meaning": "آنطرف، عرض",
+      "level": "A1",
+      "example_sentence": "Walk across the street."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "act",
+      "persian_meaning": "عمل کردن، بازی کردن",
+      "level": "A1",
+      "example_sentence": "He can act very well."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "action",
+      "persian_meaning": "عمل، اقدام",
+      "level": "A1",
+      "example_sentence": "We need action now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "active",
+      "persian_meaning": "فعال",
+      "level": "A1",
+      "example_sentence": "She is an active child."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "activity",
+      "persian_meaning": "فعالیت",
+      "level": "A1",
+      "example_sentence": "Swimming is a fun activity."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "actor",
+      "persian_meaning": "بازیگر",
+      "level": "A1",
+      "example_sentence": "He wants to be an actor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "actress",
+      "persian_meaning": "بازیگر زن",
+      "level": "A1",
+      "example_sentence": "She is a famous actress."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "actual",
+      "persian_meaning": "واقعی",
+      "level": "A1",
+      "example_sentence": "The actual price is lower."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ad",
+      "persian_meaning": "تبلیغ",
+      "level": "A1",
+      "example_sentence": "I saw an ad on TV."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "add",
+      "persian_meaning": "اضافه کردن",
+      "level": "A1",
+      "example_sentence": "Add sugar to tea."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "address",
+      "persian_meaning": "آدرس",
+      "level": "A1",
+      "example_sentence": "What is your address?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "admire",
+      "persian_meaning": "تحسین کردن",
+      "level": "A1",
+      "example_sentence": "I admire your work."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "admit",
+      "persian_meaning": "پذیرفتن (اشتباه)",
+      "level": "A1",
+      "example_sentence": "He admitted his mistake."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "adopt",
+      "persian_meaning": "پذیرفتن، به فرزندی گرفتن",
+      "level": "A1",
+      "example_sentence": "They want to adopt a child."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "adult",
+      "persian_meaning": "بزرگسال",
+      "level": "A1",
+      "example_sentence": "He is an adult now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "advance",
+      "persian_meaning": "پیشرفت",
+      "level": "A1",
+      "example_sentence": "Technology continues to advance."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "advantage",
+      "persian_meaning": "مزیت",
+      "level": "A1",
+      "example_sentence": "Being tall is an advantage."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "advice",
+      "persian_meaning": "توصیه",
+      "level": "A1",
+      "example_sentence": "Thank you for your advice."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "advise",
+      "persian_meaning": "توصیه کردن",
+      "level": "A1",
+      "example_sentence": "I advise you to study."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "affect",
+      "persian_meaning": "تاثیر گذاشتن",
+      "level": "A1",
+      "example_sentence": "Weather affects my mood."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "afford",
+      "persian_meaning": "قدرت خرید داشتن",
+      "level": "A1",
+      "example_sentence": "I can't afford a car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "afraid",
+      "persian_meaning": "ترسیده",
+      "level": "A1",
+      "example_sentence": "I am afraid of spiders."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "after",
+      "persian_meaning": "بعد از",
+      "level": "A1",
+      "example_sentence": "Come after lunch."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "afternoon",
+      "persian_meaning": "بعد از ظهر",
+      "level": "A1",
+      "example_sentence": "See you in the afternoon."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "again",
+      "persian_meaning": "دوباره",
+      "level": "A1",
+      "example_sentence": "Please say it again."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "against",
+      "persian_meaning": "علیه",
+      "level": "A1",
+      "example_sentence": "Don't go against the rules."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "age",
+      "persian_meaning": "سن",
+      "level": "A1",
+      "example_sentence": "What is your age?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "agency",
+      "persian_meaning": "آژانس",
+      "level": "A1",
+      "example_sentence": "Travel agency."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "agent",
+      "persian_meaning": "نماینده",
+      "level": "A1",
+      "example_sentence": "Real estate agent."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ago",
+      "persian_meaning": "پیش (زمان)",
+      "level": "A1",
+      "example_sentence": "Two years ago."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "agree",
+      "persian_meaning": "موافقت کردن",
+      "level": "A1",
+      "example_sentence": "I agree with you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ahead",
+      "persian_meaning": "جلوتر",
+      "level": "A1",
+      "example_sentence": "Go straight ahead."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "aim",
+      "persian_meaning": "هدف",
+      "level": "A1",
+      "example_sentence": "My aim is to succeed."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "air",
+      "persian_meaning": "هوا",
+      "level": "A1",
+      "example_sentence": "Fresh air is good."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "airport",
+      "persian_meaning": "فرودگاه",
+      "level": "A1",
+      "example_sentence": "The airport is busy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "alarm",
+      "persian_meaning": "زنگ هشدار",
+      "level": "A1",
+      "example_sentence": "Set the alarm for 7 AM."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "alive",
+      "persian_meaning": "زنده",
+      "level": "A1",
+      "example_sentence": "The fish is still alive."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "all",
+      "persian_meaning": "همه",
+      "level": "A1",
+      "example_sentence": "All people need water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "allow",
+      "persian_meaning": "اجازه دادن",
+      "level": "A1",
+      "example_sentence": "Please allow me to help."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "almost",
+      "persian_meaning": "تقریبا",
+      "level": "A1",
+      "example_sentence": "It's almost done."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "alone",
+      "persian_meaning": "تنها",
+      "level": "A1",
+      "example_sentence": "I am alone at home."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "along",
+      "persian_meaning": "همراه، در طول",
+      "level": "A1",
+      "example_sentence": "Walk along the river."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "already",
+      "persian_meaning": "قبلاً",
+      "level": "A1",
+      "example_sentence": "I already ate."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "also",
+      "persian_meaning": "همچنین",
+      "level": "A1",
+      "example_sentence": "I also like coffee."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "although",
+      "persian_meaning": "اگرچه",
+      "level": "A1",
+      "example_sentence": "Although it rained, we went out."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "always",
+      "persian_meaning": "همیشه",
+      "level": "A1",
+      "example_sentence": "I always wake up early."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "amaze",
+      "persian_meaning": "حیرت زده کردن",
+      "level": "A1",
+      "example_sentence": "You amaze me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "amazing",
+      "persian_meaning": "شگفت‌انگیز",
+      "level": "A1",
+      "example_sentence": "That's amazing!"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ambition",
+      "persian_meaning": "جاه طلبی",
+      "level": "A1",
+      "example_sentence": "She has big ambitions."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "among",
+      "persian_meaning": "در میان",
+      "level": "A1",
+      "example_sentence": "Among friends."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "amount",
+      "persian_meaning": "مقدار",
+      "level": "A1",
+      "example_sentence": "A small amount of salt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "an",
+      "persian_meaning": "یک",
+      "level": "A1",
+      "example_sentence": "I have an apple."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ancient",
+      "persian_meaning": "قدیمی، باستانی",
+      "level": "A1",
+      "example_sentence": "Ancient Egypt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "and",
+      "persian_meaning": "و",
+      "level": "A1",
+      "example_sentence": "You and me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "anger",
+      "persian_meaning": "خشم",
+      "level": "A1",
+      "example_sentence": "He couldn't hide his anger."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "angle",
+      "persian_meaning": "زاویه",
+      "level": "A1",
+      "example_sentence": "Right angle."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "angry",
+      "persian_meaning": "عصبانی",
+      "level": "A1",
+      "example_sentence": "He is angry with me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "animal",
+      "persian_meaning": "حیوان",
+      "level": "A1",
+      "example_sentence": "Lions are wild animals."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "announce",
+      "persian_meaning": "اعلام کردن",
+      "level": "A1",
+      "example_sentence": "They announced the winner."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "annoy",
+      "persian_meaning": "اذیت کردن",
+      "level": "A1",
+      "example_sentence": "Stop annoying me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "annual",
+      "persian_meaning": "سالانه",
+      "level": "A1",
+      "example_sentence": "Annual meeting."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "another",
+      "persian_meaning": "دیگری",
+      "level": "A1",
+      "example_sentence": "Can I have another one?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "answer",
+      "persian_meaning": "جواب",
+      "level": "A1",
+      "example_sentence": "Please answer the question."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ant",
+      "persian_meaning": "مورچه",
+      "level": "A1",
+      "example_sentence": "The ant is small."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "any",
+      "persian_meaning": "هیچ، هر",
+      "level": "A1",
+      "example_sentence": "Do you have any money?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "anyone",
+      "persian_meaning": "هر کسی",
+      "level": "A1",
+      "example_sentence": "Anyone can do it."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "anything",
+      "persian_meaning": "هر چیزی",
+      "level": "A1",
+      "example_sentence": "I will do anything for you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "anyway",
+      "persian_meaning": "به هر حال",
+      "level": "A1",
+      "example_sentence": "Anyway, let's go."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "anywhere",
+      "persian_meaning": "هر جایی",
+      "level": "A1",
+      "example_sentence": "You can sit anywhere."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "apart",
+      "persian_meaning": "جدا",
+      "level": "A1",
+      "example_sentence": "They live apart."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "apartment",
+      "persian_meaning": "آپارتمان",
+      "level": "A1",
+      "example_sentence": "I live in an apartment."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "appear",
+      "persian_meaning": "ظاهر شدن",
+      "level": "A1",
+      "example_sentence": "The sun appeared."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "apple",
+      "persian_meaning": "سیب",
+      "level": "A1",
+      "example_sentence": "I eat an apple every day."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "apply",
+      "persian_meaning": "درخواست دادن",
+      "level": "A1",
+      "example_sentence": "Apply for a job."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "appoint",
+      "persian_meaning": "منصوب کردن",
+      "level": "A1",
+      "example_sentence": "They appointed a new manager."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "area",
+      "persian_meaning": "منطقه",
+      "level": "A1",
+      "example_sentence": "This area is safe."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "argue",
+      "persian_meaning": "جر و بحث کردن",
+      "level": "A1",
+      "example_sentence": "Don't argue with me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "arm",
+      "persian_meaning": "بازو",
+      "level": "A1",
+      "example_sentence": "He broke his arm."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "army",
+      "persian_meaning": "ارتش",
+      "level": "A1",
+      "example_sentence": "He joined the army."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "around",
+      "persian_meaning": "دور و بر",
+      "level": "A1",
+      "example_sentence": "Look around you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "arrange",
+      "persian_meaning": "ترتیب دادن",
+      "level": "A1",
+      "example_sentence": "Arrange the chairs."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "arrest",
+      "persian_meaning": "دستگیر کردن",
+      "level": "A1",
+      "example_sentence": "The police arrested him."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "arrive",
+      "persian_meaning": "رسیدن",
+      "level": "A1",
+      "example_sentence": "When will you arrive?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "art",
+      "persian_meaning": "هنر",
+      "level": "A1",
+      "example_sentence": "I love art."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "article",
+      "persian_meaning": "مقاله",
+      "level": "A1",
+      "example_sentence": "Read this article."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "artist",
+      "persian_meaning": "هنرمند",
+      "level": "A1",
+      "example_sentence": "She is an artist."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "as",
+      "persian_meaning": "مثل، به عنوان",
+      "level": "A1",
+      "example_sentence": "As you know."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ashamed",
+      "persian_meaning": "شرمنده",
+      "level": "A1",
+      "example_sentence": "I feel ashamed."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ask",
+      "persian_meaning": "پرسیدن",
+      "level": "A1",
+      "example_sentence": "Ask me a question."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "asleep",
+      "persian_meaning": "خواب",
+      "level": "A1",
+      "example_sentence": "The baby is asleep."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "assist",
+      "persian_meaning": "کمک کردن",
+      "level": "A1",
+      "example_sentence": "I will assist you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "assistant",
+      "persian_meaning": "دستیار",
+      "level": "A1",
+      "example_sentence": "She is my assistant."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "assume",
+      "persian_meaning": "فرض کردن",
+      "level": "A1",
+      "example_sentence": "I assume you're right."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "at",
+      "persian_meaning": "در (مکان)",
+      "level": "A1",
+      "example_sentence": "Meet me at the park."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attack",
+      "persian_meaning": "حمله",
+      "level": "A1",
+      "example_sentence": "The dog attacked."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attempt",
+      "persian_meaning": "تلاش",
+      "level": "A1",
+      "example_sentence": "Make an attempt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attend",
+      "persian_meaning": "حضور یافتن",
+      "level": "A1",
+      "example_sentence": "Attend the meeting."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attention",
+      "persian_meaning": "توجه",
+      "level": "A1",
+      "example_sentence": "Pay attention!"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attitude",
+      "persian_meaning": "نگرش",
+      "level": "A1",
+      "example_sentence": "Positive attitude."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "attract",
+      "persian_meaning": "جذب کردن",
+      "level": "A1",
+      "example_sentence": "Flowers attract bees."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "aunt",
+      "persian_meaning": "عمه، خاله",
+      "level": "A1",
+      "example_sentence": "My aunt is nice."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "autumn",
+      "persian_meaning": "پاییز",
+      "level": "A1",
+      "example_sentence": "Leaves fall in autumn."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "available",
+      "persian_meaning": "موجود",
+      "level": "A1",
+      "example_sentence": "Is this seat available?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "average",
+      "persian_meaning": "متوسط",
+      "level": "A1",
+      "example_sentence": "Average score."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "avoid",
+      "persian_meaning": "اجتناب کردن",
+      "level": "A1",
+      "example_sentence": "Avoid the traffic."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "awake",
+      "persian_meaning": "بیدار",
+      "level": "A1",
+      "example_sentence": "I am awake now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "away",
+      "persian_meaning": "دور",
+      "level": "A1",
+      "example_sentence": "Go away!"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "baby",
+      "persian_meaning": "نوزاد",
+      "level": "A1",
+      "example_sentence": "The baby is crying."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "back",
+      "persian_meaning": "پشت",
+      "level": "A1",
+      "example_sentence": "I'll be back soon."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bad",
+      "persian_meaning": "بد",
+      "level": "A1",
+      "example_sentence": "That is bad."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bag",
+      "persian_meaning": "کیف",
+      "level": "A1",
+      "example_sentence": "I need a bag."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "balance",
+      "persian_meaning": "تعادل",
+      "level": "A1",
+      "example_sentence": "Keep your balance."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ball",
+      "persian_meaning": "توپ",
+      "level": "A1",
+      "example_sentence": "Throw the ball."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "banana",
+      "persian_meaning": "موز",
+      "level": "A1",
+      "example_sentence": "I like bananas."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "band",
+      "persian_meaning": "گروه موسیقی",
+      "level": "A1",
+      "example_sentence": "My favorite band."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bank",
+      "persian_meaning": "بانک",
+      "level": "A1",
+      "example_sentence": "I need to go to the bank."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bar",
+      "persian_meaning": "بار، میله",
+      "level": "A1",
+      "example_sentence": "A chocolate bar."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "base",
+      "persian_meaning": "پایه",
+      "level": "A1",
+      "example_sentence": "The base of the statue."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "basic",
+      "persian_meaning": "اساسی",
+      "level": "A1",
+      "example_sentence": "Basic rules."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bath",
+      "persian_meaning": "حمام",
+      "level": "A1",
+      "example_sentence": "Take a bath."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bathroom",
+      "persian_meaning": "دستشویی",
+      "level": "A1",
+      "example_sentence": "Where is the bathroom?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "be",
+      "persian_meaning": "بودن",
+      "level": "A1",
+      "example_sentence": "I want to be happy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "beach",
+      "persian_meaning": "ساحل",
+      "level": "A1",
+      "example_sentence": "Let's go to the beach."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bear",
+      "persian_meaning": "خرس",
+      "level": "A1",
+      "example_sentence": "The bear is big."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "beautiful",
+      "persian_meaning": "زیبا",
+      "level": "A1",
+      "example_sentence": "You are beautiful."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "because",
+      "persian_meaning": "چون",
+      "level": "A1",
+      "example_sentence": "I'm happy because it's sunny."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "become",
+      "persian_meaning": "شدن",
+      "level": "A1",
+      "example_sentence": "I want to become a doctor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bed",
+      "persian_meaning": "تخت",
+      "level": "A1",
+      "example_sentence": "Go to bed."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bedroom",
+      "persian_meaning": "اتاق خواب",
+      "level": "A1",
+      "example_sentence": "My bedroom is small."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bee",
+      "persian_meaning": "زنبور",
+      "level": "A1",
+      "example_sentence": "The bee is flying."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "beer",
+      "persian_meaning": "آبجو",
+      "level": "A1",
+      "example_sentence": "He drinks beer."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "before",
+      "persian_meaning": "قبل از",
+      "level": "A1",
+      "example_sentence": "Before the party."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "begin",
+      "persian_meaning": "شروع کردن",
+      "level": "A1",
+      "example_sentence": "Let's begin the lesson."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "behave",
+      "persian_meaning": "رفتار کردن",
+      "level": "A1",
+      "example_sentence": "Behave yourself."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "behind",
+      "persian_meaning": "پشت سر",
+      "level": "A1",
+      "example_sentence": "The cat is behind the door."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "believe",
+      "persian_meaning": "باور کردن",
+      "level": "A1",
+      "example_sentence": "I believe you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bell",
+      "persian_meaning": "زنگ",
+      "level": "A1",
+      "example_sentence": "Ring the bell."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "belong",
+      "persian_meaning": "متعلق بودن",
+      "level": "A1",
+      "example_sentence": "This belongs to me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "below",
+      "persian_meaning": "زیر",
+      "level": "A1",
+      "example_sentence": "The temperature is below zero."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "belt",
+      "persian_meaning": "کمربند",
+      "level": "A1",
+      "example_sentence": "Fasten your seat belt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bench",
+      "persian_meaning": "نیمکت",
+      "level": "A1",
+      "example_sentence": "Sit on the bench."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bend",
+      "persian_meaning": "خم شدن",
+      "level": "A1",
+      "example_sentence": "Bend your knees."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "beside",
+      "persian_meaning": "کنار",
+      "level": "A1",
+      "example_sentence": "Sit beside me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "best",
+      "persian_meaning": "بهترین",
+      "level": "A1",
+      "example_sentence": "You are the best."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "better",
+      "persian_meaning": "بهتر",
+      "level": "A1",
+      "example_sentence": "This is better."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "between",
+      "persian_meaning": "بین",
+      "level": "A1",
+      "example_sentence": "Between you and me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "big",
+      "persian_meaning": "بزرگ",
+      "level": "A1",
+      "example_sentence": "This is a big room."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bird",
+      "persian_meaning": "پرنده",
+      "level": "A1",
+      "example_sentence": "The bird can fly."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "birth",
+      "persian_meaning": "تولد",
+      "level": "A1",
+      "example_sentence": "Date of birth."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "birthday",
+      "persian_meaning": "تولد",
+      "level": "A1",
+      "example_sentence": "Happy birthday!"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bit",
+      "persian_meaning": "کمی",
+      "level": "A1",
+      "example_sentence": "A little bit."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bite",
+      "persian_meaning": "گزیدن",
+      "level": "A1",
+      "example_sentence": "The dog bit me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bitter",
+      "persian_meaning": "تلخ",
+      "level": "A1",
+      "example_sentence": "Coffee is bitter."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "black",
+      "persian_meaning": "سیاه",
+      "level": "A1",
+      "example_sentence": "A black cat."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blame",
+      "persian_meaning": "سرزنش کردن",
+      "level": "A1",
+      "example_sentence": "Don't blame me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blank",
+      "persian_meaning": "خالی",
+      "level": "A1",
+      "example_sentence": "Fill in the blank."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blanket",
+      "persian_meaning": "پتو",
+      "level": "A1",
+      "example_sentence": "Warm blanket."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blind",
+      "persian_meaning": "نابینا",
+      "level": "A1",
+      "example_sentence": "He is blind."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "block",
+      "persian_meaning": "بلوک",
+      "level": "A1",
+      "example_sentence": "A block of wood."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blood",
+      "persian_meaning": "خون",
+      "level": "A1",
+      "example_sentence": "Blood is red."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blow",
+      "persian_meaning": "وزیدن",
+      "level": "A1",
+      "example_sentence": "The wind blows."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "blue",
+      "persian_meaning": "آبی",
+      "level": "A1",
+      "example_sentence": "The sky is blue."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "board",
+      "persian_meaning": "تخته",
+      "level": "A1",
+      "example_sentence": "Write on the board."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "boat",
+      "persian_meaning": "قایق",
+      "level": "A1",
+      "example_sentence": "A small boat."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "body",
+      "persian_meaning": "بدن",
+      "level": "A1",
+      "example_sentence": "Human body."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "boil",
+      "persian_meaning": "جوشیدن",
+      "level": "A1",
+      "example_sentence": "Boil the water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bold",
+      "persian_meaning": "پررنگ، جسور",
+      "level": "A1",
+      "example_sentence": "Bold text."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "book",
+      "persian_meaning": "کتاب",
+      "level": "A1",
+      "example_sentence": "This is my book."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "border",
+      "persian_meaning": "مرز",
+      "level": "A1",
+      "example_sentence": "Border control."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "boring",
+      "persian_meaning": "خسته کننده",
+      "level": "A1",
+      "example_sentence": "This movie is boring."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "born",
+      "persian_meaning": "متولد شده",
+      "level": "A1",
+      "example_sentence": "I was born in 1990."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "borrow",
+      "persian_meaning": "قرض گرفتن",
+      "level": "A1",
+      "example_sentence": "Can I borrow your pen?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "boss",
+      "persian_meaning": "رئیس",
+      "level": "A1",
+      "example_sentence": "My boss is nice."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "both",
+      "persian_meaning": "هر دو",
+      "level": "A1",
+      "example_sentence": "Both of them."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bother",
+      "persian_meaning": "مزاحم شدن",
+      "level": "A1",
+      "example_sentence": "Don't bother me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bottle",
+      "persian_meaning": "بطری",
+      "level": "A1",
+      "example_sentence": "A bottle of water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bottom",
+      "persian_meaning": "پایین",
+      "level": "A1",
+      "example_sentence": "At the bottom."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bound",
+      "persian_meaning": "محدود، مقید",
+      "level": "A1",
+      "example_sentence": "Bound to happen."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bowl",
+      "persian_meaning": "کاسه",
+      "level": "A1",
+      "example_sentence": "A bowl of soup."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "box",
+      "persian_meaning": "جعبه",
+      "level": "A1",
+      "example_sentence": "Open the box."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "boy",
+      "persian_meaning": "پسر",
+      "level": "A1",
+      "example_sentence": "The boy is playing."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brain",
+      "persian_meaning": "مغز",
+      "level": "A1",
+      "example_sentence": "Use your brain."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "branch",
+      "persian_meaning": "شاخه",
+      "level": "A1",
+      "example_sentence": "A tree branch."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brave",
+      "persian_meaning": "شجاع",
+      "level": "A1",
+      "example_sentence": "You are brave."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bread",
+      "persian_meaning": "نان",
+      "level": "A1",
+      "example_sentence": "Bread and butter."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "break",
+      "persian_meaning": "شکستن",
+      "level": "A1",
+      "example_sentence": "Don't break the glass."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "breakfast",
+      "persian_meaning": "صبحانه",
+      "level": "A1",
+      "example_sentence": "I eat breakfast at 8."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "breath",
+      "persian_meaning": "نفس",
+      "level": "A1",
+      "example_sentence": "Take a deep breath."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "breathe",
+      "persian_meaning": "نفس کشیدن",
+      "level": "A1",
+      "example_sentence": "Breathe deeply."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bridge",
+      "persian_meaning": "پل",
+      "level": "A1",
+      "example_sentence": "Cross the bridge."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brief",
+      "persian_meaning": "کوتاه، مختصر",
+      "level": "A1",
+      "example_sentence": "Brief meeting."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bright",
+      "persian_meaning": "روشن",
+      "level": "A1",
+      "example_sentence": "The sun is bright."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bring",
+      "persian_meaning": "آوردن",
+      "level": "A1",
+      "example_sentence": "Bring me water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "broad",
+      "persian_meaning": "وسیع",
+      "level": "A1",
+      "example_sentence": "Broad street."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "broken",
+      "persian_meaning": "شکسته",
+      "level": "A1",
+      "example_sentence": "Broken glass."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brother",
+      "persian_meaning": "برادر",
+      "level": "A1",
+      "example_sentence": "I have one brother."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brown",
+      "persian_meaning": "قهوه‌ای",
+      "level": "A1",
+      "example_sentence": "Brown eyes."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "brush",
+      "persian_meaning": "برس زدن",
+      "level": "A1",
+      "example_sentence": "Brush your teeth."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "build",
+      "persian_meaning": "ساختن",
+      "level": "A1",
+      "example_sentence": "Build a house."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "building",
+      "persian_meaning": "ساختمان",
+      "level": "A1",
+      "example_sentence": "Tall building."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "burn",
+      "persian_meaning": "سوزاندن",
+      "level": "A1",
+      "example_sentence": "Paper burns easily."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "bus",
+      "persian_meaning": "اتوبوس",
+      "level": "A1",
+      "example_sentence": "Take the bus."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "business",
+      "persian_meaning": "تجارت",
+      "level": "A1",
+      "example_sentence": "Family business."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "busy",
+      "persian_meaning": "مشغول",
+      "level": "A1",
+      "example_sentence": "I am busy now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "but",
+      "persian_meaning": "اما",
+      "level": "A1",
+      "example_sentence": "I like it but it's expensive."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "butter",
+      "persian_meaning": "کره",
+      "level": "A1",
+      "example_sentence": "Bread with butter."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "button",
+      "persian_meaning": "دکمه",
+      "level": "A1",
+      "example_sentence": "Press the button."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "buy",
+      "persian_meaning": "خریدن",
+      "level": "A1",
+      "example_sentence": "I want to buy a car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "by",
+      "persian_meaning": "توسط",
+      "level": "A1",
+      "example_sentence": "A book by Hemingway."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cake",
+      "persian_meaning": "کیک",
+      "level": "A1",
+      "example_sentence": "Birthday cake."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "call",
+      "persian_meaning": "صدا کردن",
+      "level": "A1",
+      "example_sentence": "Call me later."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "calm",
+      "persian_meaning": "آرام",
+      "level": "A1",
+      "example_sentence": "Stay calm."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "camera",
+      "persian_meaning": "دوربین",
+      "level": "A1",
+      "example_sentence": "Take a photo with the camera."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "camp",
+      "persian_meaning": "اردوگاه",
+      "level": "A1",
+      "example_sentence": "Summer camp."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "can",
+      "persian_meaning": "توانستن",
+      "level": "A1",
+      "example_sentence": "I can swim."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cancel",
+      "persian_meaning": "لغو کردن",
+      "level": "A1",
+      "example_sentence": "Cancel the meeting."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "candle",
+      "persian_meaning": "شمع",
+      "level": "A1",
+      "example_sentence": "Light the candle."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cap",
+      "persian_meaning": "کلاه",
+      "level": "A1",
+      "example_sentence": "Wear a cap."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "car",
+      "persian_meaning": "ماشین",
+      "level": "A1",
+      "example_sentence": "She has a red car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "card",
+      "persian_meaning": "کارت",
+      "level": "A1",
+      "example_sentence": "Credit card."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "care",
+      "persian_meaning": "مراقبت",
+      "level": "A1",
+      "example_sentence": "Take care."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "career",
+      "persian_meaning": "حرفه",
+      "level": "A1",
+      "example_sentence": "My career path."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "careful",
+      "persian_meaning": "مراقب",
+      "level": "A1",
+      "example_sentence": "Be careful!"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "carry",
+      "persian_meaning": "حمل کردن",
+      "level": "A1",
+      "example_sentence": "Carry the bag."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "case",
+      "persian_meaning": "مورد، کیف",
+      "level": "A1",
+      "example_sentence": "In that case."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cat",
+      "persian_meaning": "گربه",
+      "level": "A1",
+      "example_sentence": "The cat sleeps all day."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "catch",
+      "persian_meaning": "گرفتن",
+      "level": "A1",
+      "example_sentence": "Catch the ball."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cause",
+      "persian_meaning": "علت",
+      "level": "A1",
+      "example_sentence": "What caused the problem?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ceiling",
+      "persian_meaning": "سقف",
+      "level": "A1",
+      "example_sentence": "Look at the ceiling."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "celebrate",
+      "persian_meaning": "جشن گرفتن",
+      "level": "A1",
+      "example_sentence": "Celebrate your birthday."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cell",
+      "persian_meaning": "سلول",
+      "level": "A1",
+      "example_sentence": "Prison cell."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "center",
+      "persian_meaning": "مرکز",
+      "level": "A1",
+      "example_sentence": "City center."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "century",
+      "persian_meaning": "قرن",
+      "level": "A1",
+      "example_sentence": "21st century."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "certain",
+      "persian_meaning": "مطمئن",
+      "level": "A1",
+      "example_sentence": "Are you certain?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "chain",
+      "persian_meaning": "زنجیر",
+      "level": "A1",
+      "example_sentence": "Chain of events."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "chair",
+      "persian_meaning": "صندلی",
+      "level": "A1",
+      "example_sentence": "Sit on the chair."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "challenge",
+      "persian_meaning": "چالش",
+      "level": "A1",
+      "example_sentence": "Accept the challenge."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "chance",
+      "persian_meaning": "شانس",
+      "level": "A1",
+      "example_sentence": "Give me a chance."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "change",
+      "persian_meaning": "تغییر",
+      "level": "A1",
+      "example_sentence": "Change is good."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "character",
+      "persian_meaning": "شخصیت",
+      "level": "A1",
+      "example_sentence": "Good character."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "charge",
+      "persian_meaning": "شارژ، مسئولیت",
+      "level": "A1",
+      "example_sentence": "Charge your phone."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cheap",
+      "persian_meaning": "ارزان",
+      "level": "A1",
+      "example_sentence": "This is cheap."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "check",
+      "persian_meaning": "چک کردن",
+      "level": "A1",
+      "example_sentence": "Check your answers."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cheer",
+      "persian_meaning": "تشویق کردن",
+      "level": "A1",
+      "example_sentence": "Cheer for your team."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cheese",
+      "persian_meaning": "پنیر",
+      "level": "A1",
+      "example_sentence": "I like cheese."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "chest",
+      "persian_meaning": "سینه، صندوقچه",
+      "level": "A1",
+      "example_sentence": "Treasure chest."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "chicken",
+      "persian_meaning": "مرغ",
+      "level": "A1",
+      "example_sentence": "Fried chicken."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "child",
+      "persian_meaning": "کودک",
+      "level": "A1",
+      "example_sentence": "Every child needs love."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "choice",
+      "persian_meaning": "انتخاب",
+      "level": "A1",
+      "example_sentence": "Your choice."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "choose",
+      "persian_meaning": "انتخاب کردن",
+      "level": "A1",
+      "example_sentence": "Choose wisely."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "church",
+      "persian_meaning": "کلیسا",
+      "level": "A1",
+      "example_sentence": "Go to church."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "circle",
+      "persian_meaning": "دایره",
+      "level": "A1",
+      "example_sentence": "Draw a circle."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "city",
+      "persian_meaning": "شهر",
+      "level": "A1",
+      "example_sentence": "Big city."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "claim",
+      "persian_meaning": "ادعا کردن",
+      "level": "A1",
+      "example_sentence": "He claims he is right."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "class",
+      "persian_meaning": "کلاس",
+      "level": "A1",
+      "example_sentence": "English class."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "clean",
+      "persian_meaning": "تمیز",
+      "level": "A1",
+      "example_sentence": "Clean your room."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "clear",
+      "persian_meaning": "واضح",
+      "level": "A1",
+      "example_sentence": "Clear instructions."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "climb",
+      "persian_meaning": "بالا رفتن",
+      "level": "A1",
+      "example_sentence": "Climb the mountain."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "clock",
+      "persian_meaning": "ساعت",
+      "level": "A1",
+      "example_sentence": "Look at the clock."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "close",
+      "persian_meaning": "بستن",
+      "level": "A1",
+      "example_sentence": "Close the door."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cloth",
+      "persian_meaning": "پارچه",
+      "level": "A1",
+      "example_sentence": "Piece of cloth."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "clothes",
+      "persian_meaning": "لباس",
+      "level": "A1",
+      "example_sentence": "Warm clothes."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cloud",
+      "persian_meaning": "ابر",
+      "level": "A1",
+      "example_sentence": "White cloud."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "club",
+      "persian_meaning": "باشگاه",
+      "level": "A1",
+      "example_sentence": "Join the club."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "coast",
+      "persian_meaning": "ساحل",
+      "level": "A1",
+      "example_sentence": "West coast."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "coat",
+      "persian_meaning": "کت",
+      "level": "A1",
+      "example_sentence": "Winter coat."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "coffee",
+      "persian_meaning": "قهوه",
+      "level": "A1",
+      "example_sentence": "Cup of coffee."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "coin",
+      "persian_meaning": "سکه",
+      "level": "A1",
+      "example_sentence": "Gold coin."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cold",
+      "persian_meaning": "سرد",
+      "level": "A1",
+      "example_sentence": "Cold weather."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "collect",
+      "persian_meaning": "جمع آوری کردن",
+      "level": "A1",
+      "example_sentence": "Collect stamps."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "college",
+      "persian_meaning": "کالج",
+      "level": "A1",
+      "example_sentence": "Go to college."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "color",
+      "persian_meaning": "رنگ",
+      "level": "A1",
+      "example_sentence": "What color is it?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "combine",
+      "persian_meaning": "ترکیب کردن",
+      "level": "A1",
+      "example_sentence": "Combine ingredients."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "come",
+      "persian_meaning": "آمدن",
+      "level": "A1",
+      "example_sentence": "Come here."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "comfort",
+      "persian_meaning": "راحتی",
+      "level": "A1",
+      "example_sentence": "Comfort zone."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "common",
+      "persian_meaning": "معمولی",
+      "level": "A1",
+      "example_sentence": "Common sense."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "company",
+      "persian_meaning": "شرکت",
+      "level": "A1",
+      "example_sentence": "Work for a company."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "compare",
+      "persian_meaning": "مقایسه کردن",
+      "level": "A1",
+      "example_sentence": "Compare prices."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "compete",
+      "persian_meaning": "رقابت کردن",
+      "level": "A1",
+      "example_sentence": "Compete to win."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "complete",
+      "persian_meaning": "کامل",
+      "level": "A1",
+      "example_sentence": "Complete the task."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "computer",
+      "persian_meaning": "کامپیوتر",
+      "level": "A1",
+      "example_sentence": "Use the computer."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "concern",
+      "persian_meaning": "نگرانی",
+      "level": "A1",
+      "example_sentence": "Your concern is valid."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "condition",
+      "persian_meaning": "شرط",
+      "level": "A1",
+      "example_sentence": "Good condition."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "connect",
+      "persian_meaning": "اتصال",
+      "level": "A1",
+      "example_sentence": "Connect the wires."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "consider",
+      "persian_meaning": "در نظر گرفتن",
+      "level": "A1",
+      "example_sentence": "Consider your options."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "contain",
+      "persian_meaning": "شامل بودن",
+      "level": "A1",
+      "example_sentence": "Contains sugar."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "continue",
+      "persian_meaning": "ادامه دادن",
+      "level": "A1",
+      "example_sentence": "Continue working."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "control",
+      "persian_meaning": "کنترل",
+      "level": "A1",
+      "example_sentence": "Control the situation."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cook",
+      "persian_meaning": "پختن",
+      "level": "A1",
+      "example_sentence": "Cook dinner."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cool",
+      "persian_meaning": "خنک",
+      "level": "A1",
+      "example_sentence": "Cool water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "copy",
+      "persian_meaning": "کپی",
+      "level": "A1",
+      "example_sentence": "Copy the file."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "corner",
+      "persian_meaning": "گوشه",
+      "level": "A1",
+      "example_sentence": "Around the corner."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "correct",
+      "persian_meaning": "درست",
+      "level": "A1",
+      "example_sentence": "Correct answer."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cost",
+      "persian_meaning": "هزینه",
+      "level": "A1",
+      "example_sentence": "How much does it cost?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cotton",
+      "persian_meaning": "پنبه",
+      "level": "A1",
+      "example_sentence": "Cotton shirt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cough",
+      "persian_meaning": "سرفه",
+      "level": "A1",
+      "example_sentence": "You have a cough."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "could",
+      "persian_meaning": "می توانستم",
+      "level": "A1",
+      "example_sentence": "I could help."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "count",
+      "persian_meaning": "شمردن",
+      "level": "A1",
+      "example_sentence": "Count to ten."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "country",
+      "persian_meaning": "کشور",
+      "level": "A1",
+      "example_sentence": "My country."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "couple",
+      "persian_meaning": "زوج",
+      "level": "A1",
+      "example_sentence": "A couple of days."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "courage",
+      "persian_meaning": "شجاعت",
+      "level": "A1",
+      "example_sentence": "Have courage."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "course",
+      "persian_meaning": "دوره",
+      "level": "A1",
+      "example_sentence": "English course."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "court",
+      "persian_meaning": "دادگاه",
+      "level": "A1",
+      "example_sentence": "Court room."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cover",
+      "persian_meaning": "پوشاندن",
+      "level": "A1",
+      "example_sentence": "Cover your head."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cow",
+      "persian_meaning": "گاو",
+      "level": "A1",
+      "example_sentence": "Milk cow."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "crack",
+      "persian_meaning": "ترک",
+      "level": "A1",
+      "example_sentence": "Crack in the wall."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "craft",
+      "persian_meaning": "صنایع دستی",
+      "level": "A1",
+      "example_sentence": "Arts and crafts."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "crash",
+      "persian_meaning": "تصادف",
+      "level": "A1",
+      "example_sentence": "Car crash."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "crazy",
+      "persian_meaning": "دیوانه",
+      "level": "A1",
+      "example_sentence": "You are crazy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cream",
+      "persian_meaning": "کرم",
+      "level": "A1",
+      "example_sentence": "Ice cream."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "create",
+      "persian_meaning": "ایجاد کردن",
+      "level": "A1",
+      "example_sentence": "Create something new."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "credit",
+      "persian_meaning": "اعتبار",
+      "level": "A1",
+      "example_sentence": "Credit card."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "crime",
+      "persian_meaning": "جرم",
+      "level": "A1",
+      "example_sentence": "Crime scene."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cross",
+      "persian_meaning": "عبور کردن",
+      "level": "A1",
+      "example_sentence": "Cross the street."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "crowd",
+      "persian_meaning": "جمعیت",
+      "level": "A1",
+      "example_sentence": "Big crowd."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cry",
+      "persian_meaning": "گریه کردن",
+      "level": "A1",
+      "example_sentence": "Don't cry."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cup",
+      "persian_meaning": "فنجان",
+      "level": "A1",
+      "example_sentence": "Cup of tea."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "curious",
+      "persian_meaning": "کنجکاو",
+      "level": "A1",
+      "example_sentence": "Curious child."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "current",
+      "persian_meaning": "جاری",
+      "level": "A1",
+      "example_sentence": "Current events."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "curve",
+      "persian_meaning": "منحنی",
+      "level": "A1",
+      "example_sentence": "Learning curve."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "cut",
+      "persian_meaning": "بریدن",
+      "level": "A1",
+      "example_sentence": "Cut the paper."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "daily",
+      "persian_meaning": "روزانه",
+      "level": "A1",
+      "example_sentence": "Daily routine."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dance",
+      "persian_meaning": "رقصیدن",
+      "level": "A1",
+      "example_sentence": "I like to dance."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "danger",
+      "persian_meaning": "خطر",
+      "level": "A1",
+      "example_sentence": "Danger ahead."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dark",
+      "persian_meaning": "تاریک",
+      "level": "A1",
+      "example_sentence": "Dark night."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "date",
+      "persian_meaning": "تاریخ",
+      "level": "A1",
+      "example_sentence": "What is the date?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "daughter",
+      "persian_meaning": "دختر",
+      "level": "A1",
+      "example_sentence": "My daughter."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "day",
+      "persian_meaning": "روز",
+      "level": "A1",
+      "example_sentence": "Have a nice day."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dead",
+      "persian_meaning": "مرده",
+      "level": "A1",
+      "example_sentence": "Dead end."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "deal",
+      "persian_meaning": "معامله",
+      "level": "A1",
+      "example_sentence": "Good deal."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dear",
+      "persian_meaning": "عزیز",
+      "level": "A1",
+      "example_sentence": "Dear friend."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "death",
+      "persian_meaning": "مرگ",
+      "level": "A1",
+      "example_sentence": "Life and death."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "decide",
+      "persian_meaning": "تصمیم گرفتن",
+      "level": "A1",
+      "example_sentence": "Decide now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "deep",
+      "persian_meaning": "عمیق",
+      "level": "A1",
+      "example_sentence": "Deep water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "deer",
+      "persian_meaning": "گوزن",
+      "level": "A1",
+      "example_sentence": "A deer runs fast."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "defend",
+      "persian_meaning": "دفاع کردن",
+      "level": "A1",
+      "example_sentence": "Defend yourself."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "degree",
+      "persian_meaning": "درجه",
+      "level": "A1",
+      "example_sentence": "University degree."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "delay",
+      "persian_meaning": "تاخیر",
+      "level": "A1",
+      "example_sentence": "Flight delay."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "deliver",
+      "persian_meaning": "تحویل دادن",
+      "level": "A1",
+      "example_sentence": "Deliver the package."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "demand",
+      "persian_meaning": "تقاضا",
+      "level": "A1",
+      "example_sentence": "Supply and demand."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "depend",
+      "persian_meaning": "بستگی داشتن",
+      "level": "A1",
+      "example_sentence": "It depends."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "describe",
+      "persian_meaning": "توصیف کردن",
+      "level": "A1",
+      "example_sentence": "Describe yourself."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "desert",
+      "persian_meaning": "بیابان",
+      "level": "A1",
+      "example_sentence": "Sahara desert."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "design",
+      "persian_meaning": "طراحی",
+      "level": "A1",
+      "example_sentence": "Graphic design."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "desire",
+      "persian_meaning": "تمایل",
+      "level": "A1",
+      "example_sentence": "Strong desire."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "desk",
+      "persian_meaning": "میز",
+      "level": "A1",
+      "example_sentence": "Office desk."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "destroy",
+      "persian_meaning": "تخریب کردن",
+      "level": "A1",
+      "example_sentence": "Destroy the evidence."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "detail",
+      "persian_meaning": "جزئیات",
+      "level": "A1",
+      "example_sentence": "Small detail."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "develop",
+      "persian_meaning": "توسعه دادن",
+      "level": "A1",
+      "example_sentence": "Develop skills."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "device",
+      "persian_meaning": "دستگاه",
+      "level": "A1",
+      "example_sentence": "Electronic device."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "diamond",
+      "persian_meaning": "الماس",
+      "level": "A1",
+      "example_sentence": "Diamond ring."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dictionary",
+      "persian_meaning": "فرهنگ لغت",
+      "level": "A1",
+      "example_sentence": "Use a dictionary."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "die",
+      "persian_meaning": "مردن",
+      "level": "A1",
+      "example_sentence": "We will all die."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "difference",
+      "persian_meaning": "تفاوت",
+      "level": "A1",
+      "example_sentence": "No difference."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "different",
+      "persian_meaning": "مختلف",
+      "level": "A1",
+      "example_sentence": "Different colors."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "difficult",
+      "persian_meaning": "دشوار",
+      "level": "A1",
+      "example_sentence": "Difficult task."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dig",
+      "persian_meaning": "حفر کردن",
+      "level": "A1",
+      "example_sentence": "Dig a hole."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dinner",
+      "persian_meaning": "شام",
+      "level": "A1",
+      "example_sentence": "What's for dinner?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "direct",
+      "persian_meaning": "مستقیم",
+      "level": "A1",
+      "example_sentence": "Direct flight."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dirty",
+      "persian_meaning": "کثیف",
+      "level": "A1",
+      "example_sentence": "Dirty hands."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "discover",
+      "persian_meaning": "کشف کردن",
+      "level": "A1",
+      "example_sentence": "Discover new things."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "discuss",
+      "persian_meaning": "بحث کردن",
+      "level": "A1",
+      "example_sentence": "Discuss the topic."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "disease",
+      "persian_meaning": "بیماری",
+      "level": "A1",
+      "example_sentence": "Heart disease."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dish",
+      "persian_meaning": "ظرف",
+      "level": "A1",
+      "example_sentence": "Wash the dishes."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "distance",
+      "persian_meaning": "فاصله",
+      "level": "A1",
+      "example_sentence": "Long distance."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "divide",
+      "persian_meaning": "تقسیم کردن",
+      "level": "A1",
+      "example_sentence": "Divide equally."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "do",
+      "persian_meaning": "انجام دادن",
+      "level": "A1",
+      "example_sentence": "Do your work."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "doctor",
+      "persian_meaning": "دکتر",
+      "level": "A1",
+      "example_sentence": "See a doctor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dog",
+      "persian_meaning": "سگ",
+      "level": "A1",
+      "example_sentence": "My dog is friendly."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dollar",
+      "persian_meaning": "دلار",
+      "level": "A1",
+      "example_sentence": "One dollar."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "door",
+      "persian_meaning": "در",
+      "level": "A1",
+      "example_sentence": "Open the door."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "double",
+      "persian_meaning": "دو برابر",
+      "level": "A1",
+      "example_sentence": "Double check."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "doubt",
+      "persian_meaning": "شک",
+      "level": "A1",
+      "example_sentence": "No doubt."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "down",
+      "persian_meaning": "پایین",
+      "level": "A1",
+      "example_sentence": "Sit down."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "draw",
+      "persian_meaning": "کشیدن",
+      "level": "A1",
+      "example_sentence": "Draw a picture."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dream",
+      "persian_meaning": "رویا",
+      "level": "A1",
+      "example_sentence": "Follow your dream."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dress",
+      "persian_meaning": "لباس پوشیدن",
+      "level": "A1",
+      "example_sentence": "Dress warmly."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "drink",
+      "persian_meaning": "نوشیدن",
+      "level": "A1",
+      "example_sentence": "Drink water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "drive",
+      "persian_meaning": "رانندگی کردن",
+      "level": "A1",
+      "example_sentence": "Drive carefully."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "drop",
+      "persian_meaning": "رها کردن",
+      "level": "A1",
+      "example_sentence": "Drop the ball."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "drug",
+      "persian_meaning": "دارو",
+      "level": "A1",
+      "example_sentence": "Drug store."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dry",
+      "persian_meaning": "خشک",
+      "level": "A1",
+      "example_sentence": "Dry hair."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "duck",
+      "persian_meaning": "اردک",
+      "level": "A1",
+      "example_sentence": "Quack like a duck."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "during",
+      "persian_meaning": "در طول",
+      "level": "A1",
+      "example_sentence": "During the day."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "dust",
+      "persian_meaning": "گرد و غبار",
+      "level": "A1",
+      "example_sentence": "Dust the furniture."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "duty",
+      "persian_meaning": "وظیفه",
+      "level": "A1",
+      "example_sentence": "Civic duty."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "each",
+      "persian_meaning": "هر کدام",
+      "level": "A1",
+      "example_sentence": "Each person."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "eager",
+      "persian_meaning": "مشتاق",
+      "level": "A1",
+      "example_sentence": "Eager to learn."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ear",
+      "persian_meaning": "گوش",
+      "level": "A1",
+      "example_sentence": "Ear infection."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "early",
+      "persian_meaning": "زود",
+      "level": "A1",
+      "example_sentence": "Wake up early."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "earn",
+      "persian_meaning": "به دست آوردن",
+      "level": "A1",
+      "example_sentence": "Earn money."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "earth",
+      "persian_meaning": "زمین",
+      "level": "A1",
+      "example_sentence": "Planet Earth."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "east",
+      "persian_meaning": "شرق",
+      "level": "A1",
+      "example_sentence": "East side."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "easy",
+      "persian_meaning": "آسان",
+      "level": "A1",
+      "example_sentence": "Easy task."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "eat",
+      "persian_meaning": "خوردن",
+      "level": "A1",
+      "example_sentence": "Eat breakfast."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "edge",
+      "persian_meaning": "لبه",
+      "level": "A1",
+      "example_sentence": "Edge of the cliff."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "educate",
+      "persian_meaning": "آموزش دادن",
+      "level": "A1",
+      "example_sentence": "Educate children."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "effect",
+      "persian_meaning": "اثر",
+      "level": "A1",
+      "example_sentence": "Side effect."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "effort",
+      "persian_meaning": "تلاش",
+      "level": "A1",
+      "example_sentence": "Make an effort."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "egg",
+      "persian_meaning": "تخم مرغ",
+      "level": "A1",
+      "example_sentence": "Fried egg."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "eight",
+      "persian_meaning": "هشت",
+      "level": "A1",
+      "example_sentence": "Eight hours."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "either",
+      "persian_meaning": "یا",
+      "level": "A1",
+      "example_sentence": "Either way."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "electric",
+      "persian_meaning": "برقی",
+      "level": "A1",
+      "example_sentence": "Electric car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "elegant",
+      "persian_meaning": "شیک",
+      "level": "A1",
+      "example_sentence": "Elegant dress."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "elephant",
+      "persian_meaning": "فیل",
+      "level": "A1",
+      "example_sentence": "Big elephant."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "else",
+      "persian_meaning": "دیگر",
+      "level": "A1",
+      "example_sentence": "Something else."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "email",
+      "persian_meaning": "ایمیل",
+      "level": "A1",
+      "example_sentence": "Send an email."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "embrace",
+      "persian_meaning": "در آغوش گرفتن",
+      "level": "A1",
+      "example_sentence": "Embrace change."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "emerge",
+      "persian_meaning": "ظاهر شدن",
+      "level": "A1",
+      "example_sentence": "New evidence emerged."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "empty",
+      "persian_meaning": "خالی",
+      "level": "A1",
+      "example_sentence": "Empty bottle."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "enable",
+      "persian_meaning": "امکان دادن",
+      "level": "A1",
+      "example_sentence": "Enable the feature."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "end",
+      "persian_meaning": "پایان",
+      "level": "A1",
+      "example_sentence": "The end."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "enemy",
+      "persian_meaning": "دشمن",
+      "level": "A1",
+      "example_sentence": "Worst enemy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "energy",
+      "persian_meaning": "انرژی",
+      "level": "A1",
+      "example_sentence": "Full of energy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "engine",
+      "persian_meaning": "موتور",
+      "level": "A1",
+      "example_sentence": "Car engine."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "enjoy",
+      "persian_meaning": "لذت بردن",
+      "level": "A1",
+      "example_sentence": "Enjoy your meal."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "enough",
+      "persian_meaning": "کافی",
+      "level": "A1",
+      "example_sentence": "Enough is enough."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "enter",
+      "persian_meaning": "وارد شدن",
+      "level": "A1",
+      "example_sentence": "Enter the room."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "entire",
+      "persian_meaning": "کل",
+      "level": "A1",
+      "example_sentence": "Entire world."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "environment",
+      "persian_meaning": "محیط زیست",
+      "level": "A1",
+      "example_sentence": "Protect the environment."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "equal",
+      "persian_meaning": "مساوی",
+      "level": "A1",
+      "example_sentence": "Equal rights."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "error",
+      "persian_meaning": "خطا",
+      "level": "A1",
+      "example_sentence": "Error message."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "escape",
+      "persian_meaning": "فرار کردن",
+      "level": "A1",
+      "example_sentence": "Escape from prison."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "especially",
+      "persian_meaning": "به خصوص",
+      "level": "A1",
+      "example_sentence": "Especially now."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "essential",
+      "persian_meaning": "ضروری",
+      "level": "A1",
+      "example_sentence": "Essential items."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "establish",
+      "persian_meaning": "تاسیس کردن",
+      "level": "A1",
+      "example_sentence": "Establish a company."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "even",
+      "persian_meaning": "حتی",
+      "level": "A1",
+      "example_sentence": "Even better."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "evening",
+      "persian_meaning": "عصر",
+      "level": "A1",
+      "example_sentence": "Good evening."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "event",
+      "persian_meaning": "رویداد",
+      "level": "A1",
+      "example_sentence": "Special event."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "ever",
+      "persian_meaning": "هرگز",
+      "level": "A1",
+      "example_sentence": "Have you ever?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "every",
+      "persian_meaning": "هر",
+      "level": "A1",
+      "example_sentence": "Every day."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "everyone",
+      "persian_meaning": "همه",
+      "level": "A1",
+      "example_sentence": "Everyone is here."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "everything",
+      "persian_meaning": "همه چیز",
+      "level": "A1",
+      "example_sentence": "Everything is fine."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "everywhere",
+      "persian_meaning": "همه جا",
+      "level": "A1",
+      "example_sentence": "Everywhere I go."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "evidence",
+      "persian_meaning": "شواهد",
+      "level": "A1",
+      "example_sentence": "Evidence proves it."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "evil",
+      "persian_meaning": "شر",
+      "level": "A1",
+      "example_sentence": "Good vs evil."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "exact",
+      "persian_meaning": "دقیق",
+      "level": "A1",
+      "example_sentence": "Exact time."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "examine",
+      "persian_meaning": "بررسی کردن",
+      "level": "A1",
+      "example_sentence": "Examine the evidence."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "example",
+      "persian_meaning": "مثال",
+      "level": "A1",
+      "example_sentence": "For example."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "excellent",
+      "persian_meaning": "عالی",
+      "level": "A1",
+      "example_sentence": "Excellent job."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "except",
+      "persian_meaning": "به جز",
+      "level": "A1",
+      "example_sentence": "All except me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "exchange",
+      "persian_meaning": "تبادل",
+      "level": "A1",
+      "example_sentence": "Exchange money."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "excite",
+      "persian_meaning": "هیجان زده کردن",
+      "level": "A1",
+      "example_sentence": "Excite the crowd."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "excuse",
+      "persian_meaning": "بهانه",
+      "level": "A1",
+      "example_sentence": "Excuse me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "exercise",
+      "persian_meaning": "ورزش",
+      "level": "A1",
+      "example_sentence": "Do exercise."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "exist",
+      "persian_meaning": "وجود داشتن",
+      "level": "A1",
+      "example_sentence": "Does it exist?"
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "expect",
+      "persian_meaning": "انتظار داشتن",
+      "level": "A1",
+      "example_sentence": "I expect you to come."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "expensive",
+      "persian_meaning": "گران",
+      "level": "A1",
+      "example_sentence": "Too expensive."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "experience",
+      "persian_meaning": "تجربه",
+      "level": "A1",
+      "example_sentence": "Life experience."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "explain",
+      "persian_meaning": "توضیح دادن",
+      "level": "A1",
+      "example_sentence": "Explain it to me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "explore",
+      "persian_meaning": "کاوش کردن",
+      "level": "A1",
+      "example_sentence": "Explore the world."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "express",
+      "persian_meaning": "ابراز کردن",
+      "level": "A1",
+      "example_sentence": "Express your feelings."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "extra",
+      "persian_meaning": "اضافی",
+      "level": "A1",
+      "example_sentence": "Extra time."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "eye",
+      "persian_meaning": "چشم",
+      "level": "A1",
+      "example_sentence": "Blue eyes."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "face",
+      "persian_meaning": "صورت",
+      "level": "A1",
+      "example_sentence": "Face the truth."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fact",
+      "persian_meaning": "حقیقت",
+      "level": "A1",
+      "example_sentence": "In fact."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "factor",
+      "persian_meaning": "عامل",
+      "level": "A1",
+      "example_sentence": "Important factor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "factory",
+      "persian_meaning": "کارخانه",
+      "level": "A1",
+      "example_sentence": "Car factory."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fail",
+      "persian_meaning": "شکست خوردن",
+      "level": "A1",
+      "example_sentence": "Fail the test."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fair",
+      "persian_meaning": "عادلانه",
+      "level": "A1",
+      "example_sentence": "That's fair."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fall",
+      "persian_meaning": "افتادن",
+      "level": "A1",
+      "example_sentence": "Fall down."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "false",
+      "persian_meaning": "نادرست",
+      "level": "A1",
+      "example_sentence": "True or false."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "family",
+      "persian_meaning": "خانواده",
+      "level": "A1",
+      "example_sentence": "My family."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "famous",
+      "persian_meaning": "معروف",
+      "level": "A1",
+      "example_sentence": "Famous person."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "far",
+      "persian_meaning": "دور",
+      "level": "A1",
+      "example_sentence": "Far away."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "farm",
+      "persian_meaning": "مزرعه",
+      "level": "A1",
+      "example_sentence": "Farm animal."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fast",
+      "persian_meaning": "سریع",
+      "level": "A1",
+      "example_sentence": "Fast car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fat",
+      "persian_meaning": "چاق",
+      "level": "A1",
+      "example_sentence": "Fat cat."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "father",
+      "persian_meaning": "پدر",
+      "level": "A1",
+      "example_sentence": "My father works hard."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fault",
+      "persian_meaning": "اشتباه",
+      "level": "A1",
+      "example_sentence": "It's my fault."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "favor",
+      "persian_meaning": "لطف",
+      "level": "A1",
+      "example_sentence": "Do me a favor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fear",
+      "persian_meaning": "ترس",
+      "level": "A1",
+      "example_sentence": "No fear."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "feed",
+      "persian_meaning": "غذا دادن",
+      "level": "A1",
+      "example_sentence": "Feed the dog."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "feel",
+      "persian_meaning": "احساس کردن",
+      "level": "A1",
+      "example_sentence": "Feel happy."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "female",
+      "persian_meaning": "مونث",
+      "level": "A1",
+      "example_sentence": "Female employee."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fence",
+      "persian_meaning": "حصار",
+      "level": "A1",
+      "example_sentence": "Wooden fence."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "few",
+      "persian_meaning": "چند تا",
+      "level": "A1",
+      "example_sentence": "A few days."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "field",
+      "persian_meaning": "مزرعه، زمینه",
+      "level": "A1",
+      "example_sentence": "Football field."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fierce",
+      "persian_meaning": "شدید",
+      "level": "A1",
+      "example_sentence": "Fierce competition."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fight",
+      "persian_meaning": "جنگیدن",
+      "level": "A1",
+      "example_sentence": "Fight for your rights."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "figure",
+      "persian_meaning": "شکل، رقم",
+      "level": "A1",
+      "example_sentence": "Figure it out."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "file",
+      "persian_meaning": "فایل",
+      "level": "A1",
+      "example_sentence": "Save the file."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fill",
+      "persian_meaning": "پر کردن",
+      "level": "A1",
+      "example_sentence": "Fill the glass."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "film",
+      "persian_meaning": "فیلم",
+      "level": "A1",
+      "example_sentence": "Watch a film."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "final",
+      "persian_meaning": "نهایی",
+      "level": "A1",
+      "example_sentence": "Final exam."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "find",
+      "persian_meaning": "پیدا کردن",
+      "level": "A1",
+      "example_sentence": "Find your way."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fine",
+      "persian_meaning": "خوب",
+      "level": "A1",
+      "example_sentence": "I'm fine."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "finger",
+      "persian_meaning": "انگشت",
+      "level": "A1",
+      "example_sentence": "Point your finger."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "finish",
+      "persian_meaning": "تمام کردن",
+      "level": "A1",
+      "example_sentence": "Finish your work."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fire",
+      "persian_meaning": "آتش",
+      "level": "A1",
+      "example_sentence": "Fire alarm."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "firm",
+      "persian_meaning": "محکم",
+      "level": "A1",
+      "example_sentence": "Firm handshake."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "first",
+      "persian_meaning": "اول",
+      "level": "A1",
+      "example_sentence": "First time."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fish",
+      "persian_meaning": "ماهی",
+      "level": "A1",
+      "example_sentence": "I like fish."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fit",
+      "persian_meaning": "مناسب بودن",
+      "level": "A1",
+      "example_sentence": "Fit your clothes."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "five",
+      "persian_meaning": "پنج",
+      "level": "A1",
+      "example_sentence": "Five dollars."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fix",
+      "persian_meaning": "تعمیر کردن",
+      "level": "A1",
+      "example_sentence": "Fix the car."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flag",
+      "persian_meaning": "پرچم",
+      "level": "A1",
+      "example_sentence": "National flag."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flame",
+      "persian_meaning": "شعله",
+      "level": "A1",
+      "example_sentence": "Candle flame."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flash",
+      "persian_meaning": "فلاش",
+      "level": "A1",
+      "example_sentence": "Flash of light."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flat",
+      "persian_meaning": "تخت",
+      "level": "A1",
+      "example_sentence": "Flat surface."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flavor",
+      "persian_meaning": "طعم",
+      "level": "A1",
+      "example_sentence": "Favorite flavor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flesh",
+      "persian_meaning": "گوشت",
+      "level": "A1",
+      "example_sentence": "Flesh and blood."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flight",
+      "persian_meaning": "پرواز",
+      "level": "A1",
+      "example_sentence": "Flight number."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "float",
+      "persian_meaning": "شناور بودن",
+      "level": "A1",
+      "example_sentence": "Float on water."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flood",
+      "persian_meaning": "سیل",
+      "level": "A1",
+      "example_sentence": "Flood warning."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "floor",
+      "persian_meaning": "کف",
+      "level": "A1",
+      "example_sentence": "Wood floor."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flour",
+      "persian_meaning": "آرد",
+      "level": "A1",
+      "example_sentence": "Wheat flour."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flow",
+      "persian_meaning": "جریان",
+      "level": "A1",
+      "example_sentence": "Water flow."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "flower",
+      "persian_meaning": "گل",
+      "level": "A1",
+      "example_sentence": "This flower is pretty."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fly",
+      "persian_meaning": "پرواز کردن",
+      "level": "A1",
+      "example_sentence": "Birds fly."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "focus",
+      "persian_meaning": "تمرکز",
+      "level": "A1",
+      "example_sentence": "Focus on work."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fold",
+      "persian_meaning": "تا کردن",
+      "level": "A1",
+      "example_sentence": "Fold the paper."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "follow",
+      "persian_meaning": "دنبال کردن",
+      "level": "A1",
+      "example_sentence": "Follow me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "food",
+      "persian_meaning": "غذا",
+      "level": "A1",
+      "example_sentence": "The food is delicious."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fool",
+      "persian_meaning": "احمق",
+      "level": "A1",
+      "example_sentence": "Don't be a fool."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "foot",
+      "persian_meaning": "پا",
+      "level": "A1",
+      "example_sentence": "My foot hurts."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "for",
+      "persian_meaning": "برای",
+      "level": "A1",
+      "example_sentence": "For you."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "force",
+      "persian_meaning": "نیرو",
+      "level": "A1",
+      "example_sentence": "Use force."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "foreign",
+      "persian_meaning": "خارجی",
+      "level": "A1",
+      "example_sentence": "Foreign language."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "forest",
+      "persian_meaning": "جنگل",
+      "level": "A1",
+      "example_sentence": "Dark forest."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "forget",
+      "persian_meaning": "فراموش کردن",
+      "level": "A1",
+      "example_sentence": "Don't forget."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "forgive",
+      "persian_meaning": "بخشیدن",
+      "level": "A1",
+      "example_sentence": "Forgive me."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fork",
+      "persian_meaning": "چنگال",
+      "level": "A1",
+      "example_sentence": "Knife and fork."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "form",
+      "persian_meaning": "فرم",
+      "level": "A1",
+      "example_sentence": "Fill the form."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "formal",
+      "persian_meaning": "رسمی",
+      "level": "A1",
+      "example_sentence": "Formal wear."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "former",
+      "persian_meaning": "سابق",
+      "level": "A1",
+      "example_sentence": "Former president."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "forward",
+      "persian_meaning": "به جلو",
+      "level": "A1",
+      "example_sentence": "Move forward."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "found",
+      "persian_meaning": "تاسیس کردن",
+      "level": "A1",
+      "example_sentence": "Founded in 1990."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "four",
+      "persian_meaning": "چهار",
+      "level": "A1",
+      "example_sentence": "Four seasons."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "free",
+      "persian_meaning": "رایگان",
+      "level": "A1",
+      "example_sentence": "Free to use."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "freedom",
+      "persian_meaning": "آزادی",
+      "level": "A1",
+      "example_sentence": "Freedom of speech."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "freeze",
+      "persian_meaning": "یخ زدن",
+      "level": "A1",
+      "example_sentence": "Freeze the food."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fresh",
+      "persian_meaning": "تازه",
+      "level": "A1",
+      "example_sentence": "Fresh fruit."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "friend",
+      "persian_meaning": "دوست",
+      "level": "A1",
+      "example_sentence": "You are my best friend."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "from",
+      "persian_meaning": "از",
+      "level": "A1",
+      "example_sentence": "From here."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "front",
+      "persian_meaning": "جلو",
+      "level": "A1",
+      "example_sentence": "In front of."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fruit",
+      "persian_meaning": "میوه",
+      "level": "A1",
+      "example_sentence": "Fresh fruit."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "full",
+      "persian_meaning": "پر",
+      "level": "A1",
+      "example_sentence": "Full glass."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fun",
+      "persian_meaning": "سرگرم کننده",
+      "level": "A1",
+      "example_sentence": "Have fun."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "function",
+      "persian_meaning": "عملکرد",
+      "level": "A1",
+      "example_sentence": "Function properly."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fund",
+      "persian_meaning": "صندوق",
+      "level": "A1",
+      "example_sentence": "Investment fund."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "funny",
+      "persian_meaning": "خنده دار",
+      "level": "A1",
+      "example_sentence": "Funny joke."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "fur",
+      "persian_meaning": "خز",
+      "level": "A1",
+      "example_sentence": "Animal fur."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "furniture",
+      "persian_meaning": "مبلمان",
+      "level": "A1",
+      "example_sentence": "Wooden furniture."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "further",
+      "persian_meaning": "بیشتر",
+      "level": "A1",
+      "example_sentence": "Further information."
+    }
+  },
+  {
+    "model": "language.Word",
+    "fields": {
+      "english_word": "future",
+      "persian_meaning": "آینده",
+      "level": "A1",
+      "example_sentence": "Bright future."
+    }
+  }
+]

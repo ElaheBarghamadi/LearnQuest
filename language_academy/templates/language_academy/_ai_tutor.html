@@ -1,0 +1,219 @@
+{# Questie AI Tutor — chat bubble, drawer and smart challenge card. Include with `with context='idiom'|'vocab'` #}
+<style>
+.qt-bubble { position: fixed; bottom: 22px; left: 22px; z-index: 3500; width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer; font-size: 1.5rem; color: #fff; background: linear-gradient(135deg, #8b5cf6, #3b82f6); box-shadow: 0 14px 34px rgba(99, 102, 241, 0.45); transition: transform 0.2s; }
+.qt-bubble:hover { transform: scale(1.08); }
+.qt-bubble.pulse::after { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 3px solid rgba(139, 92, 246, 0.55); animation: qtPulse 1.4s ease-out infinite; }
+@keyframes qtPulse { 0% { transform: scale(0.9); opacity: 1; } 100% { transform: scale(1.35); opacity: 0; } }
+.qt-bubble .qt-dot { position: absolute; top: -2px; inset-inline-end: -2px; width: 18px; height: 18px; border-radius: 50%; background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 800; display: none; align-items: center; justify-content: center; border: 2px solid #fff; }
+.qt-bubble.pulse .qt-dot { display: inline-flex; }
+.qt-drawer { position: fixed; bottom: 92px; left: 22px; z-index: 3500; width: 370px; max-width: calc(100vw - 32px); height: 480px; max-height: 72vh; border-radius: 22px; background: rgba(255, 255, 255, 0.88); backdrop-filter: blur(22px) saturate(150%); -webkit-backdrop-filter: blur(22px) saturate(150%); border: 1px solid rgba(255, 255, 255, 0.92); box-shadow: 0 28px 60px rgba(30, 45, 90, 0.28); display: none; flex-direction: column; overflow: hidden; }
+.qt-drawer.open { display: flex; animation: qtIn 0.22s ease; }
+@keyframes qtIn { from { transform: translateY(14px); opacity: 0; } to { transform: none; opacity: 1; } }
+.qt-head { padding: 13px 16px; display: flex; align-items: center; gap: 10px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.14), rgba(59, 130, 246, 0.14)); border-bottom: 1px solid rgba(148, 163, 184, 0.2); }
+.qt-avatar { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #8b5cf6, #3b82f6); display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; flex: 0 0 auto; }
+.qt-title { font-weight: 800; font-size: 0.92rem; color: #2B3152; }
+.qt-status { font-size: 0.7rem; color: #059669; }
+.qt-status.off { color: #b45309; }
+.qt-close { margin-inline-start: auto; border: none; background: rgba(148, 163, 184, 0.2); width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; color: #475569; }
+.qt-challenge-btn { border: none; background: rgba(245, 158, 11, 0.16); color: #b45309; font-weight: 800; font-size: 0.7rem; border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+.qt-body { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 9px; }
+.qt-msg { max-width: 84%; padding: 10px 14px; border-radius: 16px; font-size: 0.85rem; line-height: 1.7; white-space: pre-wrap; word-break: break-word; }
+.qt-msg.user { align-self: flex-end; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; border-bottom-right-radius: 6px; }
+.qt-msg.assistant { align-self: flex-start; background: rgba(99, 102, 241, 0.09); color: #2B3152; border-bottom-left-radius: 6px; }
+.qt-msg.qt-typing { opacity: 0.6; font-style: italic; }
+.qt-foot { padding: 10px 12px; display: flex; gap: 8px; border-top: 1px solid rgba(148, 163, 184, 0.2); background: rgba(255, 255, 255, 0.6); }
+.qt-foot input { flex: 1; border: 1.5px solid rgba(148, 163, 184, 0.35); border-radius: 999px; padding: 10px 16px; font-size: 0.85rem; font-family: inherit; outline: none; background: #fff; }
+.qt-foot input:focus { border-color: #6366f1; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12); }
+.qt-send { border: none; border-radius: 50%; width: 42px; height: 42px; flex: 0 0 auto; cursor: pointer; color: #fff; background: linear-gradient(135deg, #8b5cf6, #3b82f6); font-size: 1rem; box-shadow: 0 8px 18px rgba(99, 102, 241, 0.4); }
+.qt-overlay { position: fixed; inset: 0; z-index: 3600; background: rgba(15, 23, 42, 0.35); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; padding: 18px; }
+.qt-overlay.open { display: flex; animation: qtIn 0.2s ease; }
+.qt-card { width: 480px; max-width: 100%; border-radius: 24px; background: rgba(255, 255, 255, 0.94); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.95); box-shadow: 0 30px 70px rgba(30, 45, 90, 0.35); padding: 24px; }
+.qt-tag { display: inline-block; background: rgba(245, 158, 11, 0.16); color: #b45309; font-weight: 800; font-size: 0.7rem; border-radius: 999px; padding: 5px 12px; margin-bottom: 10px; }
+.qt-q { font-weight: 800; font-size: 1.02rem; color: #2B3152; line-height: 1.6; margin-bottom: 16px; }
+.qt-choice { display: block; width: 100%; text-align: start; border: 1.5px solid rgba(148, 163, 184, 0.35); background: rgba(248, 250, 255, 0.75); border-radius: 14px; padding: 11px 15px; margin-bottom: 9px; cursor: pointer; font-size: 0.88rem; transition: 0.14s; }
+.qt-choice:hover { border-color: rgba(99, 102, 241, 0.55); }
+.qt-choice.ok { border-color: #10b981; background: rgba(16, 185, 129, 0.12); font-weight: 700; }
+.qt-choice.bad { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+.qt-choice:disabled { cursor: default; }
+.qt-why { font-size: 0.8rem; color: #64748b; line-height: 1.7; background: rgba(99, 102, 241, 0.07); border-radius: 12px; padding: 10px 13px; margin: 10px 0; }
+.qt-xp { font-weight: 800; color: #059669; }
+.qt-card-foot { display: flex; gap: 10px; justify-content: space-between; margin-top: 14px; }
+.qt-next { border: none; border-radius: 999px; padding: 11px 22px; font-weight: 800; font-size: 0.85rem; cursor: pointer; color: #fff; background: linear-gradient(135deg, #8b5cf6, #3b82f6); box-shadow: 0 10px 22px rgba(99, 102, 241, 0.35); }
+.qt-quit { border: none; border-radius: 999px; padding: 11px 18px; font-weight: 700; font-size: 0.85rem; cursor: pointer; background: rgba(148, 163, 184, 0.2); color: #475569; }
+@media (max-width: 576px) {
+    .qt-bubble { bottom: 16px; left: 16px; width: 52px; height: 52px; font-size: 1.3rem; }
+    .qt-drawer { left: 12px; right: 12px; bottom: 80px; width: auto; height: 66vh; }
+}
+</style>
+
+<button type="button" class="qt-bubble" id="qtBubble" title="Questie — your AI coach" aria-label="AI Tutor">🎓<span class="qt-dot">!</span></button>
+<div class="qt-drawer" id="qtDrawer" role="dialog" aria-label="AI Tutor chat">
+    <div class="qt-head">
+        <span class="qt-avatar">🎓</span>
+        <span>
+            <span class="qt-title">Questie</span><br>
+            <span class="qt-status" id="qtStatus">your learning coach</span>
+        </span>
+        <button type="button" class="qt-challenge-btn" id="qtHeadChallenge">⚡ quiz me</button>
+        <button type="button" class="qt-close" id="qtClose" aria-label="Close">✕</button>
+    </div>
+    <div class="qt-body" id="qtBody"></div>
+    <div class="qt-foot">
+        <input type="text" id="qtInput" maxlength="800" placeholder="باهم حرف بزنیم… مثلاً «یه تست بگیر»" autocomplete="off">
+        <button type="button" class="qt-send" id="qtSend" aria-label="Send">➤</button>
+    </div>
+</div>
+
+<div class="qt-overlay" id="qtOverlay">
+    <div class="qt-card">
+        <span class="qt-tag" id="qtChTag">⚡ Smart Challenge</span>
+        <div class="qt-q" id="qtChQ"></div>
+        <div id="qtChChoices"></div>
+        <div id="qtChWhyWrap" hidden>
+            <div class="qt-why" id="qtChWhy"></div>
+            <div class="qt-xp" id="qtChXp"></div>
+        </div>
+        <div class="qt-card-foot">
+            <button type="button" class="qt-quit" id="qtChQuit">Close</button>
+            <button type="button" class="qt-next" id="qtChNext" hidden>Next one ⚡</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const CONTEXT = '{{ chat_context|default:"general" }}';
+    function csrf() {
+        const m = document.cookie.match(/(^|;\s*)csrftoken\s*=\s*([^;]+)/);
+        return m ? decodeURIComponent(m[2]) : '';
+    }
+    function post(url, body) {
+        return fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
+            body: JSON.stringify(body || {})
+        }).then((r) => r.json());
+    }
+    const bubble = document.getElementById('qtBubble');
+    const drawer = document.getElementById('qtDrawer');
+    const body = document.getElementById('qtBody');
+    const input = document.getElementById('qtInput');
+    const overlay = document.getElementById('qtOverlay');
+    let historyLoaded = false;
+
+    function addMsg(role, text) {
+        const d = document.createElement('div');
+        d.className = 'qt-msg ' + role;
+        d.textContent = text;
+        body.appendChild(d);
+        body.scrollTop = body.scrollHeight;
+        return d;
+    }
+    function loadHistory() {
+        if (historyLoaded) return;
+        historyLoaded = true;
+        fetch("{% url 'language_academy:ai_chat_history' %}")
+            .then((r) => r.json())
+            .then((j) => {
+                const msgs = (j && j.messages) || [];
+                if (!msgs.length) {
+                    addMsg('assistant', 'سلام! من کوئستی‌ام 🎓 مربی انگلیسیت توی لرن‌کوئست. هر سوالی داری بپرس، یا بگو «تست بگیر» تا یه چالش کوتاه برات بیارم!');
+                    return;
+                }
+                msgs.forEach((m) => addMsg(m.role, m.content));
+            })
+            .catch(() => {});
+    }
+    function toggle(open) {
+        drawer.classList.toggle('open', open);
+        if (open) { bubble.classList.remove('pulse'); loadHistory(); input.focus(); }
+    }
+    bubble.addEventListener('click', () => toggle(!drawer.classList.contains('open')));
+    document.getElementById('qtClose').addEventListener('click', () => toggle(false));
+
+    function send() {
+        const text = input.value.trim();
+        if (!text) return;
+        input.value = '';
+        addMsg('user', text);
+        const typing = addMsg('assistant', '…');
+        typing.classList.add('qt-typing');
+        post("{% url 'language_academy:ai_chat_send' %}", { message: text, context: CONTEXT })
+            .then((j) => {
+                typing.classList.remove('qt-typing');
+                typing.textContent = (j && j.reply) || 'Ops! یه لحظه درگیر شدم — دوباره بپرس 😅';
+            })
+            .catch(() => { typing.textContent = 'ارتباطم قطع شد — چند لحظهٔ دیگه دوباره بفرست 🙈'; });
+    }
+    document.getElementById('qtSend').addEventListener('click', send);
+    input.addEventListener('keydown', (ev) => { if (ev.key === 'Enter') send(); });
+
+    const chQ = document.getElementById('qtChQ');
+    const chChoices = document.getElementById('qtChChoices');
+    const chWhyWrap = document.getElementById('qtChWhyWrap');
+    const chWhy = document.getElementById('qtChWhy');
+    const chXp = document.getElementById('qtChXp');
+    const chNext = document.getElementById('qtChNext');
+    const chTag = document.getElementById('qtChTag');
+    let current = null;
+
+    function openChallenge() {
+        bubble.classList.remove('pulse');
+        toggle(false);
+        chQ.textContent = '…';
+        chChoices.innerHTML = '';
+        chWhyWrap.hidden = true;
+        chNext.hidden = true;
+        overlay.classList.add('open');
+        post("{% url 'language_academy:ai_challenge_new' %}", { source: 'mixed' })
+            .then((j) => {
+                if (!j || !j.ok) { chQ.textContent = 'فعلاً چالشی نیست — بعداً سر بزن!'; return; }
+                current = j;
+                chTag.textContent = '⚡ Smart Challenge · ' + (j.source === 'idiom' ? 'Idioms' : (j.source === 'vocab' ? 'Vocabulary' : 'Mixed'));
+                chQ.textContent = j.question;
+                chChoices.innerHTML = '';
+                j.choices.forEach((c, k) => {
+                    const b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'qt-choice';
+                    b.textContent = c;
+                    b.addEventListener('click', () => answer(k, b));
+                    chChoices.appendChild(b);
+                });
+            })
+            .catch(() => { chQ.textContent = 'اکیپ نخوردم — دوباره امتحان کن 🙈'; });
+    }
+    function answer(idx, btn) {
+        if (!current) return;
+        chChoices.querySelectorAll('.qt-choice').forEach((x) => { x.disabled = true; });
+        post("{% url 'language_academy:ai_challenge_answer' %}", { id: current.id, index: idx })
+            .then((j) => {
+                if (!j || !j.ok) { chWhyWrap.hidden = false; chWhy.textContent = 'این چالش قبلاً پاسخ داده شده.'; return; }
+                btn.classList.add(j.correct ? 'ok' : 'bad');
+                if (typeof j.correct_index === 'number') {
+                    const opts = chChoices.querySelectorAll('.qt-choice');
+                    if (opts[j.correct_index]) opts[j.correct_index].classList.add('ok');
+                }
+                chWhyWrap.hidden = false;
+                chWhy.textContent = (j.correct ? 'آفرین! 🎉 ' : 'جواب درست این نبود — ') + (j.why || '');
+                chXp.textContent = j.xp ? ('+' + j.xp + ' XP · +5 🪙') : '';
+                chNext.hidden = false;
+                current = null;
+            })
+            .catch(() => { chChoices.querySelectorAll('.qt-choice').forEach((x) => { x.disabled = false; }); });
+    }
+    chNext.addEventListener('click', openChallenge);
+    document.getElementById('qtChQuit').addEventListener('click', () => overlay.classList.remove('open'));
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.classList.remove('open'); });
+    document.getElementById('qtHeadChallenge').addEventListener('click', openChallenge);
+    const hubBtn = document.getElementById('iqChallengeBtn');
+    if (hubBtn) hubBtn.addEventListener('click', openChallenge);
+
+    setTimeout(() => {
+        if (!drawer.classList.contains('open') && !overlay.classList.contains('open') && Math.random() < 0.5) {
+            bubble.classList.add('pulse');
+        }
+    }, 22000);
+    window.LQAI = { challenge: openChallenge, open: toggle };
+})();
+</script>

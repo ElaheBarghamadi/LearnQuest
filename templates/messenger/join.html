@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}دعوت به گروه «{{ conv.name }}» | لرن‌کوئست{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=20260804">
+<style>
+.lq-join-card { max-width: 520px; margin: 34px auto; text-align: center; }
+.lq-join-card .g-avatar {
+    width: 96px; height: 96px; border-radius: 28px; margin: 0 auto 14px;
+    display: grid; place-items: center; font-size: 2.6rem;
+    background: linear-gradient(135deg, #0ea5a4, #0284c7);
+    box-shadow: 0 14px 34px rgba(14,165,164,.35); color: #fff;
+}
+.lq-join-members { display: flex; justify-content: center; gap: 6px; margin: 14px 0 4px; flex-wrap: wrap; }
+.lq-join-members .m-chip {
+    background: #f1f5f9; border-radius: 999px; padding: 5px 12px;
+    font-size: .74rem; font-weight: 700; color: #334155;
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="lq-wrap">
+    <div class="lq-panel lq-join-card">
+        <div class="g-avatar">👥</div>
+        <h1 style="font-size:1.35rem;margin:0 0 4px">{{ conv.name }}</h1>
+        <p style="color:var(--lq-muted);font-size:.88rem;margin:0">
+            🔗 با لینک دعوت به این گروه دعوت شدی · <b>{{ members_count }}</b> عضو
+        </p>
+        {% if preview_members %}
+        <div class="lq-join-members">
+            {% for m in preview_members %}<span class="m-chip">{{ m.username }}</span>{% endfor %}
+            {% if members_count > 6 %}<span class="m-chip">…</span>{% endif %}
+        </div>
+        {% endif %}
+
+        {% if is_member %}
+            <div class="lq-panel" style="background:#e6fbf7;color:#0d8488;font-weight:700;margin:16px 20px 8px">
+                ✅ تو همین حالا هم عضو این گروهی!
+            </div>
+            <a class="lq-btn primary lg block" href="/messenger/?c={{ conv.pk }}" style="margin-top:14px">💬 ورود به گفت‌وگو</a>
+        {% else %}
+            <form method="post" style="margin-top:16px">
+                {% csrf_token %}
+                <button type="submit" class="lq-btn primary lg block">🎉 پیوستن به گروه</button>
+            </form>
+            <p style="font-size:.72rem;color:var(--lq-muted);margin-top:10px">
+                با پیوستن، تاریخچهٔ گفت‌وگو برایت از همین لحظه قابل مشاهده می‌شود.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

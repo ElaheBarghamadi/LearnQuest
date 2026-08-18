@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lq-wrap">
+    <div class="lq-hero teal">
+        <h1>🐾 پت‌های من</h1>
+        <p>به پتت غذا بده تا بزرگ شود — غذای رایگان هر {{ free_feed_hours }} ساعت؛ هر غذا +۲۰ XP به پت!</p>
+    </div>
+
+    {% if pets %}
+        {% for pet in pets %}
+        <div class="lq-petcard">
+            <div class="halo"></div>
+            {% if pet.is_active %}
+                <span class="lq-ribbon" style="position:absolute;top:14px;right:14px;background:var(--lq-green)">✨ پت فعال</span>
+            {% endif %}
+            <span class="lq-pet-emoji">{{ pet.species.emoji }}</span>
+
+            <h2 style="font-size:1.35rem;font-weight:900;margin:8px 0 2px">{{ pet.name }}</h2>
+            <div style="font-size:.78rem;color:var(--lq-muted);font-weight:700">{{ pet.species.name }} · سطح {{ pet.level }}</div>
+            <span class="lq-rarity {{ pet.species.rarity }}">{{ pet.species.get_rarity_display }}</span>
+
+            <div style="text-align:right;margin-top:20px">
+                <div class="lq-bar-label"><span>🍗 سیری</span><span>{{ pet.hunger }}٪</span></div>
+                <div class="lq-bar hunger"><div style="width:{{ pet.hunger }}%"></div></div>
+
+                <div class="lq-bar-label"><span>⭐ تجربهٔ پت</span><span>{{ pet.xp }}</span></div>
+                <div class="lq-bar xp"><div style="width:{% widthratio pet.xp 100 1 %}%"></div></div>
+            </div>
+
+            <div style="display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px">
+                <button class="lq-btn feed-btn" data-id="{{ pet.id }}">
+                    🍖 غذا بده {% if not pet.can_free_feed %}(🪙 {{ feed_cost }}){% else %}(رایگان 🎉){% endif %}
+                </button>
+                {% if not pet.is_active %}
+                    <form method="post" action="{% url 'economy:pet_activate' pet.id %}" style="margin:0">
+                        {% csrf_token %}
+                        <button class="lq-btn ghost" type="submit">✨ فعال کن</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <form method="post" action="{% url 'economy:pet_rename' pet.id %}" style="display:flex;gap:7px;justify-content:center;margin-top:14px">
+                {% csrf_token %}
+                <input type="text" name="name" maxlength="40" placeholder="اسم جدید پت…"
+                       style="padding:10px 15px;border-radius:13px;border:1.5px solid var(--lq-border);font-family:inherit;font-size:.85rem;width:62%">
+                <button class="lq-btn ghost sm" type="submit">✏️</button>
+            </form>
+            <div class="feed-msg" style="font-size:.84rem;min-height:1.2em;margin-top:8px;font-weight:800"></div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="lq-empty" style="padding-top:50px">
+        <div class="big">🥚</div>
+        <p><b>هنوز پتی نداری!</b><br>پت‌ها از فروشگاه قابل خریدند؛ هم نمایش داده می‌شوند هم جایزهٔ ورود روزانه‌ات را بیشتر می‌کنند 😍</p>
+        <a href="{% url 'shop:home' %}?q=پت" class="lq-btn" style="margin-top:14px">🛒 برو پت بخر</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.feed-btn').forEach(btn => {
+    btn.onclick = () => {
+        const stage = btn.closest('.lq-petcard');
+        const msg = stage.querySelector('.feed-msg');
+        msg.style.color = '#7c8199';
+        msg.textContent = '⏳ ...';
+        btn.disabled = true;
+        fetch(`/economy/pet/${btn.dataset.id}/feed/`, {method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}})
+            .then(r => r.json().then(d => ({status: r.status, d})))
+            .then(({status, d}) => {
+                if (d.ok) {
+                    msg.style.color = '#11998e';
+                    msg.textContent = d.level_up ? `🎉 لِوِل‌آپ! پت الان سطح ${d.level} است!` : '🍖 غذا داده شد!';
+                    setTimeout(() => location.reload(), 1100);
+                } else {
+                    msg.style.color = '#dd2476';
+                    msg.textContent = '❌ ' + (d.error || 'خطا');
+                    btn.disabled = false;
+                }
+            });
+    };
+});
+</script>
+{% endblock %}

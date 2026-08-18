@@ -1,0 +1,78 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Name *</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Name (Persian)</label>
+                    {{ form.name_fa }}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Description</label>
+                {{ form.description }}
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Badge Type</label>
+                    {{ form.badge_type }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Icon Image</label>
+                    {{ form.icon }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Requirement Type</label>
+                    {{ form.requirement_type }}
+                    <small class="text-muted">e.g., lessons_completed, streak_days, quiz_passed</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Requirement Value</label>
+                    {{ form.requirement_value }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">XP Reward</label>
+                    {{ form.xp_reward }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Order</label>
+                    {{ form.order }}
+                </div>
+            </div>
+            
+            <div class="form-check mb-3">
+                {{ form.is_active }}
+                <label class="form-check-label">Active</label>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_cms:badge_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Badge</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود | لرن کویست</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<style>
+
+    html, body { margin: 0; padding: 0; }
+    body {
+        min-height: 100vh;
+        background: linear-gradient(168deg, #0d1f3d 0%, #123058 42%, #08142c 100%);
+        background-attachment: fixed;
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+        color: #262B47;
+        overflow-x: hidden;
+    }
+    .au-wrap { min-height: 100vh; }
+    .au-body-pad { display: grid; place-items: center; padding: 20px 16px 40px; }
+    .au-home {
+        position: fixed; top: 14px; right: 16px; z-index: 30;
+        display: inline-flex; align-items: center; gap: 7px;
+        padding: 9px 18px; border-radius: 999px; text-decoration: none;
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+        font-size: .8rem; font-weight: 800; color: #262B47;
+        background: rgba(255, 255, 255, .5);
+        border: 1px solid rgba(255, 255, 255, .8);
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        box-shadow: 0 8px 22px rgba(15, 45, 110, .18), inset 0 1px 0 rgba(255,255,255,.85);
+        transition: transform .2s, box-shadow .25s;
+    }
+    .au-home:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15, 45, 110, .26), inset 0 1px 0 rgba(255,255,255,.9); }
+            .au-flash { width: min(460px, 100%); margin: 0 auto 12px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 5; }
+    .au-flash-item {
+        display: flex; align-items: center; gap: 9px;
+        padding: 12px 16px; border-radius: 15px;
+        font-size: .84rem; font-weight: 800;
+        background: rgba(255, 255, 255, .72);
+        border: 1px solid rgba(255, 255, 255, .85);
+        backdrop-filter: blur(16px) saturate(160%);
+        -webkit-backdrop-filter: blur(16px) saturate(160%);
+        box-shadow: 0 10px 26px rgba(15, 45, 110, .16);
+        animation: au-pop .5s cubic-bezier(.2, 1.1, .3, 1.05) both;
+        border-right: 4px solid #3B82F6; color: #1e3a8a;
+    }
+    .au-flash-item.error { border-right-color: #ef4444; color: #b91c1c; }
+    .au-flash-item.success { border-right-color: #22c55e; color: #15803d; }
+    .au-flash-item.warning { border-right-color: #f59e0b; color: #b45309; }
+    @media (max-width: 560px) {
+        .au-home { top: 10px; right: 10px; font-size: .72rem; padding: 8px 14px; }
+        .au-body-pad { padding: 12px 12px 30px; align-items: start; }
+    }
+</style>
+<style>
+    .au-wrap {
+        min-height: calc(100vh - 230px);
+        display: grid;
+        place-items: center;
+        position: relative;
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+        padding: 24px 0 36px;
+    }
+
+    .au-mesh {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        pointer-events: none;
+        background:
+            radial-gradient(58% 78% at 18% 18%, rgba(56, 189, 248, .38), transparent 62%),
+            radial-gradient(52% 62% at 82% 22%, rgba(56, 189, 248, .32), transparent 64%),
+            radial-gradient(62% 72% at 72% 82%, rgba(217, 70, 239, .28), transparent 62%),
+            radial-gradient(46% 56% at 28% 78%, rgba(251, 191, 36, .24), transparent 64%);
+        animation: au-meshmove 22s ease-in-out infinite alternate;
+    }
+    @keyframes au-meshmove { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.12) rotate(2.5deg); } }
+
+    .au-orb {
+        position: fixed;
+        z-index: -1;
+        border-radius: 50%;
+        filter: blur(80px);
+        -webkit-filter: blur(80px);
+        pointer-events: none;
+    }
+    .au-orb.o1 { width: 360px; height: 360px; background: #38BDF8; opacity: .4; top: -110px; right: -90px; animation: au-float 16s ease-in-out infinite; }
+    .au-orb.o2 { width: 300px; height: 300px; background: #22d3ee; opacity: .34; bottom: -100px; left: -80px; animation: au-float 19s ease-in-out infinite reverse; }
+    .au-orb.o3 { width: 220px; height: 220px; background: #38BDF8; opacity: .3; top: 40%; left: 9%; animation: au-float 14s ease-in-out infinite 1.5s; }
+    @keyframes au-float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, -38px) scale(1.1); } }
+
+    .au-card {
+        width: min(440px, 100%);
+        background:
+            linear-gradient(160deg, rgba(255, 255, 255, .74), rgba(255, 255, 255, .44)) padding-box,
+            linear-gradient(150deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .2) 38%, rgba(56, 189, 248, .38) 74%, rgba(56, 189, 248, .42)) border-box;
+        backdrop-filter: blur(28px) saturate(175%);
+        -webkit-backdrop-filter: blur(28px) saturate(175%);
+        border: 1.5px solid transparent;
+        box-shadow: 0 26px 64px rgba(15, 45, 110, .24), inset 0 1px 0 rgba(255, 255, 255, .9);
+        border-radius: 30px;
+        padding: 38px 36px 26px;
+        position: relative;
+        overflow: hidden;
+        animation: au-pop .65s cubic-bezier(.2, 1.1, .3, 1.05) both;
+    }
+    .au-card::before {
+        content: '';
+        position: absolute;
+        top: 0; right: 10%; left: 10%;
+        height: 4px;
+        border-radius: 0 0 12px 12px;
+        background: linear-gradient(90deg, #3B82F6, #22D3EE, #38bdf8);
+        box-shadow: 0 4px 14px rgba(56, 189, 248, .45);
+    }
+    .au-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(440px 170px at 50% -40px, rgba(255, 255, 255, .55), transparent 66%);
+    }
+    @keyframes au-pop { from { opacity: 0; transform: translateY(26px) scale(.95); } }
+
+    .au-brand { text-align: center; margin-bottom: 26px; position: relative; z-index: 1; }
+    .au-badge {
+        width: 66px; height: 66px;
+        border-radius: 21px;
+        background: linear-gradient(135deg, #3B82F6, #38BDF8);
+        display: grid;
+        place-items: center;
+        font-size: 1.95rem;
+        margin: 0 auto 15px;
+        box-shadow: 0 14px 30px rgba(59, 130, 246, .45), inset 0 1.5px 0 rgba(255, 255, 255, .5);
+        animation: au-bob 3.2s ease-in-out infinite;
+    }
+    @keyframes au-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-4deg); } }
+    .au-brand h2 { margin: 0 0 7px; font-size: 1.55rem; font-weight: 900; color: #262B47; letter-spacing: -.3px; }
+    .au-gt {
+        background: linear-gradient(120deg, #3B82F6, #22D3EE, #38bdf8, #3B82F6);
+        background-size: 260% 100%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        animation: au-grad 5.5s linear infinite;
+    }
+    @keyframes au-grad { to { background-position: 260% 0; } }
+    .au-brand p { margin: 0; color: #6B7399; font-size: .84rem; font-weight: 600; }
+    .au-flip {
+        display: inline-block;
+        color: #3B82F6;
+        font-weight: 900;
+        transition: opacity .25s ease, transform .25s ease;
+    }
+    .au-flip.swap { opacity: 0; transform: translateY(7px); }
+
+    .au-form { display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1; }
+
+    .au-field {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        background: linear-gradient(165deg, rgba(255, 255, 255, .58), rgba(255, 255, 255, .32));
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255, 255, 255, .78);
+        box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .9), 0 6px 18px rgba(15, 45, 110, .08);
+        border-radius: 17px;
+        padding: 3px 15px;
+        transition: border-color .2s, box-shadow .25s, transform .2s;
+    }
+    .au-field:hover { transform: translateY(-1px); }
+    .au-field:focus-within {
+        border-color: rgba(59, 130, 246, .68);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, .14), inset 0 1.5px 0 rgba(255, 255, 255, .95), 0 10px 24px rgba(59, 130, 246, .14);
+        transform: translateY(-2px);
+    }
+    .au-ico { font-size: 1.06rem; flex-shrink: 0; transition: transform .2s; }
+    .au-field:focus-within .au-ico { transform: scale(1.14); }
+    .au-field input {
+        flex: 1;
+        min-width: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+        padding: 15px 0 13px;
+        font-family: inherit;
+        font-size: .94rem;
+        font-weight: 600;
+        color: #262B47;
+    }
+    .au-lbl {
+        position: absolute;
+        right: 45px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9aa1c4;
+        font-size: .88rem;
+        font-weight: 600;
+        pointer-events: none;
+        transition: all .18s cubic-bezier(.3, .7, .3, 1);
+    }
+    .au-field:focus-within .au-lbl,
+    .au-field input:not(:placeholder-shown) ~ .au-lbl {
+        top: 0;
+        right: 38px;
+        transform: translateY(-62%) scale(.8);
+        color: #3B82F6;
+        font-weight: 800;
+        background: linear-gradient(180deg, #fdfcff, #f5f4fd);
+        padding: 1px 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, .1);
+    }
+    .au-eye {
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 1.02rem;
+        padding: 7px;
+        border-radius: 10px;
+        opacity: .55;
+        transition: .15s;
+        flex-shrink: 0;
+    }
+    .au-eye:hover { opacity: 1; background: rgba(59, 130, 246, .1); }
+
+    .au-btn {
+        position: relative;
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+        border-radius: 17px;
+        padding: 15px;
+        margin-top: 3px;
+        background: linear-gradient(135deg, #3B82F6, #38BDF8 55%, #0EA5E9);
+        background-size: 175% 100%;
+        color: #fff;
+        font-family: inherit;
+        font-size: 1.02rem;
+        font-weight: 900;
+        letter-spacing: .1px;
+        transition: background-position .3s, transform .2s, box-shadow .25s;
+        box-shadow: 0 13px 28px rgba(59, 130, 246, .42), inset 0 1.5px 0 rgba(255, 255, 255, .32);
+    }
+    .au-btn:hover {
+        background-position: 100% 0;
+        transform: translateY(-2px);
+        box-shadow: 0 17px 36px rgba(59, 130, 246, .5), inset 0 1.5px 0 rgba(255, 255, 255, .32);
+    }
+    .au-btn:active { transform: scale(.965); }
+    .au-btn::after {
+        content: '';
+        position: absolute;
+        top: 0; bottom: 0;
+        width: 45%;
+        right: 0;
+        transform: translateX(-330%) skewX(18deg);
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
+        transition: transform .6s cubic-bezier(.3, .6, .3, 1);
+        pointer-events: none;
+    }
+    .au-btn:hover::after { transform: translateX(350%) skewX(18deg); }
+
+    .au-err {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #dc2626;
+        font-size: .74rem;
+        font-weight: 700;
+        margin: -7px 4px 0;
+        animation: au-shake .35s ease;
+    }
+    @keyframes au-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(4px); } 75% { transform: translateX(-4px); } }
+
+    .au-alt {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 13px;
+        margin-top: 20px;
+        font-size: .8rem;
+        font-weight: 700;
+        position: relative;
+        z-index: 1;
+    }
+    .au-alt a { color: #3B82F6; text-decoration: none; transition: .15s; }
+    .au-alt a:hover { text-decoration: underline; }
+    .au-sep { width: 4px; height: 4px; border-radius: 50%; background: #c9cde6; }
+
+    .au-chips {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+        padding-top: 18px;
+        border-top: 1px dashed rgba(120, 120, 160, .25);
+        position: relative;
+        z-index: 1;
+    }
+    .au-chips span {
+        font-size: .66rem;
+        font-weight: 800;
+        color: #5c6390;
+        background: rgba(255, 255, 255, .5);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, .85);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
+        padding: 6px 12px;
+        border-radius: 999px;
+        transition: transform .2s;
+    }
+    .au-chips span:hover { transform: translateY(-2px); }
+
+    @media (max-width: 560px) {
+        .au-wrap { padding: 10px 0 26px; align-items: start; }
+        .au-card { padding: 30px 20px 22px; border-radius: 26px; }
+        .au-brand { margin-bottom: 20px; }
+        .au-brand h2 { font-size: 1.32rem; }
+        .au-badge { width: 56px; height: 56px; font-size: 1.6rem; border-radius: 18px; }
+        .au-orb { filter: blur(56px); -webkit-filter: blur(56px); }
+        .au-orb.o1 { width: 220px; height: 220px; }
+        .au-orb.o2 { width: 190px; height: 190px; }
+        .au-orb.o3 { display: none; }
+        .au-chips span { font-size: .62rem; padding: 5px 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .au-card, .au-badge, .au-orb, .au-mesh, .au-gt { animation: none; }
+        .au-btn::after { display: none; }
+    }
+
+    @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
+        .au-card { background: rgba(255, 255, 255, .96); border-color: rgba(59, 130, 246, .2); }
+        .au-field { background: #f7f7fc; }
+        .au-orb, .au-mesh { opacity: .15; }
+    }
+</style>
+</head>
+<body>
+<div class="au-body-pad">
+    <a class="au-home" href="{% url 'home' %}">🏠 بازگشت به خانه</a>
+    <div class="au-wrap" style="min-height: 0; padding: 0; width: 100%;">
+        {% if messages %}
+        <div class="au-flash">
+            {% for message in messages %}
+            <div class="au-flash-item {{ message.tags }}">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}💡{% endif %} {{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+<div class="au-wrap">
+    <span class="au-mesh"></span>
+    <span class="au-orb o1"></span>
+    <span class="au-orb o2"></span>
+    <span class="au-orb o3"></span>
+
+    <div class="au-card">
+        <div class="au-brand">
+            <span class="au-badge">🎓</span>
+            <h2>خوش برگشتی <span class="au-gt">قهرمان!</span> 👋</h2>
+            <p>امروز وقتشه <b class="au-flip" id="auFlip">یاد بگیری</b> 🚀</p>
+        </div>
+
+        <form method="post" class="au-form">
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            <label class="au-field">
+                <span class="au-ico">👤</span>
+                <input type="text" name="username" placeholder=" " required
+                       value="{{ form.username.value|default:'' }}" autocomplete="username">
+                <span class="au-lbl">نام کاربری</span>
+            </label>
+            {% if form.username.errors %}
+                <div class="au-err">⚠️ {{ form.username.errors.0 }}</div>
+            {% endif %}
+
+            <label class="au-field">
+                <span class="au-ico">🔒</span>
+                <input type="password" name="password" id="auPass" placeholder=" " required autocomplete="current-password">
+                <span class="au-lbl">رمز عبور</span>
+                <button type="button" class="au-eye" id="auEye" aria-label="نمایش یا پنهان کردن رمز">👁</button>
+            </label>
+            {% if form.password.errors %}
+                <div class="au-err">⚠️ {{ form.password.errors.0 }}</div>
+            {% endif %}
+
+            <button type="submit" class="au-btn">ورود به حساب</button>
+        </form>
+
+        <div class="au-alt">
+            <a href="{% url 'password_reset' %}">🔑 فراموشی رمز؟</a>
+            <span class="au-sep"></span>
+            <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">ساخت حساب جدید ✨</a>
+        </div>
+
+        <div class="au-chips">
+            <span>🎮 یادگیری با بازی</span>
+            <span>🎁 جایزهٔ روزانه</span>
+            <span>🏆 رقابت و سطح‌بندی</span>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const eye = document.getElementById('auEye');
+    const pass = document.getElementById('auPass');
+    if (eye && pass) {
+        eye.addEventListener('click', function () {
+            const show = pass.type === 'password';
+            pass.type = show ? 'text' : 'password';
+            eye.textContent = show ? '🙈' : '👁';
+        });
+    }
+
+    const flip = document.getElementById('auFlip');
+    if (flip) {
+        const words = ['یاد بگیری', 'بازی کنی', 'سکه جمع کنی', 'رقابت کنی', 'سطح بری بالا'];
+        let i = 0;
+        setInterval(function () {
+            flip.classList.add('swap');
+            setTimeout(function () {
+                i = (i + 1) % words.length;
+                flip.textContent = words[i];
+                flip.classList.remove('swap');
+            }, 260);
+        }, 2600);
+    }
+})();
+</script>
+
+</div>
+</div>
+</body>
+</html>

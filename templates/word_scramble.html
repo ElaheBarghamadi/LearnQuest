@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}جورچین کلمات | لرن کویست{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .scramble-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            padding: 15px 20px;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .game-stat {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .level-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .level-btn {
+            padding: 8px 20px;
+            border: 2px solid #4C9BF8;
+            background: white;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .level-btn.active {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            color: white;
+        }
+
+        .question-area {
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .scrambled-word {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4C9BF8;
+            margin-bottom: 20px;
+            letter-spacing: 10px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            word-break: break-all;
+        }
+
+        .persian-hint {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .guess-input-area {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .guess-input {
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            width: 250px;
+            max-width: 100%;
+            text-align: center;
+        }
+
+        .guess-btn {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .guess-btn:hover {
+            transform: scale(0.95);
+        }
+
+        .new-game-btn {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .feedback.correct {
+            color: #4CAF50;
+        }
+
+        .feedback.wrong {
+            color: #f44336;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        @media (max-width: 600px) {
+            .scrambled-word {
+                font-size: 1.5rem;
+                letter-spacing: 5px;
+            }
+
+            .question-area {
+                padding: 20px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+    <div class="scramble-container">
+        <h2 style="text-align:center; margin-bottom:20px;">🔀 جورچین کلمات</h2>
+
+        <div class="level-selector">
+            <button class="level-btn" data-level="easy">🍃 آسان</button>
+            <button class="level-btn active" data-level="medium">⚡ متوسط</button>
+            <button class="level-btn" data-level="hard">🔥 سخت</button>
+        </div>
+
+        <div class="game-header">
+            <div class="game-stat">🎯 امتیاز: <span id="score">0</span></div>
+            <div class="game-stat">❓ سوال: <span id="currentQuestion">1</span>/<span id="totalQuestions">0</span></div>
+            <div class="game-stat">⏱️ زمان: <span id="timer">00:00</span></div>
+        </div>
+
+        <div class="question-area">
+            <div class="scrambled-word" id="scrambledWord">---</div>
+            <div class="persian-hint">📖 معنی: <span id="persianHint">---</span></div>
+
+            <div class="guess-input-area">
+                <input type="text" id="guessInput" class="guess-input" placeholder="کلمه درست رو بنویس...">
+                <button id="submitGuess" class="guess-btn">بررسی کن</button>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+        </div>
+
+        <button id="newGameBtn" class="new-game-btn">🎮 بازی جدید</button>
+    </div>
+
+    <div id="completionModal"
+         style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:1000;">
+        <div style="background:white; padding:30px; border-radius:20px; text-align:center; max-width:300px; margin:20px;">
+            <h2>🎉 تبریک! 🎉</h2>
+            <p id="completionText"></p>
+            <div style="background:#f0f0f0; padding:10px; border-radius:12px; margin:15px 0;">
+                <span id="xpGainText"></span>
+            </div>
+            <button id="closeModal" class="guess-btn">بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        let wordsData = [];
+        let currentIndex = 0;
+        let score = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let currentWord = null;
+        let currentScrambled = '';
+        let gameActive = true;
+        let currentLevel = 'medium';
+
+        try {
+            wordsData = {{ words|safe }};
+            console.log('Words loaded:', wordsData);
+            document.getElementById('totalQuestions').textContent = wordsData.length;
+        } catch (e) {
+            console.error('Error loading words:', e);
+            wordsData = [];
+        }
+
+        function shuffleString(str) {
+            if (!str) return '';
+            let arr = str.split('');
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr.join('');
+        }
+
+        function scrambleWord(word, level) {
+            if (!word) return '';
+            let scrambled = shuffleString(word);
+
+            if (scrambled === word && word.length > 1) {
+                const arr = scrambled.split('');
+                [arr[0], arr[1]] = [arr[1], arr[0]];
+                scrambled = arr.join('');
+            }
+
+            if (level === 'easy') {
+                const arr = word.split('');
+                if (arr.length >= 3) {
+                    [arr[0], arr[1]] = [arr[1], arr[0]];
+                    scrambled = arr.join('');
+                }
+            } else if (level === 'hard') {
+                scrambled = shuffleString(word);
+                if (scrambled === word) {
+                    scrambled = scrambled.split('').reverse().join('');
+                }
+            }
+
+            return scrambled;
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameActive) {
+                    timerSeconds++;
+                    const mins = Math.floor(timerSeconds / 60);
+                    const secs = timerSeconds % 60;
+                    document.getElementById('timer').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            if (!gameActive) return;
+
+            if (!wordsData.length || currentIndex >= wordsData.length) {
+                console.error('No words or invalid index');
+                return;
+            }
+
+            currentWord = wordsData[currentIndex];
+            if (!currentWord || !currentWord.english_word) {
+                console.error('Invalid word data:', currentWord);
+                return;
+            }
+
+            currentScrambled = scrambleWord(currentWord.english_word.toLowerCase(), currentLevel);
+
+            document.getElementById('scrambledWord').textContent = currentScrambled.toUpperCase();
+            document.getElementById('persianHint').textContent = currentWord.persian_meaning || '---';
+            document.getElementById('currentQuestion').textContent = currentIndex + 1;
+            document.getElementById('score').textContent = score;
+            document.getElementById('guessInput').value = '';
+            document.getElementById('guessInput').focus();
+            document.getElementById('feedback').textContent = '';
+        }
+
+        function checkGuess() {
+            const guess = document.getElementById('guessInput').value.trim().toLowerCase();
+            if (!guess) {
+                document.getElementById('feedback').textContent = 'لطفاً یک کلمه وارد کن!';
+                document.getElementById('feedback').className = 'feedback wrong';
+                return;
+            }
+
+            if (guess === currentWord.english_word.toLowerCase()) {
+                let pointsEarned = 10;
+                if (currentLevel === 'easy') pointsEarned = 8;
+                else if (currentLevel === 'hard') pointsEarned = 15;
+
+                score += pointsEarned;
+                document.getElementById('feedback').textContent = `✅ درست! +${pointsEarned} امتیاز`;
+                document.getElementById('feedback').className = 'feedback correct';
+
+                if (currentIndex + 1 < wordsData.length) {
+                    currentIndex++;
+                    updateDisplay();
+                } else {
+                    endGame();
+                }
+            } else {
+                document.getElementById('feedback').textContent = '❌ اشتباه! دوباره تلاش کن';
+                document.getElementById('feedback').className = 'feedback wrong';
+                document.getElementById('guessInput').value = '';
+                document.getElementById('guessInput').focus();
+            }
+        }
+
+        function endGame() {
+            gameActive = false;
+            if (timerInterval) clearInterval(timerInterval);
+
+            let maxScore = wordsData.length;
+            if (currentLevel === 'easy') maxScore *= 8;
+            else if (currentLevel === 'medium') maxScore *= 10;
+            else maxScore *= 15;
+
+            fetch('/language/save-scramble-score/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    score: score,
+                    total_questions: wordsData.length,
+                    time_seconds: timerSeconds,
+                    level: currentLevel
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('completionText').innerHTML = `امتیاز نهایی: ${score} از ${maxScore}<br>زمان: ${document.getElementById('timer').textContent}<br>سطح: ${currentLevel === 'easy' ? 'آسان' : currentLevel === 'medium' ? 'متوسط' : 'سخت'}`;
+                        document.getElementById('xpGainText').innerHTML = `✨ <strong>+${data.xp_gained} XP</strong> دریافت کردی! ✨<br>سطح: ${data.level}`;
+                        document.getElementById('completionModal').style.display = 'flex';
+                        document.getElementById('completionModal').style.display = 'flex';
+
+                        if (document.querySelector('.xp')) {
+                            document.querySelector('.xp').textContent = `⚡ ${data.total_xp}`;
+                            document.querySelector('.level').textContent = `🏆 ${data.level}`;
+                            document.querySelector('.points').textContent = `⭐ ${data.total_points}`;
+                        }
+                    } else {
+                        document.getElementById('completionText').innerHTML = `امتیاز نهایی: ${score} از ${maxScore}<br>زمان: ${document.getElementById('timer').textContent}`;
+                        document.getElementById('xpGainText').innerHTML = `🎉 آفرین! بازی رو کامل کردی! 🎉`;
+                        document.getElementById('completionModal').style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('completionText').innerHTML = `امتیاز نهایی: ${score} از ${maxScore}<br>زمان: ${document.getElementById('timer').textContent}`;
+                    document.getElementById('xpGainText').innerHTML = `🎉 آفرین! بازی رو کامل کردی! 🎉`;
+                    document.getElementById('completionModal').style.display = 'flex';
+                });
+        }
+
+        function newGame() {
+            window.location.reload();
+        }
+
+        function changeLevel(level) {
+            currentLevel = level;
+            currentIndex = 0;
+            score = 0;
+            timerSeconds = 0;
+            gameActive = true;
+            if (timerInterval) clearInterval(timerInterval);
+            startTimer();
+            updateDisplay();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('submitGuess').addEventListener('click', checkGuess);
+        document.getElementById('guessInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') checkGuess();
+        });
+        document.getElementById('newGameBtn').addEventListener('click', newGame);
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('completionModal').style.display = 'none';
+            newGame();
+        });
+
+        document.querySelectorAll('.level-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                changeLevel(btn.dataset.level);
+            });
+        });
+
+        if (wordsData && wordsData.length > 0) {
+            startTimer();
+            updateDisplay();
+        } else {
+            document.getElementById('scrambledWord').textContent = '⚠️ خطا در بارگذاری کلمات';
+            document.getElementById('persianHint').textContent = 'لطفاً صفحه را دوباره بارگذاری کنید';
+            console.error('No words data available');
+        }
+    </script>
+{% endblock %}

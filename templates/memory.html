@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}کارت‌های حافظه | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+    <style>
+        .memory-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+            font-weight: bold;
+        }
+
+        .card.flipped {
+            background: white;
+            color: #333;
+            box-shadow: 0 0 0 2px #4C9BF8;
+            transform: scale(0.95);
+        }
+
+        .card.matched {
+            background: #10b981;
+            color: white;
+            cursor: default;
+            opacity: 0.6;
+            transform: scale(0.95);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #4C9BF8;
+            color: white;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: scale(0.95);
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .result-modal.active {
+            display: flex;
+        }
+
+        .result-content {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 300px;
+        }
+
+        @media (max-width: 500px) {
+            .board {
+                gap: 8px;
+            }
+
+            .card {
+                font-size: 20px;
+            }
+        }
+    </style>
+
+    <div class="memory-container">
+        <h2 style="text-align:center; margin-bottom:20px;">🎮 بازی کارت‌های حافظه</h2>
+
+        <div class="game-stats">
+            <div class="stat">🏆 حرکت: <span id="moves">0</span></div>
+            <div class="stat">⏱️ زمان: <span id="timer">00:00</span></div>
+            <div class="stat">✨ جفت: <span id="pairs">0</span>/8</div>
+            <div class="stat">⭐ XP شما: <span id="userXp">{{ user.xp }}</span></div>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div style="text-align:center;">
+            <button class="btn" id="restartBtn">🔄 شروع مجدد</button>
+            <button class="btn" id="newGameBtn">✨ بازی جدید</button>
+        </div>
+    </div>
+
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <h2>🎉 تبریک! 🎉</h2>
+            <p id="resultText"></p>
+            <div style="background:#f0f0f0; padding:10px; border-radius:12px; margin:15px 0;">
+                <span id="xpGainText"></span>
+            </div>
+            <button class="btn" id="closeModal">بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        const EMOJIS = ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼'];
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedCount = 0;
+        let moves = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let canFlip = true;
+
+        const board = document.getElementById('board');
+        const movesSpan = document.getElementById('moves');
+        const timerSpan = document.getElementById('timer');
+        const pairsSpan = document.getElementById('pairs');
+        const resultModal = document.getElementById('resultModal');
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initGame() {
+            let newCards = [...EMOJIS, ...EMOJIS];
+            newCards = shuffleArray(newCards);
+
+            cards = newCards.map((emoji, index) => ({
+                id: index,
+                emoji: emoji,
+                flipped: false,
+                matched: false
+            }));
+
+            flippedCards = [];
+            matchedCount = 0;
+            moves = 0;
+            canFlip = true;
+
+            movesSpan.textContent = moves;
+            pairsSpan.textContent = matchedCount;
+
+            if (timerInterval) clearInterval(timerInterval);
+            timerSeconds = 0;
+            timerSpan.textContent = '00:00';
+            startTimer();
+
+            renderBoard();
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                const mins = Math.floor(timerSeconds / 60);
+                const secs = timerSeconds % 60;
+                timerSpan.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function renderBoard() {
+            board.innerHTML = '';
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card';
+
+                if (card.flipped) {
+                    cardDiv.classList.add('flipped');
+                    cardDiv.textContent = card.emoji;
+                } else if (card.matched) {
+                    cardDiv.classList.add('matched');
+                    cardDiv.textContent = '✓';
+                } else {
+                    cardDiv.textContent = '?';
+                }
+
+                cardDiv.addEventListener('click', () => flipCard(i));
+                board.appendChild(cardDiv);
+            }
+        }
+
+        function flipCard(index) {
+            if (!canFlip) return;
+            if (cards[index].flipped) return;
+            if (cards[index].matched) return;
+            if (flippedCards.length >= 2) return;
+
+            cards[index].flipped = true;
+            flippedCards.push(index);
+            renderBoard();
+
+            if (flippedCards.length === 2) {
+                moves++;
+                movesSpan.textContent = moves;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [idx1, idx2] = flippedCards;
+            const card1 = cards[idx1];
+            const card2 = cards[idx2];
+
+            if (card1.emoji === card2.emoji) {
+                card1.matched = true;
+                card2.matched = true;
+                card1.flipped = false;
+                card2.flipped = false;
+                matchedCount++;
+                pairsSpan.textContent = matchedCount;
+                flippedCards = [];
+                renderBoard();
+
+                if (matchedCount === 8) {
+                    endGame();
+                }
+            } else {
+                canFlip = false;
+                setTimeout(() => {
+                    cards[idx1].flipped = false;
+                    cards[idx2].flipped = false;
+                    flippedCards = [];
+                    renderBoard();
+                    canFlip = true;
+                }, 800);
+            }
+        }
+
+        function endGame() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            let xpGained = 30;
+            if (moves < 20) xpGained += (20 - moves);
+            if (timerSeconds < 60) xpGained += Math.floor((60 - timerSeconds) / 5);
+
+            fetch('/games/save-memory-score/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    moves: moves,
+                    pairs: matchedCount,
+                    time: timerSeconds
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('userXp').textContent = data.total_xp;
+                        document.getElementById('resultText').innerHTML = `با <strong>${moves}</strong> حرکت و <strong>${timerSpan.textContent}</strong> زمان`;
+                        document.getElementById('xpGainText').innerHTML = `✨ <strong>+${data.xp_gained} XP</strong> دریافت کردی! ✨`;
+                        resultModal.classList.add('active');
+                    }
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
+            if (timerInterval) clearInterval(timerInterval);
+            initGame();
+        });
+
+        document.getElementById('newGameBtn').addEventListener('click', () => {
+            if (timerInterval) clearInterval(timerInterval);
+            initGame();
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            resultModal.classList.remove('active');
+            initGame();
+        });
+
+        initGame();
+    </script>
+{% endblock %}

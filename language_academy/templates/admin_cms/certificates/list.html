@@ -1,0 +1,89 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}Certificates | CMS{% endblock %}
+{% block page_title %}Certificates{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-certificate me-2"></i> صدور دستی گواهی</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" class="row g-3 align-items-end">
+            {% csrf_token %}
+            <div class="col-md-4">
+                <label class="form-label">نام کاربری</label>
+                <input type="text" name="username" class="form-control" placeholder="username" required>
+            </div>
+            <div class="col-md-5">
+                <label class="form-label">جهان</label>
+                <select name="world_id" class="form-select" required>
+                    {% for w in worlds %}
+                        <option value="{{ w.id }}">{{ w.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus me-1"></i> صدور گواهی</button>
+            </div>
+        </form>
+        <small class="text-muted d-block mt-2">صدور خودکار هم فعال است: وقتی کاربر همهٔ درس‌های یک جهان را کامل کند، گواهی خودکار صادر می‌شود. صدور تکراری (idempotent) نگران‌کننده نیست.</small>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> گواهی‌های صادرشده</h5>
+        <form method="get" class="d-flex gap-2">
+            <input type="text" name="q" class="form-control form-control-sm" placeholder="کاربر یا شماره گواهی…" value="{{ q }}">
+            <button type="submit" class="btn btn-primary btn-sm">جستجو</button>
+        </form>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>شماره گواهی</th>
+                        <th>کاربر</th>
+                        <th>جهان</th>
+                        <th>تاریخ صدور</th>
+                        <th>کد تأیید</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in certificates %}
+                    <tr>
+                        <td><strong dir="ltr">{{ c.certificate_number }}</strong></td>
+                        <td>{{ c.user.username }}</td>
+                        <td>{{ c.world.name|default:'—' }}</td>
+                        <td>{{ c.issued_at|date:'Y-m-d H:i' }}</td>
+                        <td><code dir="ltr">{{ c.verification_code }}</code></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center py-4">هنوز گواهی‌ای صادر نشده است.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if certificates.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if certificates.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ certificates.previous_page_number }}&q={{ q }}">قبلی</a></li>
+                {% endif %}
+                {% for num in certificates.paginator.page_range %}
+                    <li class="page-item {% if certificates.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&q={{ q }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if certificates.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ certificates.next_page_number }}&q={{ q }}">بعدی</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

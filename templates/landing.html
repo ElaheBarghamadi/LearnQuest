@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لرن‌کوئست | یادگیری زبان، بازی و بلاگ — بدون ورود هم نگاه کن</title>
+<meta name="description" content="لرن‌کوئست: آکادمی زبان انگلیسی، ده‌ها بازی ذهنی و بلاگ دانش. بدون ورود نگاه کن؛ برای بازی و یادگیری وارد شو.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-deep:#050b1a;
+  --bg-navy:#0c1f3f;
+  --glass:rgba(255,255,255,0.06);
+  --glass-strong:rgba(255,255,255,0.11);
+  --glass-border:rgba(255,255,255,0.18);
+  --cyan:#4fd1ff;
+  --blue:#2F7CE6;
+  --peri:#7c9cff;
+  --ink:#eaf2ff;
+  --muted:#9fb3d1;
+  --radius:26px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Vazirmatn','Segoe UI',Tahoma,sans-serif;
+  background:var(--bg-deep);
+  color:var(--ink);
+  overflow-x:hidden;
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
+}
+.ln-aurora{position:fixed; inset:0; z-index:0; overflow:hidden;
+  background:
+    radial-gradient(circle at 22% 12%, rgba(79,209,255,0.17), transparent 46%),
+    radial-gradient(circle at 78% 8%, rgba(124,156,255,0.15), transparent 42%),
+    radial-gradient(circle at 55% 95%, rgba(47,124,230,0.16), transparent 50%),
+    linear-gradient(180deg, #050b1a 0%, #0a1830 45%, #0c1f3f 100%);
+}
+.ln-blob{position:absolute; border-radius:50%; filter:blur(70px); opacity:0.55; will-change:transform;}
+.ln-blob.b1{width:520px;height:520px;background:radial-gradient(circle,#1d4ed8,transparent 65%);top:-140px;right:-120px;animation:ln-drift1 22s ease-in-out infinite;}
+.ln-blob.b2{width:420px;height:420px;background:radial-gradient(circle,#4fd1ff,transparent 65%);top:30%;left:-160px;animation:ln-drift2 26s ease-in-out infinite;}
+.ln-blob.b3{width:460px;height:460px;background:radial-gradient(circle,#7c9cff,transparent 65%);bottom:-160px;right:10%;animation:ln-drift3 30s ease-in-out infinite;}
+.ln-blob.b4{width:300px;height:300px;background:radial-gradient(circle,#34d399,transparent 65%);top:58%;left:38%;opacity:0.35;animation:ln-drift2 24s ease-in-out infinite 2s;}
+@keyframes ln-drift1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-40px,60px) scale(1.12);}}
+@keyframes ln-drift2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(50px,-40px) scale(1.08);}}
+@keyframes ln-drift3{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-30px,-50px) scale(1.15);}}
+.ln-noise{position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.035;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.ln-glass{background:var(--glass);border:1px solid var(--glass-border);
+  backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);
+  box-shadow:0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);border-radius:var(--radius);}
+.ln-wrap{position:relative; z-index:2;}
+.ln-reveal{opacity:0; transform:translateY(30px); transition:opacity .8s ease, transform .8s ease;}
+.ln-reveal.ln-in{opacity:1; transform:translateY(0);}
+
+.ln-progress{position:fixed; top:0; right:0; height:3px; z-index:120; width:0;
+  background:linear-gradient(270deg,var(--cyan),var(--peri),#34d399);
+  box-shadow:0 0 12px rgba(79,209,255,0.7); transition:width .1s linear; border-radius:0 0 0 6px;}
+
+.ln-nav{position:sticky; top:0; z-index:100; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:14px clamp(18px,4.5vw,64px);
+  background:rgba(6,14,30,0.55); backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border-bottom:1px solid rgba(255,255,255,0.08); transition:padding .25s ease, background .25s ease;}
+.ln-nav.ln-scrolled{padding:9px clamp(18px,4.5vw,64px); background:rgba(6,14,30,0.78);}
+.ln-logo{display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.22rem; text-decoration:none; color:var(--ink); flex:none;}
+.ln-logo-mark{width:38px;height:38px;border-radius:12px;font-size:1.15rem;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--cyan),var(--blue)); box-shadow:0 0 24px rgba(79,209,255,0.5);}
+.ln-nav-links{display:flex; gap:6px; list-style:none; align-items:center;}
+.ln-nav-links a{color:var(--muted); text-decoration:none; font-size:0.92rem; font-weight:600; padding:8px 12px; border-radius:12px; transition:color .25s, background .25s;}
+.ln-nav-links a:hover{color:var(--ink); background:rgba(255,255,255,0.06);}
+.ln-nav-auth{display:flex; gap:10px; align-items:center; flex:none;}
+.ln-btn{display:inline-flex; align-items:center; gap:7px; text-decoration:none; font-weight:700; border-radius:999px; transition:transform .25s, box-shadow .25s, background .25s, border-color .25s;}
+.ln-btn-ghost{padding:10px 20px; font-size:0.9rem; color:var(--ink); border:1px solid var(--glass-border); background:var(--glass); backdrop-filter:blur(14px);}
+.ln-btn-ghost:hover{transform:translateY(-2px); background:var(--glass-strong);}
+.ln-btn-main{padding:10px 22px; font-size:0.9rem; color:#04101f; background:linear-gradient(135deg,var(--cyan),var(--peri)); box-shadow:0 6px 20px rgba(79,209,255,0.35);}
+.ln-btn-main:hover{transform:translateY(-2px); box-shadow:0 10px 26px rgba(79,209,255,0.5);}
+.ln-burger{display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:6px;}
+.ln-burger span{width:24px; height:2px; background:var(--ink); border-radius:2px; transition:.3s;}
+.ln-burger.ln-x span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.ln-burger.ln-x span:nth-child(2){opacity:0;}
+.ln-burger.ln-x span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+@keyframes ln-rise{from{opacity:0; transform:translateY(26px);} to{opacity:1; transform:translateY(0);}}
+.ln-hero{min-height:92vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+  padding:70px 20px 56px; position:relative;}
+.ln-hero-bubbles{position:absolute; inset:0; pointer-events:none; z-index:-1;}
+.ln-bbl{position:absolute; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:1.5rem;
+  background:var(--glass); border:1px solid var(--glass-border);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:0 8px 28px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+  animation:ln-float 7s ease-in-out infinite; will-change:transform;}
+.ln-bbl.g1{width:74px;height:74px;top:11%;right:7%;font-size:1.9rem;animation-delay:0s;}
+.ln-bbl.g2{width:56px;height:56px;top:20%;left:9%;animation-delay:1.2s;}
+.ln-bbl.g3{width:66px;height:66px;bottom:22%;right:11%;animation-delay:2.1s;}
+.ln-bbl.g4{width:50px;height:50px;bottom:28%;left:13%;animation-delay:.6s;}
+.ln-bbl.g5{width:62px;height:62px;top:52%;right:3%;animation-delay:1.8s;}
+.ln-bbl.g6{width:44px;height:44px;top:7%;left:27%;animation-delay:2.6s;}
+.ln-bbl.badge{width:auto;height:auto;border-radius:999px;padding:9px 18px;font-size:.78rem;font-weight:800;color:var(--ink);top:40%;left:4%;animation-delay:3.1s;}
+@keyframes ln-float{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-22px) rotate(6deg);}}
+.ln-eyebrow{display:inline-flex; align-items:center; gap:8px; padding:8px 18px; border-radius:999px; font-size:.85rem; color:var(--cyan); margin-bottom:24px; font-weight:700; opacity:0; animation:ln-rise .8s .1s forwards;}
+.ln-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:ln-pulse 1.6s infinite;}
+@keyframes ln-pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+.ln-hero-title{font-size:clamp(2.2rem, 5.6vw, 4.3rem); font-weight:900; line-height:1.32; max-width:940px; opacity:0; animation:ln-rise .9s .25s forwards; letter-spacing:-0.5px;}
+.ln-hero-title .grad{background:linear-gradient(90deg,var(--cyan),var(--peri),#34d399,var(--cyan)); background-size:260% 100%; -webkit-background-clip:text; background-clip:text; color:transparent; animation:ln-gradmove 7s linear infinite;}
+@keyframes ln-gradmove{to{background-position:260% 0;}}
+.ln-hero-sub{margin-top:20px; max-width:640px; color:var(--muted); font-size:clamp(1rem,1.9vw,1.18rem); line-height:2; opacity:0; animation:ln-rise .9s .4s forwards;}
+.ln-hero-actions{margin-top:34px; display:flex; gap:14px; flex-wrap:wrap; justify-content:center; opacity:0; animation:ln-rise .9s .55s forwards;}
+.ln-hero-actions .ln-btn-main, .ln-hero-actions .ln-btn-ghost{padding:16px 32px; font-size:1rem;}
+.ln-hero-stats{margin-top:44px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center; opacity:0; animation:ln-rise .9s .7s forwards;}
+.ln-hstat{display:flex; align-items:center; gap:8px; padding:9px 18px; border-radius:999px; font-size:.82rem; font-weight:700; color:var(--ink);}
+.ln-hstat b{color:var(--cyan); font-size:.95rem;}
+.ln-scroll-hint{position:absolute; bottom:22px; right:50%; transform:translateX(50%); font-size:.78rem; color:var(--muted); display:flex; flex-direction:column; align-items:center; gap:6px; opacity:0; animation:ln-rise 1s 1.1s forwards;}
+.ln-scroll-hint i{font-style:normal; animation:ln-hop 1.6s ease-in-out infinite; font-size:1rem;}
+@keyframes ln-hop{0%,100%{transform:translateY(0);}50%{transform:translateY(7px);}}
+
+.ln-marquee{overflow:hidden; padding:14px 0; border-top:1px solid rgba(255,255,255,0.07); border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.025);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);}
+.ln-marq-track{display:flex; gap:34px; width:max-content; animation:ln-scrollX 30s linear infinite;}
+.ln-marquee:hover .ln-marq-track{animation-play-state:paused;}
+.ln-marq-track span{white-space:nowrap; color:var(--muted); font-size:.9rem; font-weight:700;}
+.ln-marq-track b{color:var(--cyan); margin:0 4px;}
+@keyframes ln-scrollX{from{transform:translateX(0);} to{transform:translateX(50%);}}
+
+.ln-section{padding:96px clamp(18px,5.5vw,72px); position:relative;}
+.ln-sec-head{max-width:680px; margin:0 auto 54px; text-align:center;}
+.ln-sec-tag{color:var(--cyan); font-weight:700; font-size:.9rem; letter-spacing:.02em;}
+.ln-sec-title{font-size:clamp(1.65rem,3.4vw,2.5rem); font-weight:900; margin-top:12px; line-height:1.45;}
+.ln-sec-desc{color:var(--muted); margin-top:14px; line-height:2; font-size:.98rem;}
+.ln-sec-note{display:inline-flex; align-items:center; gap:8px; margin-top:18px; padding:8px 18px; border-radius:999px; font-size:.8rem; font-weight:700; color:var(--cyan);}
+.ln-grid{max-width:1220px; margin:0 auto; display:grid; gap:24px; grid-template-columns:repeat(3,1fr);}
+
+.ln-tilt{transform-style:preserve-3d; transition:transform .18s ease, box-shadow .3s ease, border-color .3s ease; will-change:transform;}
+.ln-feat{padding:32px 26px; transition:transform .3s ease, border-color .3s ease, box-shadow .3s ease;}
+.ln-feat:hover{transform:translateY(-8px); border-color:rgba(79,209,255,0.5); box-shadow:0 20px 50px rgba(0,0,0,0.45);}
+.ln-feat-ico{width:54px;height:54px;border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:1.45rem; margin-bottom:18px;
+  background:linear-gradient(135deg, rgba(79,209,255,0.25), rgba(124,156,255,0.2)); border:1px solid rgba(255,255,255,0.15);}
+.ln-feat h3{font-size:1.14rem; font-weight:800; margin-bottom:9px;}
+.ln-feat p{color:var(--muted); font-size:.92rem; line-height:1.9;}
+
+.ln-game{position:relative; overflow:hidden; text-decoration:none; color:var(--ink); display:flex; flex-direction:column;}
+.ln-game-cov{height:118px; display:flex; align-items:center; justify-content:center; font-size:2.5rem; border-bottom:1px solid var(--glass-border); position:relative; overflow:hidden;
+  background-color:rgba(255,255,255,0.04);}
+.ln-game-cov i{position:absolute; width:120px; height:120px; border-radius:50%; filter:blur(28px); opacity:.5;}
+.ln-game-cov span{position:relative; transform:rotate(-4deg); transition:transform .3s ease; filter:drop-shadow(0 8px 16px rgba(0,0,0,0.4));}
+.ln-game:hover .ln-game-cov span{transform:rotate(0) scale(1.14);}
+.ln-game-body{padding:18px 18px 16px;}
+.ln-game-body h4{font-size:1rem; font-weight:800; margin-bottom:6px;}
+.ln-game-body p{color:var(--muted); font-size:.8rem; line-height:1.75;}
+.ln-lock{position:absolute; top:12px; left:12px; z-index:2; display:inline-flex; align-items:center; gap:6px; padding:5px 12px; border-radius:999px; font-size:.68rem; font-weight:800; color:#fff;
+  background:rgba(6,14,30,0.6); border:1px solid rgba(255,255,255,0.22); backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ln-game{transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;}
+.ln-game:hover{transform:translateY(-6px); border-color:rgba(79,209,255,0.55); box-shadow:0 18px 44px rgba(0,0,0,0.5);}
+.ln-games-more{max-width:1220px; margin:26px auto 0; text-align:center;}
+
+.ln-world{overflow:hidden; text-decoration:none; color:var(--ink); display:flex; flex-direction:column; transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;}
+.ln-world:hover{transform:translateY(-8px); border-color:rgba(52,211,153,0.5); box-shadow:0 22px 52px rgba(0,0,0,0.5);}
+.ln-world-cov{height:130px; display:flex; align-items:center; justify-content:center; font-size:2.7rem; border-bottom:1px solid var(--glass-border);
+  background:linear-gradient(135deg, rgba(52,211,153,0.22), rgba(79,209,255,0.18));}
+.ln-world-body{padding:22px;}
+.ln-world-body h3{font-size:1.08rem; font-weight:800; margin-bottom:4px;}
+.ln-world-body .lat{color:var(--muted); font-size:.78rem; direction:ltr; display:block; margin-bottom:10px;}
+.ln-world-desc{color:var(--muted); font-size:.85rem; line-height:1.8; margin-bottom:14px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.ln-world-meta{display:flex; gap:8px; flex-wrap:wrap;}
+.ln-mini{padding:5px 13px; border-radius:999px; font-size:.72rem; font-weight:700; color:var(--cyan); background:rgba(79,209,255,0.12); border:1px solid rgba(79,209,255,0.3);}
+.ln-mini.lvl{color:#34d399; background:rgba(52,211,153,0.12); border-color:rgba(52,211,153,0.3);}
+
+.ln-article{overflow:hidden; text-decoration:none; color:var(--ink); display:flex; flex-direction:column; transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease;}
+.ln-article:hover{transform:translateY(-8px); border-color:rgba(124,156,255,0.55); box-shadow:0 22px 50px rgba(0,0,0,0.5);}
+.ln-art-cov{height:150px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--glass-border);}
+.ln-art-cov img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+.ln-article:hover .ln-art-cov img{transform:scale(1.07);}
+.ln-art-cov.grad{display:flex; font-size:2.4rem;}
+.ln-art-cat{position:absolute; top:12px; right:12px; padding:5px 13px; border-radius:999px; font-size:.68rem; font-weight:800; color:#fff; background:rgba(6,14,30,0.62); border:1px solid rgba(255,255,255,0.22); backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+.ln-art-body{padding:20px 20px 16px; display:flex; flex-direction:column; gap:8px; flex:1;}
+.ln-art-body h3{font-size:1.02rem; font-weight:800; line-height:1.7; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.ln-art-body p{color:var(--muted); font-size:.84rem; line-height:1.85; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; flex:1;}
+.ln-art-meta{display:flex; gap:14px; color:var(--muted); font-size:.74rem; border-top:1px dashed rgba(255,255,255,0.14); padding-top:12px;}
+
+.ln-steps{max-width:1000px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); gap:24px; counter-reset:step;}
+.ln-step{padding:30px 26px; text-align:center; position:relative;}
+.ln-step-num{width:52px; height:52px; margin:0 auto 16px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:900; font-size:1.15rem; color:#04101f;
+  background:linear-gradient(135deg,var(--cyan),var(--peri)); box-shadow:0 10px 26px rgba(79,209,255,0.4);}
+.ln-step h4{font-size:1.02rem; font-weight:800; margin-bottom:8px;}
+.ln-step p{color:var(--muted); font-size:.86rem; line-height:1.9;}
+
+.ln-stats{max-width:1120px; margin:0 auto; padding:44px clamp(18px,4vw,48px); display:grid; grid-template-columns:repeat(4,1fr); gap:22px; text-align:center;}
+.ln-stat-num{font-size:clamp(1.9rem,4vw,2.7rem); font-weight:900; background:linear-gradient(90deg,var(--cyan),var(--peri)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.ln-stat-label{color:var(--muted); font-size:.86rem; margin-top:6px;}
+
+.ln-testi{padding:28px 24px;}
+.ln-testi-stars{color:var(--cyan); letter-spacing:3px; margin-bottom:12px; font-size:.9rem;}
+.ln-testi p{color:var(--ink); opacity:.92; line-height:2; font-size:.94rem; margin-bottom:18px;}
+.ln-testi-who{display:flex; align-items:center; gap:12px;}
+.ln-testi-ava{width:42px;height:42px;border-radius:50%; background:linear-gradient(135deg,var(--cyan),var(--peri)); display:flex; align-items:center; justify-content:center; font-weight:800; color:#04101f;}
+.ln-testi-who strong{font-size:.9rem; display:block;}
+.ln-testi-who span{font-size:.78rem; color:var(--muted);}
+
+.ln-faq{max-width:780px; margin:0 auto; display:flex; flex-direction:column; gap:14px;}
+.ln-faq-item{overflow:hidden;}
+.ln-faq-q{width:100%; display:flex; justify-content:space-between; align-items:center; gap:12px; padding:19px 24px; background:none; border:none; color:var(--ink);
+  font-family:inherit; font-size:.98rem; font-weight:800; text-align:right; cursor:pointer;}
+.ln-faq-q .xi{font-style:normal; color:var(--cyan); transition:transform .3s ease; font-size:1.2rem;}
+.ln-faq-item.ln-open .ln-faq-q .xi{transform:rotate(45deg);}
+.ln-faq-a{max-height:0; overflow:hidden; transition:max-height .4s ease;}
+.ln-faq-a p{padding:0 24px 20px; color:var(--muted); font-size:.9rem; line-height:2;}
+
+.ln-cta{max-width:940px; margin:0 auto; padding:60px clamp(22px,5vw,64px); text-align:center; position:relative; overflow:hidden;}
+.ln-cta::before{content:""; position:absolute; inset:-40%; z-index:-1; background:radial-gradient(circle at 30% 30%, rgba(79,209,255,0.32), transparent 60%); animation:ln-drift1 18s ease-in-out infinite;}
+.ln-cta h2{font-size:clamp(1.55rem,3.4vw,2.3rem); font-weight:900; margin-bottom:14px;}
+.ln-cta p{color:var(--muted); margin-bottom:30px; line-height:2;}
+.ln-cta .ln-btn-main{padding:16px 36px; font-size:1.02rem;}
+
+.ln-footer{padding:56px clamp(18px,5.5vw,72px) 30px; border-top:1px solid rgba(255,255,255,0.08); position:relative; z-index:2;}
+.ln-footer-grid{max-width:1200px; margin:0 auto; display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:38px; padding-bottom:30px;}
+.ln-footer-brand p{color:var(--muted); font-size:.88rem; line-height:2; margin-top:14px; max-width:300px;}
+.ln-footer-col h5{font-size:.92rem; font-weight:800; margin-bottom:16px; color:var(--ink);}
+.ln-footer-col a{display:block; color:var(--muted); text-decoration:none; font-size:.86rem; margin-bottom:10px; transition:color .2s;}
+.ln-footer-col a:hover{color:var(--cyan);}
+.ln-footer-bottom{max-width:1200px; margin:0 auto; padding-top:22px; border-top:1px solid rgba(255,255,255,0.08); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; color:var(--muted); font-size:.8rem;}
+.ln-soc{display:flex; gap:10px; margin-top:16px;}
+.ln-soc a{width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:1rem; transition:transform .2s, box-shadow .2s;}
+.ln-soc a:hover{transform:translateY(-3px); box-shadow:0 10px 22px rgba(79,209,255,0.25);}
+
+@media (max-width:1080px){
+  .ln-grid{grid-template-columns:repeat(2,1fr);}
+  .ln-steps{grid-template-columns:1fr; max-width:520px;}
+  .ln-footer-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:880px){
+  .ln-nav-links{position:fixed; inset:60px 14px auto 14px; flex-direction:column; gap:4px; align-items:stretch; text-align:center;
+    padding:14px; border-radius:20px; background:rgba(8,18,38,0.94); backdrop-filter:blur(20px); border:1px solid var(--glass-border);
+    transform:translateY(-14px); opacity:0; pointer-events:none; transition:all .3s ease; z-index:99;}
+  .ln-nav-links.ln-open{transform:translateY(0); opacity:1; pointer-events:auto;}
+  .ln-nav-links a{padding:12px 10px; border-radius:10px; display:block;}
+  .ln-nav-links a:hover{background:rgba(255,255,255,0.06);}
+  .ln-nav-auth{display:none;}
+  .ln-burger{display:flex;}
+  .ln-grid{grid-template-columns:1fr;}
+  .ln-section{padding:70px 18px;}
+  .ln-bbl{display:none;}
+  .ln-bbl.g1,.ln-bbl.g4{display:flex;}
+}
+@media (max-width:560px){
+  .ln-stats{grid-template-columns:1fr 1fr; gap:18px;}
+  .ln-footer-grid{grid-template-columns:1fr;}
+  .ln-hero-actions{flex-direction:column; width:100%; max-width:320px;}
+  .ln-hero-actions .ln-btn-main, .ln-hero-actions .ln-btn-ghost{width:100%; justify-content:center;}
+  .ln-hstat{font-size:.74rem; padding:7px 14px;}
+}
+</style>
+<noscript><style>.ln-reveal{opacity:1 !important; transform:none !important;} .ln-hero-title,.ln-hero-sub,.ln-hero-actions,.ln-hero-stats,.ln-eyebrow,.ln-scroll-hint{opacity:1 !important; animation:none !important;}</style></noscript>
+</head>
+<body class="ln-body">
+
+<div class="ln-aurora">
+  <div class="ln-blob b1"></div>
+  <div class="ln-blob b2"></div>
+  <div class="ln-blob b3"></div>
+  <div class="ln-blob b4"></div>
+</div>
+<div class="ln-noise"></div>
+<div class="ln-progress" id="lnProgress"></div>
+
+<div class="ln-wrap">
+
+<nav class="ln-nav" id="lnNav">
+  <a class="ln-logo" href="{% url 'home' %}">
+    <span class="ln-logo-mark">🎓</span>
+    لرن‌کوئست
+  </a>
+  <ul class="ln-nav-links" id="lnLinks">
+    <li><a href="#games">بازی‌ها</a></li>
+    <li><a href="#lang">بازی‌های زبان</a></li>
+    <li><a href="#blog">بلاگ</a></li>
+    <li><a href="#features">امکانات</a></li>
+    <li><a href="/contact_us/">تماس با ما</a></li>
+    <li style="display:none;" id="lnMobileAuth1"><a href="{% url 'login' %}">ورود</a></li>
+    <li style="display:none;" id="lnMobileAuth2"><a href="{% url 'register' %}">ثبت‌نام ✨</a></li>
+  </ul>
+  <div class="ln-nav-auth">
+    <a href="{% url 'login' %}" class="ln-btn ln-btn-ghost">👋 ورود</a>
+    <a href="{% url 'register' %}" class="ln-btn ln-btn-main">✨ ثبت‌نام</a>
+  </div>
+  <button class="ln-burger" id="lnBurger" aria-label="منو"><span></span><span></span><span></span></button>
+</nav>
+
+<main>
+  <section class="ln-hero">
+    <div class="ln-hero-bubbles" id="lnBubbles">
+      <div class="ln-bbl g1">🇬🇧</div>
+      <div class="ln-bbl g2">🐍</div>
+      <div class="ln-bbl g3">🧩</div>
+      <div class="ln-bbl g4">📚</div>
+      <div class="ln-bbl g5">🎮</div>
+      <div class="ln-bbl g6">🐾</div>
+      <div class="ln-bbl badge">سکه جمع کن 🪙</div>
+    </div>
+    <div class="ln-eyebrow ln-glass"><span class="dot"></span> نگاه کردن رایگان است — بدون ورود هم می‌تونی اعضا و محتوا رو ببینی 👀</div>
+    <h1 class="ln-hero-title">زبان یاد بگیر، <span class="grad">بازی کن</span>، گواهی بگیر و جایزه‌ها رو ببر</h1>
+    <p class="ln-hero-sub">لرن‌کوئست سه دنیا رو کنار هم گذاشته: آکادمی زبان انگلیسی با درس‌های تعاملی، ده‌ها بازی ذهنی اعتیادآور و بلاگ دانش. فقط برای بازی و یادگیری کافیست وارد حسابت بشی؛ بقیه‌اش که رایگانه! 🎉</p>
+    <div class="ln-hero-actions">
+      <a href="{% url 'register' %}" class="ln-btn ln-btn-main">🚀 شروع رایگان — ثبت‌نام</a>
+      <a href="{% url 'login' %}" class="ln-btn ln-btn-ghost">👋 ورود به حساب</a>
+    </div>
+    <div class="ln-hero-stats">
+      <span class="ln-hstat ln-glass">📰 <b>{{ stat_articles }}</b> مقاله</span>
+      <span class="ln-hstat ln-glass">🎮 <b>۱۰+</b> بازی</span>
+      <span class="ln-hstat ln-glass">🃏 <b>{{ stat_words }}</b> کلمه</span>
+      <span class="ln-hstat ln-glass">📖 <b>{{ stat_lessons }}</b> درس زبانی</span>
+    </div>
+    <div class="ln-scroll-hint">پایین برو<i>↓</i></div>
+  </section>
+
+  <div class="ln-marquee" id="features">
+    <div class="ln-marq-track" id="lnMarq">
+      <span>🎮 <b>بازی‌های ذهنی</b> سودوکو · حافظه · ۲۰۴۸ · مار</span>
+      <span>🇬🇧 <b>آکادمی زبان</b> درس · کوییز · دیالوگ · نوشتار</span>
+      <span>🔥 <b>استریک روزانه</b> عادت بساز، پیشرفت کن</span>
+      <span>🪙 <b>اقتصاد بازی</b> سکه، الماس، فروشگاه و بلیط</span>
+      <span>🐾 <b>پت کویست</b> حیوان خانگی مجازیت رو بزرگ کن</span>
+      <span>🎟 <b>سیزن‌پس</b> جایزه‌های فصلی ویژه</span>
+      <span>💬 <b>پیامرسان</b> با دوستات گفت‌وگو و رقابت کن</span>
+      <span>🎓 <b>گواهی معتبر</b> با کد تأیید عمومی</span>
+    </div>
+  </div>
+
+  <section class="ln-section" id="feature-grid">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">چرا لرن‌کوئست</div>
+      <h2 class="ln-sec-title">یادگیری که تبدیل به عادت می‌شه، نه تکلیف</h2>
+      <p class="ln-sec-desc">هر بخش با دقت طراحی شده تا چند دقیقهٔ روزانه ات به پیشرفت واقعی تبدیل بشه.</p>
+    </div>
+    <div class="ln-grid">
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">🇬🇧</div><h3>آکادمی زبان کامل</h3><p>جهان‌های داستان‌محور، درس‌های تعاملی با کوییز، دیالوگ واقعی، واژگان با فلش‌کارت و تمرین نوشتار.</p></div>
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">🎮</div><h3>بازی‌های آموزشی</h3><p>ده بازی ذهنی از سودوکو تا مار و تست هوش — هر برد، سکه و XP به حسابت برمی‌گردونه.</p></div>
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">🪙</div><h3>اقتصاد و فروشگاه</h3><p>کیف پول، بوستر، آزادکنندهٔ درس اختصاصی، پت مجازی و سیزن‌پس با جایزه‌های پله‌ای.</p></div>
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">🔥</div><h3>عادت‌سازی واقعی</h3><p>استریک روزانه، هدف روزانه، جایزهٔ ورود و لیدربرد هفتگی — همه‌چیز برای اینکه «فردا هم بیا».</p></div>
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">💬</div><h3>پیامرسان و رقابت</h3><p>با دوستات چت کن، امتیازهات رو مقایسه کن و با هم جلوی رقیبا بشین.</p></div>
+      <div class="ln-feat ln-glass ln-reveal ln-tilt"><div class="ln-feat-ico">🎓</div><h3>گواهی قابل استعلام</h3><p>با تمام‌کردن هر جهان، گواهی‌ات با شمارهٔ اختصاصی و کد تأیید عمومی صادر می‌شه.</p></div>
+    </div>
+  </section>
+
+  <section class="ln-section" id="games">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">🎮 بازی‌ها</div>
+      <h2 class="ln-sec-title">ده تا بازی که مغز رو روشن نگه می‌داره</h2>
+      <p class="ln-sec-desc">متن و تعداد بازی‌ها همین‌جا دیدنیه؛ برای شروع بازی و ثبت امتیاز فقط وارد حسابت شو.</p>
+      <span class="ln-sec-note ln-glass">🔒 نمایش آزاد — بازی کردن بعد از ورود فعال می‌شه</span>
+    </div>
+    <div class="ln-grid" style="grid-template-columns:repeat(5,1fr);">
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:sudoku' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 30% 20%, rgba(79,209,255,0.35), transparent 60%);"><span>🧩</span></div><div class="ln-game-body"><h4>سودوکو</h4><p>منطق محض با سه درجهٔ سختی و تایمر رقابتی.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:memory' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 70% 30%, rgba(124,156,255,0.4), transparent 60%);"><span>🃏</span></div><div class="ln-game-body"><h4>حافظه</h4><p>جفت‌کردن کارت‌ها برای تقویت تمرکز.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:number_puzzle' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 50% 80%, rgba(52,211,153,0.35), transparent 60%);"><span>🔢</span></div><div class="ln-game-body"><h4>پازل عددی</h4><p>ترتیب اعداد در گرید سرخوردنی.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:iq_test' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 20% 70%, rgba(251,191,36,0.35), transparent 60%);"><span>🧠</span></div><div class="ln-game-body"><h4>تست هوش</h4><p>سوال‌های چالشی زمان‌دار با تحلیل نتیجه.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:snake' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 80% 20%, rgba(244,114,182,0.35), transparent 60%);"><span>🐍</span></div><div class="ln-game-body"><h4>مار</h4><p>کلاسیک همیشه‌عزیز با امتیازبندی.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:game_2048' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 40% 30%, rgba(251,146,60,0.35), transparent 60%);"><span>🔟</span></div><div class="ln-game-body"><h4>۲۰۴۸</h4><p>کاشی‌های ادغام‌گر تا عدد افسانه‌ای.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:reaction' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 60% 70%, rgba(79,209,255,0.35), transparent 60%);"><span>⚡</span></div><div class="ln-game-body"><h4>واکنش</h4><p>سرعت بازتابت رو ثانیه‌سنج بگیر.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:simon' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 30% 80%, rgba(167,139,250,0.35), transparent 60%);"><span>🌈</span></div><div class="ln-game-body"><h4>سایمون</h4><p>تکرار الگوی نور و صدا — مرحله به مرحله سخت‌تر.</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:whack' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 75% 40%, rgba(52,211,153,0.35), transparent 60%);"><span>🔨</span></div><div class="ln-game-body"><h4>وک‌ا-مول</h4><p>به موش‌های سوراخ‌رو ضربه بزن!</p></div></a>
+      <a class="ln-game ln-glass ln-reveal" href="{% url 'Games:tictactoe' %}"><span class="ln-lock">🔒 مشاهده</span><div class="ln-game-cov" style="background-image:radial-gradient(circle at 25% 25%, rgba(244,63,94,0.3), transparent 60%);"><span>❌⭕</span></div><div class="ln-game-body"><h4>ایکس‌اُ</h4><p>استراتژی ۳×۳ در برابر کامپیوتر.</p></div></a>
+    </div>
+    <div class="ln-games-more ln-reveal"><a class="ln-btn ln-btn-ghost" href="/home/games/">🕹 گالری کامل بازی‌ها</a></div>
+  </section>
+
+  <section class="ln-section" id="lang">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">🇬🇧 بازی‌های زبان</div>
+      <h2 class="ln-sec-title">جهان‌های آکادمی زبان</h2>
+      <p class="ln-sec-desc">هر جهان یک داستان است؛ فصل، درس، کوییز و در آخر هر جهان یک گواهی معتبر. نگاه کن — برای شروع درس‌ها، وارد شو.</p>
+      <span class="ln-sec-note ln-glass">👀 خواندن آزاد — درس‌شتنی برای کاربران</span>
+    </div>
+    <div class="ln-grid" style="grid-template-columns:repeat({% if worlds|length >= 3 %}3{% elif worlds|length == 2 %}2{% else %}1{% endif %},1fr);">
+      {% for w in worlds %}
+      <a class="ln-world ln-glass ln-reveal" href="{% url 'language_academy:world_detail' w.id %}">
+        <div class="ln-world-cov">{% if w.image %}<img src="{{ w.image.url }}" alt="{{ w.name_fa|default:w.name }}" style="width:100%;height:100%;object-fit:cover;">{% else %}🏝️{% endif %}</div>
+        <div class="ln-world-body">
+          <h3>{{ w.name_fa|default:w.name }}</h3>
+          <span class="lat">World {{ w.order }} · {{ w.name }}</span>
+          <p class="ln-world-desc">{{ w.description }}</p>
+          <div class="ln-world-meta">
+            <span class="ln-mini lvl">{{ w.get_difficulty_level_display }}</span>
+            <span class="ln-mini">📚 {{ w.chapters_cnt }} فصل</span>
+            <span class="ln-mini">📖 {{ w.lessons_cnt }} درس</span>
+          </div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="ln-feat ln-glass ln-reveal" style="grid-column:1/-1; text-align:center;"><div class="ln-feat-ico" style="margin-inline:auto;">🏝️</div><h3>به‌زودی جهان‌ها اضافه می‌شن</h3><p>آکادمی زبان در حال آماده‌سازی است؛ کمی بعد سر بزن.</p></div>
+      {% endfor %}
+    </div>
+    <div class="ln-games-more ln-reveal"><a class="ln-btn ln-btn-main" href="/academy/">🗺 نقشهٔ کامل آکادمی</a></div>
+  </section>
+
+  <section class="ln-section" id="blog">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">📚 بلاگ دانش</div>
+      <h2 class="ln-sec-title">تازه‌ترین مقالات</h2>
+      <p class="ln-sec-desc">بدون ورود بخوان؛ برای گذاشتن کامنت و لایک فقط کافیست وارد حسابت بشی.</p>
+      <span class="ln-sec-note ln-glass">💬 کامنت‌گذاری مخصوص کاربران است</span>
+    </div>
+    <div class="ln-grid" id="ln-articles">
+      {% for a in articles %}
+      <a class="ln-article ln-glass ln-reveal" href="{{ a.get_absolute_url }}">
+        <div class="ln-art-cov {% if not a.image %}grad{% endif %}" {% if not a.image %}style="background:linear-gradient(135deg, rgba(79,209,255,0.28), rgba(124,156,255,0.2), rgba(52,211,153,0.16));"{% endif %}>
+          {% if a.image %}<img src="{{ a.image.url }}" alt="{{ a.title }}">{% else %}📖{% endif %}
+          <span class="ln-art-cat">{{ a.category.name }}</span>
+        </div>
+        <div class="ln-art-body">
+          <h3>{{ a.title }}</h3>
+          <p>{{ a.excerpt }}</p>
+          <div class="ln-art-meta"><span>⏱ {{ a.reading_time }} دقیقه</span><span>👁 {{ a.views }}</span><span>❤️ {{ a.likes }}</span></div>
+        </div>
+      </a>
+      {% empty %}
+      <div class="ln-feat ln-glass ln-reveal" style="grid-column:1/-1; text-align:center;"><div class="ln-feat-ico" style="margin-inline:auto;">📝</div><h3>به‌زودی مقاله‌ها میان</h3><p>نویسنده‌ها مشغول نوشتنن!</p></div>
+      {% endfor %}
+    </div>
+    <div class="ln-games-more ln-reveal"><a class="ln-btn ln-btn-ghost" href="/blog/">📚 همهٔ مقالات</a></div>
+  </section>
+
+  <section class="ln-section">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">مسیر تو</div>
+      <h2 class="ln-sec-title">سه قدم تا شروع</h2>
+    </div>
+    <div class="ln-steps">
+      <div class="ln-step ln-glass ln-reveal"><div class="ln-step-num">۱</div><h4>ثبت‌نام کن</h4><p>۳۰ ثانیه، فقط نام کاربری و رمز — جایزهٔ ورود روزانه از همون لحظهٔ اول شروع می‌شه.</p></div>
+      <div class="ln-step ln-glass ln-reveal"><div class="ln-step-num">۲</div><h4>بازی و درس</h4><p>هر روز چند درس زبان + چند بازی ذهنی؛ هر فعالیت سکه و XP به حسابت اضافه می‌کنه.</p></div>
+      <div class="ln-step ln-glass ln-reveal"><div class="ln-step-num">۳</div><h4>جایزه و گواهی</h4><p>جهان‌ها رو تموم کن، گواهی‌ات رو با کد تأیید بگیر و توی جدول امتیازات بدرخش.</p></div>
+    </div>
+  </section>
+
+  <section class="ln-section ln-reveal">
+    <div class="ln-stats ln-glass">
+      <div><div class="ln-stat-num" data-count="{{ stat_users }}">0</div><div class="ln-stat-label">کاربر فعال</div></div>
+      <div><div class="ln-stat-num" data-count="{{ stat_lessons }}">0</div><div class="ln-stat-label">درس زبانی</div></div>
+      <div><div class="ln-stat-num" data-count="{{ stat_words }}">0</div><div class="ln-stat-label">کلمهٔ آماده</div></div>
+      <div><div class="ln-stat-num" data-count="{{ stat_articles }}">0</div><div class="ln-stat-label">مقالهٔ بلاگ</div></div>
+    </div>
+  </section>
+
+  <section class="ln-section">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">نظر زبان‌آموزها</div>
+      <h2 class="ln-sec-title">کسانی که همراه ما پیشرفت کردن</h2>
+    </div>
+    <div class="ln-grid">
+      <div class="ln-testi ln-glass ln-reveal"><div class="ln-testi-stars">★★★★★</div><p>«بعد از دو ماه استریکِ بی‌وقفه، الان آسون با دوستام انگلیسی چت می‌کنم. بازی‌ها واقعی اعتیادآورن — به طرز خوبی!»</p><div class="ln-testi-who"><div class="ln-testi-ava">س</div><div><strong>سارا محمدی</strong><span>زبان‌آموز زبان انگلیسی</span></div></div></div>
+      <div class="ln-testi ln-glass ln-reveal"><div class="ln-testi-stars">★★★★★</div><p>«سودوکو صبح‌ها، کوییز زبان عصرها. گواهی اولم رو هم گرفتم — کد تأیید داشت که نشونش دادم!»</p><div class="ln-testi-who"><div class="ln-testi-ava">آ</div><div><strong>آرمین رضایی</strong><span>متقاضی آیلتس</span></div></div></div>
+      <div class="ln-testi ln-glass ln-reveal"><div class="ln-testi-stars">★★★★★</div><p>«پتم رو بزرگ کردم، سیزن‌پس رو هم جمع کردم. هیچ اپ دیگه‌ای این‌قدر نگهم نداشته بود.»</p><div class="ln-testi-who"><div class="ln-testi-ava">م</div><div><strong>مریم حسینی</strong><span>بازیکن قهار سودوکو</span></div></div></div>
+    </div>
+  </section>
+
+  <section class="ln-section" id="faq">
+    <div class="ln-sec-head ln-reveal">
+      <div class="ln-sec-tag">سؤالات پرتکرار</div>
+      <h2 class="ln-sec-title">بدون ری‌دی، جواب مستقیم</h2>
+    </div>
+    <div class="ln-faq">
+      <div class="ln-faq-item ln-glass ln-reveal"><button class="ln-faq-q" type="button">بدون حساب کاربری چی کار می‌تونم بکنم؟ <i class="xi">+</i></button><div class="ln-faq-a"><p>بلاگ رو کامل بخون، گالری بازی‌ها و جهان‌های آکادمی زبان رو نگاه کن و با محیط آشنا شو. بازی کردن، درس‌شتنی و کامنت‌گذاری بعد از ورود فعال می‌شن.</p></div></div>
+      <div class="ln-faq-item ln-glass ln-reveal"><button class="ln-faq-q" type="button">ثبت‌نام پولیه؟ <i class="xi">+</i></button><div class="ln-faq-a"><p>نه، کاملاً رایگانه. حتی بدون کارت بانکی. درس‌های اختصاصی و بعضی آیتم‌های فروشگاهی با سکه‌های بازی (نه پول واقعی) باز می‌شن.</p></div></div>
+      <div class="ln-faq-item ln-glass ln-reveal"><button class="ln-faq-q" type="button">گواهی‌ها چقدر معتبرن؟ <i class="xi">+</i></button><div class="ln-faq-a"><p>هر گواهی بعد از تمام‌کردن یک جهان از آکادمی صادر می‌شه، شمارهٔ اختصاصی `LQ-...` داره و هر کسی می‌تونه با صفحهٔ تأیید عمومی، صحتش رو چک کنه.</p></div></div>
+      <div class="ln-faq-item ln-glass ln-reveal"><button class="ln-faq-q" type="button">اگر یه روز از قافله عقب بمونم چی؟ <i class="xi">+</i></button><div class="ln-faq-a"><p>استریکت صفر می‌شه ولی پیشرفتت هیچ‌جا نمی‌ره — هر وقت برگشتی از همون‌جا ادامه می‌دی. پتت هم صبر می‌کنه (ولی غرولند می‌کنه 🐾).</p></div></div>
+    </div>
+  </section>
+
+  <section class="ln-section">
+    <div class="ln-cta ln-glass ln-reveal">
+      <h2>همین حالا اولین قدم رو بردار</h2>
+      <p>رایگان ثبت‌نام کن؛ سکهٔ اول، استریک اول و هیجان اول با تو. فقط یک کلیک دوره! 🚀</p>
+      <a href="{% url 'register' %}" class="ln-btn ln-btn-main">✨ ساخت حساب رایگان</a>
+      <div style="margin-top:18px;"><a href="{% url 'login' %}" style="color:var(--muted); font-size:.85rem; text-decoration:none;">قبلاً حساب داری؟ <b style="color:var(--cyan);">وارد شو →</b></a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="ln-footer">
+  <div class="ln-footer-grid">
+    <div class="ln-footer-brand">
+      <a class="ln-logo" href="{% url 'home' %}"><span class="ln-logo-mark">🎓</span>لرن‌کوئست</a>
+      <p>پلتفرم یادگیری زبان با بازی، اقتصاد، پیامرسان و بلاگ؛ جایی که یادگیری، بازی می‌شه.</p>
+      <div class="ln-soc">
+        <a href="#" class="ln-glass" title="تلگرام">📨</a>
+        <a href="#" class="ln-glass" title="اینستاگرام">📸</a>
+        <a href="#" class="ln-glass" title="ویدیو">🎬</a>
+      </div>
+    </div>
+    <div class="ln-footer-col">
+      <h5>سایت</h5>
+      <a href="{% url 'home' %}">صفحهٔ اصلی</a>
+      <a href="/blog/">بلاگ</a>
+      <a href="/home/games/">بازی‌ها</a>
+      <a href="/academy/">بازی‌های زبان</a>
+    </div>
+    <div class="ln-footer-col">
+      <h5>حساب کاربری</h5>
+      <a href="{% url 'login' %}">ورود</a>
+      <a href="{% url 'register' %}">ثبت‌نام</a>
+      <a href="{% url 'password_reset_request' %}">فراموشی رمز</a>
+    </div>
+    <div class="ln-footer-col">
+      <h5>پشتیبانی</h5>
+      <a href="/contact_us/">تماس با ما</a>
+      <a href="#faq">سوالات متداول</a>
+      <a href="/academy/certificate/verify/">تأیید گواهی</a>
+    </div>
+  </div>
+  <div class="ln-footer-bottom">
+    <span>© ۱۴۰۶ لرن‌کوئست — یادگیری، بازی می‌شه 🎮</span>
+    <span>ساخته‌شده با ❤ برای زبان‌آموزان ایرانی</span>
+  </div>
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var burger = document.getElementById('lnBurger');
+  var links = document.getElementById('lnLinks');
+  burger.addEventListener('click', function(){
+    links.classList.toggle('ln-open');
+    burger.classList.toggle('ln-x');
+  });
+  links.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ links.classList.remove('ln-open'); burger.classList.remove('ln-x'); });
+  });
+
+  var mq = window.matchMedia('(max-width: 880px)');
+  function syncMobile(){
+    var show = mq.matches;
+    document.getElementById('lnMobileAuth1').style.display = show ? 'list-item' : 'none';
+    document.getElementById('lnMobileAuth2').style.display = show ? 'list-item' : 'none';
+  }
+  syncMobile();
+  if (mq.addEventListener) mq.addEventListener('change', syncMobile);
+
+  var nav = document.getElementById('lnNav');
+  var bar = document.getElementById('lnProgress');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('ln-scrolled', window.scrollY > 30);
+    var h = document.documentElement;
+    var p = h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight);
+    bar.style.width = (p * 100) + '%';
+  }, {passive:true});
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if (e.isIntersecting){ e.target.classList.add('ln-in'); io.unobserve(e.target); } });
+  }, {threshold: 0.14});
+  document.querySelectorAll('.ln-reveal').forEach(function(el){ io.observe(el); });
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var nums = document.querySelectorAll('.ln-stat-num');
+  var nio = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (!e.isIntersecting) return;
+      nio.unobserve(e.target);
+      var el = e.target, target = parseInt(el.getAttribute('data-count'), 10) || 0;
+      if (reduce || target === 0){ el.textContent = target.toLocaleString('fa-IR') + (target > 0 ? '+' : ''); return; }
+      var t0 = performance.now(), dur = 1400;
+      (function step(t){
+        var k = Math.min(1, (t - t0) / dur), ease = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(target * ease).toLocaleString('fa-IR') + (k >= 1 && target > 0 ? '+' : '');
+        if (k < 1) requestAnimationFrame(step);
+      })(t0);
+    });
+  }, {threshold: 0.5});
+  nums.forEach(function(el){ nio.observe(el); });
+
+  if (!reduce){
+    document.querySelectorAll('.ln-tilt').forEach(function(card){
+      card.addEventListener('mousemove', function(ev){
+        var r = card.getBoundingClientRect();
+        var x = (ev.clientX - r.left) / r.width - 0.5;
+        var y = (ev.clientY - r.top) / r.height - 0.5;
+        card.style.transform = 'translateY(-8px) rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 6) + 'deg)';
+      });
+      card.addEventListener('mouseleave', function(){ card.style.transform = ''; });
+    });
+
+    var blobs = document.querySelectorAll('.ln-blob');
+    window.addEventListener('scroll', function(){
+      var y = window.scrollY;
+      blobs.forEach(function(b, i){ b.style.transform = 'translateY(' + (y * (0.04 + i * 0.02)) + 'px)'; });
+    }, {passive:true});
+
+    var bArea = document.getElementById('lnBubbles');
+    if (bArea){
+      document.querySelector('.ln-hero').addEventListener('mousemove', function(ev){
+        var cx = ev.clientX / window.innerWidth - 0.5;
+        var cy = ev.clientY / window.innerHeight - 0.5;
+        bArea.querySelectorAll('.ln-bbl').forEach(function(b, i){
+          var f = (i % 3 + 1) * 7;
+          b.style.marginRight = (-cx * f) + 'px';
+          b.style.marginTop = (-cy * f) + 'px';
+        });
+      });
+    }
+  }
+
+  document.querySelectorAll('.ln-faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.parentElement;
+      var ans = item.querySelector('.ln-faq-a');
+      var open = item.classList.toggle('ln-open');
+      ans.style.maxHeight = open ? (ans.scrollHeight + 'px') : '0px';
+    });
+  });
+
+  var track = document.getElementById('lnMarq');
+  track.innerHTML += track.innerHTML;
+})();
+</script>
+
+</body>
+</html>

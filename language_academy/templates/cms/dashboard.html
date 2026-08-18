@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}CMS Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>CMS Dashboard</h1>
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_worlds }}</h5>
+                    <p class="card-text">Worlds</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_chapters }}</h5>
+                    <p class="card-text">Chapters</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_lessons }}</h5>
+                    <p class="card-text">Lessons</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_users }}</h5>
+                    <p class="card-text">Users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    Quick Actions
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'cms:world_create' %}" class="btn btn-primary">Create World</a>
+                    <a href="{% url 'cms:vocabulary_list' %}" class="btn btn-success">Manage Vocabulary</a>
+                    <a href="{% url 'cms:analytics' %}" class="btn btn-info">View Analytics</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

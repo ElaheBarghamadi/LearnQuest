@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}سوالات هوش | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+    <style>
+        .iq-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .iq-card {
+            background: white;
+            border-radius: 28px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .iq-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .iq-header h2 {
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .progress-bar {
+            background: #e8ecf0;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            background: #f5f7fb;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .question-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .question-image {
+            background: #f5f7fb;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-image i {
+            font-size: 5rem;
+            color: #4C9BF8;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background: #f5f7fb;
+            border: 2px solid transparent;
+            padding: 15px;
+            border-radius: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .option:hover {
+            background: #e8ecf0;
+            transform: scale(0.98);
+        }
+
+        .option.selected {
+            background: #4C9BF8;
+            color: white;
+            border-color: #4C9BF8;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e8ecf0;
+            color: #4b5563;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .result-modal.show {
+            display: flex;
+        }
+
+        .result-content {
+            background: white;
+            padding: 40px;
+            border-radius: 32px;
+            text-align: center;
+            max-width: 350px;
+            width: 90%;
+        }
+
+        .result-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #4C9BF8;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 500px) {
+            .options {
+                grid-template-columns: 1fr;
+            }
+
+            .question-text {
+                font-size: 1.2rem;
+            }
+
+            .iq-card {
+                padding: 20px;
+            }
+        }
+    </style>
+
+    <div class="iq-container">
+        <div class="iq-card">
+            <div class="iq-header">
+                <h2>🧠 سوالات هوش</h2>
+                <p>به سوالات منطقی پاسخ دهید</p>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="stats">
+                <div class="stat">❓ سوال <span id="currentQ">1</span>/<span
+                        id="totalQ">10</span></div>
+                <div class="stat">⭐ امتیاز: <span id="scoreCount">0</span></div>
+                <div class="stat">⚡ XP شما: <span id="userXp">{{ user.xp }}</span></div>
+            </div>
+
+            <div class="question-area">
+                <div class="question-text" id="questionText"></div>
+                <div class="question-image" id="questionImage">
+                    <span style="font-size:2.2rem">💡</span>
+                </div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" disabled>قبلی</button>
+                <button class="btn btn-primary" id="nextBtn">بعدی</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <span style="font-size:3.6rem">🏆</span>
+            <h2>نتیجه آزمون</h2>
+            <div class="result-score" id="finalScore">0/10</div>
+            <p id="resultMessage"></p>
+            <div style="background: #f0f0f0; padding: 12px; border-radius: 16px; margin: 15px 0;">
+                <span id="xpGainText"></span>
+            </div>
+            <button class="btn btn-primary" id="restartQuiz">بازی جدید</button>
+            <button class="btn btn-secondary" id="backToGames" style="margin-top: 10px;">بازگشت به بازی‌ها</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "اگر ۱ = ۵، ۲ = ۱۰، ۳ = ۱۵، ۴ = ۲۰، آنگاه ۵ = ؟",
+                options: ["۲۵", "۱", "۵", "۲۰"],
+                correct: 1,
+                explanation: "طبق الگو 1=5 پس 5=1"
+            },
+            {
+                text: "کدام عدد با بقیه متفاوت است؟",
+                options: ["۱۲", "۲۴", "۳۶", "۴۸", "۶۱"],
+                correct: 4,
+                explanation: "بقیه اعداد بر 12 بخش‌پذیرند"
+            },
+            {
+                text: "اگر دیروز فردا بود، امروز پنج‌شنبه بود. امروز چه روزی است؟",
+                options: ["سه‌شنبه", "چهارشنبه", "پنج‌شنبه", "جمعه", "شنبه"],
+                correct: 2,
+                explanation: "جمعه"
+            },
+            {
+                text: "کدام گزینه با بقیه متفاوت است؟",
+                options: ["مثلث", "مربع", "دایره", "مستطیل", "لوزی"],
+                correct: 2,
+                explanation: "دایره شکل گرد است، بقیه چندضلعی هستند"
+            },
+            {
+                text: "اگر ۲+۳=۱۰، ۷+۲=۶۳، ۶+۵=۶۶، آنگاه ۸+۴=؟",
+                options: ["۹۶", "۳۲", "۱۲", "۷۲"],
+                correct: 0,
+                explanation: "8+4=12, 12×8=96"
+            },
+            {
+                text: "کدام گزینه ادامه منطقی این دنباله است: ۲، ۶، ۱۲، ۲۰، ؟",
+                options: ["۲۴", "۲۸", "۳۰", "۳۲"],
+                correct: 2,
+                explanation: "افزایش 4،6،8،10 → 20+10=30"
+            },
+            {
+                text: "پدرم گفت: این پسر برادرزاده من است. این پسر چه نسبتی با من دارد؟",
+                options: ["پسر", "برادر", "نوه", "عمو", "دایی"],
+                correct: 0,
+                explanation: "پسر خود من است"
+            },
+            {
+                text: "کدام یک از این کلمات با بقیه متفاوت است؟",
+                options: ["سیب", "موز", "پرتقال", "خیار", "انگور"],
+                correct: 3,
+                explanation: "خیار سبزی است، بقیه میوه هستند"
+            },
+            {
+                text: "اگر ساعت ۳:۱۵ باشد، زاویه بین عقربه‌ها چند درجه است؟",
+                options: ["۰", "۷.۵", "۱۵", "۳۰"],
+                correct: 1,
+                explanation: "7.5 درجه"
+            },
+            {
+                text: "کدام عدد با بقیه متفاوت است؟",
+                options: ["۹", "۲۵", "۴۹", "۸۱", "۱۰۰"],
+                correct: 4,
+                explanation: "100 مربع کامل است اما بقیه مربع اعداد فرد هستند"
+            }
+        ];
+
+        let currentIndex = 0;
+        let userAnswers = new Array(questions.length).fill(-1);
+        let score = 0;
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            document.getElementById('questionText').innerHTML = q.text;
+            document.getElementById('currentQ').innerHTML = currentIndex + 1;
+            document.getElementById('totalQ').innerHTML = questions.length;
+
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (userAnswers[currentIndex] === idx) {
+                    optionDiv.classList.add('selected');
+                }
+                optionDiv.innerHTML = opt;
+                optionDiv.onclick = () => selectAnswer(idx);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            const progress = ((currentIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+
+            updateScoreDisplay();
+        }
+
+        function selectAnswer(selectedIdx) {
+            if (userAnswers[currentIndex] !== selectedIdx) {
+                userAnswers[currentIndex] = selectedIdx;
+                renderQuestion();
+            }
+        }
+
+        function updateScoreDisplay() {
+            let tempScore = 0;
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    tempScore++;
+                }
+            }
+            score = tempScore;
+            document.getElementById('scoreCount').innerHTML = score;
+        }
+
+        function calculateFinalScore() {
+            let final = 0;
+            for (let i = 0; i < userAnswers.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    final++;
+                }
+            }
+            return final;
+        }
+
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            const finalScore = calculateFinalScore();
+            const total = questions.length;
+            const percent = (finalScore / total) * 100;
+
+            let message = '';
+            if (percent >= 80) message = 'عالي! 🎉 سطح هوش شما بسیار بالاست!';
+            else if (percent >= 60) message = 'خوب! 👍 می‌توانید بهتر هم شوید!';
+            else if (percent >= 40) message = 'متوسط! 📚 بیشتر تمرین کنید!';
+            else message = 'نیاز به تمرین بیشتر دارید! 💪';
+
+            document.getElementById('finalScore').innerHTML = `${finalScore}/${total}`;
+            document.getElementById('resultMessage').innerHTML = message;
+
+            fetch('/games/save-iq-score/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    score: finalScore,
+                    total: total
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('userXp').innerHTML = data.total_xp;
+                        document.getElementById('xpGainText').innerHTML = `✨ <strong>+${data.xp_gained} XP</strong> دریافت کردی! ✨`;
+                    }
+                });
+
+            document.getElementById('resultModal').classList.add('show');
+        }
+
+        function restartQuiz() {
+            userAnswers = new Array(questions.length).fill(-1);
+            currentIndex = 0;
+            score = 0;
+            document.getElementById('resultModal').classList.remove('show');
+            renderQuestion();
+        }
+
+        function getCookie(name) {
+            let value = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        value = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return value;
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+        document.getElementById('restartQuiz').addEventListener('click', restartQuiz);
+        document.getElementById('backToGames').addEventListener('click', () => {
+            window.location.href = '/home/games/';
+        });
+
+        renderQuestion();
+    </script>
+{% endblock %}

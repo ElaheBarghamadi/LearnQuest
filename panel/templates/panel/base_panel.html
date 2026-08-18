@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}پنل مدیریت | لرن‌کوئست{% endblock %}</title>
+    {% load static %}
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛡️</text></svg>">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <link rel="stylesheet" href="{% static 'css/lq-core.css' %}?v=20260804">
+    <link rel="stylesheet" href="{% static 'css/panel.css' %}?v=20260804">
+</head>
+<body class="pn">
+{% csrf_token %}
+
+<header class="pn-top">
+    <div class="pn-top-in">
+        <a class="pn-brand" href="{% url 'panel:dashboard' %}">
+            <span class="pn-brand-ico">🛡️</span>
+            <span>پنل مدیریت<small>لرن‌کوئست</small></span>
+        </a>
+        <nav class="pn-tabs">
+            <a href="{% url 'panel:dashboard' %}" class="{% if active_tab == 'dashboard' %}on{% endif %}">📊 داشبورد</a>
+            <a href="{% url 'panel:users' %}" class="{% if active_tab == 'users' %}on{% endif %}">👥 کاربران</a>
+            <a href="{% url 'admin_cms:dashboard' %}">🎓 CMS اکادمی</a>
+            <a href="{% url 'admin:index' %}">⚙️ ادمین جنگو</a>
+            <a href="{% url 'index' %}">🏠 مشاهده سایت</a>
+        </nav>
+        <div class="pn-me">
+            <span class="pn-me-name">{{ user.username }}</span>
+            <span class="pn-me-badge">ادمین</span>
+        </div>
+    </div>
+</header>
+
+<main class="pn-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="pn-foot">
+    <span>🛡️ پنل مدیریت لرن‌کوئست — هر اقدام در «تاریخچهٔ اقدامات» ثبت می‌شود.</span>
+</footer>
+
+<script>
+(function () {
+    const origFetch = window.fetch;
+    function getCookie(name) {
+        const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+        return v ? decodeURIComponent(v.pop()) : '';
+    }
+    window.fetch = function (input, init) {
+        init = init || {};
+        const method = (init.method || 'GET').toUpperCase();
+        if (method !== 'GET' && method !== 'HEAD') {
+            const url = (typeof input === 'string') ? input : input.url;
+            if (url.startsWith('/') || url.startsWith(window.location.origin)) {
+                const headers = new Headers(init.headers || {});
+                if (!headers.has('X-CSRFToken')) headers.set('X-CSRFToken', getCookie('csrftoken'));
+                init.headers = headers;
+            }
+        }
+        return origFetch(input, init);
+    };
+})();
+window.LQ_USER = { authed: true, id: {{ user.pk }}, username: "{{ user.username|escapejs }}" };
+</script>
+<script src="{% static 'js/lq-core.js' %}?v=20260804"></script>
+<script src="{% static 'js/panel.js' %}?v=20260804"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

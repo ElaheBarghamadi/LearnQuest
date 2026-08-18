@@ -1,0 +1,561 @@
+:root {
+    --ms-teal: #0A84FF;
+    --ms-teal-deep: #0866cc;
+    --ms-teal-soft: #e5f1ff;
+    --ms-sky: #34B7F1;
+    --ms-gold: #f59e0b;
+    --ms-gold-soft: #fef3c7;
+    --ms-red: #FF3B30;
+    --ms-red-soft: #ffe5e3;
+    --ms-ink: #1c1c1e;
+    --ms-muted: #8E8E93;
+    --ms-line: #E5E5EA;
+    --ms-bg: #f2f2f6;
+    --ms-card: #ffffff;
+    --ms-chat-bg: #cfc9d9;
+    --ms-mine: linear-gradient(135deg, #0A84FF, #2f7dff);
+    --ms-bubble-mine: linear-gradient(180deg, #e2fdc8, #cdf0ae);
+    --ms-shadow: 0 8px 24px rgba(18, 18, 36, .10);
+    --ms-radius: 17px;
+    --ms-font: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+    --ms-hairline: rgba(60, 60, 67, .12);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0; padding: 0; height: 100%;
+    font-family: var(--ms-font);
+    background: var(--ms-bg);
+    color: var(--ms-ink);
+    overflow: hidden;
+}
+
+.ms-app {
+    display: flex;
+    height: 100dvh;
+    direction: rtl;
+    position: relative;
+}
+
+/* ───────── لیست چت‌ها (سایدبار) — سبک iOS تلگرام ───────── */
+.ms-sidebar {
+    width: 356px; flex-shrink: 0;
+    background: var(--ms-card);
+    border-left: 1px solid var(--ms-hairline);
+    display: flex; flex-direction: column;
+    z-index: 30;
+}
+
+.ms-side-head {
+    padding: 10px 14px 9px;
+    background: rgba(247, 247, 248, .88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 0.5px solid var(--ms-hairline);
+}
+
+.ms-navrow {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+
+.ms-nav-mid { flex: 1; min-width: 0; text-align: center; }
+
+.ms-nav-title {
+    margin: 0;
+    font-size: 1.28rem; font-weight: 900; color: var(--ms-ink);
+    letter-spacing: -.2px; line-height: 1.25;
+}
+
+.ms-nav-sub {
+    margin-top: 1px; font-size: .66rem; font-weight: 600; color: var(--ms-muted);
+}
+
+.ms-icon-btn {
+    width: 34px; height: 34px; border: none; border-radius: 50%;
+    background: transparent; color: var(--ms-teal); cursor: pointer;
+    display: grid; place-items: center; transition: .18s;
+    font-size: 1rem; line-height: 1; text-decoration: none;
+}
+.ms-icon-btn:hover { background: rgba(10, 132, 255, .12); }
+.ms-icon-btn:active { transform: scale(.92); }
+
+/* جستجوی iOS */
+.ms-search-box { padding: 9px 14px 7px; position: relative; background: rgba(247,247,248,.88); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+.ms-search-wrap {
+    display: flex; align-items: center; gap: 7px;
+    background: rgba(118, 118, 128, .12);
+    border: none; border-radius: 10px;
+    padding: 7px 11px; transition: .18s;
+}
+.ms-search-wrap:focus-within { background: rgba(118, 118, 128, .16); box-shadow: 0 0 0 1.5px var(--ms-teal); }
+.ms-search-wrap input {
+    flex: 1; border: none; outline: none; background: transparent;
+    font-family: inherit; font-size: .87rem; color: var(--ms-ink);
+}
+.ms-search-wrap input::placeholder { color: var(--ms-muted); }
+.ms-search-wrap .s-ico { color: var(--ms-muted); flex-shrink: 0; }
+
+.ms-search-results {
+    position: absolute; top: calc(100% - 2px); right: 14px; left: 14px;
+    background: #fff; border-radius: 14px; box-shadow: var(--ms-shadow);
+    border: 0.5px solid var(--ms-hairline); z-index: 40; display: none;
+    max-height: 320px; overflow-y: auto;
+}
+.ms-search-results.open { display: block; }
+.ms-search-hit {
+    display: flex; align-items: center; gap: 11px; padding: 9px 12px;
+    cursor: pointer; transition: background .12s;
+}
+.ms-search-hit:hover { background: rgba(118, 118, 128, .08); }
+.ms-search-hit:active { background: rgba(118, 118, 128, .16); }
+.ms-search-hit .meta { flex: 1; min-width: 0; }
+.ms-search-hit .meta b { display: block; font-size: .88rem; font-weight: 700; }
+.ms-search-hit .meta small { color: var(--ms-muted); font-size: .72rem; }
+
+.ms-section-title {
+    padding: 12px 18px 5px; font-size: .72rem; font-weight: 700;
+    color: var(--ms-muted); letter-spacing: .3px;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.ms-mini-btn {
+    border: none; background: none; color: var(--ms-teal);
+    font: inherit; font-size: .72rem; font-weight: 700; padding: 3px 8px;
+    border-radius: 999px; cursor: pointer; transition: .18s;
+}
+.ms-mini-btn:hover { background: rgba(10, 132, 255, .1); }
+.ms-mini-btn:active { transform: scale(.95); }
+
+/* ردیف‌های چت — لیست تمیز iOS با خطوط نازک */
+.ms-convs {
+    flex: 1; overflow-y: auto; padding: 0 0 12px;
+    scrollbar-width: thin; scrollbar-color: #c7c7cc transparent;
+    background: var(--ms-card);
+}
+.ms-convs::-webkit-scrollbar { width: 5px; }
+.ms-convs::-webkit-scrollbar-thumb { background: #c7c7cc; border-radius: 99px; }
+
+.ms-conv {
+    display: flex; align-items: center; gap: 12px;
+    padding: 9px 14px; cursor: pointer;
+    transition: background .12s;
+    position: relative;
+}
+.ms-conv::after {
+    content: ''; position: absolute; bottom: 0; right: 80px; left: 0;
+    height: 0.5px; background: var(--ms-hairline);
+}
+.ms-conv:last-child::after { display: none; }
+.ms-conv:hover { background: rgba(118, 118, 128, .07); }
+.ms-conv:active { background: rgba(118, 118, 128, .14); }
+.ms-conv.active { background: var(--ms-teal-soft); }
+.ms-conv.active::after { display: none; }
+
+.ms-avatar {
+    width: 54px; height: 54px; border-radius: 50%; flex-shrink: 0;
+    display: grid; place-items: center; font-size: 1.35rem; font-weight: 900;
+    color: #fff; position: relative; text-shadow: 0 1px 2px rgba(0,0,0,.2);
+}
+.ms-avatar .dot {
+    position: absolute; bottom: 1px; left: 1px;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: #c7c7cc; border: 3px solid #fff;
+}
+.ms-avatar .dot.on { background: #4BD964; }
+
+.ms-conv .meta { flex: 1; min-width: 0; padding: 2px 0; }
+.ms-conv .row1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.ms-conv .name { font-weight: 700; font-size: .94rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ms-conv .name a { color: inherit; text-decoration: none; }
+.ms-conv .name a:hover { color: var(--ms-teal); }
+.ms-conv .time { font-size: .68rem; color: var(--ms-muted); flex-shrink: 0; font-weight: 500; }
+.ms-conv .row2 { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 3px; }
+.ms-conv .preview {
+    font-size: .8rem; color: var(--ms-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ms-badge {
+    background: #4CCD64; color: #fff;
+    min-width: 21px; height: 21px; padding: 0 6px; border-radius: 999px;
+    display: grid; place-items: center; font-size: .7rem; font-weight: 800;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(76, 205, 100, .4);
+}
+
+.ms-convs-empty, .ms-loading {
+    text-align: center; color: var(--ms-muted); padding: 44px 18px; font-size: .84rem;
+}
+.ms-convs-empty .big, .ms-loading .big { font-size: 2.2rem; margin-bottom: 8px; }
+
+.ms-side-foot {
+    border-top: 0.5px solid var(--ms-hairline); padding: 8px 12px;
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(247, 247, 248, .88);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+}
+.ms-me { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.ms-me:hover .me-name { color: var(--ms-teal); }
+.ms-me .ms-avatar { width: 40px; height: 40px; font-size: 1rem; }
+.ms-me .me-name { font-weight: 700; font-size: .86rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: .15s; }
+.ms-me small { display: block; color: var(--ms-muted); font-size: .68rem; font-weight: 500; }
+.ms-foot-btn {
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%;
+    border: none; background: transparent; color: var(--ms-teal);
+    cursor: pointer; display: grid; place-items: center; transition: .18s; font-size: .95rem;
+    text-decoration: none;
+}
+.ms-foot-btn:hover { background: rgba(10, 132, 255, .12); }
+.ms-foot-btn:active { transform: scale(.9); }
+.ms-foot-btn.danger { color: var(--ms-red); }
+.ms-foot-btn.danger:hover { background: var(--ms-red-soft); }
+
+/* ───────── ناحیهٔ چت — والپیپر دودل تلگرام ───────── */
+.ms-chat {
+    flex: 1; display: flex; flex-direction: column; min-width: 0;
+    background: var(--ms-chat-bg);
+    position: relative;
+}
+.ms-chat::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background-color: #d2ccdf;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%238e88a3' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' opacity='.32'%3E%3Cpath d='M22 30c-4-6 4-12 8-7 4-5 12 1 8 7-3 4-11 5-16 0z'/%3E%3Ccircle cx='102' cy='26' r='7'/%3E%3Cpath d='M60 96l3.2 6.5 7.2 1-5.2 5.1 1.2 7.1-6.4-3.3-6.4 3.3 1.2-7.1-5.2-5.1 7.2-1z'/%3E%3Cpath d='M112 92c5 0 9 4 9 9s-4 9-9 9-9-4-9-9 4-9 9-9zm-4 3c1.6 2 4 2.5 6 2M107 104c2 1.6 5 1.8 7 1'/%3E%3Cpath d='M28 104c6-3 13-3 19 0'/%3E%3Cpath d='M52 22q6 6 0 12t-10-2t0-10t10 0z'/%3E%3Cpath d='M80 52c3-5 12-5 14 1M78 120q5-5 10 0'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+.ms-chat-empty {
+    flex: 1; display: grid; place-items: center; position: relative; z-index: 1;
+    text-align: center; padding: 30px;
+}
+.ms-chat-empty .card {
+    background: rgba(255,255,255,.72); backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,.6);
+    border-radius: 24px; padding: 42px 38px;
+    box-shadow: 0 16px 40px rgba(30,30,60,.14);
+    max-width: 420px;
+}
+.ms-chat-empty .big { font-size: 3.4rem; }
+.ms-chat-empty h3 { margin: 12px 0 6px; font-size: 1.2rem; font-weight: 900; }
+.ms-chat-empty p { color: #55556b; font-size: .88rem; line-height: 2; margin: 0 0 20px; }
+.ms-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ms-mine); color: #fff; border: none;
+    padding: 12px 26px; border-radius: 999px; font-family: inherit;
+    font-size: .92rem; font-weight: 800; cursor: pointer; transition: .2s;
+    box-shadow: 0 8px 18px rgba(10,132,255,.35);
+}
+.ms-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(10,132,255,.45); }
+.ms-cta:active { transform: scale(.96); }
+
+/* هدر چت — نوبار iOS */
+.ms-chat-head {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(247, 247, 248, .86);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-bottom: 0.5px solid var(--ms-hairline);
+    padding: 8px 14px;
+}
+.ms-back-btn { display: none; color: var(--ms-teal); }
+.ms-chat-head .ms-avatar { width: 40px; height: 40px; font-size: 1rem; }
+.ms-chat-head .info { flex: 1; min-width: 0; }
+.ms-chat-head .h-name { font-weight: 800; font-size: .97rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ms-chat-head .h-name a { color: inherit; text-decoration: none; }
+.ms-chat-head .h-name a:hover { color: var(--ms-teal); }
+.ms-chat-head .h-sub { font-size: .7rem; color: var(--ms-muted); display: flex; align-items: center; gap: 4px; font-weight: 600; }
+.ms-chat-head .h-sub .on-txt { color: var(--ms-teal); font-weight: 700; }
+.ms-chat-head .h-actions { display: flex; gap: 4px; }
+
+/* لیست پیام‌ها */
+.ms-messages {
+    flex: 1; overflow-y: auto; padding: 18px 14px 10px;
+    display: flex; flex-direction: column; gap: 2.5px;
+    position: relative; z-index: 1;
+    scrollbar-width: thin; scrollbar-color: rgba(60,60,67,.35) transparent;
+}
+.ms-messages::-webkit-scrollbar { width: 5px; }
+.ms-messages::-webkit-scrollbar-thumb { background: rgba(60,60,67,.3); border-radius: 99px; }
+
+.ms-day-sep {
+    align-self: center;
+    background: rgba(255,255,255,.72); color: #55556b;
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    font-size: .66rem; font-weight: 700; padding: 5px 14px; border-radius: 999px;
+    margin: 12px 0 7px; box-shadow: 0 2px 6px rgba(30,30,60,.12);
+}
+
+/* حباب‌ها — مثل تلگرام آیفون: پیام خودی چپ/سبز، طرف راست/سفید */
+.ms-msg { display: flex; max-width: min(72%, 540px); margin-top: 2px; }
+.ms-msg.mine { align-self: flex-end; }
+.ms-msg.theirs { align-self: flex-start; }
+
+.ms-msg .bubble {
+    padding: 7px 11px 4px; border-radius: 17px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(30,30,60,.14);
+    min-width: 66px;
+}
+.ms-msg.mine .bubble {
+    background: var(--ms-bubble-mine); color: #12300f;
+    border-bottom-left-radius: 5px;
+}
+.ms-msg.theirs .bubble {
+    background: #fff; color: var(--ms-ink);
+    border-bottom-right-radius: 5px;
+}
+.ms-msg .sender {
+    display: block; font-size: .7rem; font-weight: 800; margin-bottom: 2px;
+    color: var(--ms-teal-deep); text-decoration: none;
+}
+.ms-msg .sender:hover { text-decoration: underline; }
+.ms-msg .text { font-size: .92rem; line-height: 1.78; word-break: break-word; white-space: pre-wrap; }
+.ms-msg .b-foot {
+    display: flex; align-items: center; justify-content: flex-end; gap: 3.5px;
+    font-size: .62rem; margin-top: 1px;
+    line-height: 1;
+}
+.ms-msg.mine .b-foot { color: #4d9440; }
+.ms-msg.theirs .b-foot { color: #b4b4bb; }
+.ms-msg .ticks { display: inline-flex; }
+.ms-msg .ticks.read { color: var(--ms-sky); }
+
+.ms-msg.system { align-self: center; max-width: 92%; }
+.ms-msg.system .bubble {
+    background: rgba(96, 96, 110, .55);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    color: #fff; font-size: .72rem; border-radius: 999px;
+    padding: 6px 16px; box-shadow: none; min-width: 0;
+    text-align: center; font-weight: 600;
+}
+
+/* تایپینگ — حباب سفید طرف */
+.ms-typing {
+    align-self: flex-start; background: #fff; border-radius: 17px;
+    border-bottom-right-radius: 5px; padding: 13px 15px;
+    display: none; gap: 5px; box-shadow: 0 1px 2px rgba(30,30,60,.14);
+    align-items: center; margin-top: 3px;
+}
+.ms-typing.show { display: flex; }
+.ms-typing .t-dot { width: 7px; height: 7px; border-radius: 50%; background: #a9a9b1; animation: mst-dot 1.2s infinite; }
+.ms-typing .t-dot:nth-child(2) { animation-delay: .18s; }
+.ms-typing .t-dot:nth-child(3) { animation-delay: .36s; }
+@keyframes mst-dot { 0%, 60%, 100% { transform: translateY(0); opacity: .45; } 30% { transform: translateY(-5px); opacity: 1; } }
+
+/* کامپوزر — نوار iOS */
+.ms-composer {
+    position: relative; z-index: 2;
+    padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+    background: rgba(247, 247, 248, .86);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border-top: 0.5px solid var(--ms-hairline);
+    display: flex; align-items: flex-end; gap: 8px;
+}
+.ms-input-wrap {
+    flex: 1; display: flex; align-items: flex-end; gap: 4px;
+    background: #fff; border: 0.5px solid var(--ms-hairline);
+    border-radius: 19px; padding: 4px 6px; transition: .18s;
+}
+.ms-input-wrap:focus-within { border-color: var(--ms-teal); box-shadow: 0 0 0 3px rgba(10,132,255,.14); }
+.ms-input-wrap textarea {
+    flex: 1; border: none; outline: none; background: transparent; resize: none;
+    font-family: inherit; font-size: .93rem; line-height: 1.7; max-height: 110px;
+    padding: 7px 4px; color: var(--ms-ink);
+}
+.ms-emoji-btn {
+    border: none; background: none; font-size: 1.3rem; cursor: pointer;
+    padding: 5px 7px; border-radius: 50%; transition: .18s; color: var(--ms-muted);
+}
+.ms-emoji-btn:hover { background: rgba(118, 118, 128, .1); transform: scale(1.1); }
+.ms-emoji-btn:active { transform: scale(.92); }
+.ms-send-btn {
+    width: 38px; height: 38px; flex-shrink: 0; border: none; border-radius: 50%;
+    background: var(--ms-teal); color: #fff; cursor: pointer;
+    display: grid; place-items: center; transition: .2s;
+    box-shadow: 0 4px 10px rgba(10,132,255,.35);
+}
+.ms-send-btn:hover:not(:disabled) { transform: scale(1.07); }
+.ms-send-btn:active:not(:disabled) { transform: scale(.92); }
+.ms-send-btn:disabled { background: #c7c7cc; box-shadow: none; cursor: not-allowed; }
+.ms-send-btn svg { transform: scaleX(-1); }
+
+.ms-composer-note {
+    flex: 1; text-align: center; color: var(--ms-muted);
+    background: #fff; border: 0.5px solid var(--ms-hairline);
+    border-radius: 19px; padding: 13px; font-size: .84rem; font-weight: 600;
+}
+.ms-composer-note b { color: var(--ms-red); }
+
+/* مودال‌ها — شیت iOS */
+.ms-modal-back {
+    position: fixed; inset: 0; background: rgba(18, 18, 36, .4);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    z-index: 100;
+    display: none; align-items: center; justify-content: center; padding: 18px;
+}
+.ms-modal-back.open { display: flex; }
+.ms-modal {
+    background: #fff; border-radius: 18px; width: 100%; max-width: 480px;
+    max-height: 88dvh; display: flex; flex-direction: column;
+    box-shadow: 0 24px 60px rgba(18,18,36,.3); animation: mspop .25s cubic-bezier(.2,1.4,.4,1);
+    overflow: hidden;
+}
+@keyframes mspop { from { transform: scale(.94) translateY(12px); opacity: 0; } }
+.ms-modal-head {
+    padding: 16px 18px 11px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 0.5px solid var(--ms-hairline);
+}
+.ms-modal-head h3 { margin: 0; font-size: 1.02rem; font-weight: 900; }
+.ms-modal-x {
+    width: 30px; height: 30px; border: none; border-radius: 50%;
+    background: rgba(118, 118, 128, .12); color: var(--ms-muted);
+    cursor: pointer; font-size: .9rem; transition: .18s;
+}
+.ms-modal-x:hover { background: var(--ms-red-soft); color: var(--ms-red); }
+.ms-modal-body { padding: 14px 18px; overflow-y: auto; }
+.ms-modal-foot { padding: 10px 18px 16px; display: flex; gap: 10px; }
+
+.ms-field { margin-bottom: 14px; }
+.ms-field label { display: block; font-size: .78rem; font-weight: 800; margin-bottom: 6px; color: var(--ms-ink); }
+.ms-field input[type="text"] {
+    width: 100%; border: none; border-radius: 11px;
+    background: rgba(118, 118, 128, .1);
+    padding: 11px 14px; font-family: inherit; font-size: .92rem; outline: none; transition: .18s;
+}
+.ms-field input[type="text"]:focus { box-shadow: 0 0 0 2px var(--ms-teal); background: #fff; }
+.ms-hint { font-size: .7rem; color: var(--ms-muted); margin-top: 5px; }
+
+.ms-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 8px 0; }
+.ms-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--ms-teal-soft); color: var(--ms-teal-deep);
+    font-size: .78rem; font-weight: 700; padding: 5px 7px 5px 12px; border-radius: 999px;
+}
+.ms-chip button {
+    border: none; background: var(--ms-teal); color: #fff;
+    width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+    font-size: .62rem; line-height: 1; display: grid; place-items: center;
+}
+.ms-chip.owner { background: var(--ms-gold-soft); color: #b45309; }
+.ms-chip.owner button { background: var(--ms-gold); }
+
+.ms-btn {
+    flex: 1; border: none; border-radius: 12px; padding: 12px;
+    font-family: inherit; font-size: .92rem; font-weight: 800; cursor: pointer; transition: .18s;
+}
+.ms-btn.primary { background: var(--ms-teal); color: #fff; box-shadow: 0 6px 14px rgba(10,132,255,.3); }
+.ms-btn.primary:hover:not(:disabled) { transform: translateY(-1px); }
+.ms-btn.primary:active:not(:disabled) { transform: scale(.97); }
+.ms-btn.primary:disabled { opacity: .5; cursor: not-allowed; }
+.ms-btn.ghost { background: rgba(118, 118, 128, .12); color: var(--ms-ink); }
+.ms-btn.ghost:hover { background: rgba(118, 118, 128, .2); }
+.ms-btn.danger { background: var(--ms-red-soft); color: var(--ms-red); }
+.ms-btn.danger:hover { background: var(--ms-red); color: #fff; }
+
+.ms-list-row {
+    display: flex; align-items: center; gap: 11px; padding: 9px 4px;
+    border-bottom: 0.5px solid rgba(118,118,128,.12);
+}
+.ms-list-row:last-child { border-bottom: none; }
+.ms-list-row .ms-avatar { width: 42px; height: 42px; font-size: 1rem; }
+.ms-list-row .meta { flex: 1; min-width: 0; }
+.ms-list-row .meta b { font-size: .87rem; display: block; font-weight: 700; }
+.ms-list-row .meta b a { color: inherit; text-decoration: none; }
+.ms-list-row .meta b a:hover { color: var(--ms-teal); }
+.ms-list-row .meta small { color: var(--ms-muted); font-size: .68rem; }
+.ms-row-btn {
+    border: none; border-radius: 999px; padding: 6px 14px; cursor: pointer;
+    font-family: inherit; font-size: .72rem; font-weight: 700; transition: .18s;
+    background: rgba(10, 132, 255, .1); color: var(--ms-teal); flex-shrink: 0;
+}
+.ms-row-btn:hover { background: var(--ms-teal); color: #fff; }
+.ms-row-btn.danger { background: var(--ms-red-soft); color: var(--ms-red); }
+.ms-row-btn.danger:hover { background: var(--ms-red); color: #fff; }
+.ms-row-btn.ok { background: rgba(76, 205, 100, .12); color: #2fa345; }
+.ms-row-btn.ok:hover { background: #4CCD64; color: #fff; }
+
+.ms-invite-box {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(118, 118, 128, .08); border: 1px dashed rgba(118,118,128,.35);
+    border-radius: 12px; padding: 9px 12px; margin-top: 8px; direction: ltr;
+}
+.ms-invite-box code {
+    flex: 1; font-size: .74rem; color: var(--ms-teal-deep);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: inherit; font-weight: 600; direction: ltr;
+}
+.ms-copy-btn {
+    border: none; border-radius: 999px; background: var(--ms-teal); color: #fff;
+    padding: 7px 13px; font-family: inherit; font-size: .72rem; font-weight: 700;
+    cursor: pointer; transition: .18s; flex-shrink: 0;
+}
+.ms-copy-btn:hover { background: var(--ms-teal-deep); }
+.ms-copy-btn.copied { background: #4CCD64; }
+
+/* توست — HUD iOS */
+.ms-toasts {
+    position: fixed; bottom: 24px; right: 50%; transform: translateX(50%);
+    z-index: 300; display: flex; flex-direction: column; gap: 8px; align-items: center;
+}
+.ms-toast {
+    background: rgba(28, 28, 30, .88); color: #fff;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 11px 22px; border-radius: 999px;
+    font-size: .84rem; font-weight: 600;
+    box-shadow: 0 10px 26px rgba(18,18,36,.35);
+    animation: mstoast .3s cubic-bezier(.2,1.4,.4,1); max-width: min(90vw, 440px);
+    text-align: center; line-height: 1.7;
+}
+.ms-toast.error { background: rgba(199, 43, 36, .92); }
+.ms-toast.ok { background: rgba(33, 140, 70, .92); }
+@keyframes mstoast { from { transform: translateY(14px); opacity: 0; } }
+
+.ms-conn {
+    position: absolute; top: 8px; right: 50%; transform: translateX(50%);
+    z-index: 50; background: rgba(28,28,30,.85); color: #fff;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    font-size: .68rem; font-weight: 700;
+    padding: 6px 15px; border-radius: 999px; display: none;
+    box-shadow: 0 4px 12px rgba(18,18,36,.25);
+}
+.ms-conn.show { display: block; }
+.ms-conn.ok { background: rgba(33, 140, 70, .9); }
+
+/* ───────── موبایل — کاملاً مثل تلگرام آیفون ───────── */
+@media (max-width: 860px) {
+    .ms-sidebar {
+        position: absolute; inset: 0; width: 100%; border-left: none;
+        transition: transform .28s cubic-bezier(.25,.9,.3,1);
+    }
+    .ms-app.chat-open .ms-sidebar { transform: translateX(100%); pointer-events: none; }
+    .ms-chat { position: absolute; inset: 0; transform: translateX(-100%); transition: transform .28s cubic-bezier(.25,.9,.3,1); }
+    .ms-app.chat-open .ms-chat { transform: translateX(0); }
+    .ms-back-btn {
+        display: grid !important;
+        color: var(--ms-teal);
+        font-size: 0; width: auto; height: auto;
+        padding: 4px 2px; margin-left: 4px;
+    }
+    .ms-back-btn svg { width: 26px; height: 26px; }
+    .ms-msg { max-width: 84%; }
+    .ms-modal { max-width: 100%; }
+    .ms-chat-head .ms-avatar { width: 36px; height: 36px; }
+    .ms-conv .ms-avatar { width: 52px; height: 52px; }
+    .ms-conv::after { right: 78px; }
+}
+
+@media (max-width: 480px) {
+    .ms-search-box { padding: 8px 12px 6px; }
+    .ms-conv { padding: 8px 12px; }
+    .ms-messages { padding: 14px 10px 8px; }
+}
+
+@media (min-width: 861px) {
+    .ms-chat { transform: none !important; }
+    .ms-sidebar { transform: none !important; position: relative; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ms-typing .t-dot { animation: none; }
+    .ms-modal { animation: none; }
+}

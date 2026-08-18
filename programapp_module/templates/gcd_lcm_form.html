@@ -1,0 +1,655 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}
+    محاسبه ب.م.م و ک.م.م | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .gcdlcm-container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .gcdlcm-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .gcdlcm-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gcdlcm-header::before {
+            content: 'GCD LCM';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            font-size: 80px;
+            opacity: 0.08;
+            font-weight: 800;
+            letter-spacing: 5px;
+        }
+
+        .gcdlcm-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .gcdlcm-header h1 i {
+            font-size: 1.8rem;
+        }
+
+        .gcdlcm-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+
+        /* فرم */
+        .gcdlcm-form {
+            padding: 35px 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1.1rem;
+        }
+
+        .gcdlcm-input {
+            width: 100%;
+            padding: 14px 50px 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
+        .gcdlcm-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed rgba(76, 175, 80, 0.3);
+        }
+
+        .result-header i {
+            font-size: 1.5rem;
+            color: #4CAF50;
+        }
+
+        .result-header h3 {
+            font-size: 1.1rem;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .result-numbers {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .result-numbers p {
+            margin: 5px 0;
+            font-size: 1rem;
+        }
+
+        .gcd-result, .lcm-result {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .gcd-result:hover, .lcm-result:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #3B82F6;
+        }
+
+        .result-value small {
+            font-size: 0.8rem;
+            font-weight: normal;
+            color: #888;
+        }
+
+        .divisors-section {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .divisors-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .divisors-title i {
+            color: #3B82F6;
+        }
+
+        .divisors-tag {
+            display: inline-block;
+            background: #f0f0ff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin: 3px;
+            color: #3B82F6;
+        }
+
+        /* مثال‌ها */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .example-item {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            padding: 12px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .example-item:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+        }
+
+        .example-item:hover .example-nums,
+        .example-item:hover .example-result {
+            color: white;
+        }
+
+        .example-nums {
+            font-weight: 700;
+            color: #3B82F6;
+            margin-bottom: 5px;
+        }
+
+        .example-result {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        /* توضیحات */
+        .info-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .info-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .formula-box {
+            background: #2d3047;
+            color: #36D1DC;
+            padding: 12px;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .gcdlcm-container {
+                padding: 15px;
+            }
+
+            .gcdlcm-header {
+                padding: 25px 20px;
+            }
+
+            .gcdlcm-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .gcdlcm-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-value {
+                font-size: 1.6rem;
+            }
+
+            .examples-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .gcdlcm-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge-group {
+                flex-wrap: wrap;
+            }
+
+            .result-value {
+                font-size: 1.3rem;
+            }
+
+            .examples-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="gcdlcm-container">
+        <div class="gcdlcm-card">
+            <div class="gcdlcm-header">
+                <h1>
+                    <i class="fas fa-link"></i>
+                    ب.م.م و ک.م.م
+                    <i class="fas fa-chart-line"></i>
+                </h1>
+                <p>محاسبه بزرگترین مقسوم‌علیه مشترک و کوچکترین مضرب مشترک</p>
+                <div class="badge-group">
+                    <span class="badge"><i class="fas fa-divide"></i> GCD</span>
+                    <span class="badge"><i class="fas fa-times"></i> LCM</span>
+                    <span class="badge"><i class="fas fa-infinity"></i> تا ۱۰ میلیون</span>
+                </div>
+            </div>
+
+            <form method="post" class="gcdlcm-form">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-hashtag"></i>
+                            عدد اول:
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-sort-numeric-up"></i>
+                            <input type="number"
+                                   name="num1"
+                                   id="num1"
+                                   class="gcdlcm-input"
+                                   placeholder="مثال: 12"
+                                   value="{{ num1|default:'' }}"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-hashtag"></i>
+                            عدد دوم:
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-sort-numeric-down"></i>
+                            <input type="number"
+                                   name="num2"
+                                   id="num2"
+                                   class="gcdlcm-input"
+                                   placeholder="مثال: 18"
+                                   value="{{ num2|default:'' }}"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-calculator"></i>
+                    محاسبه ب.م.م و ک.م.م
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            {% if gcd_result and lcm_result %}
+                <div class="result-section">
+                    <div class="result-card">
+                        <div class="result-header">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>نتایج محاسبه</h3>
+                        </div>
+
+                        <div class="result-numbers">
+                            <p><strong>اعداد وارد شده:</strong> {{ num1|intcomma }} و {{ num2|intcomma }}</p>
+                        </div>
+
+                        <div class="gcd-result">
+                            <div class="result-label">
+                                <i class="fas fa-arrow-up"></i> بزرگترین مقسوم‌علیه مشترک
+                            </div>
+                            <div class="result-value">
+                                {{ gcd_result|intcomma }}
+                                <small>GCD</small>
+                            </div>
+                        </div>
+
+                        <div class="lcm-result">
+                            <div class="result-label">
+                                <i class="fas fa-arrow-down"></i> کوچکترین مضرب مشترک
+                            </div>
+                            <div class="result-value">
+                                {{ lcm_result|intcomma }}
+                                <small>LCM</small>
+                            </div>
+                        </div>
+
+                        {% if divisors1 or divisors2 %}
+                            <div class="divisors-section">
+                                <div class="divisors-title">
+                                    <i class="fas fa-list-ul"></i>
+                                    مقسوم‌علیه‌ها
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <strong>{{ num1|intcomma }}:</strong><br>
+                                    {% for d in divisors1 %}
+                                        <span class="divisors-tag">{{ d }}</span>
+                                    {% endfor %}
+                                </div>
+                                <div>
+                                    <strong>{{ num2|intcomma }}:</strong><br>
+                                    {% for d in divisors2 %}
+                                        <span class="divisors-tag">{{ d }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- مثال‌ها -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📊 مثال‌های معروف
+            </div>
+            <div class="examples-grid">
+                <div class="example-item" data-num1="12" data-num2="18">
+                    <div class="example-nums">12 و 18</div>
+                    <div class="example-result">GCD: 6 | LCM: 36</div>
+                </div>
+                <div class="example-item" data-num1="24" data-num2="36">
+                    <div class="example-nums">24 و 36</div>
+                    <div class="example-result">GCD: 12 | LCM: 72</div>
+                </div>
+                <div class="example-item" data-num1="8" data-num2="12">
+                    <div class="example-nums">8 و 12</div>
+                    <div class="example-result">GCD: 4 | LCM: 24</div>
+                </div>
+                <div class="example-item" data-num1="15" data-num2="25">
+                    <div class="example-nums">15 و 25</div>
+                    <div class="example-result">GCD: 5 | LCM: 75</div>
+                </div>
+                <div class="example-item" data-num1="7" data-num2="13">
+                    <div class="example-nums">7 و 13</div>
+                    <div class="example-result">GCD: 1 | LCM: 91</div>
+                </div>
+                <div class="example-item" data-num1="16" data-num2="24">
+                    <div class="example-nums">16 و 24</div>
+                    <div class="example-result">GCD: 8 | LCM: 48</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- توضیحات -->
+        <div class="info-section">
+            <div class="info-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 ب.م.م و ک.م.م چیست؟
+            </div>
+            <div class="info-text">
+                <strong>بزرگترین مقسوم‌علیه مشترک (ب.م.م)</strong> بزرگترین عددی است که می‌تواند هر دو عدد را بدون
+                باقیمانده تقسیم کند.
+            </div>
+            <div class="formula-box">
+                GCD(a, b) = بزرگترین عددی که a و b بر آن بخش‌پذیرند
+            </div>
+            <div class="info-text">
+                <strong>کوچکترین مضرب مشترک (ک.م.م)</strong> کوچکترین عددی است که بر هر دو عدد بخش‌پذیر است.
+            </div>
+            <div class="formula-box">
+                LCM(a, b) = |a × b| ÷ GCD(a, b)
+            </div>
+            <div class="info-text">
+                <strong>مثال:</strong> برای اعداد 12 و 18:<br>
+                • مقسوم‌علیه‌های 12: ۱, ۲, ۳, ۴, ۶, ۱۲<br>
+                • مقسوم‌علیه‌های 18: ۱, ۲, ۳, ۶, ۹, ۱۸<br>
+                • ب.م.م = ۶<br>
+                • ک.م.م = (12 × 18) ÷ 6 = 216 ÷ 6 = 36
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // کلیک روی مثال‌ها برای پر کردن خودکار ورودی‌ها
+        document.querySelectorAll('.example-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const num1 = this.getAttribute('data-num1');
+                const num2 = this.getAttribute('data-num2');
+
+                if (num1 && num2) {
+                    document.getElementById('num1').value = num1;
+                    document.getElementById('num2').value = num2;
+
+                    // اختیاری: ارسال خودکار فرم
+                    // this.closest('form').submit();
+                }
+            });
+        });
+
+        // اعتبارسنجی ورودی‌ها
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                const num1 = parseInt(document.getElementById('num1').value);
+                const num2 = parseInt(document.getElementById('num2').value);
+
+                if (isNaN(num1) || isNaN(num2)) {
+                    alert('لطفاً هر دو عدد را وارد کنید.');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (num1 <= 0 || num2 <= 0) {
+                    alert('لطفاً اعداد مثبت وارد کنید.');
+                    e.preventDefault();
+                    return;
+                }
+
+                if (num1 > 10000000 || num2 > 10000000) {
+                    alert('اعداد باید کمتر از ۱۰ میلیون باشند.');
+                    e.preventDefault();
+                    return;
+                }
+            });
+        }
+    </script>
+{% endblock %}

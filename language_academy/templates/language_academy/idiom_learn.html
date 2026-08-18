@@ -1,0 +1,90 @@
+{% extends 'language_academy/base_academy.html' %}
+{% block title %}Learn Idioms — {{ level }} | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+.il-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+.il-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.il-chip { padding: 7px 15px; border-radius: 999px; font-size: 0.82rem; font-weight: 700; text-decoration: none; background: rgba(148, 163, 184, 0.16); color: var(--text-secondary, #64748b); text-transform: capitalize; transition: 0.15s; }
+.il-chip:hover { background: rgba(99, 102, 241, 0.2); color: #4f46e5; }
+.il-chip.on { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; }
+.il-card { border-radius: 20px; padding: 18px 20px; height: 100%; position: relative; overflow: hidden; }
+.il-ex { font-size: 1.06rem; font-weight: 800; color: #4f46e5; margin-bottom: 2px; }
+.il-fa { font-size: 0.88rem; color: var(--text-secondary, #64748b); margin-bottom: 10px; }
+.il-def { font-size: 0.85rem; line-height: 1.55; margin-bottom: 8px; }
+.il-sen { font-size: 0.82rem; font-style: italic; color: var(--text-secondary, #64748b); border-inline-start: 3px solid rgba(99, 102, 241, 0.4); padding-inline-start: 10px; }
+.il-foot { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; gap: 8px; }
+.il-dots { display: inline-flex; gap: 4px; }
+.il-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(148, 163, 184, 0.4); }
+.il-dots i.on { background: linear-gradient(135deg, #8b5cf6, #3b82f6); }
+.il-btn { border: none; border-radius: 999px; padding: 7px 16px; font-size: 0.78rem; font-weight: 800; cursor: pointer; background: rgba(16, 185, 129, 0.14); color: #047857; transition: 0.15s; }
+.il-btn:hover { background: rgba(16, 185, 129, 0.26); }
+.il-btn.done { background: rgba(16, 185, 129, 0.9); color: #fff; pointer-events: none; }
+.il-xp { position: absolute; top: 14px; inset-inline-end: 16px; font-size: 0.8rem; font-weight: 800; color: #059669; opacity: 0; transition: 0.4s; }
+.il-xp.show { opacity: 1; transform: translateY(-4px); }
+</style>
+
+<div class="container py-4" style="max-width: 1000px;">
+    <div class="il-head">
+        <div>
+            <h1 class="h3 mb-1">💬 {{ level }} Idioms{% if topic %} — <span style="text-transform: capitalize;">{{ topic }}</span>{% endif %}</h1>
+            <div class="text-muted small">{{ items|length }} expressions · tap ✔ when you can use one yourself</div>
+        </div>
+        <div class="il-chips">
+            <a class="il-chip{% if not topic %} on{% endif %}" href="{% url 'language_academy:idiom_learn' %}">all</a>
+            {% for t in topics %}<a class="il-chip{% if t == topic %} on{% endif %}" href="?topic={{ t }}">{{ icons|default_if_none:'' }}{{ t }}</a>{% endfor %}
+        </div>
+    </div>
+
+    <div class="row g-3">
+        {% for it in items %}
+        <div class="col-md-6">
+            <div class="academy-card glass-card il-card">
+                <span class="il-xp" id="xp-{{ it.obj.id }}">+8 XP ✨</span>
+                <div class="il-ex">{{ it.obj.expression }}</div>
+                <div class="il-fa">{{ it.obj.translation_fa }}</div>
+                <div class="il-def">{{ it.obj.definition_en }}</div>
+                <div class="il-sen">“{{ it.obj.example_en }}”</div>
+                <div class="il-foot">
+                    <span class="il-dots" id="dots-{{ it.obj.id }}">
+                        {% for d in '12345' %}<i class="{% if it.mastery >= forloop.counter0 %}on{% endif %}"></i>{% endfor %}
+                    </span>
+                    <button type="button" class="il-btn{% if it.mastery >= 2 %} done{% endif %}" id="btn-{{ it.obj.id }}"
+                            onclick="ilMark({{ it.obj.id }}, this)">✔ I know this</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12"><div class="academy-card glass-card p-5 text-center text-muted">No idioms here yet — check back soon!</div></div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+(function () {
+    function csrf() {
+        const m = document.cookie.match(/(^|;\s*)csrftoken\s*=\s*([^;]+)/);
+        return m ? decodeURIComponent(m[2]) : '';
+    }
+    window.ilMark = function (id, btn) {
+        fetch("{% url 'language_academy:idiom_mark_learned' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
+            body: JSON.stringify({ idiom_id: id, action: 'known' })
+        }).then((r) => r.json()).then((j) => {
+            if (!j.ok) return;
+            btn.classList.add('done');
+            btn.textContent = '✔ Learned';
+            const dots = document.querySelectorAll('#dots-' + id + ' i');
+            dots.forEach((d, k) => { if (k <= j.mastery) d.classList.add('on'); });
+            if (j.xp) {
+                const xp = document.getElementById('xp-' + id);
+                xp.classList.add('show');
+                setTimeout(() => xp.classList.remove('show'), 1800);
+            }
+        }).catch(() => {});
+    };
+})();
+</script>
+{% include 'language_academy/_ai_tutor.html' with chat_context='idiom' %}
+{% endblock %}

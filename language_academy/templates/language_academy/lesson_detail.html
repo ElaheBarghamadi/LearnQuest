@@ -1,0 +1,2571 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}{{ lesson.name }} | LearnQuest Academy{% endblock %}
+
+{% block extra_css %}
+<style>
+    
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    :root {
+        --bg-card: rgba(255, 255, 255, 0.62);
+        --text-primary: #1A1A2E;
+        --text-secondary: #4A4A6A;
+        --accent-primary: #3b82f6;
+        --accent-success: #10b981;
+        --accent-warning: #f59e0b;
+        --accent-danger: #ef4444;
+        --accent-purple: #38BDF8;
+        --border-light: rgba(232, 234, 246, 0.7);
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    }
+
+    [data-theme="dark"] {
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #1e293b;
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --border-light: #334155;
+    }
+
+    body {
+        background: var(--bg-primary);
+    }
+
+    .modern-breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+        padding: 12px 0;
+    }
+
+    .breadcrumb-link {
+        background: rgba(59, 130, 246, 0.1);
+        padding: 6px 16px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--accent-primary);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .breadcrumb-link:hover {
+        background: var(--accent-primary);
+        color: white;
+        transform: translateX(3px);
+    }
+
+    .breadcrumb-current {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+        padding: 6px 20px;
+        border-radius: 40px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .breadcrumb-sep {
+        color: var(--text-secondary);
+        font-size: 0.7rem;
+    }
+
+    .lesson-header-modern {
+        margin-bottom: 32px;
+        padding: 24px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+        border-radius: 24px;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    .lesson-header-modern::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 300px;
+        height: 300px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-20px, -20px); }
+    }
+
+    .lesson-icon-modern {
+        width: 56px;
+        height: 56px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        backdrop-filter: blur(10px);
+    }
+
+    .lesson-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .lesson-meta-modern {
+        display: flex;
+        gap: 20px;
+        margin-top: 16px;
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+    .progress-timeline {
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 20px;
+        margin-bottom: 32px;
+        box-shadow: var(--shadow-lg);
+        animation: fadeInUp 0.5s ease 0.1s both;
+    }
+
+    .timeline-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .timeline-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .step-dot {
+        width: 40px;
+        height: 40px;
+        background: var(--border-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 2;
+    }
+
+    .timeline-step.completed .step-dot {
+        background: var(--accent-success);
+        color: white;
+        transform: scale(1.1);
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .timeline-step.active .step-dot {
+        background: var(--accent-primary);
+        color: white;
+        transform: scale(1.15);
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.3);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+        50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0); }
+    }
+
+    .step-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+    }
+
+    .timeline-step.completed .step-label,
+    .timeline-step.active .step-label {
+        color: var(--accent-primary);
+        font-weight: 700;
+    }
+
+    .section-card-modern {
+        background: var(--bg-card);
+        border-radius: 20px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        transition: all 0.3s ease;
+        animation: fadeInUp 0.4s ease;
+    }
+
+    .section-card-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .section-header-modern {
+        padding: 18px 24px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(56, 189, 248,0.05));
+        border-bottom: 1px solid var(--border-light);
+    }
+
+    .section-header-modern:hover {
+        background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(56, 189, 248,0.1));
+    }
+
+    .section-title-modern {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .section-icon {
+        width: 36px;
+        height: 36px;
+        background: rgba(59,130,246,0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .section-title-text {
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-primary);
+    }
+
+    .section-badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+
+    .section-badge.completed {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent-success);
+    }
+
+    .section-badge.active {
+        background: rgba(59, 130, 246, 0.1);
+        color: var(--accent-primary);
+    }
+
+    .section-badge.locked {
+        background: rgba(100, 116, 139, 0.1);
+        color: var(--text-secondary);
+    }
+
+    .section-content-modern {
+        padding: 0 24px;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .section-card-modern.expanded .section-content-modern {
+        max-height: 2000px;
+        padding: 24px;
+    }
+
+    .reading-card {
+        background: linear-gradient(135deg, rgba(56, 189, 248, 0.05), rgba(59, 130, 246, 0.05));
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 20px;
+        border-left: 4px solid var(--accent-purple);
+    }
+
+    .reading-text {
+        line-height: 1.8;
+        font-size: 0.95rem;
+        color: var(--text-primary);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .grammar-box {
+        background: rgba(245, 158, 11, 0.05);
+        border-radius: 16px;
+        padding: 20px;
+        border-left: 4px solid var(--accent-warning);
+        margin-bottom: 16px;
+    }
+
+    .vocab-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 16px;
+    }
+
+    .vocab-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-light);
+        border-radius: 16px;
+        padding: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .vocab-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--accent-primary);
+    }
+
+    .vocab-word {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+        margin-bottom: 4px;
+    }
+
+    .vocab-pronounce {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        font-family: inherit;
+        letter-spacing: 0.4px;
+        margin-bottom: 8px;
+    }
+
+    .vocab-meaning {
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .vocab-example {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-style: italic;
+        background: rgba(59,130,246,0.05);
+        padding: 8px;
+        border-radius: 12px;
+    }
+
+    .complete-btn-modern {
+        background: linear-gradient(135deg, var(--accent-success), #059669);
+        border: none;
+        border-radius: 40px;
+        padding: 8px 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .complete-btn-modern:hover {
+        transform: scale(0.97);
+        box-shadow: var(--shadow-md);
+    }
+
+    .done-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 16px;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 40px;
+        color: var(--accent-success);
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .btn-translation {
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid var(--accent-purple);
+        border-radius: 30px;
+        padding: 6px 14px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        color: var(--accent-purple);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-translation:hover {
+        background: var(--accent-purple);
+        color: white;
+    }
+
+    .quiz-card {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+        border-radius: 20px;
+        padding: 32px;
+        text-align: center;
+        color: white;
+    }
+
+
+    .lq-blocks-card { margin-top: 0; }
+    .lqb { display: flex; gap: 12px; align-items: flex-start; border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; border: 1px solid transparent; position: relative; }
+    body.ve-on .lqb:hover > .ve-tools { display: inline-flex; }
+    .lqb:last-child { margin-bottom: 0; }
+    .lqb-ico { font-size: 1.25rem; flex-shrink: 0; margin-top: 2px; }
+    .lqb-text { font-size: 0.92rem; line-height: 1.9; }
+    .lqb-note { background: #eff6ff; border-color: #bfdbfe; color: #1e3a8a; }
+    .lqb-alert { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; }
+    .lqb-tip { background: #fffbeb; border-color: #fde68a; color: #78350f; }
+    .lqb-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border: none; border-radius: 12px; padding: 12px 24px; font-family: inherit; font-size: 0.9rem; font-weight: 800; cursor: pointer; box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35); transition: 0.2s; }
+    .lqb-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(59, 130, 246, 0.45); }
+    .lqb:has(> .lqb-btn) { padding: 6px 2px; background: transparent; border: none; }
+    .lqb-empty-hint { color: #8a8fbf; font-size: 0.82rem; text-align: center; padding: 10px; margin: 0; }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        backdrop-filter: blur(4px);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-container {
+        background: var(--bg-card);
+        border-radius: 24px;
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modal-header {
+        padding: 20px;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 24px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+        transform: scale(1.1);
+    }
+
+    .sidebar-modern {
+        background: var(--bg-card);
+        border-radius: 20px;
+        padding: 24px;
+        position: sticky;
+        top: 20px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-light);
+    }
+
+    .progress-ring {
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+        position: relative;
+    }
+
+    .progress-ring svg {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring-circle {
+        fill: none;
+        stroke: var(--accent-primary);
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.5s ease;
+    }
+
+    .progress-ring-bg {
+        fill: none;
+        stroke: var(--border-light);
+        stroke-width: 8;
+    }
+
+    .progress-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--accent-primary);
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+        .lesson-title { font-size: 1.5rem; }
+        .timeline-steps { overflow-x: auto; flex-wrap: nowrap; }
+        .timeline-step { min-width: 70px; }
+        .vocab-grid { grid-template-columns: 1fr; }
+        .sidebar-modern { margin-top: 20px; }
+    }
+
+    .next-lesson-btn {
+        background: linear-gradient(135deg, var(--accent-success), #059669);
+        border: none;
+        border-radius: 60px;
+        padding: 12px 32px;
+        font-size: 1rem;
+        font-weight: 700;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        animation: pulse 2s infinite;
+    }
+
+    .next-lesson-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+        color: white;
+    }
+
+    .lesson-complete-banner {
+        background: linear-gradient(135deg, var(--accent-success), #059669);
+        border-radius: 20px;
+        padding: 24px 32px;
+        color: white;
+        text-align: center;
+        margin-top: 20px;
+        animation: fadeInUp 0.5s ease;
+    }
+
+    .lesson-featured-img {
+        margin-top: 4px;
+    }
+
+    .lesson-featured-img img {
+        width: 100%;
+        max-height: 260px;
+        object-fit: cover;
+        border-radius: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 14px 34px rgba(15, 45, 110, 0.25);
+    }
+
+    .vocab-img {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        object-fit: cover;
+        border: 1.5px solid var(--border-light);
+        float: left;
+        margin-left: 10px;
+    }
+.vocab-toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .vocab-count { font-size: 0.8rem; font-weight: 700; color: var(--text-secondary); }
+    .vocab-known-pill { font-size: 0.72rem; font-weight: 700; color: var(--accent-success); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 999px; padding: 4px 12px; }
+    .vocab-mode-btn { margin-right: auto; background: linear-gradient(135deg, var(--accent-primary), #2563eb); color: #fff; border: none; border-radius: 12px; padding: 9px 18px; font-size: 0.78rem; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: 0.22s; box-shadow: 0 6px 16px rgba(59, 130, 246, 0.3); font-family: inherit; }
+    .vocab-mode-btn:hover { transform: translateY(-2px); }
+    .vocab-mode-btn.ghost { margin-right: 0; background: #fff; color: var(--text-primary); border: 1px solid var(--border-light); box-shadow: none; }
+    .vocab-mode-btn.ghost.on { background: rgba(59, 130, 246, 0.08); border-color: var(--accent-primary); color: var(--accent-primary); }
+    .vocab-card { position: relative; }
+    .vocab-card.known { border-color: rgba(16, 185, 129, 0.45); background: linear-gradient(160deg, rgba(16, 185, 129, 0.06), #fff); }
+    .vocab-card.known::after { content: '✓'; position: absolute; top: 10px; left: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--accent-success); color: #fff; font-size: 0.7rem; font-weight: 900; display: grid; place-items: center; }
+    .vocab-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .va-btn { flex: 0 0 auto; border: 1px solid var(--border-light); background: #fff; border-radius: 10px; padding: 6px 10px; font-size: 0.72rem; font-weight: 700; color: var(--text-primary); cursor: pointer; transition: 0.18s; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; }
+    .va-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); background: rgba(59, 130, 246, 0.06); }
+    .va-btn.known-on { background: var(--accent-success); border-color: var(--accent-success); color: #fff; }
+    .vocab-grid.hide-known .vocab-card.known { display: none; }
+    .vocab-flash { position: fixed; inset: 0; z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 20px; background: rgba(10, 22, 48, 0.72); backdrop-filter: blur(14px) saturate(150%); -webkit-backdrop-filter: blur(14px) saturate(150%); }
+    .vocab-flash[hidden] { display: none; }
+    .vf-stage { perspective: 1100px; }
+    .vf-card { position: relative; width: min(430px, 88vw); height: min(300px, 52vh); transform-style: preserve-3d; transition: transform 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.1); cursor: pointer; }
+    .vf-card.flip { transform: rotateY(180deg); }
+    .vf-face { position: absolute; inset: 0; border-radius: 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 26px; text-align: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .vf-front { background: linear-gradient(160deg, rgba(255, 255, 255, 0.96), rgba(224, 239, 255, 0.92)); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: 0 24px 60px rgba(4, 16, 40, 0.4); color: #0f172a; }
+    .vf-back { background: linear-gradient(160deg, #1d4ed8, #2563eb 60%, #38bdf8); color: #fff; transform: rotateY(180deg); box-shadow: 0 24px 60px rgba(4, 16, 40, 0.45); }
+    .vf-pos { position: absolute; top: 14px; left: 16px; font-size: 0.7rem; font-weight: 800; color: #64748b; letter-spacing: 0.5px; }
+    .vf-word { font-size: 2rem; font-weight: 900; color: #1d4ed8; direction: ltr; }
+    .vf-pron { font-size: 0.95rem; color: #64748b; letter-spacing: 0.6px; direction: ltr; }
+    .vf-hint { position: absolute; bottom: 14px; font-size: 0.68rem; font-weight: 600; color: #94a3b8; }
+    .vf-mean { font-size: 1.5rem; font-weight: 900; direction: ltr; }
+    .vf-meanfa { font-size: 1rem; font-weight: 700; opacity: 0.92; }
+    .vf-example { font-size: 0.85rem; font-style: italic; opacity: 0.95; line-height: 1.8; max-width: 340px; margin: 0; direction: ltr; }
+    .vf-speak { border: none; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; border-radius: 999px; padding: 9px 20px; font-size: 0.8rem; font-weight: 800; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; transition: 0.2s; box-shadow: 0 8px 18px rgba(37, 99, 235, 0.35); font-family: inherit; }
+    .vf-speak:hover { transform: scale(1.05); }
+    .vf-ctrls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .vf-ctrls button { border: 1px solid rgba(255, 255, 255, 0.35); background: rgba(255, 255, 255, 0.12); color: #fff; border-radius: 12px; padding: 10px 18px; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: 0.2s; font-family: inherit; min-height: 44px; }
+    .vf-ctrls button:hover { background: rgba(255, 255, 255, 0.22); }
+    .vf-ctrls #vfKnow.known-on { background: #10b981; border-color: #10b981; }
+    .vf-progress { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 430px; }
+    .vf-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255, 255, 255, 0.3); transition: 0.2s; }
+    .vf-dot.cur { background: #fff; transform: scale(1.3); }
+    .vf-dot.known { background: #4ade80; }
+    .vf-close { position: absolute; top: 18px; right: 22px; background: rgba(255, 255, 255, 0.14); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; width: 42px; height: 42px; border-radius: 50%; font-size: 1.05rem; cursor: pointer; }
+    .vf-close:hover { background: rgba(255, 255, 255, 0.26); }
+
+    @media (max-width: 768px) {
+        .container { padding-right: 12px; padding-left: 12px; }
+        .modern-breadcrumb { flex-wrap: wrap; gap: 6px; font-size: 0.74rem; }
+        .breadcrumb-sep { display: none; }
+        .lesson-header-modern { padding: 18px 14px; border-radius: 18px; }
+        .lesson-header-modern .d-flex { flex-wrap: wrap; }
+        .lesson-icon-modern { width: 56px; height: 56px; font-size: 1.55rem; border-radius: 16px; }
+        .lesson-title { font-size: 1.32rem; line-height: 1.4; }
+        .lesson-meta-modern { flex-wrap: wrap; gap: 6px; font-size: 0.72rem; }
+        .lesson-meta-modern span { background: rgba(59, 130, 246, 0.06); padding: 4px 10px; border-radius: 999px; }
+        .timeline-steps { gap: 6px; padding-bottom: 4px; flex-wrap: wrap; justify-content: center; overflow-x: visible; }
+        .timeline-step { min-width: 52px; }
+        .timeline-step .step-dot { width: 26px; height: 26px; font-size: 0.72rem; }
+        .timeline-step .step-label { font-size: 0.6rem; }
+        .sidebar-modern { position: static; padding: 18px 16px; }
+        .section-card-modern { border-radius: 16px; }
+        .section-header-modern { padding: 12px 14px; }
+        .section-content-modern { padding: 0 14px; font-size: 0.88rem; }
+        .section-card-modern.expanded .section-content-modern { padding: 14px; font-size: 0.88rem; }
+        .complete-btn-modern, .next-lesson-btn { width: 100%; justify-content: center; padding: 13px 18px; font-size: 0.9rem; }
+        .lesson-complete-banner { padding: 18px 14px; font-size: 0.9rem; }
+        .grammar-box { padding: 14px; font-size: 0.84rem; }
+        .vocab-card { padding: 14px; }
+        .vocab-mode-btn { flex: 1 1 auto; justify-content: center; margin-right: 0; }
+        .modal-container { margin: 12px; padding: 20px 16px; max-height: 86vh; overflow-y: auto; }
+    }
+    @media (max-width: 480px) {
+        .lesson-title { font-size: 1.18rem; }
+        .vf-card { height: min(320px, 56vh); }
+        .vf-word { font-size: 1.6rem; }
+        .vf-ctrls button { padding: 9px 13px; font-size: 0.74rem; }
+    }
+
+    .section-card-modern, .sidebar-modern, .vocab-card, .reading-card, .grammar-box {
+        backdrop-filter: blur(12px) saturate(150%);
+        -webkit-backdrop-filter: blur(12px) saturate(150%);
+    }
+
+</style>
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="modern-breadcrumb">
+        <a href="{% url 'language_academy:world_map' %}" class="breadcrumb-link">
+            <i class="fas fa-globe"></i> Worlds
+        </a>
+        <span class="breadcrumb-sep">→</span>
+        <a href="{% url 'language_academy:world_detail' lesson.chapter.world.id %}" class="breadcrumb-link">
+            <i class="fas fa-graduation-cap"></i> {{ lesson.chapter.world.name }}
+        </a>
+        <span class="breadcrumb-sep">→</span>
+        <a href="{% url 'language_academy:chapter_detail' lesson.chapter.id %}" class="breadcrumb-link">
+            <i class="fas fa-book"></i> {{ lesson.chapter.name }}
+        </a>
+        <span class="breadcrumb-sep">→</span>
+        <span class="breadcrumb-current">
+            <i class="fas fa-play"></i> {{ lesson.name }}
+        </span>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="lesson-header-modern" id="lessonHero"{% if daccent %} style="background: linear-gradient(135deg, {{ daccent }}, {{ daccent2|default:daccent }});"{% endif %}>
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="lesson-icon-modern">
+                        {% if lesson.lesson_type == 'vocabulary' %}📚
+                        {% elif lesson.lesson_type == 'grammar' %}📝
+                        {% elif lesson.lesson_type == 'dialogue' %}💬
+                        {% elif lesson.lesson_type == 'reading' %}📖
+                        {% elif lesson.lesson_type == 'listening' %}🎧
+                        {% elif lesson.lesson_type == 'writing' %}✍️
+                        {% elif lesson.lesson_type == 'speaking' %}🗣️
+                        {% else %}🎯{% endif %}
+                    </div>
+                    <div>
+                        <div class="lesson-title" data-ve="lesson.name">{{ lesson.name }}</div>
+                        <div class="lesson-meta-modern">
+                            <span><i class="far fa-clock"></i> <b data-ve="lesson.est_time">{{ lesson.estimated_time_minutes }}</b> min</span>
+                            <span><i class="fas fa-star"></i> +<b data-ve="lesson.xp_reward">{{ lesson.xp_reward }}</b> XP</span>
+                            <span><i class="fas fa-coins"></i> +<b data-ve="lesson.coin_reward">{{ lesson.coin_reward }}</b></span>
+                            {% if lesson.lesson_type %}
+                                <span><i class="fas fa-tag"></i> {{ lesson.get_lesson_type_display }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% if content.featured_image %}
+                    <div class="lesson-featured-img" id="lessonFeaturedImg" data-iw="{{ image_width }}" data-ia="{{ image_align }}"{% if image_width < 100 or image_align != 'center' %} style="width: {{ image_width }}%; {% if image_align == 'center' %}margin-inline: auto;{% elif image_align == 'right' %}margin-inline-start: 0; margin-inline-end: auto;{% else %}margin-inline-end: 0; margin-inline-start: auto;{% endif %}"{% endif %}><img src="{{ content.featured_image.url }}" alt="{{ lesson.name }}" onerror="this.parentElement.remove()"></div>
+                {% endif %}
+            </div>
+
+            <div class="progress-timeline">
+                <div class="timeline-steps" id="timelineSteps">
+                    <div class="timeline-step" data-step="0"><div class="step-dot">1</div><div class="step-label">Intro</div></div>
+                    <div class="timeline-step" data-step="1"><div class="step-dot">2</div><div class="step-label">Vocabulary</div></div>
+                    <div class="timeline-step" data-step="2"><div class="step-dot">3</div><div class="step-label">Grammar</div></div>
+                    <div class="timeline-step" data-step="3"><div class="step-dot">4</div><div class="step-label">Reading</div></div>
+                    <div class="timeline-step" data-step="4"><div class="step-dot">5</div><div class="step-label">Practice</div></div>
+                    <div class="timeline-step" data-step="5"><div class="step-dot">6</div><div class="step-label">Quiz</div></div>
+                </div>
+            </div>
+
+            <div id="sectionsContainer">
+                <div class="section-card-modern" data-section-id="0" data-ve-section="intro"{% if dstyles.intro %} style="{% if dstyles.intro.bg %}background: {{ dstyles.intro.bg }};{% endif %}{% if dstyles.intro.color %}color: {{ dstyles.intro.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-bullhorn"></i></div>
+                            <span class="section-title-text">Introduction</span>
+                        </div>
+                        <span class="section-badge" id="badge0">Not started</span>
+                    </div>
+                    <div class="section-content-modern">
+                        {% if content.introduction %}
+                            <div data-ve="content.introduction">{{ content.introduction|safe|linebreaks }}</div>
+                        {% else %}
+                            <div class="text-muted" data-ve="content.introduction">{% if visual_edit %}{% else %}No introduction available for this lesson.{% endif %}</div>
+                        {% endif %}
+
+                        <div class="mt-3"{% if not content.learning_objectives and not visual_edit %} hidden{% endif %}>
+                            <h6><i class="fas fa-bullseye"></i> Learning Objectives</h6>
+                            <ul data-ve-list="objectives">
+                                {% for objective in content.learning_objectives %}
+                                    <li data-ve-item>{{ objective }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="mt-3" id="sectionCompleteBtn0">
+                            <button class="complete-btn-modern" onclick="completeSection(0)">
+                                <i class="fas fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card-modern" data-section-id="1" data-ve-section="vocab"{% if dstyles.vocab %} style="{% if dstyles.vocab.bg %}background: {{ dstyles.vocab.bg }};{% endif %}{% if dstyles.vocab.color %}color: {{ dstyles.vocab.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-book"></i></div>
+                            <span class="section-title-text">Vocabulary</span>
+                        </div>
+                        <span class="section-badge" id="badge1">Locked</span>
+                    </div>
+                    <div class="section-content-modern">
+                        <div id="vocabSectionContent"{% if not vocabularies and not visual_edit %} hidden{% endif %}>
+                            <div class="vocab-toolbar">
+                                <span class="vocab-count">📚 {{ vocabularies|length }} words</span>
+                                <span class="vocab-known-pill" id="vocabKnownPill">✓ 0 learned</span>
+                                {% if not visual_edit %}
+                                    <button type="button" class="vocab-mode-btn" id="vocabFlashBtn">🃏 Flashcards</button>
+                                    <button type="button" class="vocab-mode-btn ghost" id="vocabHideKnown">👁 Hide learned</button>
+                                {% endif %}
+                            </div>
+                            <div class="vocab-grid" id="vocabGrid" data-ve-list="vocab">
+                                {% for vocab in vocabularies %}
+                                    <div class="vocab-card" data-vocab-id="{{ vocab.pk }}" data-word="{{ vocab.word }}" data-pron="{{ vocab.pronunciation|default:'' }}" data-mean="{{ vocab.meaning }}" data-meanfa="{{ vocab.meaning_fa|default:'' }}"{% with vocab.get_random_example as example %}{% if example %} data-example="{{ example.sentence }}"{% endif %}{% endwith %}>
+                                        {% if vocab.image %}<img class="vocab-img" src="{{ vocab.image.url }}" alt="{{ vocab.word }}" loading="lazy" onerror="this.remove()">{% endif %}
+                                        <div class="vocab-word" data-ve="vocab.word">{{ vocab.word }}</div>
+                                        <div class="vocab-pronounce" data-ve="vocab.pronunciation"{% if not vocab.pronunciation %} hidden{% endif %}>{{ vocab.pronunciation }}</div>
+                                        <div class="vocab-meaning" data-ve="vocab.meaning">{{ vocab.meaning }}</div>
+                                        <div class="vocab-meaning" style="color: var(--text-secondary); font-size: 0.8rem;" data-ve="vocab.meaning_fa"{% if not vocab.meaning_fa %} hidden{% endif %}>{{ vocab.meaning_fa }}</div>
+                                        {% with vocab.get_random_example as example %}
+                                            {% if example %}
+                                                <div class="vocab-example" data-ve="vocabex">"{{ example.sentence }}"</div>
+                                            {% endif %}
+                                        {% endwith %}
+                                        <div class="vocab-actions">
+                                            <button type="button" class="va-btn va-speak" data-say="{{ vocab.word }}">🔊 Listen</button>
+                                            {% if not visual_edit %}<button type="button" class="va-btn va-know">✔ I know it</button>{% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if not vocabularies and not visual_edit %}
+                            <div class="text-muted">No vocabulary items for this lesson.</div>
+                        {% endif %}
+                            <div class="vocab-flash" id="vocabFlash" hidden>
+                                <button class="vf-close" id="vfClose" aria-label="Close">✕</button>
+                                <div class="vf-stage">
+                                    <div class="vf-card" id="vfCard">
+                                        <div class="vf-face vf-front">
+                                            <span class="vf-pos" id="vfPos"></span>
+                                            <div class="vf-word" id="vfWord"></div>
+                                            <div class="vf-pron" id="vfPron"></div>
+                                            <button type="button" class="vf-speak" id="vfSpeak">🔊 Listen</button>
+                                            <span class="vf-hint">Click the card to see the meaning 👆</span>
+                                        </div>
+                                        <div class="vf-face vf-back">
+                                            <div class="vf-mean" id="vfMean"></div>
+                                            <div class="vf-meanfa" id="vfMeanFa"></div>
+                                            <p class="vf-example" id="vfExample"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="vf-ctrls">
+                                    <button type="button" id="vfPrev">← Prev</button>
+                                    <button type="button" id="vfKnow">✔ I know it</button>
+                                    <button type="button" id="vfShuffle">🔀 Shuffle</button>
+                                    <button type="button" id="vfNext">Next →</button>
+                                </div>
+                                <div class="vf-progress" id="vfProgress"></div>
+                            </div>
+                        <div class="mt-3" id="sectionCompleteBtn1">
+                            <button class="complete-btn-modern" onclick="completeSection(1)">
+                                <i class="fas fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card-modern" data-section-id="2" data-ve-section="grammar"{% if dstyles.grammar %} style="{% if dstyles.grammar.bg %}background: {{ dstyles.grammar.bg }};{% endif %}{% if dstyles.grammar.color %}color: {{ dstyles.grammar.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-language"></i></div>
+                            <span class="section-title-text">Grammar</span>
+                        </div>
+                        <span class="section-badge" id="badge2">Locked</span>
+                    </div>
+                    <div class="section-content-modern">
+                        {% if content.grammar_notes %}
+                            <div class="grammar-box" data-ve="content.grammar_notes">
+                                {{ content.grammar_notes|safe }}
+                            </div>
+                        {% else %}
+                            <div class="text-muted grammar-box" data-ve="content.grammar_notes">{% if visual_edit %}{% else %}No grammar notes available for this lesson.{% endif %}</div>
+                        {% endif %}
+
+                        <div class="mt-3" data-ve-list="grammar_examples"{% if not content.grammar_examples and not visual_edit %} hidden{% endif %}>
+                            <h6><i class="fas fa-examples"></i> Examples</h6>
+                            {% for example in content.grammar_examples %}
+                                <div class="grammar-box" style="border-left-color: var(--accent-primary);" data-ve-item>
+                                    {{ example }}
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mt-3" id="sectionCompleteBtn2">
+                            <button class="complete-btn-modern" onclick="completeSection(2)">
+                                <i class="fas fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card-modern" data-section-id="3" data-ve-section="reading"{% if dstyles.reading %} style="{% if dstyles.reading.bg %}background: {{ dstyles.reading.bg }};{% endif %}{% if dstyles.reading.color %}color: {{ dstyles.reading.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-book-open"></i></div>
+                            <span class="section-title-text">Reading & Comprehension</span>
+                        </div>
+                        <span class="section-badge" id="badge3">Locked</span>
+                    </div>
+                    <div class="section-content-modern">
+                        {% if content.reading_text or visual_edit %}
+                            <div class="reading-card">
+                                <div class="reading-text">
+                                    <h5 style="margin-bottom: 16px;">📖 {{ lesson.name }} - Reading</h5>
+                                    <span data-ve="content.reading_text">{% if content.reading_text %}{{ content.reading_text|linebreaks }}{% endif %}</span>
+                                </div>
+                                {% if content.reading_translation or content.reading_notes or visual_edit %}
+                                    <button class="btn-translation mt-3" onclick="openModal()">
+                                        <i class="fas fa-language"></i> Translation & Notes
+                                    </button>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="text-muted">No reading content available for this lesson.</div>
+                        {% endif %}
+
+                        <div class="mt-3" id="sectionCompleteBtn3">
+                            <button class="complete-btn-modern" onclick="completeSection(3)">
+                                <i class="fas fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card-modern" data-section-id="4" data-ve-section="practice"{% if dstyles.practice %} style="{% if dstyles.practice.bg %}background: {{ dstyles.practice.bg }};{% endif %}{% if dstyles.practice.color %}color: {{ dstyles.practice.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-comments"></i></div>
+                            <span class="section-title-text">Practice & Examples</span>
+                        </div>
+                        <span class="section-badge" id="badge4">Locked</span>
+                    </div>
+                    <div class="section-content-modern">
+                        <div class="vocab-grid" data-ve-list="example_sentences"{% if not content.example_sentences and not visual_edit %} hidden{% endif %}>
+                            {% for sentence in content.example_sentences %}
+                                <div class="vocab-card" data-ve-item>
+                                    <div class="vocab-example" style="font-style: normal; font-size: 0.9rem;">
+                                        "{{ sentence }}"
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        {% if not content.example_sentences and not visual_edit %}
+                            <div class="text-muted">No practice examples available for this lesson.</div>
+                        {% endif %}
+
+                        <div class="mt-3" style="background: rgba(59,130,246,0.05); padding: 16px; border-radius: 16px;"{% if not content.key_takeaways and not visual_edit %} hidden{% endif %}>
+                            <h6><i class="fas fa-key"></i> Key Takeaways</h6>
+                            <ul data-ve-list="takeaways">
+                                {% for takeaway in content.key_takeaways %}
+                                    <li data-ve-item>{{ takeaway }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="mt-3" id="sectionCompleteBtn4">
+                            <button class="complete-btn-modern" onclick="completeSection(4)">
+                                <i class="fas fa-check-circle"></i> Mark as Complete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                {% if custom_blocks or visual_edit %}
+                <div class="section-card-modern lq-blocks-card" id="lqBlocksCard">
+                    <div class="section-header-modern" style="cursor: default;">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-puzzle-piece"></i></div>
+                            <span class="section-title-text">{% if visual_edit %}Extra Blocks (Editable){% else %}Notes & Extras{% endif %}</span>
+                        </div>
+                    </div>
+                    <div class="section-content-modern" id="lqBlocksZone">
+                        {% for b in custom_blocks %}
+                        <div class="lqb lqb-{{ b.kind }}" data-lqb-id="{{ b.id }}" data-lqb-kind="{{ b.kind }}">
+                            {% if b.kind == 'btn' %}
+                                <button type="button" class="lqb-btn" data-lqbm="lqbm-{{ b.id }}">🔘 <span class="lqb-btntext">{{ b.text }}</span></button>
+                            {% else %}
+                                <span class="lqb-ico">{% if b.kind == 'note' %}💡{% elif b.kind == 'alert' %}⚠️{% else %}🌟{% endif %}</span>
+                                <div class="lqb-text">{{ b.text|linebreaksbr }}</div>
+                            {% endif %}
+                        </div>
+                        {% empty %}
+                            {% if visual_edit %}<p class="lqb-empty-hint">هنوز بلاکی نیست — از ریل سمت چپ چیپ 💡/⚠️/🌟/🔘 را اینجا رها یا کلیک کن.</p>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="section-card-modern" data-section-id="5" data-ve-section="quiz"{% if dstyles.quiz %} style="{% if dstyles.quiz.bg %}background: {{ dstyles.quiz.bg }};{% endif %}{% if dstyles.quiz.color %}color: {{ dstyles.quiz.color }};{% endif %}"{% endif %}>
+                    <div class="section-header-modern" onclick="toggleSection(this)">
+                        <div class="section-title-modern">
+                            <div class="section-icon"><i class="fas fa-question-circle"></i></div>
+                            <span class="section-title-text">Quiz</span>
+                        </div>
+                        <span class="section-badge" id="badge5">Locked</span>
+                    </div>
+                    <div class="section-content-modern">
+                        <div class="quiz-card">
+                            {% if quiz %}
+                            <h3 style="margin-bottom: 16px;">🎯 Ready to Test Your Knowledge?</h3>
+                            <p style="margin-bottom: 20px;" id="quizLockMessage">Complete all sections above to unlock the quiz!</p>
+                            <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; flex-wrap: wrap;">
+                                <span><i class="fas fa-star"></i> +{{ quiz.xp_reward|default:30 }} XP</span>
+                                <span><i class="fas fa-flag-checkered"></i> {{ quiz.passing_score|default:70 }}% to pass</span>
+                                {% if quiz.time_limit_minutes %}
+                                    <span><i class="fas fa-clock"></i> {{ quiz.time_limit_minutes }} min</span>
+                                {% endif %}
+                            </div>
+                            {% if quiz_attempt %}
+                                <div class="alert alert-success" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 16px; border-radius: 12px;">
+                                    🎉 You've already passed this quiz!
+                                    <br><small>Score: {{ quiz_attempt.score }}%</small>
+                                </div>
+                                <a href="{% url 'language_academy:take_quiz' quiz.id %}" class="complete-btn-modern" style="background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); text-decoration: none; font-size: 0.9rem;">Review Quiz →</a>
+                            {% else %}
+                                <a href="{% url 'language_academy:take_quiz' quiz.id %}" id="quizLink" class="start-quiz-btn" style="background: white; color: var(--accent-primary); padding: 14px 40px; border-radius: 60px; text-decoration: none; font-weight: 700; display: inline-block; opacity: 0.5; pointer-events: none; transition: all 0.3s ease; font-size: 1.1rem;">Start Quiz →</a>
+                            {% endif %}
+                            {% else %}
+                            <h3 style="margin-bottom: 16px;">🎓 Exclusive Lesson — No Quiz!</h3>
+                            <p style="margin-bottom: 0;">Read every section above and practice the sentences out loud to claim your lesson rewards. ⭐</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sidebar-modern">
+                <div class="progress-ring">
+                    <svg width="120" height="120">
+                        <circle class="progress-ring-bg" cx="60" cy="60" r="52"></circle>
+                        <circle class="progress-ring-circle" cx="60" cy="60" r="52" stroke-dasharray="0, 327"></circle>
+                    </svg>
+                    <div class="progress-text" id="progressPercent">0%</div>
+                </div>
+                <h5 class="text-center mb-3">Lesson Progress</h5>
+                <ul id="sectionChecklist" style="list-style: none; padding: 0;">
+                    <li id="checklist0" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Introduction</li>
+                    <li id="checklist1" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Vocabulary</li>
+                    <li id="checklist2" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Grammar</li>
+                    <li id="checklist3" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Reading</li>
+                    <li id="checklist4" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Practice</li>
+                    <li id="checklist5" style="padding: 8px 0; display: flex; align-items: center; gap: 10px;"><i class="far fa-circle"></i> Quiz</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if custom_blocks %}
+{% for b in custom_blocks %}{% if b.kind == 'btn' %}
+<div id="lqbm-{{ b.id }}" class="modal-overlay lqb-modal">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4><i class="fas fa-square-check"></i> <span class="lqb-title">{{ b.title|default:'Note' }}</span></h4>
+            <button class="modal-close" type="button" data-lqbclose>&times;</button>
+        </div>
+        <div class="modal-body lqb-body">{{ b.body|linebreaks }}</div>
+    </div>
+</div>
+{% endif %}{% endfor %}
+{% endif %}
+
+<div id="readingModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-header">
+            <h4><i class="fas fa-language"></i> Translation & Notes</h4>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            {% if content.reading_translation or visual_edit %}
+                <div style="background: rgba(16, 185, 129, 0.1); padding: 16px; border-radius: 16px; margin-bottom: 20px;">
+                    <h5 style="color: var(--accent-success); margin-bottom: 12px;">📖 Persian Translation</h5>
+                    <div data-ve="content.reading_translation">{{ content.reading_translation|linebreaks }}</div>
+                </div>
+            {% endif %}
+            {% if content.reading_notes or visual_edit %}
+                <div style="background: rgba(245, 158, 11, 0.1); padding: 16px; border-radius: 16px;">
+                    <h5 style="color: var(--accent-warning); margin-bottom: 12px;">📝 Key Notes</h5>
+                    <div data-ve="content.reading_notes">{{ content.reading_notes|linebreaks }}</div>
+                </div>
+            {% endif %}
+            {% if not content.reading_translation and not content.reading_notes and not visual_edit %}
+                <div class="text-muted">No translation or notes available.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+
+    const STORAGE_KEY = 'lesson_progress_{{ request.user.id }}_{{ lesson.id }}';
+    const TOTAL_SECTIONS = 6;
+
+    let completedSections = new Set();
+    let currentSection = 0;
+    let isLessonComplete = false;
+
+    function loadProgress() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                completedSections = new Set(parsed);
+                console.log('📂 Loaded progress:', [...completedSections]);
+            }
+        } catch (e) {
+            console.warn('⚠️ Error loading progress:', e);
+            completedSections = new Set();
+        }
+
+        currentSection = 0;
+        for (let i = 0; i < TOTAL_SECTIONS; i++) {
+            if (!completedSections.has(i)) {
+                currentSection = i;
+                break;
+            }
+        }
+        if (completedSections.size === TOTAL_SECTIONS) {
+            currentSection = TOTAL_SECTIONS - 1;
+            isLessonComplete = true;
+        }
+    }
+
+    function saveProgress() {
+        try {
+            const data = JSON.stringify([...completedSections]);
+            localStorage.setItem(STORAGE_KEY, data);
+            console.log('💾 Saved progress:', [...completedSections]);
+        } catch (e) {
+            console.warn('⚠️ Error saving progress:', e);
+        }
+    }
+
+    function updateUI() {
+        for (let i = 0; i < TOTAL_SECTIONS; i++) {
+            const badge = document.getElementById(`badge${i}`);
+            if (!badge) continue;
+
+            if (completedSections.has(i)) {
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> Done';
+                badge.className = 'section-badge completed';
+            } else if (i === currentSection) {
+                badge.innerHTML = '<i class="fas fa-play"></i> Current';
+                badge.className = 'section-badge active';
+            } else {
+                badge.innerHTML = '<i class="fas fa-lock"></i> Locked';
+                badge.className = 'section-badge locked';
+            }
+        }
+
+        for (let i = 0; i < TOTAL_SECTIONS; i++) {
+            const step = document.querySelector(`.timeline-step[data-step="${i}"]`);
+            if (!step) continue;
+
+            step.classList.remove('completed', 'active');
+            if (completedSections.has(i)) {
+                step.classList.add('completed');
+            } else if (i === currentSection) {
+                step.classList.add('active');
+            }
+        }
+
+        const labels = ['Introduction', 'Vocabulary', 'Grammar', 'Reading', 'Practice', 'Quiz'];
+        for (let i = 0; i < TOTAL_SECTIONS; i++) {
+            const item = document.getElementById(`checklist${i}`);
+            if (!item) continue;
+
+            if (completedSections.has(i)) {
+                item.innerHTML = `<i class="fas fa-check-circle" style="color: var(--accent-success);"></i> ${labels[i]}`;
+            } else if (i === currentSection) {
+                item.innerHTML = `<i class="fas fa-circle" style="color: var(--accent-primary);"></i> ${labels[i]}`;
+            } else {
+                item.innerHTML = `<i class="far fa-circle"></i> ${labels[i]}`;
+            }
+        }
+
+        for (let i = 0; i < TOTAL_SECTIONS; i++) {
+            const section = document.querySelector(`.section-card-modern[data-section-id="${i}"]`);
+            if (!section) continue;
+
+            if (completedSections.has(i) || i === currentSection) {
+                section.classList.add('expanded');
+            } else {
+                section.classList.remove('expanded');
+            }
+        }
+
+        for (let i = 0; i < TOTAL_SECTIONS - 1; i++) {
+            const container = document.getElementById(`sectionCompleteBtn${i}`);
+            if (!container) continue;
+
+            if (completedSections.has(i)) {
+                container.innerHTML = '<div class="done-badge"><i class="fas fa-check-circle"></i> Completed ✓</div>';
+            } else if (i === currentSection) {
+                container.innerHTML = `
+                    <button class="complete-btn-modern" onclick="completeSection(${i})">
+                        <i class="fas fa-check-circle"></i> Mark as Complete
+                    </button>
+                `;
+            } else {
+                container.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.75rem;"><i class="fas fa-lock"></i> Complete previous section first</div>';
+            }
+        }
+
+        const quizLink = document.getElementById('quizLink');
+        const quizLockMessage = document.getElementById('quizLockMessage');
+        const allPreQuizComplete = [0,1,2,3,4].every(id => completedSections.has(id));
+        const allComplete = completedSections.size === TOTAL_SECTIONS;
+
+        if (quizLink) {
+            if (allPreQuizComplete || completedSections.has(5)) {
+                quizLink.style.opacity = '1';
+                quizLink.style.pointerEvents = 'auto';
+                quizLink.style.cursor = 'pointer';
+                quizLink.style.background = 'white';
+                quizLink.style.color = 'var(--accent-primary)';
+                quizLink.style.transform = 'scale(1)';
+                quizLink.style.boxShadow = '0 4px 20px rgba(255,255,255,0.3)';
+                if (quizLockMessage) {
+                    if (completedSections.has(5)) {
+                        quizLockMessage.innerHTML = '✅ Quiz completed! Great job!';
+                        quizLockMessage.style.color = 'rgba(255,255,255,0.9)';
+                    } else {
+                        quizLockMessage.innerHTML = '🎉 All sections complete! Click "Start Quiz" now!';
+                        quizLockMessage.style.color = 'rgba(255,255,255,0.9)';
+                    }
+                }
+            } else {
+                quizLink.style.opacity = '0.5';
+                quizLink.style.pointerEvents = 'none';
+                quizLink.style.cursor = 'default';
+                if (quizLockMessage) {
+                    const completedPre = [0,1,2,3,4].filter(id => completedSections.has(id)).length;
+                    quizLockMessage.innerHTML = `Complete all lesson sections (${completedPre}/5) to unlock the quiz!`;
+                    quizLockMessage.style.color = 'rgba(255,255,255,0.8)';
+                }
+            }
+        }
+
+        const percent = Math.round((completedSections.size / TOTAL_SECTIONS) * 100);
+        const circle = document.querySelector('.progress-ring-circle');
+        const percentText = document.getElementById('progressPercent');
+
+        if (circle) {
+            const radius = 52;
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDasharray = `${circumference - offset}, ${circumference}`;
+        }
+        if (percentText) {
+            percentText.innerText = percent + '%';
+        }
+
+        console.log(`📊 Progress: ${percent}% (${completedSections.size}/${TOTAL_SECTIONS})`);
+
+        if (allComplete && !isLessonComplete) {
+            isLessonComplete = true;
+            showLessonComplete();
+        }
+    }
+
+    window.completeSection = function(sectionId) {
+        if (sectionId === TOTAL_SECTIONS - 1) {
+            showXPPopup(0, '⚠️ The Quiz section only completes when you pass the quiz!');
+            return;
+        }
+
+        if (completedSections.has(sectionId)) {
+            console.log(`⚠️ Section ${sectionId} already completed`);
+            return;
+        }
+
+        if (sectionId !== currentSection) {
+            console.log(`⚠️ Cannot complete section ${sectionId}, current is ${currentSection}`);
+            return;
+        }
+
+        completedSections.add(sectionId);
+        saveProgress();
+
+        showXPPopup(10, '🌟 Section completed!');
+
+        let nextSection = sectionId + 1;
+        if (nextSection < TOTAL_SECTIONS) {
+            currentSection = nextSection;
+        } else {
+            currentSection = TOTAL_SECTIONS - 1;
+        }
+
+        updateUI();
+
+        if (completedSections.size === TOTAL_SECTIONS) {
+            console.log('🎉 All sections complete! Sending to server...');
+
+            fetch('{% url "language_academy:update_lesson_progress" lesson.id %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ 'progress': '100' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Server response:', data);
+                showXPPopup({{ lesson.xp_reward }}, '🎉 Lesson Complete!');
+            })
+            .catch(err => {
+                console.warn('⚠️ Server update failed:', err);
+            });
+        }
+    };
+
+    function showXPPopup(xp, message) {
+        const popup = document.createElement('div');
+        popup.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-weight: 700;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            animation: slideInRight 0.5s ease;
+            max-width: 300px;
+        `;
+        popup.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <span style="font-size: 1.5rem;">✨</span>
+                <div>
+                    <div style="font-size: 0.9rem;">${message}</div>
+                    <div style="font-size: 0.7rem; opacity: 0.8;">+${xp} XP</div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(popup);
+
+        setTimeout(() => {
+            popup.style.opacity = '0';
+            popup.style.transition = 'opacity 0.5s ease';
+            setTimeout(() => popup.remove(), 500);
+        }, 3000);
+    }
+
+    function showLessonComplete() {
+        const container = document.getElementById('sectionsContainer');
+        if (!container) return;
+
+        if (document.querySelector('.lesson-complete-banner')) return;
+
+        const banner = document.createElement('div');
+        banner.className = 'lesson-complete-banner';
+        banner.innerHTML = `
+            <h3 style="margin-bottom: 8px;">🎉 Lesson Complete!</h3>
+            <p style="margin-bottom: 16px; opacity: 0.9;">Great job! You've mastered this lesson.</p>
+            <a href="{% url 'language_academy:chapter_detail' lesson.chapter.id %}" class="next-lesson-btn">
+                <i class="fas fa-arrow-right"></i> Continue to Next Lesson
+            </a>
+        `;
+        container.appendChild(banner);
+
+        if (typeof confetti === 'function') {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#10b981', '#3b82f6', '#38BDF8', '#f59e0b', '#ef4444']
+            });
+        }
+    }
+
+    window.toggleSection = function(header) {
+        const section = header.closest('.section-card-modern');
+        if (!section) return;
+
+        const sectionId = parseInt(section.dataset.sectionId);
+        const isCompleted = completedSections.has(sectionId);
+        const isActive = (sectionId === currentSection);
+
+        if (isCompleted || isActive) {
+            section.classList.toggle('expanded');
+        }
+    };
+
+    window.openModal = function() {
+        document.getElementById('readingModal').classList.add('active');
+    };
+
+    window.closeModal = function() {
+        document.getElementById('readingModal').classList.remove('active');
+    };
+
+    loadProgress();
+
+    {% if progress.status == 'completed' %}
+    if (completedSections.size < TOTAL_SECTIONS) {
+        completedSections = new Set([0, 1, 2, 3, 4, 5]);
+        saveProgress();
+    }
+    {% else %}
+    if (completedSections.size === TOTAL_SECTIONS) {
+        completedSections.delete(TOTAL_SECTIONS - 1);
+        saveProgress();
+    }
+    {% endif %}
+
+    updateUI();
+
+    console.log('✅ Lesson progress manager initialized!');
+    console.log(`📊 Current progress: ${completedSections.size}/${TOTAL_SECTIONS}`);
+
+    {% if quiz_attempt %}
+        console.log('🎯 Quiz already passed!');
+        if (!completedSections.has(5)) {
+            completedSections.add(5);
+            saveProgress();
+            updateUI();
+        }
+    {% endif %}
+</script>
+<script>
+(function () {
+    const grid = document.getElementById('vocabGrid');
+    if (!grid) return;
+    const LESSON_KEY = 'lqVocabKnown_{{ lesson.id }}';
+    let known = new Set();
+    try { known = new Set(JSON.parse(localStorage.getItem(LESSON_KEY) || '[]')); } catch (e) {}
+    const cards = Array.from(grid.querySelectorAll('.vocab-card'));
+    const pill = document.getElementById('vocabKnownPill');
+
+    function words() {
+        return cards.map((c) => ({
+            word: c.dataset.word || '',
+            pron: c.dataset.pron || '',
+            mean: c.dataset.mean || '',
+            meanfa: c.dataset.meanfa || '',
+            example: c.dataset.example || '',
+        }));
+    }
+    function saveKnown() { try { localStorage.setItem(LESSON_KEY, JSON.stringify(Array.from(known))); } catch (e) {} }
+    function refreshKnownUI() {
+        cards.forEach((c) => c.classList.toggle('known', known.has(c.dataset.word)));
+        cards.forEach((c) => {
+            const b = c.querySelector('.va-know');
+            if (b) b.classList.toggle('known-on', known.has(c.dataset.word));
+        });
+        if (pill) pill.textContent = '✓ ' + known.size + ' of ' + cards.length + ' learned';
+        updateProgressDots();
+    }
+    function speak(text) {
+        if (!('speechSynthesis' in window) || !text) return;
+        try {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US';
+            u.rate = 0.92;
+            window.speechSynthesis.speak(u);
+        } catch (e) {}
+    }
+    grid.addEventListener('click', (ev) => {
+        const sp = ev.target.closest('.va-speak');
+        if (sp) { speak(sp.dataset.say || ''); return; }
+        const kn = ev.target.closest('.va-know');
+        if (kn) {
+            const cardEl = kn.closest('.vocab-card');
+            const w = cardEl.dataset.word;
+            if (known.has(w)) known.delete(w); else known.add(w);
+            saveKnown();
+            refreshKnownUI();
+        }
+    });
+
+    const hideBtn = document.getElementById('vocabHideKnown');
+    let hiding = false;
+    if (hideBtn) hideBtn.addEventListener('click', () => {
+        hiding = !hiding;
+        grid.classList.toggle('hide-known', hiding);
+        hideBtn.classList.toggle('on', hiding);
+        hideBtn.textContent = hiding ? '👁 Show learned' : '👁 Hide learned';
+    });
+
+    const flash = document.getElementById('vocabFlash');
+    const flashBtn = document.getElementById('vocabFlashBtn');
+    const cardEl = document.getElementById('vfCard');
+    const pos = document.getElementById('vfPos');
+    const wEl = document.getElementById('vfWord');
+    const pEl = document.getElementById('vfPron');
+    const mEl = document.getElementById('vfMean');
+    const mfEl = document.getElementById('vfMeanFa');
+    const exEl = document.getElementById('vfExample');
+    const prog = document.getElementById('vfProgress');
+    const knowBtn = document.getElementById('vfKnow');
+    if (!flash || !cardEl) return;
+    if (flash.parentElement !== document.documentElement) document.documentElement.appendChild(flash);
+    let order = [];
+    let idx = 0;
+
+    function resetOrder() { order = words().map((_, i) => i); }
+    function cur() { return words()[order[idx]]; }
+    function render() {
+        const w = cur();
+        cardEl.classList.remove('flip');
+        pos.textContent = (idx + 1) + ' / ' + order.length;
+        wEl.textContent = w.word;
+        pEl.textContent = w.pron || '';
+        mEl.textContent = w.mean;
+        mfEl.textContent = w.meanfa || '';
+        exEl.textContent = w.example ? '\u201C' + w.example + '\u201D' : '';
+        knowBtn.classList.toggle('known-on', known.has(w.word));
+        updateProgressDots();
+    }
+    function updateProgressDots() {
+        if (!prog || !flash || flash.hidden || !order.length) return;
+        prog.innerHTML = order.map((ci, i) => {
+            const w = words()[ci];
+            const cls = 'vf-dot' + (i === idx ? ' cur' : '') + (known.has(w.word) ? ' known' : '');
+            return '<span class="' + cls + '"></span>';
+        }).join('');
+    }
+    function openFlash() {
+        if (!cards.length) return;
+        resetOrder();
+        idx = 0;
+        flash.hidden = false;
+        document.body.style.overflow = 'hidden';
+        render();
+    }
+    function closeFlash() {
+        flash.hidden = true;
+        document.body.style.overflow = '';
+        refreshKnownUI();
+    }
+    function step(d) {
+        idx = (idx + d + order.length) % order.length;
+        render();
+    }
+    if (flashBtn) flashBtn.addEventListener('click', openFlash);
+    document.getElementById('vfClose').addEventListener('click', closeFlash);
+    flash.addEventListener('click', (ev) => { if (ev.target === flash) closeFlash(); });
+    cardEl.addEventListener('click', (ev) => {
+        if (ev.target.closest('#vfSpeak')) return;
+        cardEl.classList.toggle('flip');
+    });
+    document.getElementById('vfSpeak').addEventListener('click', () => speak(cur().word));
+    document.getElementById('vfPrev').addEventListener('click', () => step(-1));
+    document.getElementById('vfNext').addEventListener('click', () => step(1));
+    document.getElementById('vfShuffle').addEventListener('click', () => {
+        for (let i = order.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            const t = order[i]; order[i] = order[j]; order[j] = t;
+        }
+        idx = 0;
+        render();
+    });
+    knowBtn.addEventListener('click', () => {
+        const w = cur().word;
+        if (known.has(w)) known.delete(w); else known.add(w);
+        saveKnown();
+        knowBtn.classList.toggle('known-on', known.has(w));
+        updateProgressDots();
+    });
+    document.addEventListener('keydown', (ev) => {
+        if (flash.hidden) return;
+        if (ev.key === 'Escape') closeFlash();
+        else if (ev.key === 'ArrowRight') step(1);
+        else if (ev.key === 'ArrowLeft') step(-1);
+        else if (ev.key === ' ') { ev.preventDefault(); cardEl.classList.toggle('flip'); }
+    });
+    refreshKnownUI();
+})();
+</script>
+
+
+<script>
+(function () {
+    document.querySelectorAll('.lqb-modal').forEach(function (m) {
+        if (m.parentElement !== document.documentElement) document.documentElement.appendChild(m);
+    });
+    document.addEventListener('click', function (e) {
+        var opener = e.target.closest('[data-lqbm]');
+        if (opener && !opener.classList.contains('lqb-editing')) {
+            var m = document.getElementById(opener.dataset.lqbm);
+            if (m) m.classList.add('active');
+        }
+        var closer = e.target.closest('[data-lqbclose]');
+        if (closer) {
+            var ov = closer.closest('.modal-overlay');
+            if (ov) ov.classList.remove('active');
+        }
+    });
+})();
+</script>
+
+{% if visual_edit %}
+<style>
+    .ve-bar { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 3500; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: min(94vw, 860px); justify-content: center; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.75); border-radius: 20px; padding: 9px 14px; box-shadow: 0 18px 46px rgba(8, 30, 70, 0.28); }
+    .ve-title { font-size: 0.8rem; font-weight: 800; color: #1d4ed8; white-space: nowrap; }
+    .ve-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 700; color: #4A4A6A; white-space: nowrap; }
+    .ve-dot { width: 10px; height: 10px; border-radius: 50%; background: #cbd5e1; transition: 0.2s; }
+    .ve-dot.busy { background: #f59e0b; animation: vePulse 0.9s infinite; }
+    .ve-dot.saved { background: #10b981; }
+    .ve-dot.error { background: #ef4444; }
+    @keyframes vePulse { 50% { transform: scale(1.45); opacity: 0.6; } }
+    .ve-btn { border: 1px solid rgba(59, 130, 246, 0.3); background: #fff; color: #1d4ed8; border-radius: 12px; padding: 8px 14px; font-size: 0.74rem; font-weight: 800; cursor: pointer; font-family: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: 0.18s; white-space: nowrap; }
+    .ve-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(59, 130, 246, 0.22); }
+    .ve-btn.primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border: none; }
+    .ve-cpanel { position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%); z-index: 3500; background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 12px 14px; box-shadow: 0 18px 40px rgba(8, 30, 70, 0.25); display: none; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 92vw; justify-content: center; }
+    .ve-cpanel.open { display: flex; }
+    .ve-cpanel label { font-size: 0.7rem; font-weight: 700; color: #4A4A6A; display: inline-flex; align-items: center; gap: 5px; }
+    .ve-cpanel input[type=color] { width: 34px; height: 30px; border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 9px; background: #fff; cursor: pointer; padding: 2px; }
+    .ve-rail { position: fixed; left: 12px; top: 50%; transform: translateY(-50%); z-index: 3500; display: flex; flex-direction: column; gap: 8px; }
+    .ve-chip { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1.5px dashed rgba(59, 130, 246, 0.45); border-radius: 14px; padding: 9px 12px; font-size: 0.74rem; font-weight: 800; color: #1d4ed8; cursor: grab; box-shadow: 0 10px 24px rgba(8, 30, 70, 0.18); user-select: none; transition: 0.18s; white-space: nowrap; }
+    .ve-chip:hover { transform: scale(1.05); border-style: solid; }
+    .ve-chip:active { cursor: grabbing; }
+    body.ve-on footer { display: none; }
+    body.ve-on .complete-btn-modern, body.ve-on .next-lesson-btn { display: none !important; }
+    .ve-tools[contenteditable="false"] { user-select: none; }
+    body.ve-on [data-ve] { cursor: text; border-radius: 8px; transition: outline-color 0.15s; outline: 1.5px dashed transparent; outline-offset: 2px; }
+    body.ve-on [data-ve]:hover { outline-color: rgba(59, 130, 246, 0.55); }
+    body.ve-on [data-ve]:empty { outline-color: rgba(59, 130, 246, 0.6); background: rgba(59, 130, 246, 0.06); min-height: 2.4em; min-width: 160px; display: inline-block; border-radius: 10px; }
+    body.ve-on [data-ve]:empty::before { content: '✍️ Click to write here…'; color: #3b6fd4; font-size: 0.82rem; font-weight: 700; opacity: 0.85; }
+    body.ve-on [data-ve]:empty:focus::before { content: ''; }
+    body.ve-on [data-ve]:focus { outline: 2px solid #3b82f6; outline-offset: 2px; background: rgba(59, 130, 246, 0.06); }
+    body.ve-on [data-ve-list] { outline: 1.5px dashed rgba(59, 130, 246, 0.28); outline-offset: 6px; border-radius: 12px; min-height: 44px; }
+    body.ve-on [data-ve-list].ve-dropon { outline-color: #3b82f6; outline-style: solid; background: rgba(59, 130, 246, 0.07); }
+    body.ve-on [data-ve-item], body.ve-on [data-ve-list].ve-sort > * { position: relative; }
+    .ve-tools { position: absolute; top: -11px; right: -8px; z-index: 40; display: none; gap: 4px; }
+    body.ve-on [data-ve-item]:hover > .ve-tools, body.ve-on .vocab-card:hover > .ve-tools { display: inline-flex; }
+    .ve-tools button { border: 1px solid rgba(59, 130, 246, 0.35); background: #fff; color: #1d4ed8; border-radius: 9px; width: 24px; height: 24px; font-size: 0.72rem; cursor: grab; display: grid; place-items: center; padding: 0; line-height: 1; }
+    .ve-tools button.ve-del { color: #ef4444; border-color: rgba(239, 68, 68, 0.4); cursor: pointer; }
+    .ve-tools button.ve-del:hover { background: #fee2e2; }
+    body.ve-on .lesson-featured-img { position: relative; }
+    body.ve-on .ve-imgbar { position: absolute; top: 10px; inset-inline-start: 10px; z-index: 6; display: inline-flex; align-items: center; gap: 6px; background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 999px; padding: 5px 8px; box-shadow: 0 10px 26px rgba(30, 45, 90, 0.22); }
+    body.ve-on .ve-imgbar button { border: none; background: rgba(59, 130, 246, 0.10); color: #1d4ed8; min-width: 28px; height: 28px; padding: 0 9px; border-radius: 999px; font-size: 0.74rem; font-weight: 800; cursor: pointer; font-family: inherit; transition: 0.15s; }
+    body.ve-on .ve-imgbar button:hover { background: rgba(59, 130, 246, 0.24); }
+    body.ve-on .ve-imgbar button.on { background: #2f7ce6; color: #fff; }
+    body.ve-on .ve-imgbar .ve-imgbar-w { font-size: 0.8rem; font-weight: 800; color: #33415e; min-width: 42px; text-align: center; direction: ltr; }
+    body.ve-on .ve-imgbar .ve-imgbar-sep { width: 1px; height: 18px; background: rgba(50, 60, 100, 0.18); }
+    .ve-addbtn { margin-top: 10px; border: 1.5px dashed rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.07); color: #1d4ed8; border-radius: 12px; padding: 8px 16px; font-size: 0.76rem; font-weight: 800; cursor: pointer; font-family: inherit; width: 100%; transition: 0.18s; }
+    .ve-addbtn:hover { background: rgba(59, 130, 246, 0.14); border-style: solid; }
+    .ve-imgbtn { position: absolute; bottom: 8px; left: 8px; z-index: 40; border: 1px solid rgba(59, 130, 246, 0.35); background: rgba(255, 255, 255, 0.9); color: #1d4ed8; border-radius: 9px; padding: 4px 9px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: none; }
+    body.ve-on .vocab-card:hover .ve-imgbtn { display: inline-flex; }
+    body.ve-on #lessonHero { outline: 2px dashed transparent; outline-offset: -2px; transition: outline-color 0.15s; }
+    body.ve-on #lessonHero.ve-imgon { outline-color: #fff; }
+    .ve-hero-hint { position: absolute; inset: auto 14px 12px auto; z-index: 40; background: rgba(255, 255, 255, 0.85); color: #1d4ed8; border-radius: 10px; padding: 5px 11px; font-size: 0.7rem; font-weight: 800; display: none; }
+    body.ve-on #lessonHero .ve-hero-hint { display: inline-flex; }
+
+    .vqb .modal-container { direction: ltr; }
+    .vqb-meta label { display: block; font-size: 0.68rem; font-weight: 900; color: #6b6f9b; margin: 12px 0 5px; }
+    .vqb-input { background: #f4f6ff; border: 1.5px solid rgba(59, 130, 246, 0.25); border-radius: 10px; padding: 9px 13px; font-size: 0.86rem; min-height: 20px; outline: none; }
+    .vqb-input:focus { border-color: #3b82f6; background: #fff; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.14); }
+    .vqb-grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .vqb-grid3 label { margin-top: 12px; }
+    .vqb-qs { margin-top: 20px; display: flex; flex-direction: column; gap: 12px; }
+    .vqb-q { background: #fff; border: 1.5px solid #e5e8fa; border-radius: 14px; padding: 12px 14px; }
+    .vqb-qhead { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+    .vqb-qnum { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; font-size: 0.66rem; font-weight: 900; padding: 3px 10px; border-radius: 999px; }
+    .vqb-qtype { font-size: 0.64rem; font-weight: 800; color: #9095c9; text-transform: uppercase; letter-spacing: 0.4px; }
+    .vqb-del { margin-left: auto; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; border-radius: 9px; padding: 5px 10px; font-size: 0.72rem; cursor: pointer; }
+    .vqb-del:hover { background: #fee2e2; }
+    .vqb-qt { font-size: 0.9rem; font-weight: 700; color: #1A1A2E; outline: 1.5px dashed rgba(59,130,246,0.3); outline-offset: 3px; border-radius: 8px; padding: 4px 6px; }
+    .vqb-choices { margin-top: 10px; display: flex; flex-direction: column; gap: 7px; }
+    .vqb-c { display: flex; align-items: center; gap: 9px; background: #f8f9ff; border: 1px solid #eceefc; border-radius: 10px; padding: 7px 11px; }
+    .vqb-c input[type="radio"] { accent-color: #10b981; width: 17px; height: 17px; flex-shrink: 0; cursor: pointer; }
+    .vqb-ct { font-size: 0.84rem; flex: 1; outline: none; border-radius: 6px; padding: 2px 5px; }
+    .vqb-ct:focus { background: #fff; box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
+    .vqb-note { font-size: 0.76rem; color: #9095c9; margin-top: 8px; }
+    .vqb-none { text-align: center; color: #9095c9; font-size: 0.85rem; padding: 18px 0; }
+    .vqb-add { margin-top: 16px; width: 100%; background: rgba(59,130,246,0.08); color: #1d4ed8; border: 1.5px dashed rgba(59,130,246,0.45); padding: 12px; border-radius: 13px; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
+    .vqb-add:hover { background: rgba(59,130,246,0.16); border-style: solid; }
+    .vqb input[type="text"] { font-family: inherit; }
+
+    body.ve-tinting [data-ve-section] { cursor: crosshair; }
+    .ve-tintpop { position: fixed; z-index: 3600; background: rgba(255, 255, 255, 0.94); border: 1px solid rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-radius: 14px; padding: 10px 12px; box-shadow: 0 16px 38px rgba(8, 30, 70, 0.3); display: none; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .ve-tintpop.open { display: flex; }
+    .ve-sort-ghost { opacity: 0.45; }
+    .ve-insertline { height: 3px; background: #3b82f6; border-radius: 99px; margin: 3px 0; }
+    @media (max-width: 900px) {
+        .ve-rail { left: 0; right: 0; top: auto; bottom: 120px; transform: none; flex-direction: row; overflow-x: auto; padding: 8px 10px 6px; gap: 6px; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid rgba(255, 255, 255, 0.7); }
+        .ve-chip { flex: 0 0 auto; box-shadow: none; }
+    }
+    @media (max-width: 640px) {
+        .ve-bar { bottom: 0; left: 0; right: 0; transform: none; border-radius: 18px 18px 0 0; padding: 8px 10px; gap: 7px; max-width: 100vw; }
+        .ve-rail { bottom: 150px; }
+    }
+</style>
+
+<div class="ve-rail" id="veRail">
+    <span class="ve-chip" draggable="true" data-ve-add="objective">🎯 Objective</span>
+    <span class="ve-chip" draggable="true" data-ve-add="vocab">🃏 Word</span>
+    <span class="ve-chip" draggable="true" data-ve-add="grammar_example">✏️ Grammar ex.</span>
+    <span class="ve-chip" draggable="true" data-ve-add="example_sentence">💬 Sentence</span>
+    <span class="ve-chip" draggable="true" data-ve-add="takeaway">✅ Takeaway</span>
+    <span class="ve-chip" draggable="true" data-ve-block="note">💡 Note</span>
+    <span class="ve-chip" draggable="true" data-ve-block="alert">⚠️ Alert</span>
+    <span class="ve-chip" draggable="true" data-ve-block="tip">🌟 Tip</span>
+    <span class="ve-chip" draggable="true" data-ve-block="btn">🔘 Button</span>
+</div>
+
+<div class="ve-cpanel" id="veCpanel">
+    <label>🎨 Hero A <input type="color" id="veC1" value="{{ daccent|default:'#3b82f6' }}"></label>
+    <label>Hero B <input type="color" id="veC2" value="{{ daccent2|default:'#38bdf8' }}"></label>
+    <button type="button" class="ve-btn" id="veTintBtn">🖌 Section tint</button>
+    <span style="font-size: 0.66rem; color: #8b90b8; font-weight: 700;">click a card while tint is armed</span>
+</div>
+
+<div class="ve-tintpop" id="veTintpop">
+    <label style="font-size:0.7rem;font-weight:700;color:#4A4A6A;">Text <input type="color" id="veTintColor" value="#1a1a2e"></label>
+    <label style="font-size:0.7rem;font-weight:700;color:#4A4A6A;">BG <input type="color" id="veTintBg" value="#ffffff"></label>
+    <button type="button" class="ve-btn" id="veTintClear">Clear</button>
+    <button type="button" class="ve-btn primary" id="veTintDone">Done</button>
+</div>
+
+
+{% if edit_quiz %}
+<div class="modal-overlay vqb" id="veQuizModal">
+    <div class="modal-container" style="max-width: 740px; width: 94%;">
+        <div class="modal-header">
+            <h4><i class="fas fa-question-circle"></i> Quiz Builder — {{ lesson.name }}</h4>
+            <button class="modal-close" type="button" id="vqbClose">&times;</button>
+        </div>
+        <div class="modal-body" style="max-height: 74vh; overflow-y: auto;">
+            <div class="vqb-meta">
+                <label>🏷 Title</label>
+                <div class="vqb-input" data-ve="quiz.title" data-vequiz="1">{{ edit_quiz.title }}</div>
+                <label>📝 Description</label>
+                <div class="vqb-input" data-ve="quiz.description" data-vequiz="1">{{ edit_quiz.description }}</div>
+                <div class="vqb-grid3">
+                    <div><label>✅ Pass %</label><div class="vqb-input" data-ve="quiz.passing_score" data-vequiz="1">{{ edit_quiz.passing_score }}</div></div>
+                    <div><label>⏱ Minutes</label><div class="vqb-input" data-ve="quiz.time_limit_minutes" data-vequiz="1">{{ edit_quiz.time_limit_minutes }}</div></div>
+                    <div><label>🔁 Attempts</label><div class="vqb-input" data-ve="quiz.max_attempts" data-vequiz="1">{{ edit_quiz.max_attempts }}</div></div>
+                </div>
+            </div>
+            <div class="vqb-qs" id="vqbQs">
+                {% for q in quiz_questions %}
+                <div class="vqb-q" data-qid="{{ q.id }}">
+                    <div class="vqb-qhead">
+                        <span class="vqb-qnum">Q{{ forloop.counter }}</span>
+                        <span class="vqb-qtype">{{ q.question_type }}</span>
+                        <button type="button" class="vqb-del" data-q-del="{{ q.id }}" title="حذف سوال">🗑</button>
+                    </div>
+                    <div class="vqb-qt" data-ve="q.{{ q.id }}.question_text" data-vequiz="1">{{ q.question_text }}</div>
+                    {% if q.question_type == 'mcq' or q.question_type == 'true_false' %}
+                    <div class="vqb-choices">
+                        {% for ch in q.choices.all %}
+                        <div class="vqb-c">
+                            <input type="radio" name="vq-{{ q.id }}" {% if ch.is_correct %}checked{% endif %} data-qc-correct="{{ ch.id }}" title="گزینهٔ صحیح">
+                            <span class="vqb-ct" data-ve="qc.{{ ch.id }}.choice_text" data-vequiz="1">{{ ch.choice_text }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="vqb-note">Type: {{ q.question_type }} — فعلاً ویرایش گزینه فقط برای MCQ.</div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <p class="vqb-none">هنوز سوالی نیست — با دکمهٔ پایین بساز 👇</p>
+                {% endfor %}
+            </div>
+            <button type="button" class="vqb-add" id="vqbAdd">＋ Add Question (MCQ)</button>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="ve-bar">
+    <span class="ve-title">✏️ Visual Editor</span>
+    <span class="ve-status"><span class="ve-dot" id="veDot"></span><span id="veState">Ready</span></span>
+    <button type="button" class="ve-btn" id="veColors">🎨 Colors</button>
+    <button type="button" class="ve-btn" id="veQuiz">📝 Quiz</button>
+    <button type="button" class="ve-btn primary" id="veSave">💾 Save</button>
+    <a class="ve-btn" href="{% url 'language_academy:lesson_detail' lesson.id %}" id="vePrev">👁 Preview</a>
+    <a class="ve-btn" href="{% url 'admin_cms:dashboard' %}">✕ Exit</a>
+</div>
+
+<script>
+(function () {
+    document.body.classList.add('ve-on');
+    ['veRail', 'veCpanel', 'veTintpop'].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el && el.parentElement !== document.documentElement) document.documentElement.appendChild(el);
+    });
+    document.querySelectorAll('.ve-bar').forEach((el) => {
+        if (el.parentElement !== document.documentElement) document.documentElement.appendChild(el);
+    });
+    const SAVE_URL = "{% url 'admin_cms:lesson_visual_save' lesson.id %}";
+    const UP_URL = "{% url 'admin_cms:lesson_visual_upload' lesson.id %}";
+    const EDIT_SUFFIX = "?edit=1";
+    function csrf() {
+        const m = document.cookie.match(/(^|;\s*)csrftoken\s*=\s*([^;]+)/);
+        return m ? decodeURIComponent(m[2]) : '';
+    }
+    const dot = document.getElementById('veDot');
+    const state = document.getElementById('veState');
+    let pending = {};
+    let dirty = false;
+    let timer = null;
+    let hasNewVocab = false;
+
+    function setState(cls, txt) {
+        dot.className = 've-dot' + (cls ? ' ' + cls : '');
+        state.textContent = txt;
+    }
+    function mark(key, value) { pending[key] = value; dirty = true; setState('', 'Editing…'); schedule(); }
+    function schedule() { clearTimeout(timer); timer = setTimeout(flush, 1100); }
+    async function flush() {
+        const keys = Object.keys(pending);
+        if (!keys.length) return;
+        const payload = { updates: Object.assign({}, pending) };
+        pending = {};
+        setState('busy', 'Saving…');
+        let ok = false;
+        try {
+            const r = await fetch(SAVE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
+                body: JSON.stringify(payload)
+            });
+            const j = await r.json();
+            ok = r.ok && j && j.ok;
+        } catch (e) { ok = false; }
+        if (!ok) {
+            pending = Object.assign(payload.updates, pending);
+            dirty = true;
+            setState('error', 'Save failed — retry');
+            schedule();
+            return;
+        }
+        if (hasNewVocab) {
+            sessionStorage.setItem('veScroll', String(window.scrollY));
+            location.href = location.pathname + EDIT_SUFFIX;
+            return;
+        }
+        dirty = Object.keys(pending).length > 0;
+        setState('saved', 'All saved ✓');
+        setTimeout(() => { if (!dirty) setState('', 'Ready'); }, 2200);
+    }
+
+    const RICH = new Set(['content.introduction', 'content.grammar_notes', 'content.summary']);
+    const NUMS = new Set(['lesson.est_time', 'lesson.xp_reward', 'lesson.coin_reward',
+        'quiz.passing_score', 'quiz.time_limit_minutes', 'quiz.max_attempts']);
+
+    function valOf(el, key) {
+        if (RICH.has(key)) return el.innerHTML.trim();
+        return el.textContent.trim();
+    }
+
+    document.querySelectorAll('[data-ve]').forEach((el) => {
+        el.contentEditable = 'true';
+        el.spellcheck = false;
+        el.addEventListener('input', () => {
+            const key = el.dataset.ve;
+            let v = valOf(el, key);
+            if (NUMS.has(key)) {
+                const digits = v.replace(/[^0-9]/g, '');
+                if (v !== digits) el.textContent = digits || '0';
+                v = digits || '0';
+            }
+            if (key.startsWith('vocab.') || key === 'vocabex') {
+                const card = el.closest('[data-vocab-id]');
+                if (!card) return;
+                if (card.dataset.veNew) {
+                    return;
+                }
+                if (key === 'vocabex') mark('vocabex.' + card.dataset.vocabId, el.textContent.trim().replace(/^[“"«]+|[”"»]+$/g, ''));
+                else mark('vocab.' + card.dataset.vocabId + '.' + key.slice(6), v);
+                if (key === 'vocab.word') card.dataset.word = v;
+                return;
+            }
+            mark(key, v);
+        });
+    });
+
+    const LIST_DEFS = {
+        objectives: { key: 'objectives', node: () => { const li = document.createElement('li'); li.dataset.veItem = ''; li.textContent = 'New objective'; return li; } },
+        takeaways: { key: 'takeaways', node: () => { const li = document.createElement('li'); li.dataset.veItem = ''; li.textContent = 'New takeaway'; return li; } },
+        grammar_examples: { key: 'grammar_examples', node: () => { const d = document.createElement('div'); d.className = 'grammar-box'; d.style.borderLeftColor = 'var(--accent-primary)'; d.dataset.veItem = ''; d.textContent = 'New example'; return d; } },
+        example_sentences: { key: 'example_sentences', node: () => { const d = document.createElement('div'); d.className = 'vocab-card'; d.dataset.veItem = ''; d.innerHTML = '<div class="vocab-example" style="font-style: normal; font-size: 0.9rem;">"New sentence"</div>'; return d; } },
+    };
+
+    function stripQuotes(t) { return t.trim().replace(/^[“"«\s]+|[”"»\s]+$/g, ''); }
+
+    function itemText(el) {
+        const c = el.cloneNode(true);
+        c.querySelectorAll('.ve-tools, .ve-imgbtn').forEach((n) => n.remove());
+        return c.textContent;
+    }
+
+    function collectList(container) {
+        const def = LIST_DEFS[container.dataset.veList];
+        if (!def) return;
+        const items = Array.from(container.querySelectorAll(':scope [data-ve-item]'));
+        const arr = items.map((el) => {
+            let t = def.key === 'example_sentences' ? stripQuotes(itemText(el)) : itemText(el).trim();
+            return t.trim();
+        }).filter((t) => t.length > 0);
+        mark(def.key, arr);
+    }
+
+    function newVocabCard() {
+        const d = document.createElement('div');
+        d.className = 'vocab-card';
+        d.dataset.veNew = '1';
+        d.innerHTML = '<div class="vocab-word" data-vf="word">new word</div>'
+            + '<div class="vocab-pronounce" data-vf="pronunciation">/…/</div>'
+            + '<div class="vocab-meaning" data-vf="meaning">Meaning</div>'
+            + '<div class="vocab-meaning" data-vf="meaning_fa" style="color: var(--text-secondary); font-size: 0.8rem;">معنی</div>'
+            + '<div class="vocab-example" data-vf="example">"Example sentence"</div>';
+        d.querySelectorAll('[data-vf]').forEach((f) => {
+            f.contentEditable = 'true';
+            f.spellcheck = false;
+            f.addEventListener('input', () => { queueNewVocab(); });
+        });
+        attachItemTools(d, 'vocab');
+        return d;
+    }
+
+    function queueNewVocab() { hasNewVocab = true; dirty = true; setState('', 'Editing…'); schedule(); }
+
+    function gatherNewVocabs() {
+        const out = [];
+        document.querySelectorAll('[data-ve-new="1"]').forEach((card) => {
+            const g = (k) => { const el = card.querySelector('[data-vf="' + k + '"]'); return el ? stripQuotes(el.textContent) : ''; };
+            out.push({ word: g('word'), pronunciation: g('pronunciation'), meaning: g('meaning'), meaning_fa: g('meaning_fa'), example: g('example') });
+        });
+        return out;
+    }
+
+    const _flush = flush;
+    flush = async function () {
+        const news = gatherNewVocabs();
+        news.forEach((n, i) => mark('new_vocab.' + i, JSON.parse(JSON.stringify(n))));
+        await _flush();
+    };
+
+    function attachItemTools(el, kind) {
+        if (el.querySelector(':scope > .ve-tools')) return;
+        const t = document.createElement('span');
+        t.className = 've-tools';
+        t.setAttribute('contenteditable', 'false');
+        t.innerHTML = '<button type="button" class="ve-drag" title="Drag to reorder">⠿</button><button type="button" class="ve-del" title="Remove">✕</button>';
+        const dragBtn = t.querySelector('.ve-drag');
+        dragBtn.addEventListener('mousedown', () => { el.draggable = true; });
+        dragBtn.addEventListener('mouseup', () => { el.draggable = false; });
+        el.addEventListener('dragstart', (ev) => {
+            if (!el.draggable) { ev.preventDefault(); return; }
+            draggedNode = el;
+            ev.dataTransfer.effectAllowed = 'move';
+            el.classList.add('ve-sort-ghost');
+        });
+        el.addEventListener('dragend', () => {
+            el.classList.remove('ve-sort-ghost');
+            el.draggable = false;
+            draggedNode = null;
+            clearInsertLine();
+            const list = el.closest('[data-ve-list]');
+            if (list) afterOrderChanged(list);
+        });
+        t.querySelector('.ve-del').addEventListener('click', () => {
+            const list = el.closest('[data-ve-list]');
+            if (kind === 'vocab' && el.dataset.vocabId) {
+                excludedSet.add(parseInt(el.dataset.vocabId, 10));
+                mark('display.excluded_vocab', Array.from(excludedSet));
+                el.remove();
+                refreshVocabOrder();
+                return;
+            }
+            el.remove();
+            if (list) afterOrderChanged(list);
+        });
+        el.appendChild(t);
+    }
+
+    let draggedNode = null;
+    let insertLine = null;
+    function clearInsertLine() { if (insertLine) { insertLine.remove(); insertLine = null; } }
+
+    function afterOrderChanged(list) {
+        if (list.dataset.veList === 'vocab') refreshVocabOrder();
+        else collectList(list);
+    }
+
+    function refreshVocabOrder() {
+        const ids = Array.from(document.querySelectorAll('#vocabGrid [data-vocab-id]')).map((c) => parseInt(c.dataset.vocabId, 10));
+        mark('display.vocab_order', ids);
+    }
+
+    const excludedSet = new Set();
+    document.querySelectorAll('[data-ve-item]').forEach((el) => attachItemTools(el, 'item'));
+    document.querySelectorAll('#vocabGrid .vocab-card').forEach((el) => {
+        attachItemTools(el, 'vocab');
+        if (!el.querySelector(':scope > .ve-imgbtn')) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 've-imgbtn';
+            b.textContent = '🖼️ img';
+            b.addEventListener('click', () => pickImage('vocab_' + (el.dataset.vocabId || ''), el));
+            el.appendChild(b);
+        }
+    });
+
+    document.querySelectorAll('[data-ve-list]').forEach((list) => {
+        list.addEventListener('input', () => { if (list.dataset.veList !== 'vocab') collectList(list); });
+        list.addEventListener('dragover', (ev) => {
+            ev.preventDefault();
+            if (draggedNode) {
+                if (draggedNode.parentElement !== list && list.dataset.veList !== 'vocab') return;
+                const sib = nearSibling(list, ev.clientY);
+                clearInsertLine();
+                insertLine = document.createElement('div');
+                insertLine.className = 've-insertline';
+                if (sib) list.insertBefore(insertLine, sib); else list.appendChild(insertLine);
+                return;
+            }
+            list.classList.add('ve-dropon');
+        });
+        list.addEventListener('dragleave', (ev) => { if (!list.contains(ev.relatedTarget)) { list.classList.remove('ve-dropon'); } });
+        list.addEventListener('drop', (ev) => {
+            ev.preventDefault();
+            list.classList.remove('ve-dropon');
+            const type = ev.dataTransfer.getData('ve/add');
+            if (draggedNode) {
+                if (insertLine) list.insertBefore(draggedNode, insertLine); else list.appendChild(draggedNode);
+                clearInsertLine();
+                afterOrderChanged(list);
+                return;
+            }
+            if (!type) return;
+            addItem(list.dataset.veList, list, type, null);
+        });
+        if (list.dataset.veList !== 'vocab' && list.parentElement && !list.parentElement.querySelector(':scope > .ve-addbtn[data-for="' + list.dataset.veList + '"]')) {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 've-addbtn';
+            b.dataset.for = list.dataset.veList;
+            b.textContent = '+ Add';
+            b.addEventListener('click', () => addItem(list.dataset.veList, list, list.dataset.veList, b));
+            list.parentElement.insertBefore(b, list.nextSibling);
+        }
+    });
+
+    function nearSibling(list, y) {
+        const nodes = Array.from(list.querySelectorAll(':scope [data-ve-item], :scope .vocab-card')).filter((n) => n !== draggedNode);
+        for (const n of nodes) {
+            const r = n.getBoundingClientRect();
+            if (y < r.top + r.height / 2) return n;
+        }
+        return null;
+    }
+
+    const ADD_PAIRS = {
+        objectives: ['objective'],
+        takeaways: ['takeaway'],
+        grammar_examples: ['grammar_example'],
+        example_sentences: ['example_sentence'],
+        vocab: ['vocab'],
+    };
+
+    function addItem(listKey, list, type, anchorBtn) {
+        if (!ADD_PAIRS[listKey] || !ADD_PAIRS[listKey].includes(type)) return;
+        let node = null;
+        if (type === 'vocab') node = newVocabCard();
+        else if (LIST_DEFS[listKey]) node = LIST_DEFS[listKey].node();
+        if (!node) return;
+        list.appendChild(node);
+        if (!node.classList.contains('vocab-card') || node.dataset.veItem !== undefined) attachItemTools(node, type === 'vocab' ? 'vocab' : 'item');
+        if (type === 'vocab') queueNewVocab();
+        else {
+            attachItemTools(node, 'item');
+            const tgt = node.classList.contains('vocab-card') ? node.querySelector('.vocab-example') : node;
+            if (tgt) { tgt.contentEditable = 'true'; tgt.spellcheck = false; }
+            collectList(list);
+        }
+        node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    document.querySelectorAll('.ve-chip').forEach((chip) => {
+        chip.addEventListener('dragstart', (ev) => { ev.dataTransfer.setData('ve/add', chip.dataset.veAdd); });
+        chip.addEventListener('click', () => {
+            const map = { objective: 'objectives', takeaway: 'takeaways', grammar_example: 'grammar_examples', example_sentence: 'example_sentences', vocab: 'vocab' };
+            const listKey = map[chip.dataset.veAdd];
+            const list = document.querySelector('[data-ve-list="' + listKey + '"]');
+            if (list) addItem(listKey, list, chip.dataset.veAdd, null);
+        });
+    });
+
+    document.querySelectorAll('.section-card-modern').forEach((s) => s.classList.add('expanded'));
+
+    const hero = document.getElementById('lessonHero');
+    if (hero) {
+        const hint = document.createElement('span');
+        hint.className = 've-hero-hint';
+        hint.textContent = '🖼️ drop image here or click';
+        hero.appendChild(hint);
+        hero.addEventListener('dragover', (ev) => { ev.preventDefault(); hero.classList.add('ve-imgon'); });
+        hero.addEventListener('dragleave', () => hero.classList.remove('ve-imgon'));
+        hero.addEventListener('drop', (ev) => {
+            ev.preventDefault();
+            hero.classList.remove('ve-imgon');
+            const f = ev.dataTransfer.files && ev.dataTransfer.files[0];
+            if (f) uploadImage('featured', f, null);
+        });
+        hero.addEventListener('click', (ev) => {
+            if (ev.target.closest('[data-ve]')) return;
+            pickImage('featured', null);
+        });
+    }
+
+    let fileInput = null;
+    function pickImage(target, card) {
+        if (!fileInput) {
+            fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.addEventListener('change', () => {
+                const f = fileInput.files && fileInput.files[0];
+                const tgt = fileInput.dataset.target;
+                const cardSel = fileInput.dataset.cardSel;
+                fileInput.value = '';
+                if (f) uploadImage(tgt, f, cardSel);
+            });
+        }
+        fileInput.dataset.target = target;
+        fileInput.dataset.cardSel = card ? ('[data-vocab-id="' + card.dataset.vocabId + '"]') : '';
+        fileInput.click();
+    }
+
+    document.querySelectorAll('[data-ve-item]').forEach((el) => {
+        const tgt = el.classList.contains('vocab-card') ? el.querySelector('.vocab-example') : el;
+        if (tgt) { tgt.contentEditable = 'true'; tgt.spellcheck = false; }
+    });
+
+    async function uploadImage(target, file, cardSel) {
+        setState('busy', 'Uploading…');
+        const fd = new FormData();
+        fd.append('target', target);
+        fd.append('file', file);
+        try {
+            const r = await fetch(UP_URL, { method: 'POST', headers: { 'X-CSRFToken': csrf() }, body: fd });
+            const j = await r.json();
+            if (!r.ok || !j.ok) { setState('error', 'Upload failed'); return; }
+            if (target === 'featured') {
+                let wrap = document.getElementById('lessonFeaturedImg');
+                if (!wrap) {
+                    wrap = document.createElement('div');
+                    wrap.className = 'lesson-featured-img';
+                    wrap.id = 'lessonFeaturedImg';
+                    hero.appendChild(wrap);
+                }
+                wrap.innerHTML = '<img src="' + j.url + '" alt="">';
+            } else if (cardSel) {
+                const card = document.querySelector(cardSel);
+                if (card) {
+                    let img = card.querySelector('.vocab-img');
+                    if (!img) {
+                        img = document.createElement('img');
+                        img.className = 'vocab-img';
+                        card.insertBefore(img, card.firstChild);
+                    }
+                    img.src = j.url;
+                }
+            }
+            if (target === 'featured') {
+                wrap.dataset.iw = wrap.dataset.iw || '100';
+                wrap.dataset.ia = wrap.dataset.ia || 'center';
+                initImgBar();
+            }
+            setState('saved', 'Image saved ✓');
+        } catch (e) { setState('error', 'Upload failed'); }
+    }
+
+    const ALIGN_STYLE = {
+        right: (w) => 'width: ' + w + '%; margin-inline-start: 0; margin-inline-end: auto;',
+        center: (w) => 'width: ' + w + '%; margin-inline: auto;',
+        left: (w) => 'width: ' + w + '%; margin-inline-end: 0; margin-inline-start: auto;'
+    };
+    function initImgBar() {
+        const wrap = document.getElementById('lessonFeaturedImg');
+        if (!wrap || wrap.querySelector(':scope > .ve-imgbar')) return;
+        let w = parseInt(wrap.dataset.iw || '100', 10);
+        if (!(w >= 20 && w <= 100)) w = 100;
+        let a = wrap.dataset.ia || 'center';
+        if (!ALIGN_STYLE[a]) a = 'center';
+        const bar = document.createElement('div');
+        bar.className = 've-imgbar';
+        bar.setAttribute('contenteditable', 'false');
+        bar.innerHTML = '<button type="button" data-act="minus" title="کوچک‌تر">−</button>'
+            + '<span class="ve-imgbar-w">' + w + '%</span>'
+            + '<button type="button" data-act="plus" title="بزرگ‌تر">+</button>'
+            + '<span class="ve-imgbar-sep"></span>'
+            + '<button type="button" data-act="right" title="راست">راست</button>'
+            + '<button type="button" data-act="center" title="وسط">وسط</button>'
+            + '<button type="button" data-act="left" title="چپ">چپ</button>';
+        bar.addEventListener('click', (ev) => {
+            const btn = ev.target.closest('button[data-act]');
+            if (!btn) return;
+            ev.preventDefault();
+            const act = btn.dataset.act;
+            if (act === 'minus') w = Math.max(20, w - 5);
+            else if (act === 'plus') w = Math.min(100, w + 5);
+            else a = act;
+            bar.querySelector('.ve-imgbar-w').textContent = w + '%';
+            bar.querySelectorAll('button[data-act="right"],button[data-act="center"],button[data-act="left"]')
+                .forEach((x) => x.classList.toggle('on', x.dataset.act === a));
+            wrap.dataset.iw = String(w);
+            wrap.dataset.ia = a;
+            if (w >= 100 && a === 'center') wrap.removeAttribute('style');
+            else wrap.style.cssText = ALIGN_STYLE[a](w);
+            mark('display.image_width', w);
+            mark('display.image_align', a);
+        });
+        wrap.appendChild(bar);
+        const onBtn = bar.querySelector('button[data-act="' + a + '"]');
+        if (onBtn) onBtn.classList.add('on');
+    }
+    initImgBar();
+
+    const cpanel = document.getElementById('veCpanel');
+    document.getElementById('veColors').addEventListener('click', () => cpanel.classList.toggle('open'));
+    const c1 = document.getElementById('veC1');
+    const c2 = document.getElementById('veC2');
+    function applyAccent() {
+        if (hero) hero.style.background = 'linear-gradient(135deg, ' + c1.value + ', ' + c2.value + ')';
+        mark('display.accent', c1.value);
+        mark('display.accent2', c2.value);
+    }
+    c1.addEventListener('change', applyAccent);
+    c2.addEventListener('change', applyAccent);
+
+    let tintArmed = false;
+    let tintTarget = null;
+    const tintBtn = document.getElementById('veTintBtn');
+    const tintpop = document.getElementById('veTintpop');
+    const tColor = document.getElementById('veTintColor');
+    const tBg = document.getElementById('veTintBg');
+    tintBtn.addEventListener('click', () => {
+        tintArmed = !tintArmed;
+        document.body.classList.toggle('ve-tinting', tintArmed);
+        tintBtn.classList.toggle('primary', tintArmed);
+        if (!tintArmed) tintpop.classList.remove('open');
+    });
+    document.querySelectorAll('[data-ve-section]').forEach((sec) => {
+        sec.addEventListener('click', (ev) => {
+            if (!tintArmed || ev.target.closest('[data-ve]')) return;
+            ev.preventDefault();
+            ev.stopPropagation();
+            tintTarget = sec;
+            tintpop.classList.add('open');
+            tintpop.style.left = Math.min(ev.clientX, window.innerWidth - 320) + 'px';
+            tintpop.style.bottom = '90px';
+        }, true);
+    });
+    function applyTint() {
+        if (!tintTarget) return;
+        const entry = {};
+        const key = tintTarget.dataset.veSection;
+        const curBg = tBg.value.toLowerCase();
+        const curColor = tColor.value.toLowerCase();
+        if (curColor !== '#1a1a2e') entry.color = tColor.value;
+        if (curBg !== '#ffffff') entry.bg = tBg.value;
+        let st = '';
+        if (entry.bg) st += 'background: ' + entry.bg + ';';
+        if (entry.color) st += 'color: ' + entry.color + ';';
+        tintTarget.style.cssText = st;
+        mark('style.' + key, entry);
+    }
+    tColor.addEventListener('change', applyTint);
+    tBg.addEventListener('change', applyTint);
+    document.getElementById('veTintClear').addEventListener('click', () => {
+        if (!tintTarget) return;
+        tintTarget.style.cssText = '';
+        mark('style.' + tintTarget.dataset.veSection, {});
+        tintpop.classList.remove('open');
+    });
+    document.getElementById('veTintDone').addEventListener('click', () => {
+        tintpop.classList.remove('open');
+        tintArmed = false;
+        document.body.classList.remove('ve-tinting');
+        tintBtn.classList.remove('primary');
+    });
+
+    const quizModal = document.getElementById('veQuizModal');
+    if (quizModal && quizModal.parentElement !== document.documentElement) document.documentElement.appendChild(quizModal);
+    const veQuizBtn = document.getElementById('veQuiz');
+    async function postNow(updates, reopenQuiz) {
+        setState('busy', 'Saving…');
+        try {
+            await fetch(SAVE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() }, body: JSON.stringify({ updates: updates }) });
+        } catch (e) {}
+        if (reopenQuiz) sessionStorage.setItem('veQuizOpen', '1');
+        sessionStorage.setItem('veScroll', String(window.scrollY));
+        location.href = location.pathname + EDIT_SUFFIX;
+    }
+    if (veQuizBtn) {
+        veQuizBtn.addEventListener('click', () => {
+            if (quizModal) { quizModal.classList.add('active'); return; }
+            const updates = { 'quiz.create': 1 };
+            postNow(updates, true);
+        });
+    }
+    const vqbClose = document.getElementById('vqbClose');
+    if (vqbClose && quizModal) vqbClose.addEventListener('click', () => quizModal.classList.remove('active'));
+    document.querySelectorAll('[data-qc-correct]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            if (radio.checked) mark('qc.' + radio.dataset.qcCorrect + '.is_correct', true);
+        });
+    });
+    document.querySelectorAll('[data-q-del]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+            if (!confirm('این سوال برای همیشه حذف شود؟')) return;
+            const updates = {};
+            updates['del_question.' + btn.dataset.qDel] = 1;
+            postNow(updates, true);
+        });
+    });
+    const vqbAdd = document.getElementById('vqbAdd');
+    if (vqbAdd) vqbAdd.addEventListener('click', () => {
+        const updates = {};
+        updates['new_question.' + Date.now()] = { question_text: 'New question?', choices: ['Option A', 'Option B', 'Option C', 'Option D'], correct: 0 };
+        postNow(updates, true);
+    });
+    if (sessionStorage.getItem('veQuizOpen') && quizModal) {
+        sessionStorage.removeItem('veQuizOpen');
+        quizModal.classList.add('active');
+    }
+
+    const blockZone = document.getElementById('lqBlocksZone');
+    const BLOCK_ICONS = { note: '💡', alert: '⚠️', tip: '🌟' };
+    function blockUid() { return 'b' + Math.random().toString(36).slice(2, 10); }
+    function makeBlockModal(entry) {
+        const m = document.createElement('div');
+        m.id = 'lqbm-' + entry.id;
+        m.className = 'modal-overlay lqb-modal';
+        const cont = document.createElement('div');
+        cont.className = 'modal-container';
+        const head = document.createElement('div');
+        head.className = 'modal-header';
+        const h4 = document.createElement('h4');
+        const span = document.createElement('span');
+        span.className = 'lqb-title';
+        span.textContent = entry.title || 'Note';
+        span.contentEditable = 'true';
+        span.spellcheck = false;
+        h4.appendChild(span);
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'modal-close';
+        closeBtn.type = 'button';
+        closeBtn.setAttribute('data-lqbclose', '');
+        closeBtn.innerHTML = '&times;';
+        head.appendChild(h4);
+        head.appendChild(closeBtn);
+        const body = document.createElement('div');
+        body.className = 'modal-body lqb-body';
+        body.textContent = entry.body || '';
+        body.contentEditable = 'true';
+        body.spellcheck = false;
+        cont.appendChild(head);
+        cont.appendChild(body);
+        m.appendChild(cont);
+        document.documentElement.appendChild(m);
+        [span, body].forEach((el) => el.addEventListener('input', pushBlocks));
+        return m;
+    }
+    function scanBlocks() {
+        const arr = [];
+        blockZone.querySelectorAll('[data-lqb-id]').forEach((n) => {
+            const kind = n.dataset.lqbKind;
+            const entry = { id: n.dataset.lqbId, kind: kind };
+            if (kind === 'btn') {
+                const lbl = n.querySelector('.lqb-btntext');
+                entry.text = lbl ? lbl.textContent.trim() : '';
+                const m = document.getElementById('lqbm-' + n.dataset.lqbId);
+                const t = m ? m.querySelector('.lqb-title') : null;
+                const b = m ? m.querySelector('.lqb-body') : null;
+                entry.title = t ? t.textContent.trim() : '';
+                entry.body = b ? b.textContent.trim() : '';
+            } else {
+                const t = n.querySelector('.lqb-text');
+                entry.text = t ? t.textContent.trim() : '';
+            }
+            if (entry.text) arr.push(entry);
+        });
+        return arr;
+    }
+    function pushBlocks() {
+        const hint = blockZone.querySelector('.lqb-empty-hint');
+        if (hint && blockZone.querySelector('[data-lqb-id]')) hint.remove();
+        mark('display.custom_blocks', scanBlocks());
+    }
+    let draggedBlock = null;
+    let blockLine = null;
+    function clearBlockLine() { if (blockLine) { blockLine.remove(); blockLine = null; } }
+    function enhanceBlock(n) {
+        n.querySelectorAll('.lqb-text, .lqb-btntext').forEach((el) => {
+            el.contentEditable = 'true';
+            el.spellcheck = false;
+            el.addEventListener('input', pushBlocks);
+        });
+        const btnEl = n.querySelector('.lqb-btn');
+        if (btnEl) btnEl.classList.add('lqb-editing');
+        if (n.querySelector(':scope > .ve-tools')) return;
+        const t = document.createElement('span');
+        t.className = 've-tools';
+        t.setAttribute('contenteditable', 'false');
+        t.innerHTML = '<button type="button" class="ve-drag" title="Drag to reorder">⠿</button>'
+            + (n.dataset.lqbKind === 'btn' ? '<button type="button" class="ve-mdl" title="Edit modal">✎</button>' : '')
+            + '<button type="button" class="ve-del" title="Remove">✕</button>';
+        const dragBtn = t.querySelector('.ve-drag');
+        dragBtn.addEventListener('mousedown', () => { n.draggable = true; });
+        dragBtn.addEventListener('mouseup', () => { n.draggable = false; });
+        n.addEventListener('dragstart', (ev) => {
+            if (!n.draggable) { ev.preventDefault(); return; }
+            draggedBlock = n;
+            ev.dataTransfer.effectAllowed = 'move';
+            n.classList.add('ve-sort-ghost');
+        });
+        n.addEventListener('dragend', () => {
+            n.classList.remove('ve-sort-ghost');
+            n.draggable = false;
+            draggedBlock = null;
+            clearBlockLine();
+            pushBlocks();
+        });
+        const mdlBtn = t.querySelector('.ve-mdl');
+        if (mdlBtn) mdlBtn.addEventListener('click', () => {
+            const m = document.getElementById('lqbm-' + n.dataset.lqbId);
+            if (m) m.classList.add('active');
+        });
+        t.querySelector('.ve-del').addEventListener('click', () => {
+            const m = document.getElementById('lqbm-' + n.dataset.lqbId);
+            if (m) m.remove();
+            n.remove();
+            pushBlocks();
+        });
+        n.appendChild(t);
+    }
+    function makeBlockNode(entry) {
+        const n = document.createElement('div');
+        n.className = 'lqb lqb-' + entry.kind;
+        n.dataset.lqbId = entry.id;
+        n.dataset.lqbKind = entry.kind;
+        if (entry.kind === 'btn') {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'lqb-btn';
+            b.dataset.lqbm = 'lqbm-' + entry.id;
+            b.appendChild(document.createTextNode('🔘 '));
+            const sp = document.createElement('span');
+            sp.className = 'lqb-btntext';
+            sp.textContent = entry.text;
+            b.appendChild(sp);
+            n.appendChild(b);
+            makeBlockModal(entry);
+        } else {
+            const ico = document.createElement('span');
+            ico.className = 'lqb-ico';
+            ico.textContent = BLOCK_ICONS[entry.kind] || '💡';
+            const tx = document.createElement('div');
+            tx.className = 'lqb-text';
+            tx.textContent = entry.text;
+            n.appendChild(ico);
+            n.appendChild(tx);
+        }
+        return n;
+    }
+    function addBlock(kind) {
+        const entry = { id: blockUid(), kind: kind };
+        if (kind === 'btn') { entry.text = 'Open notes'; entry.title = 'Extra notes'; entry.body = 'Write the details here…'; }
+        else entry.text = kind === 'alert' ? 'Something important to watch out for.' : (kind === 'tip' ? 'A helpful tip for learners.' : 'A useful note about this lesson.');
+        const n = makeBlockNode(entry);
+        blockZone.appendChild(n);
+        enhanceBlock(n);
+        pushBlocks();
+        n.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    if (blockZone) {
+        blockZone.querySelectorAll('[data-lqb-id]').forEach((n) => {
+            enhanceBlock(n);
+            if (n.dataset.lqbKind === 'btn') {
+                const m = document.getElementById('lqbm-' + n.dataset.lqbId);
+                if (m) m.querySelectorAll('.lqb-title, .lqb-body').forEach((el) => {
+                    el.contentEditable = 'true';
+                    el.spellcheck = false;
+                    el.addEventListener('input', pushBlocks);
+                });
+            }
+        });
+        blockZone.addEventListener('dragover', (ev) => {
+            ev.preventDefault();
+            if (draggedBlock) {
+                const sib = Array.from(blockZone.querySelectorAll(':scope [data-lqb-id]')).filter((x) => x !== draggedBlock)
+                    .find((x) => ev.clientY < x.getBoundingClientRect().top + x.getBoundingClientRect().height / 2) || null;
+                clearBlockLine();
+                blockLine = document.createElement('div');
+                blockLine.className = 've-insertline';
+                if (sib) blockZone.insertBefore(blockLine, sib); else blockZone.appendChild(blockLine);
+            }
+        });
+        blockZone.addEventListener('drop', (ev) => {
+            ev.preventDefault();
+            const kind = ev.dataTransfer.getData('ve/block');
+            if (draggedBlock) {
+                if (blockLine) blockZone.insertBefore(draggedBlock, blockLine); else blockZone.appendChild(draggedBlock);
+                clearBlockLine();
+                pushBlocks();
+                return;
+            }
+            if (kind) addBlock(kind);
+        });
+        document.querySelectorAll('[data-ve-block]').forEach((chip) => {
+            chip.addEventListener('dragstart', (ev) => { ev.dataTransfer.setData('ve/block', chip.dataset.veBlock); });
+            chip.addEventListener('click', () => addBlock(chip.dataset.veBlock));
+        });
+    }
+
+    document.getElementById('veSave').addEventListener('click', flush);
+    document.addEventListener('keydown', (ev) => {
+        if ((ev.ctrlKey || ev.metaKey) && ev.key.toLowerCase() === 's') { ev.preventDefault(); flush(); }
+    });
+    window.addEventListener('beforeunload', (ev) => { if (dirty) { ev.preventDefault(); ev.returnValue = ''; } });
+
+    const sy = sessionStorage.getItem('veScroll');
+    if (sy) { sessionStorage.removeItem('veScroll'); window.scrollTo(0, parseInt(sy, 10) || 0); }
+})();
+</script>
+{% endif %}
+{% endblock %}

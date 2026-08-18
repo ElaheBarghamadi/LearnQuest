@@ -1,0 +1,130 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Quiz Result | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="academy-card text-center">
+                <div class="card-body p-5">
+                    {% if attempt.passed %}
+                        <div class="result-icon success mb-4">
+                            <i class="fas fa-trophy fa-5x text-warning"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold text-success mb-2">Congratulations!</h1>
+                        <p class="lead">You passed the quiz!</p>
+                    {% else %}
+                        <div class="result-icon failed mb-4">
+                            <i class="fas fa-frown fa-5x text-danger"></i>
+                        </div>
+                        <h1 class="display-4 fw-bold text-danger mb-2">Keep Trying!</h1>
+                        <p class="lead">You didn't pass this time. Review and try again.</p>
+                    {% endif %}
+
+                    <div class="score-circle mx-auto my-4">
+                        <div class="score-value">{{ attempt.score }}%</div>
+                        <div class="score-label">Your Score</div>
+                    </div>
+
+                    <div class="mb-4">
+                        <span class="badge bg-secondary fs-6">Passing Score: {{ quiz.passing_score }}%</span>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <div class="stat-value">{{ quiz.questions.count }}</div>
+                                <div class="stat-label">Questions</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <div class="stat-value">{{ attempt.score|floatformat:0 }}%</div>
+                                <div class="stat-label">Accuracy</div>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-box">
+                                <div class="stat-value">+{{ quiz.xp_reward }}</div>
+                                <div class="stat-label">XP Earned</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+                        <a href="{% url 'language_academy:lesson_detail' quiz.lesson.id %}" class="btn-academy-outline">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Lesson
+                        </a>
+                        {% if not attempt.passed %}
+                            <a href="{% url 'language_academy:take_quiz' quiz.id %}" class="btn-academy">
+                                <i class="fas fa-redo me-2"></i> Try Again
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'language_academy:chapter_detail' quiz.lesson.chapter.id %}" class="btn-academy-outline">
+                            <i class="fas fa-list me-2"></i> Chapter Overview
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="academy-card mt-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i> Feedback</h5>
+                    {% if attempt.passed %}
+                        <p class="mb-0">Great job! You've mastered this lesson. Keep up the momentum and move to the next lesson!</p>
+                    {% else %}
+                        <p class="mb-0">Don't worry! Review the lesson materials and try again. You've got this!</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.result-icon i {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.score-circle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--duo-green), var(--duo-blue));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.score-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.score-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.stat-box {
+    background: var(--duo-gray-50);
+    padding: 12px;
+    border-radius: var(--duo-radius);
+}
+
+.stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--duo-green);
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--duo-gray-500);
+}
+</style>
+{% endblock %}

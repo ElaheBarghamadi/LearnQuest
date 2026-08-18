@@ -1,0 +1,166 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lesson Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name *</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name (Persian)</label>
+                            {{ form.name_fa }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Lesson Type</label>
+                            {{ form.lesson_type }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Order</label>
+                            {{ form.order }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">XP Reward</label>
+                            {{ form.xp_reward }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Coin Reward</label>
+                            {{ form.coin_reward }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Estimated Time (minutes)</label>
+                            {{ form.estimated_time_minutes }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check mt-4">
+                                {{ form.is_published }}
+                                <label class="form-check-label">Published</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.is_free_preview }}
+                                <label class="form-check-label">Free Preview (visible without login)</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.is_exclusive }}
+                                <label class="form-check-label">👑 Exclusive (needs shop ticket)</label>
+                            </div>
+                            <small class="text-muted d-block mt-1">برای درس اختصاصی، بلیطش را از بخش Shop بسازید: <code dir="ltr">effect_type = exclusive_lesson</code> و پیلود {% if lesson %}<code dir="ltr">{"lesson_id": {{ lesson.id }}}</code>{% else %}<code dir="ltr">{"lesson_id": LESSON_ID}</code> (پس از ذخیره، ID را از همین صفحه ببینید){% endif %}</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h5 class="mt-3">Lesson Content</h5>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Introduction</label>
+                        {{ content_form.introduction }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Introduction Audio</label>
+                        {{ content_form.introduction_audio }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Learning Objectives (one per line)</label>
+                        {{ content_form.learning_objectives }}
+                        <small class="text-muted">Enter each objective on a new line</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Grammar Notes</label>
+                        {{ content_form.grammar_notes }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Grammar Examples (one per line)</label>
+                        {{ content_form.grammar_examples }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Example Sentences (one per line)</label>
+                        {{ content_form.example_sentences }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Featured Image</label>
+                            {{ content_form.featured_image }}
+                            <div class="mt-2">
+                                <label class="form-label">{{ content_form.image_width.label }} <small class="text-muted">(۲۰ تا ۱۰۰)</small></label>
+                                {{ content_form.image_width }}{{ content_form.image_width.errors }}
+                            </div>
+                            <div class="mt-2">
+                                <label class="form-label">{{ content_form.image_align.label }}</label>
+                                {{ content_form.image_align }}{{ content_form.image_align.errors }}
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Featured Video</label>
+                            {{ content_form.featured_video }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Featured Video URL (YouTube/Vimeo)</label>
+                        {{ content_form.featured_video_url }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Summary</label>
+                        {{ content_form.summary }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Key Takeaways (one per line)</label>
+                        {{ content_form.key_takeaways }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ content_form.is_interactive }}
+                                <label class="form-check-label">Interactive Lesson</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ content_form.allow_skip }}
+                                <label class="form-check-label">Allow Skipping</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        {% if lesson %}
+                            <a href="{% url 'admin_cms:chapter_edit' lesson.chapter.id %}" class="btn btn-secondary">Cancel</a>
+                        {% else %}
+                            <a href="{% url 'admin_cms:chapter_edit' chapter.id %}" class="btn btn-secondary">Cancel</a>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary">Save Lesson</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

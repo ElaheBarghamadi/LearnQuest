@@ -1,0 +1,604 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    حل معادله درجه یک | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .equation-container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .equation-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .equation-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .equation-header::before {
+            content: 'x';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 140px;
+            opacity: 0.1;
+            font-weight: 800;
+            font-family: inherit;
+        }
+
+        .equation-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .equation-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .equation-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .formula-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+            font-family: inherit;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* فرم */
+        .equation-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1rem;
+        }
+
+        .equation-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            font-size: 1rem;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .equation-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .help-text {
+            font-size: 0.7rem;
+            color: #888;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .example-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .example-btn {
+            background: #f0f0ff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #3B82F6;
+            font-family: inherit;
+        }
+
+        .example-btn:hover {
+            background: #3B82F6;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+        }
+
+        .calc-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            animation: fadeInUp 0.5s ease;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed rgba(76, 175, 80, 0.3);
+        }
+
+        .result-header i {
+            font-size: 1.3rem;
+            color: #4CAF50;
+        }
+
+        .result-card.error .result-header i {
+            color: #f44336;
+        }
+
+        .result-header h3 {
+            font-size: 1rem;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .result-card.error .result-header h3 {
+            color: #c62828;
+        }
+
+        .solution-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2e7d32;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            font-family: inherit;
+        }
+
+        .result-card.error .solution-value {
+            color: #c62828;
+        }
+
+        .solution-detail {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+            white-space: pre-line;
+            direction: ltr;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        /* لودینگ */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* راهنما */
+        .help-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .help-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rule-box {
+            background: #2d3047;
+            color: #36D1DC;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        .help-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .help-list li {
+            padding: 6px 0;
+            font-size: 0.8rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-list li i {
+            color: #3B82F6;
+            font-size: 0.7rem;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .equation-container {
+                padding: 15px;
+            }
+
+            .equation-header {
+                padding: 25px 20px;
+            }
+
+            .equation-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .equation-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .solution-value {
+                font-size: 1.2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .equation-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .equation-input {
+                padding: 14px 45px 14px 15px;
+                font-size: 0.9rem;
+            }
+
+            .calc-btn {
+                padding: 14px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="equation-container">
+        <div class="equation-card">
+            <div class="equation-header">
+                <h1>
+                    <i class="fas fa-calculator"></i>
+                    حل معادله درجه یک
+                    <i class="fas fa-chart-line"></i>
+                </h1>
+                <p>محاسبه ریشه معادلات خطی به صورت سریع و دقیق</p>
+                <div class="formula-badge">
+                    ax + b = 0
+                </div>
+            </div>
+
+            <div class="equation-form">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-infinity"></i>
+                        معادله را وارد کنید:
+                    </label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-superscript"></i>
+                        <input type="text"
+                               id="equationInput"
+                               class="equation-input"
+                               placeholder="مثال: 2x+4=0"
+                               autocomplete="off">
+                    </div>
+                    <div class="help-text">
+                        <i class="fas fa-info-circle"></i>
+                        فرمت مجاز: ax + b = 0 (a و b می‌توانند اعشاری یا منفی باشند)
+                    </div>
+                    <div class="example-buttons">
+                        <button type="button" class="example-btn" data-equation="2x+4=0">2x + 4 = 0</button>
+                        <button type="button" class="example-btn" data-equation="3x-6=0">3x - 6 = 0</button>
+                        <button type="button" class="example-btn" data-equation="-4x+8=0">-4x + 8 = 0</button>
+                        <button type="button" class="example-btn" data-equation="x+5=0">x + 5 = 0</button>
+                        <button type="button" class="example-btn" data-equation="5x=0">5x = 0</button>
+                        <button type="button" class="example-btn" data-equation="0.5x-2=0">0.5x - 2 = 0</button>
+                    </div>
+                </div>
+
+                <button type="button" id="solveBtn" class="calc-btn">
+                    <i class="fas fa-search"></i>
+                    حل معادله
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+
+            <div class="result-section">
+                <div id="resultCard" class="result-card">
+                    <div class="result-header">
+                        <i class="fas fa-check-circle"></i>
+                        <h3>جواب معادله</h3>
+                    </div>
+                    <div id="solutionValue" class="solution-value"></div>
+                    <div id="solutionDetail" class="solution-detail"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- راهنما -->
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 حل معادله درجه یک
+            </div>
+            <div class="rule-box">
+                ax + b = 0 → x = -b/a
+            </div>
+            <ul class="help-list">
+                <li><i class="fas fa-check-circle"></i> اگر a ≠ 0 → معادله یک جواب دارد: x = -b/a</li>
+                <li><i class="fas fa-check-circle"></i> اگر a = 0 و b = 0 → معادله به ازای همه xها برقرار است</li>
+                <li><i class="fas fa-check-circle"></i> اگر a = 0 و b ≠ 0 → معادله جواب ندارد</li>
+                <li><i class="fas fa-check-circle"></i> ضرایب می‌توانند اعشاری یا کسری باشند</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const equationInput = document.getElementById('equationInput');
+        const solveBtn = document.getElementById('solveBtn');
+        const resultCard = document.getElementById('resultCard');
+        const solutionValue = document.getElementById('solutionValue');
+        const solutionDetail = document.getElementById('solutionDetail');
+
+        // دریافت CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        // اعتبارسنجی ساده در سمت کلاینت
+        function validateEquation(equation) {
+            if (!equation.trim()) {
+                return 'لطفاً معادله را وارد کنید.';
+            }
+
+            // بررسی وجود x
+            if (!equation.includes('x')) {
+                return 'معادله باید شامل متغیر x باشد.';
+            }
+
+            // بررسی فرمت کلی
+            const cleanEq = equation.replace(/\s/g, '');
+            const validPattern = /^[+-]?\d*\.?\d*x[+-]?\d*\.?\d*=?0?$/;
+
+            if (!validPattern.test(cleanEq) && !validPattern.test(cleanEq.replace('=0', ''))) {
+                return 'فرمت معادله نامعتبر است. از فرمت ax+b=0 استفاده کنید.';
+            }
+
+            return null;
+        }
+
+        // حل معادله
+        async function solveEquation() {
+            const equation = equationInput.value.trim();
+
+            // اعتبارسنجی
+            const validationError = validateEquation(equation);
+            if (validationError) {
+                showError(validationError);
+                return;
+            }
+
+            // نمایش لودینگ
+            solveBtn.disabled = true;
+            solveBtn.innerHTML = '<span class="loading"></span> در حال محاسبه...';
+
+            try {
+                const response = await fetch("{% url 'solve_linear_ajax' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrftoken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: `equation=${encodeURIComponent(equation)}`
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showSuccess(data.solution, data.message);
+                } else {
+                    showError(data.message || 'خطا در حل معادله');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('خطا در ارتباط با سرور. لطفاً دوباره تلاش کنید.');
+            } finally {
+                solveBtn.disabled = false;
+                solveBtn.innerHTML = '<i class="fas fa-search"></i> حل معادله <i class="fas fa-arrow-left"></i>';
+            }
+        }
+
+        function showSuccess(solution, detail) {
+            resultCard.classList.remove('error');
+            resultCard.classList.add('show');
+            solutionValue.innerHTML = `<i class="fas fa-equals"></i> ${solution}`;
+            solutionDetail.innerHTML = detail || '';
+        }
+
+        function showError(message) {
+            resultCard.classList.add('error', 'show');
+            solutionValue.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${message}`;
+            solutionDetail.innerHTML = '';
+        }
+
+        // رویدادها
+        solveBtn.addEventListener('click', solveEquation);
+
+        // اینتر زدن در ورودی
+        equationInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                solveEquation();
+            }
+        });
+
+        // کلیک روی مثال‌ها
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                equationInput.value = this.getAttribute('data-equation');
+                solveEquation();
+            });
+        });
+
+        // پاک کردن نتیجه هنگام تایپ مجدد
+        equationInput.addEventListener('input', function () {
+            resultCard.classList.remove('show');
+        });
+    </script>
+{% endblock %}

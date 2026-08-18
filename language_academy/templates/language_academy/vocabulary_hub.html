@@ -1,0 +1,263 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Vocabulary Learning Hub | LearnQuest{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="h2">🧠 Vocabulary Learning Hub</h1>
+        <p class="text-muted">Master new words with smart learning methods</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-primary-soft">
+                    <i class="fas fa-book-open fa-2x text-primary"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ total_words }}</div>
+                <div class="small text-muted">Total Words</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-success-soft">
+                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ learned_words }}</div>
+                <div class="small text-muted">Learning</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-warning-soft">
+                    <i class="fas fa-star fa-2x text-warning"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ mastered_words }}</div>
+                <div class="small text-muted">Mastered</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-danger-soft">
+                    <i class="fas fa-clock fa-2x text-danger"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ due_reviews }}</div>
+                <div class="small text-muted">Due for Review</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <a href="{% url 'language_academy:vocabulary_flashcards' %}?mode=new" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift">
+                    <i class="fas fa-cards fa-2x text-primary mb-2"></i>
+                    <h6 class="mb-0">Flashcards</h6>
+                    <small class="text-muted">Learn new words</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'language_academy:vocabulary_matching_game' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift">
+                    <i class="fas fa-puzzle-piece fa-2x text-success mb-2"></i>
+                    <h6 class="mb-0">Matching Game</h6>
+                    <small class="text-muted">Match words & meanings</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'language_academy:vocabulary_spaced_repetition' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift">
+                    <i class="fas fa-brain fa-2x text-warning mb-2"></i>
+                    <h6 class="mb-0">Spaced Repetition</h6>
+                    <small class="text-muted">Smart review system</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'language_academy:vocabulary_sentence_builder' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift">
+                    <i class="fas fa-pen-fancy fa-2x text-info mb-2"></i>
+                    <h6 class="mb-0">Sentence Builder</h6>
+                    <small class="text-muted">Build sentences</small>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-chart-line me-2 text-primary"></i> Today's Progress</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between">
+                        <span>Daily Goal</span>
+                        <span>{{ daily_progress.current_vocabulary|default:0 }}/{{ daily_progress.target_vocabulary|default:5 }}</span>
+                    </div>
+                    <div class="academy-progress">
+                        <div class="academy-progress-bar" style="width: {% widthratio daily_progress.current_vocabulary daily_progress.target_vocabulary 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex justify-content-between">
+                        <span>XP Earned Today</span>
+                        <span>{{ daily_progress.current_xp|default:0 }}/{{ daily_progress.target_xp|default:100 }}</span>
+                    </div>
+                    <div class="academy-progress">
+                        <div class="academy-progress-bar" style="width: {% widthratio daily_progress.current_xp daily_progress.target_xp 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i> Recommended for You ({{ recommended_level }})</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                {% for word in new_words|slice:":6" %}
+                <div class="col-md-4 col-6">
+                    <div class="recommended-word p-2 text-center border rounded">
+                        <strong>{{ word.word }}</strong>
+                        <br>
+                        <small class="text-muted">{{ word.meaning|truncatechars:30 }}</small>
+                        <br>
+                        <span class="badge bg-{% if word.difficulty == 'A1' %}success{% elif word.difficulty == 'A2' %}info{% else %}warning{% endif %} mt-1">
+                            {{ word.get_difficulty_display }}
+                        </span>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted py-3">
+                    <i class="fas fa-check-circle fa-2x mb-2 d-block"></i>
+                    You've learned all recommended words! 🎉
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <a href="{% url 'language_academy:vocabulary_review' %}" class="btn-academy w-100">
+                <i class="fas fa-repeat me-2"></i> Review Due Words ({{ due_reviews }})
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a href="{% url 'language_academy:vocabulary_stats' %}" class="btn-academy-outline w-100">
+                <i class="fas fa-chart-bar me-2"></i> View Statistics
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(26, 26, 46, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--glass-shadow), var(--shadow) !important;
+    transition: var(--transition);
+}
+
+.glass-header {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 12px 20px !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+.stat-card {
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.bg-primary-soft { background: rgba(59, 130, 246, 0.12); }
+.bg-success-soft { background: rgba(46, 204, 113, 0.12); }
+.bg-warning-soft { background: rgba(241, 196, 15, 0.12); }
+.bg-danger-soft { background: rgba(231, 76, 60, 0.12); }
+.bg-info-soft { background: rgba(0, 210, 255, 0.12); }
+
+.hover-lift {
+    transition: var(--transition);
+}
+
+.hover-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover) !important;
+}
+
+.recommended-word {
+    transition: var(--transition);
+    background: rgba(59, 130, 246, 0.03);
+}
+
+.recommended-word:hover {
+    background: rgba(59, 130, 246, 0.08);
+    transform: scale(1.05);
+}
+
+.btn-academy-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 10px 26px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-academy-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .stat-icon-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+    .stat-icon-wrapper i {
+        font-size: 1.3rem !important;
+    }
+    .fs-3 {
+        font-size: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}Manage Exams | CMS{% endblock %}
+{% block page_title %}Manage Exams{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> All Exams</h5>
+        <a href="{% url 'admin_cms:exam_create' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> Create Exam
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Chapter/World</th>
+                        <th>Questions</th>
+                        <th>Passing Score</th>
+                        <th>Time Limit</th>
+                        <th>XP/Coins</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exam in exams %}
+                    <tr>
+                        <td>
+                            <strong>{{ exam.title }}</strong>
+                            {% if exam.description %}
+                                <br><small class="text-muted">{{ exam.description|truncatewords:10 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if exam.exam_type == 'chapter' %}
+                                <span class="badge bg-primary">📖 Chapter Exam</span>
+                            {% elif exam.exam_type == 'world' %}
+                                <span class="badge bg-success">🌍 World Exam</span>
+                            {% else %}
+                                <span class="badge bg-danger">🎓 Final Exam</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if exam.chapter %}
+                                📖 {{ exam.chapter.name }}
+                                <br><small class="text-muted">{{ exam.chapter.world.name }}</small>
+                            {% elif exam.world %}
+                                🌍 {{ exam.world.name }}
+                            {% else %}
+                                🎓 Course Final
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'admin_cms:exam_question_list' exam.id %}" class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-question-circle me-1"></i> {{ exam.questions_count }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning text-dark">{{ exam.passing_score }}%</span>
+                        </td>
+                        <td>{{ exam.time_limit_minutes }} min</td>
+                        <td>
+                            <small><i class="fas fa-star text-warning"></i> +{{ exam.xp_reward }}</small>
+                            <br><small><i class="fas fa-coins text-info"></i> +{{ exam.coin_reward }}</small>
+                        </td>
+                        <td>
+                            {% if exam.is_published %}
+                                <span class="badge bg-success">Published</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Draft</span>
+                            {% endif %}
+                        </td>
+                        <td class="table-actions">
+                            <a href="{% url 'admin_cms:exam_question_list' exam.id %}" class="text-info me-2" title="Manage Questions">
+                                <i class="fas fa-question-circle"></i>
+                            </a>
+                            <a href="{% url 'admin_cms:exam_edit' exam.id %}" class="text-primary me-2" title="Edit Exam">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'admin_cms:exam_delete' exam.id %}" class="text-danger" title="Delete Exam"
+                               onclick="return confirm('Are you sure you want to delete "{{ exam.title }}"? This will delete all questions too!')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-4">
+                            <i class="fas fa-info-circle fa-2x text-muted mb-2 d-block"></i>
+                            No exams created yet.
+                            <a href="{% url 'admin_cms:exam_create' %}">Create your first exam</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <h6 class="mb-0">Total Exams</h6>
+                <h2 class="mb-0">{{ exams|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <h6 class="mb-0">Published</h6>
+                <h2 class="mb-0">{{ exams|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <h6 class="mb-0">Total Questions</h6>
+                <h2 class="mb-0" id="totalQuestions">0</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let total = 0;
+{% for exam in exams %}
+    total += {{ exam.questions_count }};
+{% endfor %}
+document.getElementById('totalQuestions').innerText = total;
+</script>
+
+<style>
+.table-actions i {
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.table-actions i:hover {
+    opacity: 0.7;
+}
+
+.btn-outline-info {
+    padding: 2px 8px;
+    font-size: 0.75rem;
+}
+</style>
+{% endblock %}

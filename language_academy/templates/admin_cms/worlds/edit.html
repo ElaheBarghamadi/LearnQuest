@@ -1,0 +1,119 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Edit World Details</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name *</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name (Persian)</label>
+                            {{ form.name_fa }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Description *</label>
+                        {{ form.description }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Difficulty Level</label>
+                            {{ form.difficulty_level }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Order</label>
+                            {{ form.order }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">XP Reward</label>
+                            {{ form.xp_reward }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">Coin Reward</label>
+                            {{ form.coin_reward }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">World Image</label>
+                            {{ form.image }}
+                            {% if form.instance.image %}
+                                <div class="mt-2"><img src="{{ form.instance.image.url }}" style="max-height: 100px;"></div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Background Image</label>
+                            {{ form.background_image }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Map SVG</label>
+                            {{ form.map_svg }}
+                        </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        {{ form.is_published }}
+                        <label class="form-check-label">Published (visible to users)</label>
+                    </div>
+                    
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_cms:world_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-layer-group me-2"></i> Chapters</h5>
+                <a href="{% url 'admin_cms:chapter_create' world.id %}" class="btn btn-success btn-sm">
+                    <i class="fas fa-plus"></i> Add
+                </a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for chapter in chapters %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ chapter.order }}.</strong> {{ chapter.name }}
+                            {% if chapter.is_published %}
+                                <span class="badge bg-success">Published</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Draft</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <a href="{% url 'admin_cms:lesson_create' chapter.id %}" class="text-success me-2" title="Add Lesson to this chapter"><i class="fas fa-plus-square"></i></a>
+                            <a href="{% url 'admin_cms:chapter_edit' chapter.id %}" class="text-primary me-2"><i class="fas fa-edit"></i></a>
+                            <a href="{% url 'admin_cms:chapter_delete' chapter.id %}" class="text-danger" onclick="return confirm('Delete this chapter?')"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted">No chapters yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

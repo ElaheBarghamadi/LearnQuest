@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+
+{% block title %}آموزش زبان | لرن کویست{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #4C9BF8 0%, #1D4ED8 100%);
+            border-radius: 30px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1%, transparent 1%);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
+
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 60px;
+            font-weight: bold;
+        }
+
+        .hero-stat .number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            border-radius: 2px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .games-sq-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 22px 8px;
+            margin-bottom: 34px;
+        }
+
+        .gseq { display: flex; flex-direction: column; align-items: center; gap: 7px; text-decoration: none; }
+        .gseq-sq {
+            width: 100%; max-width: 86px; aspect-ratio: 1 / 1; border-radius: 28%;
+            background: var(--g); display: grid; place-items: center;
+            box-shadow: 0 12px 20px -8px rgba(15,23,42,.3), inset 0 2px 3px rgba(255,255,255,.35), inset 0 -4px 8px rgba(0,0,0,.14);
+            transition: transform .2s ease;
+        }
+        .gseq:hover .gseq-sq { transform: translateY(-5px) scale(1.05); }
+        .gseq-sq svg { width: 44%; height: 44%; color: #fff; filter: drop-shadow(0 2px 2px rgba(0,0,0,.25)); }
+        .gseq-name { font-size: .8rem; font-weight: 800; color: #1E293B; text-align: center; }
+        .gseq-xp { font-size: .64rem; font-weight: 800; color: #64748B; background: #fff; border: 1px solid #E2E8F0; padding: 2px 10px; border-radius: 999px; }
+        .gseq { animation: none; }
+
+        @media (max-width: 640px) {
+            .games-sq-grid { grid-template-columns: repeat(3, 1fr); }
+            .gseq-name { font-size: .74rem; }
+        }
+
+        .game-info {
+            padding: 25px;
+        }
+
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .stats-section {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 30px;
+            padding: 50px;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat-item .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4facfe;
+            margin-bottom: 10px;
+        }
+
+        .stat-item .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .progress-bar-container {
+            background: #e0e0e0;
+            border-radius: 30px;
+            height: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            width: 0%;
+            height: 100%;
+            border-radius: 30px;
+            transition: width 0.5s ease;
+        }
+
+        .recent-words {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+        }
+
+        .words-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .word-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .word-item:hover {
+            transform: translateX(-5px);
+            background: #e9ecef;
+        }
+
+        .word-english {
+            font-weight: bold;
+            color: #4C9BF8;
+            font-size: 1rem;
+        }
+
+        .word-persian {
+            color: #666;
+            font-size: 0.85rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #4CAF50;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            .hero-section h1 {
+                font-size: 1.8rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-stats {
+                gap: 15px;
+            }
+
+            .hero-stat {
+                padding: 10px 15px;
+                font-size: 0.8rem;
+            }
+
+            .hero-stat .number {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="section-title">
+        🎮 بازی‌های آموزشی
+    </div>
+
+    <div class="games-sq-grid">
+        <a href="{% url 'language:drag_drop_game' %}" class="gseq" style="--i:0; --g:linear-gradient(145deg,#5EEAD4,#0D9488);">
+            <span class="gseq-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+            <span class="gseq-name">وصل کن</span>
+            <span class="gseq-xp">+۷۰ XP</span>
+        </a>
+        <a href="{% url 'language:word_guessing' %}" class="gseq" style="--i:1; --g:linear-gradient(145deg,#FDA4AF,#E11D48);">
+            <span class="gseq-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></span>
+            <span class="gseq-name">حدس کلمه</span>
+            <span class="gseq-xp">+۸۰ XP</span>
+        </a>
+        <a href="{% url 'language:word_scramble' %}" class="gseq" style="--i:2; --g:linear-gradient(145deg,#FDE68A,#EA580C);">
+            <span class="gseq-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></span>
+            <span class="gseq-name">جورچین</span>
+            <span class="gseq-xp">+۹۰ XP</span>
+        </a>
+        <a href="{% url 'language:dictation' %}" class="gseq" style="--i:3; --g:linear-gradient(145deg,#C4B5FD,#7C3AED);">
+            <span class="gseq-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg></span>
+            <span class="gseq-name">دیکته صوتی <small style="color:#E11D48">• جدید</small></span>
+            <span class="gseq-xp">+۹۵ XP</span>
+        </a>
+        <a href="{% url 'language:word_sprint' %}" class="gseq" style="--i:4; --g:linear-gradient(145deg,#7DD3FC,#2563EB);">
+            <span class="gseq-sq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg></span>
+            <span class="gseq-name">دوئل کلمات <small style="color:#E11D48">• جدید</small></span>
+            <span class="gseq-xp">+۹۵ XP</span>
+        </a>
+    </div>
+
+    {% if user.is_authenticated %}
+        <div class="stats-section">
+            <h3 style="text-align:center; margin-bottom:30px;">📊 آمار یادگیری تو</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.xp|default:"0" }}</div>
+                    <div class="stat-label">XP کسب شده</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.level|default:"1" }}</div>
+                    <div class="stat-label">سطح</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.points|default:"0" }}</div>
+                    <div class="stat-label">امتیاز رتبه‌بندی</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ user.streak|default:"0" }}</div>
+                    <div class="stat-label">روزهای متوالی</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-section">
+            <h3>🎯 پیشرفت به سطح بعدی</h3>
+            {% with xp=user.xp|default:0 %}
+                {% if xp < 100 %}
+                    {% with percent=xp %}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ percent }}%"></div>
+                        </div>
+                        <p>تا سطح ۲ به {{ 100|add:"-"|add:xp }} XP نیاز داری</p>
+                    {% endwith %}
+                {% elif xp < 300 %}
+                    {% with percent=100|add:"-"|add:100|add:xp|add:"-"|add:100 %}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ percent }}%"></div>
+                        </div>
+                        <p>تا سطح ۳ به {{ 300|add:"-"|add:xp }} XP نیاز داری</p>
+                    {% endwith %}
+                {% elif xp < 600 %}
+                    {% with percent=100|add:"-"|add:300|add:xp|add:"-"|add:300 %}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ percent }}%"></div>
+                        </div>
+                        <p>تا سطح ۴ به {{ 600|add:"-"|add:xp }} XP نیاز داری</p>
+                    {% endwith %}
+                {% elif xp < 1000 %}
+                    {% with percent=100|add:"-"|add:600|add:xp|add:"-"|add:600 %}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: {{ percent }}%"></div>
+                        </div>
+                        <p>تا سطح ۵ به {{ 1000|add:"-"|add:xp }} XP نیاز داری</p>
+                    {% endwith %}
+                {% else %}
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                    <p>🎉 به بالاترین سطح رسیدی! آفرین! 🎉</p>
+                {% endif %}
+            {% endwith %}
+        </div>
+    {% endif %}
+
+    <div class="recent-words">
+        <h3>📚 کلمات سطح A1 (مبتدی)</h3>
+        <div class="words-list">
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Apple</span>
+                    <div class="word-persian">سیب</div>
+                </div>
+                <span class="badge">میوه</span>
+            </div>
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Book</span>
+                    <div class="word-persian">کتاب</div>
+                </div>
+                <span class="badge">وسیله</span>
+            </div>
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Happy</span>
+                    <div class="word-persian">خوشحال</div>
+                </div>
+                <span class="badge">احساس</span>
+            </div>
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Car</span>
+                    <div class="word-persian">ماشین</div>
+                </div>
+                <span class="badge">وسیله نقلیه</span>
+            </div>
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Love</span>
+                    <div class="word-persian">عشق</div>
+                </div>
+                <span class="badge">احساس</span>
+            </div>
+            <div class="word-item">
+                <div>
+                    <span class="word-english">Water</span>
+                    <div class="word-persian">آب</div>
+                </div>
+                <span class="badge">مایع</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const gameCards = document.querySelectorAll('.gseq');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, index * 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {threshold: 0.1});
+
+        gameCards.forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'all 0.5s ease';
+            observer.observe(card);
+        });
+
+        const statNumbers = document.querySelectorAll('.stat-number');
+        statNumbers.forEach(stat => {
+            const final = parseInt(stat.textContent);
+            let current = 0;
+            const increment = final / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= final) {
+                    stat.textContent = final;
+                    clearInterval(timer);
+                } else {
+                    stat.textContent = Math.floor(current);
+                }
+            }, 20);
+        });
+    </script>
+{% endblock %}

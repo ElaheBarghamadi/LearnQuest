@@ -1,0 +1,191 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Writing Feedback | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="text-center mb-4">
+                <h1 class="h2">📝 AI Writing Feedback</h1>
+                <p class="text-muted">Review your writing and improve with suggestions</p>
+            </div>
+
+            <div class="academy-card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="fas fa-quote-left me-2"></i> Your Topic</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0 fst-italic">"{{ prompt }}"</p>
+                </div>
+            </div>
+
+            <div class="academy-card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-pen-fancy me-2"></i> Your Writing</h5>
+                </div>
+                <div class="card-body">
+                    <div class="writing-content">
+                        {{ submission|linebreaks }}
+                    </div>
+                    <div class="mt-3 text-muted small">
+                        <i class="fas fa-font"></i> {{ submission|wordcount }} words
+                    </div>
+                </div>
+            </div>
+
+            <div class="academy-card text-center" id="feedbackLoading">
+                <div class="card-body py-5">
+                    <div class="spinner-border text-primary mb-3" role="status"></div>
+                    <p>Analyzing your writing with AI...</p>
+                </div>
+            </div>
+
+            <div id="feedbackResult" style="display: none;">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="academy-card text-center">
+                            <div class="card-body">
+                                <div class="display-4 fw-bold text-primary" id="grammarScore">-</div>
+                                <div class="text-muted small">Grammar</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="academy-card text-center">
+                            <div class="card-body">
+                                <div class="display-4 fw-bold text-success" id="vocabScore">-</div>
+                                <div class="text-muted small">Vocabulary</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="academy-card text-center">
+                            <div class="card-body">
+                                <div class="display-4 fw-bold text-info" id="coherenceScore">-</div>
+                                <div class="text-muted small">Coherence</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="academy-card text-center">
+                            <div class="card-body">
+                                <div class="display-4 fw-bold text-warning" id="overallScore">-</div>
+                                <div class="text-muted small">Overall</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="academy-card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-edit me-2"></i> Suggested Corrections</h5>
+                    </div>
+                    <div class="card-body" id="correctionsList">
+                    </div>
+                </div>
+
+                <div class="academy-card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-smile me-2"></i> What You Did Well</h5>
+                    </div>
+                    <div class="card-body" id="positiveFeedback">
+                    </div>
+                </div>
+
+                <div class="academy-card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Areas for Improvement</h5>
+                    </div>
+                    <div class="card-body" id="improvementsList">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{% url 'language_academy:writing_practice' %}" class="btn-academy-outline">
+                        <i class="fas fa-redo me-2"></i> Practice Again
+                    </a>
+                    {% if lesson %}
+                        <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn-academy">
+                            <i class="fas fa-arrow-left me-2"></i> Back to Lesson
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('{% url "language_academy:evaluate_writing" %}', {
+    method: 'POST',
+    headers: {
+        'X-CSRFToken': '{{ csrf_token }}',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: new URLSearchParams({
+        'prompt': '{{ prompt }}',
+        'submission': `{{ submission|escapejs }}`,
+        'lesson_id': '{{ lesson.id|default:"" }}'
+    })
+})
+.then(response => response.json())
+.then(data => {
+    document.getElementById('feedbackLoading').style.display = 'none';
+    document.getElementById('feedbackResult').style.display = 'block';
+    
+    document.getElementById('grammarScore').innerText = data.grammar_score || '-';
+    document.getElementById('vocabScore').innerText = data.vocabulary_score || '-';
+    document.getElementById('coherenceScore').innerText = data.coherence_score || '-';
+    document.getElementById('overallScore').innerText = data.overall_score || '-';
+    
+    const correctionsList = document.getElementById('correctionsList');
+    if (data.corrections && data.corrections.length > 0) {
+        correctionsList.innerHTML = data.corrections.map(c => `
+            <div class="correction-item mb-3 p-3 bg-light rounded">
+                <div class="text-danger"><del>${c.original}</del></div>
+                <div class="text-success"><i class="fas fa-arrow-right me-1"></i> ${c.corrected}</div>
+                <div class="small text-muted mt-1">${c.explanation || ''}</div>
+            </div>
+        `).join('');
+    } else {
+        correctionsList.innerHTML = '<p class="text-success mb-0"><i class="fas fa-check-circle me-2"></i> No major corrections needed! Great job!</p>';
+    }
+    
+    document.getElementById('positiveFeedback').innerHTML = data.positive_feedback || 
+        '<p class="mb-0">You did a great job expressing your ideas!</p>';
+    
+    const improvementsList = document.getElementById('improvementsList');
+    if (data.improvement_suggestions) {
+        improvementsList.innerHTML = `<p class="mb-0">${data.improvement_suggestions}</p>`;
+    } else if (data.areas_for_improvement && data.areas_for_improvement.length > 0) {
+        improvementsList.innerHTML = `<ul><li>${data.areas_for_improvement.join('</li><li>')}</li></ul>`;
+    } else {
+        improvementsList.innerHTML = '<p class="mb-0">Keep practicing to improve further!</p>';
+    }
+    
+    if (data.overall_score >= 7) {
+        showXPPopup(20, 'for excellent writing!');
+    } else if (data.overall_score >= 5) {
+        showXPPopup(10, 'for good effort!');
+    }
+});
+</script>
+
+<style>
+.writing-content {
+    background: var(--duo-gray-50);
+    padding: 20px;
+    border-radius: var(--duo-radius);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.correction-item {
+    border-left: 3px solid var(--duo-green);
+}
+</style>
+{% endblock %}

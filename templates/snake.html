@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}بازی مار | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+<style>
+    .snake-wrap {
+        max-width: 520px; margin: 0 auto; padding: 16px;
+        text-align: center;
+    }
+    .snake-card {
+        background: white; border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px;
+    }
+    .snake-header {
+        display: flex; justify-content: space-between; align-items: center;
+        background: linear-gradient(135deg, #3B82F6, #36D1DC);
+        color: white; border-radius: 16px; padding: 10px 16px; margin-bottom: 14px;
+        flex-wrap: wrap; gap: 8px;
+    }
+    .snake-header .stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: bold; backdrop-filter: blur(4px); }
+    #snakeCanvas {
+        width: 100%; max-width: 420px; aspect-ratio: 1;
+        background: #1e2235; border-radius: 16px;
+        touch-action: none; display: block; margin: 0 auto;
+    }
+    .snake-controls { margin-top: 14px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .snake-btn {
+        border: none; border-radius: 14px; padding: 10px 22px; font-weight: bold;
+        background: linear-gradient(135deg, #3B82F6, #36D1DC); color: white;
+        cursor: pointer; font-size: 1rem; transition: .2s;
+    }
+    .snake-btn:active { transform: scale(.95); }
+    
+    .dpad { display: none; margin: 14px auto 0; grid-template-columns: repeat(3, 64px); grid-template-rows: repeat(3, 64px); gap: 8px; justify-content: center; }
+    .dpad button {
+        border: none; border-radius: 16px; background: #eef0ff; color: #3B82F6;
+        font-size: 1.5rem; font-weight: bold; box-shadow: 0 4px 10px rgba(59, 130, 246,.15);
+    }
+    .dpad button:active { background: #3B82F6; color: white; }
+    .dpad .up { grid-column: 2; grid-row: 1; } .dpad .left { grid-column: 1; grid-row: 2; }
+    .dpad .down { grid-column: 2; grid-row: 3; } .dpad .right { grid-column: 3; grid-row: 2; }
+    @media (max-width: 768px) { .dpad { display: grid; } }
+    #overlay {
+        position: absolute; inset: 0; background: rgba(30,34,53,.75); border-radius: 16px;
+        display: none; align-items: center; justify-content: center; color: white;
+        flex-direction: column; gap: 8px; font-weight: bold;
+    }
+    .canvas-box { position: relative; }
+</style>
+
+<div class="snake-wrap">
+    <div class="snake-card">
+        <div class="snake-header">
+            <span class="stat">🍎 امتیاز: <span id="score">0</span></span>
+            <span class="stat">🏆 رکورد: <span id="best">0</span></span>
+            <span class="stat">⏱ <span id="timer">0</span> ثانیه</span>
+        </div>
+
+        <div class="canvas-box">
+            <canvas id="snakeCanvas" width="420" height="420"></canvas>
+            <div id="overlay"><div style="font-size:2rem">🐍</div><div id="overlayText">برای شروع روی «شروع» بزن!</div><div class="gp-xpline" id="snakeXpLine"></div></div>
+        </div>
+
+        <div class="snake-controls">
+            <button class="snake-btn" id="startBtn">▶ شروع</button>
+            <button class="snake-btn" id="pauseBtn" style="background:linear-gradient(135deg,#FF6584,#f7b733)">⏸ توقف</button>
+        </div>
+
+        <div class="dpad">
+            <button class="up" data-dir="up">⬆</button>
+            <button class="left" data-dir="left">⬅</button>
+            <button class="down" data-dir="down">⬇</button>
+            <button class="right" data-dir="right">➡</button>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const GRID = 20;
+    const canvas = document.getElementById('snakeCanvas');
+    const ctx = canvas.getContext('2d');
+    const CELL = canvas.width / GRID;
+
+    let snake, dir, nextDir, apple, score, best = 0, loop = null, speed = 130, seconds = 0, tTick = null;
+
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const timerEl = document.getElementById('timer');
+    const overlay = document.getElementById('overlay');
+
+    function reset() {
+        snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
+        dir = nextDir = 'right';
+        score = 0; seconds = 0;
+        placeApple();
+        scoreEl.textContent = 0; timerEl.textContent = 0;
+        bestEl.textContent = best;
+        draw();
+    }
+
+    function placeApple() {
+        do { apple = {x: Math.floor(Math.random()*GRID), y: Math.floor(Math.random()*GRID)}; }
+        while (snake.some(s => s.x === apple.x && s.y === apple.y));
+    }
+
+    function step() {
+        dir = nextDir;
+        const d = {up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[dir];
+        const head = {x: snake[0].x + d[0], y: snake[0].y + d[1]};
+
+        if (head.x < 0 || head.y < 0 || head.x >= GRID || head.y >= GRID ||
+            snake.some(s => s.x === head.x && s.y === head.y)) {
+            return gameOver();
+        }
+        snake.unshift(head);
+        if (head.x === apple.x && head.y === apple.y) {
+            score += 10; scoreEl.textContent = score; placeApple();
+            if (speed > 70) { speed -= 2; restartLoop(); }
+        } else snake.pop();
+        draw();
+    }
+
+    function draw() {
+        ctx.fillStyle = '#1e2235'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FF6584';
+        ctx.beginPath(); ctx.arc(apple.x*CELL+CELL/2, apple.y*CELL+CELL/2, CELL/2.4, 0, 7); ctx.fill();
+        snake.forEach((s, i) => {
+            ctx.fillStyle = i === 0 ? '#36D1DC' : `hsl(${190 + i*2}, 70%, ${55 - Math.min(i,25)}%)`;
+            roundRect(s.x*CELL+1.5, s.y*CELL+1.5, CELL-3, CELL-3, 6);
+        });
+    }
+
+    function roundRect(x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, w, h, r);
+        ctx.fill();
+    }
+
+    function restartLoop() { clearInterval(loop); loop = setInterval(step, speed); }
+
+    function start() {
+        reset();
+        overlay.style.display = 'none';
+        restartLoop();
+        clearInterval(tTick);
+        tTick = setInterval(() => { seconds++; timerEl.textContent = seconds; }, 1000);
+    }
+
+    function pause() {
+        if (loop) {
+            clearInterval(loop); loop = null; clearInterval(tTick);
+            overlay.style.display = 'flex';
+            document.getElementById('overlayText').textContent = 'متوقف شد ⏸';
+        } else {
+            overlay.style.display = 'none'; restartLoop();
+            tTick = setInterval(() => { seconds++; timerEl.textContent = seconds; }, 1000);
+        }
+    }
+
+    function gameOver() {
+        clearInterval(loop); loop = null; clearInterval(tTick);
+        if (score > best) { best = score; bestEl.textContent = best; }
+        overlay.style.display = 'flex';
+        document.getElementById('overlayText').textContent = `باخت! امتیازت: ${score} 🎮`;
+        GP.saveScore('/games/save-snake-score/', {score: score, completed: true}, 'snakeXpLine')
+            .then(d => { if (d.best_score) { best = d.best_score; bestEl.textContent = best; } });
+    }
+
+    const change = d => {
+        const opp = {up:'down',down:'up',left:'right',right:'left'}[dir];
+        if (d !== opp) nextDir = d;
+    };
+
+    document.addEventListener('keydown', e => {
+        const map = {ArrowUp:'up',ArrowDown:'down',ArrowLeft:'left',ArrowRight:'right'};
+        if (map[e.key]) { e.preventDefault(); change(map[e.key]); }
+    });
+
+    let tx, ty;
+    canvas.addEventListener('touchstart', e => { tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, {passive: true});
+    canvas.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].clientX - tx, dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > Math.abs(dy)) change(dx > 0 ? 'right' : 'left');
+        else change(dy > 0 ? 'down' : 'up');
+    });
+
+    document.querySelectorAll('.dpad button').forEach(b =>
+        b.addEventListener('click', () => change(b.dataset.dir)));
+
+    document.getElementById('startBtn').addEventListener('click', start);
+    document.getElementById('pauseBtn').addEventListener('click', pause);
+
+    overlay.style.display = 'flex';
+    reset();
+})();
+</script>
+{% endblock %}

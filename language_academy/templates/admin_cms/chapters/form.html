@@ -1,0 +1,127 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Name *</label>
+                    {{ form.name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Name (Persian)</label>
+                    {{ form.name_fa }}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Description *</label>
+                {{ form.description }}
+            </div>
+            
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Order</label>
+                    {{ form.order }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">XP Reward</label>
+                    {{ form.xp_reward }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Coin Reward</label>
+                    {{ form.coin_reward }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Passing Score (%)</label>
+                    {{ form.passing_score }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Unlock Score</label>
+                    {{ form.unlock_score }}
+                    <small class="text-muted">Minimum score to unlock this chapter</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Estimated Time (minutes)</label>
+                    {{ form.estimated_time_minutes }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Required Chapter</label>
+                    {{ form.required_chapter }}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Chapter Image</label>
+                {{ form.image }}
+                {% if form.instance.image %}
+                    <div class="mt-2"><img src="{{ form.instance.image.url }}" style="max-height: 100px;"></div>
+                {% endif %}
+            </div>
+            
+            <div class="form-check mb-3">
+                {{ form.is_published }}
+                <label class="form-check-label">Published (visible to users)</label>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-between">
+            {% if chapter %}
+                <a href="{% url 'admin_cms:world_edit' chapter.world.id %}" class="btn btn-secondary">Cancel</a>
+            {% else %}
+                <a href="{% url 'admin_cms:world_edit' world.id %}" class="btn btn-secondary">Cancel</a>
+            {% endif %}
+            <button type="submit" class="btn btn-primary">Save Chapter</button>
+        </div>
+    </form>
+</div>
+</div>
+
+{% if chapter %}
+<div class="card mt-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-book me-2"></i> Lessons in this chapter</h5>
+        <a href="{% url 'admin_cms:lesson_create' chapter.id %}" class="btn btn-success btn-sm">
+            <i class="fas fa-plus"></i> Add Lesson
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+            {% for lesson in lessons %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ lesson.order }}.</strong> {{ lesson.name }}
+                    <span class="badge bg-info text-dark ms-1">{{ lesson.get_lesson_type_display }}</span>
+                    {% if lesson.is_published %}
+                        <span class="badge bg-success">Published</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Draft</span>
+                    {% endif %}
+                    {% if lesson.is_exclusive %}<span class="badge bg-warning text-dark">👑 Exclusive</span>{% endif %}
+                </div>
+                <div>
+                    <a href="/academy/lesson/{{ lesson.id }}/?edit=1" class="text-success me-2" title="Live edit"><i class="fas fa-magic"></i></a>
+                    <a href="{% url 'admin_cms:lesson_edit' lesson.id %}" class="text-primary me-2"><i class="fas fa-edit"></i></a>
+                    <a href="{% url 'admin_cms:lesson_delete' lesson.id %}" class="text-danger" onclick="return confirm('Delete this lesson?')"><i class="fas fa-trash"></i></a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="list-group-item text-center py-4">No lessons yet — <a href="{% url 'admin_cms:lesson_create' chapter.id %}">create the first lesson</a></div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

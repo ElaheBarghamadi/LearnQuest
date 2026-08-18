@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CMS Admin Panel{% endblock %} | LearnQuest Academy</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #4C9BF8 0%, #1D4ED8 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+        .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .sidebar .nav-link i {
+            width: 25px;
+            margin-right: 10px;
+        }
+        .main-content {
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+        .stat-card {
+            border: none;
+            border-radius: 1rem;
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .table-actions i {
+            cursor: pointer;
+            margin: 0 5px;
+            transition: color 0.2s;
+        }
+        .table-actions i:hover {
+            opacity: 0.7;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <div class="col-md-3 col-lg-2 sidebar p-3">
+                <div class="text-center mb-4">
+                    <h4 class="text-white">🎓 LearnQuest</h4>
+                    <small class="text-white-50">Admin Panel</small>
+                </div>
+
+                <nav class="nav flex-column">
+                    <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'admin_cms:dashboard' %}">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </a>
+                    <a class="nav-link {% if 'world' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:world_list' %}">
+                        <i class="fas fa-globe"></i> Worlds
+                    </a>
+                    <a class="nav-link {% if 'vocabulary' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:vocabulary_list' %}">
+                        <i class="fas fa-book"></i> Vocabulary
+                    </a>
+                    <a class="nav-link {% if 'quiz' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:quiz_list' %}">
+                        <i class="fas fa-question-circle"></i> Quizzes
+                    </a>
+                    <a class="nav-link {% if 'exam' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:exam_list' %}">
+                        <i class="fas fa-file-alt"></i> Exams
+                    </a>
+                    <a class="nav-link {% if 'badge' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:badge_list' %}">
+                        <i class="fas fa-medal"></i> Badges
+                    </a>
+                    <a class="nav-link {% if 'user' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:user_list' %}">
+                        <i class="fas fa-users"></i> Users
+                    </a>
+                    <a class="nav-link {% if 'analytics' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:analytics' %}">
+                        <i class="fas fa-chart-line"></i> Analytics
+                    </a>
+                    <a class="nav-link {% if 'settings' in request.resolver_match.url_name %}active{% endif %}" href="{% url 'admin_cms:settings' %}">
+                        <i class="fas fa-cog"></i> Settings
+                    </a>
+                </nav>
+
+                <hr class="bg-light my-3">
+
+                <div class="mt-auto">
+                    <a class="nav-link" href="{% url 'language_academy:world_map' %}">
+                        <i class="fas fa-arrow-left"></i> Back to Site
+                    </a>
+                    <a class="nav-link text-danger" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-md-9 col-lg-10 main-content">
+                <nav class="navbar navbar-light bg-white border-bottom px-4 py-2">
+                    <div class="d-flex align-items-center">
+                        <h5 class="mb-0">{% block page_title %}CMS Dashboard{% endblock %}</h5>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <span class="me-3">
+                            <i class="fas fa-user-circle fa-2x text-secondary"></i>
+                        </span>
+                        <div>
+                            <strong>{{ request.user.username }}</strong><br>
+                            <small class="text-muted">Administrator</small>
+                        </div>
+                    </div>
+                </nav>
+
+                <div class="p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

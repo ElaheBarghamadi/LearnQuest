@@ -1,0 +1,807 @@
+{% extends 'base.html' %}
+{% block title %}تماس با ما | لرن کویست{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .contact-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .contact-header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .contact-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .contact-header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        
+        .contact-form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .contact-form-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8ecf0;
+        }
+
+        .form-header i {
+            font-size: 28px;
+            color: #3B82F6;
+        }
+
+        .form-header h2 {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin: 0;
+        }
+
+        
+        .form-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2D3047;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            margin-left: 6px;
+            color: #3B82F6;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e8ecf0;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: #fafbfc;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: white;
+        }
+
+        .form-control.error {
+            border-color: #FF6584;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .error-message {
+            color: #FF6584;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .error-message i {
+            font-size: 12px;
+        }
+
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        
+        .contact-info-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            padding: 35px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .contact-info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8ecf0;
+        }
+
+        .info-header i {
+            font-size: 28px;
+            color: #3B82F6;
+        }
+
+        .info-header h2 {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin: 0;
+        }
+
+        
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transform: translateX(-5px);
+        }
+
+        .info-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .info-icon i {
+            font-size: 22px;
+            color: white;
+        }
+
+        .info-content h4 {
+            font-size: 1rem;
+            color: #1a1a2e;
+            margin-bottom: 5px;
+        }
+
+        .info-content p {
+            color: #6C757D;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .info-content a {
+            color: #3B82F6;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .info-content a:hover {
+            color: #36D1DC;
+        }
+
+        
+        .map-container {
+            margin-top: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 200px;
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+        }
+
+        .map-placeholder {
+            text-align: center;
+        }
+
+        .map-placeholder i {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        
+        .social-section {
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e8ecf0;
+        }
+
+        .social-section h4 {
+            font-size: 0.9rem;
+            color: #1a1a2e;
+            margin-bottom: 15px;
+        }
+
+        .social-links-contact {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link-contact {
+            width: 45px;
+            height: 45px;
+            background: #f0f2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #3B82F6;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .social-link-contact:hover {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        
+        .success-message {
+            background: linear-gradient(135deg, #4CAF50, #8BC34A);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.5s ease;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message i {
+            font-size: 24px;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        
+        .faq-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 28px;
+            padding: 35px;
+            margin-top: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e8ecf0;
+        }
+
+        .faq-header i {
+            font-size: 28px;
+            color: #3B82F6;
+        }
+
+        .faq-header h2 {
+            font-size: 1.5rem;
+            color: #1a1a2e;
+            margin: 0;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .faq-item {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            background: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .faq-question {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        .faq-question i {
+            color: #3B82F6;
+        }
+
+        .faq-answer {
+            margin-top: 12px;
+            color: #6C757D;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+
+        
+        @media (max-width: 900px) {
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .contact-form-card,
+            .contact-info-card,
+            .faq-section {
+                padding: 25px;
+            }
+
+            .info-item {
+                padding: 12px;
+            }
+
+            .info-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .info-icon i {
+                font-size: 18px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="contact-container">
+        <div class="contact-header">
+            <h1>تماس با ما</h1>
+            <p>ما اینجاییم تا به شما کمک کنیم. سوالات و نظرات خود را با ما در میان بگذارید</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <div>
+                <strong>پیام شما با موفقیت ارسال شد!</strong><br>
+                به زودی با شما تماس خواهیم گرفت.
+            </div>
+        </div>
+
+        <div class="contact-wrapper">
+            <div class="contact-form-card">
+                <div class="form-header">
+                    <i class="fas fa-paper-plane"></i>
+                    <h2>ارسال پیام</h2>
+                </div>
+
+                <form id="contactForm" method="post" action="{% url 'contact' %}">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> نام و نام خانوادگی</label>
+                        {{form.name }}
+
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> آدرس ایمیل</label>
+                        {{ form.email }}
+
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> شماره تماس (اختیاری)</label>
+                        {{ form.phone_number }}
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="fas fa-comment"></i> متن پیام</label>
+                        {{ form.message }}
+
+                    </div>
+                    {% if form.errors %}
+                                    <div style="color: red">
+                                        {{ form.name.errors }}
+                                        {{ form.email.errors }}
+                                    </div>
+
+                    {% endif %}
+
+                    <button type="submit"  class="submit-btn" id="submitBtn">
+                        <i class="fas fa-location-arrow"></i>
+                        ارسال پیام
+                    </button>
+                </form>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="info-header">
+                    <i class="fas fa-address-card"></i>
+                    <h2>اطلاعات تماس</h2>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>آدرس</h4>
+                        <p>تهران، خیابان آزادی، نبش کوچه ۱۲، پلاک ۸<br>طبقه ۳، واحد ۵</p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>تلفن‌های تماس</h4>
+                        <p><a href="tel:02112345678">۰۲۱-۱۲۳۴۵۶۷۸</a><br>
+                            <a href="tel:09121234567">۰۹۱۲-۱۲۳۴۵۶۷</a></p>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <h4>ایمیل</h4>
+                        <p><a href="mailto:info@learnquest.com">info@learnquest.com</a><br>
+                            <a href="mailto:support@learnquest.com">support@learnquest.com</a></p>
+                    </div>
+                </div>
+
+                <div class="map-container" id="mapButton">
+                    <div class="map-placeholder">
+                        <i class="fas fa-map"></i>
+                        <p>مشاهده نقشه</p>
+                    </div>
+                </div>
+
+                <div class="social-section">
+                    <h4>ما را در شبکه‌های اجتماعی دنبال کنید</h4>
+                    <div class="social-links-contact">
+                        <a href="#" class="social-link-contact"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-link-contact"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link-contact"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link-contact"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link-contact"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-section">
+            <div class="faq-header">
+                <i class="fas fa-question-circle"></i>
+                <h2>سوالات متداول</h2>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-plus"></i>
+                        <span>چگونه می‌توانم رمز عبور خود را بازیابی کنم؟</span>
+                    </div>
+                    <div class="faq-answer">
+                        برای بازیابی رمز عبور، به صفحه ورود بروید و روی گزینه "بازیابی رمز عبور" کلیک کنید. سپس ایمیل
+                        خود را وارد کنید تا لینک بازیابی برای شما ارسال شود.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-plus"></i>
+                        <span>چگونه امتیاز XP کسب کنم؟</span>
+                    </div>
+                    <div class="faq-answer">
+                        با انجام بازی‌های آموزشی، مطالعه مقالات وبلاگ، ارسال پیام در انجمن و تکمیل چالش‌های روزانه می‌توانید
+                        امتیاز XP کسب کنید.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-plus"></i>
+                        <span>آیا استفاده از سایت رایگان است؟</span>
+                    </div>
+                    <div class="faq-answer">
+                        بله، تمام امکانات پایه سایت رایگان است. برخی ویژگی‌های ویژه مانند دوره‌های تخصصی نیاز به اشتراک
+                        ویژه دارد.
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <i class="fas fa-plus"></i>
+                        <span>چگونه می‌توانم پیشرفت خود را ببینم؟</span>
+                    </div>
+                    <div class="faq-answer">
+                        می‌توانید با مراجعه به صفحه پروفایل خود، تمام آمار و پیشرفت یادگیری خود را مشاهده کنید.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('contactForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const successMsg = document.getElementById('successMessage');
+
+            function validateEmail(email) {
+                const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return re.test(email);
+            }
+
+            function validatePhone(phone) {
+                if (!phone) return true;
+                const re = /^09[0-9]{9}$/;
+                return re.test(phone);
+            }
+
+            function showError(elementId, show) {
+                const errorEl = document.getElementById(elementId);
+                if (errorEl) {
+                    errorEl.style.display = show ? 'flex' : 'none';
+                    const input = errorEl.closest('.form-group')?.querySelector('.form-control');
+                    if (input) {
+                        if (show) {
+                            input.classList.add('error');
+                        } else {
+                            input.classList.remove('error');
+                        }
+                    }
+                }
+            }
+
+            function validateForm() {
+                let isValid = true;
+
+                const name = document.querySelector('input[name="full_name"]').value.trim();
+                if (name.length < 3) {
+                    showError('nameError', true);
+                    isValid = false;
+                } else {
+                    showError('nameError', false);
+                }
+
+                const email = document.querySelector('input[name="email"]').value.trim();
+                if (!validateEmail(email)) {
+                    showError('emailError', true);
+                    isValid = false;
+                } else {
+                    showError('emailError', false);
+                }
+
+                const phone = document.querySelector('input[name="phone"]').value.trim();
+                if (phone && !validatePhone(phone)) {
+                    showError('phoneError', true);
+                    isValid = false;
+                } else {
+                    showError('phoneError', false);
+                }
+
+                const message = document.querySelector('textarea[name="message"]').value.trim();
+                if (message.length < 10) {
+                    showError('messageError', true);
+                    isValid = false;
+                } else {
+                    showError('messageError', false);
+                }
+
+                return isValid;
+            }
+
+            {#form.addEventListener('submit', async function (e) {#}
+            {#    e.preventDefault();#}
+            {##}
+            {#    if (!validateForm()) {#}
+            {#        return;#}
+            {#    }#}
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> در حال ارسال...';
+
+                const formData = new FormData(form);
+
+                try {
+                    const response = await fetch('/contact/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken')
+                        },
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        successMsg.classList.add('show');
+                        form.reset();
+
+                        setTimeout(() => {
+                            successMsg.classList.remove('show');
+                        }, 5000);
+                    } else {
+                        alert('خطا در ارسال پیام. لطفاً مجدداً تلاش کنید.');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('خطا در ارتباط با سرور. لطفاً مجدداً تلاش کنید.');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-location-arrow"></i> ارسال پیام';
+                }
+            });
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                const icon = question.querySelector('i');
+                
+                question.addEventListener('click', () => {
+                    const isOpen = item.classList.contains('open');
+                    
+                    faqItems.forEach(other => {
+                        if (other !== item) {
+                            other.classList.remove('open');
+                            const otherIcon = other.querySelector('.faq-question i');
+                            if (otherIcon) {
+                                otherIcon.className = 'fas fa-plus';
+                            }
+                        }
+                    });
+                    
+                    item.classList.toggle('open');
+                    if (icon) {
+                        icon.className = isOpen ? 'fas fa-plus' : 'fas fa-minus';
+                    }
+                });
+            });
+
+            const mapButton = document.getElementById('mapButton');
+            if (mapButton) {
+                mapButton.addEventListener('click', () => {
+                    window.open('https://www.google.com/maps', '_blank');
+                });
+            }
+
+            const nameInput = document.querySelector('input[name="full_name"]');
+            const emailInput = document.querySelector('input[name="email"]');
+            const phoneInput = document.querySelector('input[name="phone"]');
+            const messageInput = document.querySelector('textarea[name="message"]');
+
+            if (nameInput) {
+                nameInput.addEventListener('input', () => {
+                    showError('nameError', nameInput.value.trim().length < 3 && nameInput.value.trim().length > 0);
+                });
+            }
+
+            if (emailInput) {
+                emailInput.addEventListener('input', () => {
+                    showError('emailError', !validateEmail(emailInput.value.trim()) && emailInput.value.trim().length > 0);
+                });
+            }
+
+            if (phoneInput) {
+                phoneInput.addEventListener('input', () => {
+                    const val = phoneInput.value.trim();
+                    showError('phoneError', val && !validatePhone(val));
+                });
+            }
+
+            if (messageInput) {
+                messageInput.addEventListener('input', () => {
+                    showError('messageError', messageInput.value.trim().length < 10 && messageInput.value.trim().length > 0);
+                });
+            }
+        });
+    </script>
+{% endblock %}

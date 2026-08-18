@@ -1,0 +1,90 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Word *</label>
+                    {{ form.word }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Pronunciation</label>
+                    {{ form.pronunciation }}
+                    <small class="text-muted">e.g., /ˈpæspɔːrt/</small>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Meaning *</label>
+                    {{ form.meaning }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Meaning (Persian)</label>
+                    {{ form.meaning_fa }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Part of Speech</label>
+                    {{ form.part_of_speech }}
+                    <small class="text-muted">e.g., noun, verb, adjective</small>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Difficulty Level</label>
+                    {{ form.difficulty }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Categories</label>
+                    {{ form.categories }}
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">UK Audio</label>
+                    {{ form.audio_uk }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">US Audio</label>
+                    {{ form.audio_us }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Example Audio</label>
+                    {{ form.audio_example }}
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Image</label>
+                {{ form.image }}
+                {% if form.instance.image %}
+                    <div class="mt-2"><img src="{{ form.instance.image.url }}" style="max-height: 100px;"></div>
+                {% endif %}
+            </div>
+            
+            <div class="form-check mb-3">
+                {{ form.is_active }}
+                <label class="form-check-label">Active (visible in vocabulary lists)</label>
+            </div>
+            
+            <hr>
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_cms:vocabulary_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Vocabulary</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'language_academy/base_academy.html' %}
+{% block title %}Level Check — {{ attempt.chosen_level }} | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+.pq-head { text-align: center; margin-bottom: 22px; }
+.pq-chip { display: inline-block; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; border-radius: 999px; padding: 7px 20px; font-weight: 800; }
+.pq-card { border-radius: 20px; padding: 20px; margin-bottom: 16px; }
+.pq-q { font-weight: 800; margin-bottom: 14px; line-height: 1.6; }
+.pq-num { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; background: rgba(99, 102, 241, 0.14); color: #4f46e5; align-items: center; justify-content: center; font-size: 0.85rem; margin-inline-end: 8px; }
+.pq-opt { display: block; width: 100%; text-align: start; padding: 12px 16px; border-radius: 14px; border: 1.5px solid rgba(148, 163, 184, 0.35); background: rgba(255, 255, 255, 0.55); margin-bottom: 9px; cursor: pointer; font-size: 0.92rem; transition: 0.15s; }
+.pq-opt:hover { border-color: rgba(99, 102, 241, 0.55); }
+.pq-opt.sel { border-color: #6366f1; background: rgba(99, 102, 241, 0.12); font-weight: 700; }
+.pq-foot { position: sticky; bottom: 14px; z-index: 50; text-align: center; margin-top: 6px; }
+.pq-foot .in { display: inline-flex; align-items: center; gap: 14px; background: rgba(255, 255, 255, 0.78); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 999px; padding: 10px 22px; box-shadow: 0 14px 34px rgba(30, 45, 90, 0.18); }
+.pq-count { font-weight: 800; color: #4f46e5; font-variant-numeric: tabular-nums; }
+.pq-send { border: none; border-radius: 999px; padding: 11px 30px; font-weight: 800; color: #fff; background: linear-gradient(135deg, #8b5cf6, #3b82f6); box-shadow: 0 10px 24px rgba(99, 102, 241, 0.4); transition: 0.15s; }
+.pq-send:disabled { opacity: 0.4; box-shadow: none; cursor: not-allowed; }
+</style>
+
+<div class="container py-4" style="max-width: 820px;">
+    <div class="pq-head">
+        <h1 class="h3 mb-2">🧠 Level check</h1>
+        <span class="pq-chip">{{ attempt.chosen_level }} · {{ questions|length }} questions</span>
+        <p class="text-muted mt-2 mb-0 small">Answer all of them — this only takes a minute or two.</p>
+    </div>
+
+    <form method="post" action="{% url 'language_academy:idioms_placement_submit' attempt.id %}" id="quizForm">
+        {% csrf_token %}
+        {% for q in questions %}
+        <div class="academy-card glass-card pq-card" data-q="{{ forloop.counter0 }}">
+            <div class="pq-q"><span class="pq-num">{{ forloop.counter }}</span>{{ q.q }}</div>
+            {% for c in q.choices %}
+            <button type="button" class="pq-opt" data-qa="{{ forloop.parentloop.counter0 }}" data-oi="{{ forloop.counter0 }}">{{ c }}</button>
+            {% endfor %}
+            <input type="hidden" name="ans[]" id="ans-{{ forloop.counter0 }}" value="">
+        </div>
+        {% endfor %}
+        <div class="pq-foot">
+            <span class="in">
+                <span class="pq-count" id="answeredCount">0 / {{ questions|length }}</span>
+                <button type="submit" class="pq-send" id="submitBtn" disabled>See my result 🎯</button>
+            </span>
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+    const total = {{ questions|length }};
+    const answered = new Set();
+    const count = document.getElementById('answeredCount');
+    const btn = document.getElementById('submitBtn');
+    document.querySelectorAll('.pq-opt').forEach((o) => {
+        o.addEventListener('click', () => {
+            const qq = o.dataset.qa, oi = o.dataset.oi;
+            document.querySelectorAll('.pq-opt[data-qa="' + qq + '"]').forEach((x) => x.classList.remove('sel'));
+            o.classList.add('sel');
+            document.getElementById('ans-' + qq).value = oi;
+            answered.add(qq);
+            count.textContent = answered.size + ' / ' + total;
+            btn.disabled = answered.size !== total;
+        });
+    });
+    document.getElementById('quizForm').addEventListener('submit', (ev) => {
+        if (answered.size !== total) { ev.preventDefault(); return; }
+        btn.disabled = true;
+        btn.textContent = 'Grading… ⏳';
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,257 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static jalali %}
+
+{% block title %}Certificate | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="certificate-wrapper">
+                <div class="certificate-border">
+                    <div class="certificate-content">
+                        <div class="certificate-seal">
+                            <i class="fas fa-seal"></i>
+                        </div>
+                        <div class="certificate-corner top-left"></div>
+                        <div class="certificate-corner top-right"></div>
+                        <div class="certificate-corner bottom-left"></div>
+                        <div class="certificate-corner bottom-right"></div>
+
+                        <div class="text-center">
+                            <div class="certificate-icon mb-3">
+                                <i class="fas fa-certificate fa-3x text-success"></i>
+                            </div>
+                            <h1 class="certificate-title">CERTIFICATE OF COMPLETION</h1>
+                            <p class="certificate-subtitle">This certificate is proudly presented to</p>
+                            <h2 class="certificate-name">{{ certificate.user.username }}</h2>
+                            <p class="certificate-text">
+                                for successfully completing the
+                                <strong>{{ certificate.world.name }}</strong> world
+                                in the LearnQuest Language Academy,
+                                demonstrating proficiency in English at the
+                                <strong>{{ certificate.world.get_difficulty_level_display }}</strong> level.
+                            </p>
+                            
+                            <div class="certificate-details">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="detail-label">Date of Issue</div>
+                                        <div class="detail-value">{{ certificate.issued_at|jdatelong }}</div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="detail-label">Certificate ID</div>
+                                        <div class="detail-value">{{ certificate.certificate_number }}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="certificate-footer">
+                                <div class="signature">
+                                    <div class="signature-line"></div>
+                                    <div class="signature-name">LearnQuest Academy</div>
+                                    <div class="signature-title">Director of Education</div>
+                                </div>
+                                <div class="verification-code">
+                                    <i class="fas fa-qrcode me-2"></i>
+                                    <span>Verify at: <a href="{% url 'language_academy:certificate_verify' certificate.verification_code %}" style="color:inherit;">learnquest.com/academy/certificate/verify/{{ certificate.verification_code }}</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <button onclick="window.print()" class="btn-academy">
+                        <i class="fas fa-print me-2"></i> Print Certificate
+                    </button>
+                    <a href="{% url 'language_academy:my_certificates' %}" class="btn-academy-outline">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Certificates
+                    </a>
+                    <a href="{% url 'language_academy:world_detail' certificate.world.id %}" class="btn-academy-outline">
+                        <i class="fas fa-globe me-2"></i> Review World
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.certificate-wrapper {
+    background: var(--duo-gray-100);
+    padding: 30px;
+    border-radius: 20px;
+}
+
+.certificate-border {
+    background: var(--duo-white);
+    border: 2px solid var(--duo-green);
+    border-radius: 16px;
+    padding: 40px;
+    position: relative;
+}
+
+.certificate-content {
+    position: relative;
+}
+
+.certificate-seal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFC800, #FF9800);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+}
+
+.certificate-seal i {
+    font-size: 3rem;
+    color: white;
+}
+
+.certificate-corner {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 3px solid var(--duo-green);
+}
+
+.certificate-corner.top-left {
+    top: 10px;
+    left: 10px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.certificate-corner.top-right {
+    top: 10px;
+    right: 10px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.certificate-corner.bottom-left {
+    bottom: 10px;
+    left: 10px;
+    border-right: none;
+    border-top: none;
+}
+
+.certificate-corner.bottom-right {
+    bottom: 10px;
+    right: 10px;
+    border-left: none;
+    border-top: none;
+}
+
+.certificate-title {
+    font-size: 1.8rem;
+    letter-spacing: 3px;
+    color: var(--duo-green);
+    margin-bottom: 20px;
+}
+
+.certificate-subtitle {
+    font-size: 1rem;
+    color: var(--duo-gray-600);
+    margin-bottom: 15px;
+}
+
+.certificate-name {
+    font-size: 2.2rem;
+    font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+    font-weight: 800;
+    color: var(--duo-gray-800);
+    border-bottom: 2px solid var(--duo-gray-300);
+    display: inline-block;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.certificate-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--duo-gray-700);
+    margin-bottom: 30px;
+}
+
+.certificate-details {
+    background: var(--duo-gray-50);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.detail-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--duo-gray-500);
+}
+
+.detail-value {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--duo-gray-800);
+}
+
+.certificate-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--duo-gray-200);
+}
+
+.signature {
+    text-align: center;
+}
+
+.signature-line {
+    width: 150px;
+    height: 1px;
+    background: var(--duo-gray-400);
+    margin-bottom: 8px;
+}
+
+.signature-name {
+    font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.signature-title {
+    font-size: 0.7rem;
+    color: var(--duo-gray-500);
+}
+
+.verification-code {
+    font-size: 0.7rem;
+    color: var(--duo-gray-500);
+    text-align: right;
+}
+
+@media print {
+    .academy-navbar, .academy-footer, .btn-academy, .btn-academy-outline, .container > .text-center {
+        display: none !important;
+    }
+    .certificate-wrapper {
+        background: white;
+        padding: 0;
+    }
+    .certificate-border {
+        border: 1px solid #ccc;
+    }
+}
+</style>
+{% endblock %}

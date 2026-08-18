@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608058">
+{% endblock %}
+
+{% block content %}
+<div class="sh-shell">
+    <div class="sh-hero hero-teal">
+        <div>
+            <h1>🎒 موجودی من</h1>
+            <p>همهٔ چیزهایی که صاحب شدی اینجاست — «استفاده» را بزن تا روی پروفایلت نمایش داده شود ✨</p>
+        </div>
+        <a class="sh-btn ghost" href="{% url 'shop:home' %}">🛍️ ادامهٔ خرید</a>
+    </div>
+
+    {% if cosmetics %}
+    <div class="sh-panel">
+        <h3>✨ الان روی پروفایلت فعال است</h3>
+        <div class="sh-activecosm">
+            {% for slot, items in cosmetics.items %}
+                {% for it in items %}
+                    <span>{{ it.emoji }} {{ it.name }}</span>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if rows %}
+    <h2 class="sh-sec-t" style="margin-top:0">🧺 آیتم‌های موجودی تو <small class="sh-pill" style="font-size:.68rem;padding:4px 12px">{{ rows|length }} آیتم</small></h2>
+    <div class="sh-grid">
+        {% for row in rows %}
+        {% with p=row.item.product %}
+        <div class="sh-card" data-item="{{ row.item.id }}">
+            <div class="sh-tile sh-tint-{{ p.tint }}">
+                {% if p.tile_mode == 'img' %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% elif p.tile_mode == 'frame' %}
+                    <span class="sh-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                {% elif p.tile_mode == 'ucolor' %}
+                    <span class="sh-tile-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
+                {% elif p.tile_mode == 'effect' %}
+                    <span class="sh-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                {% elif p.tile_mode == 'theme' %}
+                    <span class="sh-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                {% elif p.tile_mode == 'pbg' %}
+                    <span class="sh-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
+                {% else %}
+                    <span class="sh-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                {% endif %}
+                {% if row.item.equipped %}<span class="sh-r sh-r-on">✨ فعال</span>{% endif %}
+            </div>
+            <div class="sh-cbody">
+                <div class="sh-ccat">{{ p.category.emoji }} {{ p.category.name }} <span>·</span> {{ p.get_product_type_display }}</div>
+                <h3 class="sh-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="sh-meta">
+                    <span>×{{ row.item.quantity }}</span>
+                    {% if row.slot %}<span>🧩 {{ row.slot }}</span>{% endif %}
+                    {% if row.item.source != 'shop' %}<span>🎁 هدیه</span>{% endif %}
+                </div>
+                {% if row.bound %}<div class="sh-meta" style="color:var(--sh-amber)">📌 {{ row.bound }}</div>{% endif %}
+                <div class="sh-actions">
+                    {% if row.equippable %}
+                        {% if row.item.equipped %}
+                            <button class="sh-btn sm ghost eq-btn" data-act="unequip" data-id="{{ row.item.id }}">❌ خاموش</button>
+                        {% else %}
+                            <button class="sh-btn sm eq-btn" data-act="equip" data-id="{{ row.item.id }}">✨ استفاده</button>
+                        {% endif %}
+                    {% elif row.consumable %}
+                        <button class="sh-btn sm teal use-btn" data-id="{{ row.item.id }}">⚡ مصرف کن</button>
+                    {% else %}
+                        <span class="sh-meta" style="color:#0b6b5a;padding:8px 4px">✅ پسیو — همیشه فعال</span>
+                    {% endif %}
+                </div>
+                <div class="msg sh-msg"></div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="sh-empty">
+        <span class="big">🫙</span>
+        <p><b>هنوز چیزی نداری!</b> برو بازار یک چیز باحال پیدا کن 😄</p>
+        <a href="{% url 'shop:home' %}" class="sh-btn">🛒 رفتن به فروشگاه</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function csrfTok() {
+    const h = document.getElementById('lqCsrf');
+    if (h && h.value) return h.value;
+    const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+    return c ? c.pop() : '';
+}
+document.querySelectorAll('.eq-btn').forEach(btn => {
+    btn.onclick = () => {
+        const act = btn.dataset.act, id = btn.dataset.id;
+        fetch(`/shop/${act === 'equip' ? 'equip' : 'unequip'}/${id}/`, {method: 'POST', headers: {'X-CSRFToken': csrfTok()}})
+            .then(r => r.json())
+            .then(d => { if (d.ok) { location.reload(); } else alert(d.error || 'خطا'); });
+    };
+});
+document.querySelectorAll('.use-btn').forEach(btn => {
+    btn.onclick = () => {
+        const card = btn.closest('.sh-card');
+        const msg = card.querySelector('.msg');
+        msg.textContent = '⏳ ...';
+        btn.disabled = true;
+        fetch(`/shop/consume/${btn.dataset.id}/`, {method: 'POST', headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}})
+            .then(r => r.json())
+            .then(d => {
+                if (d.ok) {
+                    msg.style.color = '#11998e';
+                    msg.textContent = d.message || '✅ مصرف شد!';
+                    setTimeout(() => location.reload(), 1400);
+                } else {
+                    msg.style.color = '#dd2476';
+                    msg.textContent = '❌ ' + (d.error || 'خطا');
+                    btn.disabled = false;
+                }
+            });
+    };
+});
+</script>
+{% endblock %}

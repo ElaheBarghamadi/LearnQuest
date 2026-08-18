@@ -1,0 +1,575 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    تشخیص اعداد اول | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        /* ریست استایل‌های اضافی برای این صفحه */
+        .main-content {
+            background: transparent !important;
+            padding: 20px 5% !important;
+        }
+
+        .prime-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        /* کارت اصلی با پس‌زمینه سفید شفاف */
+        .prime-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        /* هدر کارت */
+        .prime-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .prime-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .prime-header h1 i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .prime-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* فرم */
+        .prime-form {
+            padding: 35px 30px 20px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1.2rem;
+        }
+
+        .prime-input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .prime-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 30px;
+        }
+
+        /* کارت نتیجه */
+        .prime-result {
+            border-radius: 25px;
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+        .prime-result.prime-true {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-right: 5px solid #4CAF50;
+        }
+
+        .prime-result.prime-false {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-right: 5px solid #f44336;
+        }
+
+        .result-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-icon i {
+            font-size: 2.5rem;
+        }
+
+        .prime-result.prime-true .result-icon i {
+            color: #4CAF50;
+        }
+
+        .prime-result.prime-false .result-icon i {
+            color: #f44336;
+        }
+
+        .result-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .prime-result.prime-true .result-title {
+            color: #2e7d32;
+        }
+
+        .prime-result.prime-false .result-title {
+            color: #c62828;
+        }
+
+        .result-number {
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .result-description {
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        /* لیست مقسوم‌علیه‌ها */
+        .divisors-section {
+            margin-top: 25px;
+            background: white;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .divisors-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .divisors-title i {
+            color: #3B82F6;
+        }
+
+        .divisors-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .divisor-item {
+            background: #f0f0ff;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #3B82F6;
+            transition: all 0.3s ease;
+        }
+
+        .divisor-item:hover {
+            background: #3B82F6;
+            color: white;
+            transform: scale(1.05);
+        }
+
+        /* اطلاعات اضافی */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card i {
+            font-size: 1.4rem;
+            color: #3B82F6;
+            margin-bottom: 8px;
+        }
+
+        .info-card .info-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .info-card .info-value {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* خطا */
+        .error-message {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-radius: 25px;
+            padding: 25px;
+            text-align: center;
+            border-right: 5px solid #f44336;
+        }
+
+        .error-message i {
+            font-size: 2rem;
+            color: #f44336;
+            margin-bottom: 10px;
+        }
+
+        .error-message p {
+            color: #c62828;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* راهنما */
+        .help-section {
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .help-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-title i {
+            color: #3B82F6;
+        }
+
+        .help-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .help-list li {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .help-list li i {
+            color: #3B82F6;
+            font-size: 0.7rem;
+        }
+
+        /* انیمیشن */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-section {
+            animation: fadeIn 0.4s ease;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .prime-header {
+                padding: 25px 20px;
+            }
+
+            .prime-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .prime-form {
+                padding: 25px 20px 15px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-title {
+                font-size: 1.2rem;
+            }
+
+            .result-number {
+                font-size: 1.6rem;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .divisors-grid {
+                gap: 8px;
+            }
+
+            .divisor-item {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+
+            .help-list {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .prime-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .prime-header p {
+                font-size: 0.8rem;
+            }
+
+            .prime-input {
+                padding: 12px 45px 12px 15px;
+            }
+
+            .submit-btn {
+                padding: 12px;
+            }
+
+            .result-icon {
+                width: 50px;
+                height: 50px;
+            }
+
+            .result-icon i {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="prime-container">
+        <div class="prime-card">
+            <div class="prime-header">
+                <h1>
+                    <i class="fas fa-shield-alt"></i>
+                    تشخیص اعداد اول
+                    <i class="fas fa-crown"></i>
+                </h1>
+                <p>آیا عدد مورد نظر شما اول است؟ بررسی کن و مقسوم‌علیه‌ها را ببین</p>
+            </div>
+
+            <form method="post" class="prime-form">
+                {% csrf_token %}
+                <div class="input-wrapper">
+                    <i class="fas fa-hashtag"></i>
+                    <input type="number"
+                           name="number"
+                           class="prime-input"
+                           placeholder="مثال: 17, 23, 97, 101"
+                           value="{{ number|default:'' }}"
+                           required>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-search"></i>
+                    بررسی عدد اول
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            {% if error_message %}
+                <div class="result-section">
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>{{ error_message }}</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if result is not None and not error_message %}
+                <div class="result-section">
+                    <div class="prime-result {% if result %}prime-true{% else %}prime-false{% endif %}">
+                        <div class="result-icon">
+                            {% if result %}
+                                <i class="fas fa-check-circle"></i>
+                            {% else %}
+                                <i class="fas fa-times-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="result-title">
+                            {% if result %}
+                                ✅ عدد اول است!
+                            {% else %}
+                                ❌ عدد اول نیست
+                            {% endif %}
+                        </div>
+                        <div class="result-number">
+                            {{ number }}
+                        </div>
+                        <div class="result-description">
+                            {% if result %}
+                                این عدد تنها بر <strong>۱</strong> و <strong>{{ number }}</strong> بخش‌پذیر است.
+                            {% else %}
+                                این عدد به غیر از ۱ و خودش، مقسوم‌علیه‌های دیگری نیز دارد.
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if divisors %}
+                        <div class="divisors-section">
+                            <div class="divisors-title">
+                                <i class="fas fa-list-ul"></i>
+                                تمام مقسوم‌علیه‌های عدد {{ number }}
+                            </div>
+                            <div class="divisors-grid">
+                                {% for d in divisors %}
+                                    <span class="divisor-item">{{ d }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <i class="fas fa-calculator"></i>
+                                <div class="info-label">تعداد مقسوم‌علیه‌ها</div>
+                                <div class="info-value">{{ divisors|length }} عدد</div>
+                            </div>
+                            <div class="info-card">
+                                <i class="fas fa-arrow-down"></i>
+                                <div class="info-label">کوچک‌ترین (بجز ۱)</div>
+                                <div class="info-value">{{ divisors.1|default:"—" }}</div>
+                            </div>
+                            <div class="info-card">
+                                <i class="fas fa-arrow-up"></i>
+                                <div class="info-label">بزرگ‌ترین (بجز خودش)</div>
+                                <div class="info-value">{{ divisors|slice:"-2:1"|first|default:"—" }}</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- راهنما -->
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 اعداد اول چیست؟
+            </div>
+            <ul class="help-list">
+                <li><i class="fas fa-check-circle"></i> عدد اول عددی است که فقط بر ۱ و خودش بخش‌پذیر باشد</li>
+                <li><i class="fas fa-check-circle"></i> کوچک‌ترین عدد اول: <strong>۲</strong></li>
+                <li><i class="fas fa-check-circle"></i> تنها عدد اول زوج: <strong>۲</strong></li>
+                <li><i class="fas fa-check-circle"></i> اعداد اول معروف: ۲, ۳, ۵, ۷, ۱۱, ۱۳, ۱۷, ۱۹, ۲۳, ...</li>
+            </ul>
+        </div>
+
+        <div class="help-section" style="margin-top: 15px;">
+            <div class="help-title">
+                <i class="fas fa-info-circle"></i>
+                💡 نکات مهم
+            </div>
+            <ul class="help-list">
+                <li><i class="fas fa-chart-line"></i> عدد <strong>۱</strong> نه اول است و نه مرکب</li>
+                <li><i class="fas fa-chart-line"></i> اعداد اول بی‌نهایت هستند</li>
+                <li><i class="fas fa-chart-line"></i> حداکثر عدد قابل بررسی: <strong>۱۰ میلیون</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // اعتبارسنجی ورودی
+        const primeInput = document.querySelector('.prime-input');
+        if (primeInput) {
+            primeInput.addEventListener('input', function (e) {
+                let value = parseInt(this.value);
+                if (value > 10000000) {
+                    this.setCustomValidity('عدد باید کمتر از 10 میلیون باشد');
+                } else if (value < 0) {
+                    this.setCustomValidity('عدد باید مثبت باشد');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+        }
+    </script>
+{% endblock %}

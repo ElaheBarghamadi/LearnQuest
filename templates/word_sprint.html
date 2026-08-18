@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}دوئل کلمات | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">۳۰ ثانیه! بگو این ترجمه درسته یا غلط ⚔️</span>
+</div>
+
+<style>
+    .sp-wrap { max-width: 560px; margin: 0 auto; padding: 16px; }
+    .sp-card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 22px; text-align: center; }
+    .sp-title { font-size: 1.35rem; font-weight: 900; color: #1E293B; margin-bottom: 4px; }
+    .sp-sub { color: #64748B; font-size: .85rem; margin-bottom: 18px; line-height: 1.9; }
+    .sp-btn { border: none; border-radius: 999px; padding: 13px 38px; font-size: 1rem; font-weight: 900; cursor: pointer;
+        background: linear-gradient(135deg,#06B6D4,#3B82F6); color: #fff; transition: .2s; font-family: inherit; }
+    .sp-btn:active { transform: scale(.96); }
+    .sp-btn.ghost { background: #F1F5F9; color: #475569; }
+    .sp-timer { height: 12px; border-radius: 999px; background: #E2E8F0; overflow: hidden; margin-bottom: 14px; }
+    .sp-timer > div { height: 100%; width: 100%; border-radius: 999px;
+        background: linear-gradient(90deg,#22C55E,#84CC16); transition: width .15s linear, background .3s; }
+    .sp-timer.low > div { background: linear-gradient(90deg,#EF4444,#F97316); }
+    .sp-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+    .sp-chip { border-radius: 30px; padding: 5px 16px; font-weight: 900; background: #F1F5F9; color: #334155; }
+    .sp-chip.streak { background: linear-gradient(135deg,#FED7AA,#FDBA74); color: #9A3412; }
+    .sp-pair { border: 3px solid #E2E8F0; border-radius: 20px; padding: 26px 14px; margin-bottom: 16px; transition: .15s; background: #FAFAFF; }
+    .sp-pair.good { border-color: #22C55E; background: #F0FDF4; }
+    .sp-pair.bad { border-color: #EF4444; background: #FEF2F2; }
+    .sp-word { font-size: 2rem; font-weight: 900; color: #1E293B; direction: ltr; }
+    .sp-eq { color: #94A3B8; font-size: 1.2rem; margin: 4px 0; }
+    .sp-meaning { font-size: 1.35rem; font-weight: 900; color: #0E7490; }
+    .sp-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .sp-answer { border: none; border-radius: 18px; padding: 20px 10px; font-size: 1.15rem; font-weight: 900; cursor: pointer;
+        color: #fff; font-family: inherit; transition: .15s; }
+    .sp-answer:active { transform: scale(.95); }
+    .sp-yes { background: linear-gradient(145deg,#4ADE80,#16A34A); box-shadow: 0 8px 20px rgba(34,197,94,.3); }
+    .sp-no { background: linear-gradient(145deg,#F87171,#DC2626); box-shadow: 0 8px 20px rgba(239,68,68,.3); }
+    .sp-play { display: none; }
+    .sp-end { display: none; }
+    .sp-end .emo { font-size: 3rem; }
+    .sp-end .res { font-size: 1.5rem; font-weight: 900; color: #1E293B; margin: 8px 0; }
+    .sp-end .xp-line { color: #0369A1; font-weight: 800; margin-bottom: 16px; min-height: 1.4em; }
+</style>
+
+<div class="sp-wrap">
+    <div class="sp-card">
+
+        <div id="spStart">
+            <div class="sp-title">⚔️ دوئل کلمات</div>
+            <div class="sp-sub">یک کلمهٔ انگلیسی با یک معنی فارسی می‌بینی.<br>اگر جفت درست بود بزن «درسته»، اگر نه «غلطه».<br>⏱ فقط ۳۰ ثانیه وقت داری — سرعت + دقت!</div>
+            <button class="sp-btn" id="spStartBtn">▶️ شروع دوئل</button>
+        </div>
+
+        <div class="sp-play" id="spPlay">
+            <div class="sp-timer" id="spTimer"><div id="spTimerBar"></div></div>
+            <div class="sp-meta">
+                <span class="sp-chip">⭐ <span id="spScore">۰</span></span>
+                <span class="sp-chip" id="spAnswered">۰ ❓</span>
+                <span class="sp-chip streak" id="spStreak" style="display:none">🔥 <span id="spStreakN">۰</span></span>
+            </div>
+            <div class="sp-pair" id="spPair">
+                <div class="sp-word" id="spWord">word</div>
+                <div class="sp-eq">؟</div>
+                <div class="sp-meaning" id="spMeaning">معنی</div>
+            </div>
+            <div class="sp-answers">
+                <button class="sp-answer sp-yes" id="spYes">✔️ درسته</button>
+                <button class="sp-answer sp-no" id="spNo">✖️ غلطه</button>
+            </div>
+        </div>
+
+        <div class="sp-end" id="spEnd">
+            <div class="emo" id="spEndEmo">⏱</div>
+            <div class="res" id="spEndRes"></div>
+            <div class="xp-line" id="spXpLine"></div>
+            <button class="sp-btn" id="spAgain">🔄 یه دوئل دیگه</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    var SECONDS = 30;
+    var items = [], idx = 0, score = 0, answered = 0, streak = 0, bestStreak = 0;
+    var startTime = 0, timerId = null, running = false;
+
+    var startEl = document.getElementById('spStart'), playEl = document.getElementById('spPlay'), endEl = document.getElementById('spEnd');
+    var pairEl = document.getElementById('spPair'), wordEl = document.getElementById('spWord'), meaningEl = document.getElementById('spMeaning');
+    var timerWrap = document.getElementById('spTimer'), timerBar = document.getElementById('spTimerBar');
+
+    function fa(n) { return String(n).replace(/[0-9]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+
+    function tick() {
+        var left = SECONDS - (Date.now() - startTime) / 1000;
+        if (left <= 0) { finish(); return; }
+        timerBar.style.width = (left / SECONDS * 100) + '%';
+        timerWrap.classList.toggle('low', left < 8);
+        timerId = setTimeout(tick, 120);
+    }
+
+    function render() {
+        if (idx >= items.length) idx = 0;
+        var it = items[idx];
+        wordEl.textContent = it.word;
+        meaningEl.textContent = it.meaning;
+        pairEl.className = 'sp-pair';
+    }
+
+    function answer(saidYes) {
+        if (!running) return;
+        var it = items[idx];
+        var correct = saidYes === it.isTrue;
+        answered++;
+        document.getElementById('spAnswered').innerHTML = fa(answered) + ' ❓';
+        if (correct) {
+            score++; streak++;
+            bestStreak = Math.max(bestStreak, streak);
+            document.getElementById('spScore').textContent = fa(score);
+        } else {
+            streak = 0;
+        }
+        var st = document.getElementById('spStreak');
+        st.style.display = streak >= 3 ? '' : 'none';
+        document.getElementById('spStreakN').textContent = fa(streak);
+        pairEl.classList.add(correct ? 'good' : 'bad');
+        setTimeout(function () { pairEl.classList.remove('good', 'bad'); }, 160);
+        idx++;
+        render();
+    }
+
+    function start() {
+        fetch('/language/word-sprint/?deck=json')
+            .then(function (r) { return r.json(); })
+            .then(function (d) {
+                items = d.items || [];
+                if (!items.length) return;
+                idx = 0; score = 0; answered = 0; streak = 0; bestStreak = 0;
+                document.getElementById('spScore').textContent = '۰';
+                document.getElementById('spAnswered').innerHTML = '۰ ❓';
+                document.getElementById('spStreak').style.display = 'none';
+                startEl.style.display = 'none';
+                endEl.style.display = 'none';
+                playEl.style.display = 'block';
+                running = true;
+                startTime = Date.now();
+                render();
+                tick();
+            })
+            .catch(function () {});
+    }
+
+    function finish() {
+        if (!running) return;
+        running = false;
+        if (timerId) clearTimeout(timerId);
+        playEl.style.display = 'none';
+        endEl.style.display = 'block';
+        document.getElementById('spEndEmo').textContent = score >= 25 ? '🏆' : (score >= 12 ? '⚡' : '💪');
+        document.getElementById('spEndRes').textContent = fa(score) + ' درست از ' + fa(answered) + (bestStreak >= 4 ? ' • بهترین زنجیره 🔥' + fa(bestStreak) : '');
+        var xpLine = document.getElementById('spXpLine');
+        xpLine.textContent = 'در حال ثبت نتیجه…';
+        GP.saveScore('/language/save-sprint-score/', { score: score, answered: answered, seconds: SECONDS }, xpLine);
+    }
+
+    document.getElementById('spStartBtn').addEventListener('click', start);
+    document.getElementById('spAgain').addEventListener('click', start);
+    document.getElementById('spYes').addEventListener('click', function () { answer(true); });
+    document.getElementById('spNo').addEventListener('click', function () { answer(false); });
+    document.addEventListener('keydown', function (e) {
+        if (!running) return;
+        if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') answer(true);
+        if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') answer(false);
+    });
+})();
+</script>
+{% endblock %}

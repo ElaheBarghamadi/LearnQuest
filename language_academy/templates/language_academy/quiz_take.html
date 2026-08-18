@@ -1,0 +1,431 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+{% load academy_filters %}
+
+{% block title %}{{ quiz.title }} | Quiz{% endblock %}
+
+{% block content %}
+    <div class="container py-4">
+        <div class="academy-card mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h1 class="h2 mb-2">{{ quiz.title }}</h1>
+                        <p class="text-muted mb-0">{{ quiz.description }}</p>
+                    </div>
+                    <div class="text-end">
+                        <div class="badge bg-info fs-6 mb-1">⏱ {{ quiz.time_limit_minutes }} min</div>
+                        <div class="badge bg-warning fs-6">🎯 {{ quiz.passing_score }}% to pass</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quiz-info-bar mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-3 flex-wrap">
+                    <div><i class="fas fa-question-circle text-primary"></i> {{ questions|length }} Questions</div>
+                    <div><i class="fas fa-star text-warning"></i> +{{ quiz.xp_reward }} XP</div>
+                    <div><i class="fas fa-coins text-info"></i> +{{ quiz.coin_reward }} Coins</div>
+                </div>
+                <div class="quiz-timer" id="quizTimer">
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    <span id="timerDisplay">--:--</span>
+                </div>
+                <button type="button" id="useTimeCard" class="btn-academy btn-sm"
+                        style="padding:6px 14px;font-size:.75rem"
+                        title="Use a «Time Boost Card» from the shop">
+                    ⏱ +Time
+                </button>
+            </div>
+        </div>
+
+        <form method="post" id="quizForm" action="{% url 'language_academy:submit_quiz' quiz.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="session_key" value="{{ session.session_key }}" id="sessionKey">
+
+            {% for question in questions %}
+                <div class="question-card academy-card mb-4" data-question-id="{{ question.id }}">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h3 class="h5 mb-0">
+                                <span class="question-number">{{ forloop.counter }}</span>
+                                {{ question.question_text }}
+                            </h3>
+                            <span class="badge bg-secondary">{{ question.points }} pts</span>
+                            {% if question.question_type == 'mcq' %}
+                                <button type="button" class="hint-btn badge bg-warning text-dark border-0 ms-1"
+                                        data-qid="{{ question.id }}" title="Use a «Hint Ticket»: removes two wrong options">
+                                    💡 Hint
+                                </button>
+                            {% endif %}
+                        </div>
+
+                        {% if question.question_type == 'mcq' %}
+                            <div class="choices-container">
+                                {% for choice in question.choices.all %}
+                                    <label class="choice-option">
+                                        <input type="radio" name="question_{{ question.id }}" value="{{ choice.id }}"
+                                                {% with saved_answers|get_item:question.id as saved_answer %}
+                                               {% if saved_answer|stringformat:"s" == choice.id|stringformat:"s" %}checked
+                                               {% endif %}
+                                                {% endwith %}
+                                               class="d-none" data-question-id="{{ question.id }}">
+                                        <div class="choice-card">
+                                            <span class="choice-letter">{{ forloop.counter|to_letter }}</span>
+                                            <span class="choice-text">{{ choice.choice_text }}</span>
+                                        </div>
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                        {% elif question.question_type == 'fill_blank' %}
+                            <div class="fill-blank-container">
+                                <input type="text"
+                                       name="question_{{ question.id }}"
+                                       class="form-control form-control-lg fill-blank-input"
+                                       placeholder="Type your answer here..."
+                                       value="
+                                               {% with saved_answers|get_item:question.id as saved_answer %}{{ saved_answer|default:'' }}{% endwith %}"
+                                       data-question-id="{{ question.id }}"
+                                       autocomplete="off">
+                            </div>
+
+                        {% elif question.question_type == 'true_false' %}
+                            <div class="choices-container true-false">
+                                <label class="choice-option">
+                                    <input type="radio" name="question_{{ question.id }}" value="True"
+                                            {% with saved_answers|get_item:question.id as saved_answer %}
+                                           {% if saved_answer == 'True' %}checked{% endif %}
+                                            {% endwith %}
+                                           class="d-none" data-question-id="{{ question.id }}">
+                                    <div class="choice-card true">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                        <span>True</span>
+                                    </div>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio" name="question_{{ question.id }}" value="False"
+                                            {% with saved_answers|get_item:question.id as saved_answer %}
+                                           {% if saved_answer == 'False' %}checked{% endif %}
+                                            {% endwith %}
+                                           class="d-none" data-question-id="{{ question.id }}">
+                                    <div class="choice-card false">
+                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                        <span>False</span>
+                                    </div>
+                                </label>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn-academy btn-lg px-5" id="submitBtn">
+                    <i class="fas fa-paper-plane me-2"></i> Submit Quiz
+                </button>
+                <p class="text-muted small mt-2">
+                    <i class="fas fa-save"></i> Your answers are automatically saved
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let timeLeft = {{ remaining_seconds }};
+        let timerInterval;
+        const sessionKey = document.getElementById('sessionKey').value;
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            if (timeLeft <= 60) {
+                timerDisplay.style.color = '#ff4b4b';
+                timerDisplay.style.fontWeight = 'bold';
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('quizForm').submit();
+            }
+        }
+
+        function saveTimeToServer() {
+            const timeSpent = {{ quiz.time_limit_minutes }} * 60 - timeLeft;
+            fetch('{% url "language_academy:save_quiz_time" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'session_key': sessionKey,
+                    'time_spent': timeSpent
+                })
+            }).catch(error => console.error('Error saving time:', error));
+        }
+
+        timerInterval = setInterval(() => {
+            if (timeLeft > 0) {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft % 5 === 0) saveTimeToServer();
+            } else {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+        updateTimerDisplay();
+
+        window.addEventListener('beforeunload', function () {
+            saveTimeToServer();
+        });
+
+        let saveTimeout;
+
+        function saveAnswer(questionId, answer) {
+            clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                fetch('{% url "language_academy:save_quiz_answer" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'question_id': questionId,
+                        'answer': answer,
+                        'session_key': sessionKey
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            const indicator = document.querySelector(`.save-indicator[data-qid="${questionId}"]`);
+                            if (indicator) {
+                                indicator.style.opacity = '1';
+                                setTimeout(() => indicator.style.opacity = '0', 1000);
+                            }
+                        }
+                    });
+            }, 500);
+        }
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const questionId = this.dataset.questionId;
+                saveAnswer(questionId, this.value);
+
+                const parentCard = this.closest('.question-card');
+                parentCard.querySelectorAll('.choice-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                if (this.nextElementSibling) this.nextElementSibling.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.fill-blank-input').forEach(input => {
+            input.addEventListener('input', function () {
+                saveAnswer(this.dataset.questionId, this.value);
+            });
+        });
+
+        document.querySelectorAll('.question-card').forEach(card => {
+            const indicator = document.createElement('div');
+            indicator.className = 'save-indicator';
+            indicator.setAttribute('data-qid', card.dataset.questionId);
+            indicator.innerHTML = '<i class="fas fa-check-circle text-success"></i>';
+            indicator.style.cssText = 'position: absolute; bottom: 10px; right: 20px; opacity: 0; transition: opacity 0.3s;';
+            card.style.position = 'relative';
+            card.appendChild(indicator);
+        });
+
+        document.getElementById('quizForm').addEventListener('submit', function (e) {
+            if (!confirm('Are you sure you want to submit your answers?')) {
+                e.preventDefault();
+            }
+        });
+
+        let formSubmitted = false;
+        document.getElementById('quizForm').addEventListener('submit', function () {
+            formSubmitted = true;
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (timeLeft > 0 && !formSubmitted) {
+                saveTimeToServer();
+                e.preventDefault();
+                e.returnValue = 'You have not finished the quiz. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+    </script>
+
+    <script>
+        (function () {
+            const csrf = '{{ csrf_token }}';
+
+            const timeBtn = document.getElementById('useTimeCard');
+            if (timeBtn) {
+                timeBtn.addEventListener('click', function () {
+                    if (!confirm('This will use one «Time Boost Card». Continue?')) return;
+                    fetch('{% url "economy:use_time_card" %}', {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': csrf, 'Content-Type': 'application/json'},
+                        body: JSON.stringify({session_key: sessionKey})
+                    })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.ok) {
+                            timeLeft = d.remaining_seconds;
+                            updateTimerDisplay();
+                            saveTimeToServer();
+                            alert('⏱ Extra time added! Good luck 🍀');
+                        } else {
+                            alert('❌ ' + (d.error || 'You have no Time Boost Card — get one from the shop!'));
+                        }
+                    })
+                    .catch(() => alert('Connection error'));
+                });
+            }
+
+            document.querySelectorAll('.hint-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const qid = this.dataset.qid;
+                    if (!confirm('This will use one «Hint Ticket» and remove two wrong options. Continue?')) return;
+                    fetch('{% url "economy:use_hint" %}', {
+                        method: 'POST',
+                        headers: {'X-CSRFToken': csrf, 'Content-Type': 'application/json'},
+                        body: JSON.stringify({session_key: sessionKey, question_id: qid})
+                    })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.ok) {
+                            const card = document.querySelector(`.question-card[data-question-id="${qid}"]`);
+                            (d.hide_choices || []).forEach(cid => {
+                                const input = card.querySelector(`input[type="radio"][value="${cid}"]`);
+                                if (input) {
+                                    const label = input.closest('label');
+                                    if (label) {
+                                        label.style.opacity = '0.25';
+                                        label.style.pointerEvents = 'none';
+                                        label.querySelector('.choice-card')?.classList.add('text-decoration-line-through');
+                                    }
+                                }
+                            });
+                            btn.disabled = true;
+                            btn.innerText = '✅ Used';
+                        } else {
+                            alert('❌ ' + (d.error || 'You have no Hint Ticket — get one from the shop!'));
+                        }
+                    })
+                    .catch(() => alert('Connection error'));
+                });
+            });
+        })();
+    </script>
+
+    <style>
+        .quiz-info-bar {
+            background: var(--duo-white);
+            padding: 15px 20px;
+            border-radius: var(--duo-radius);
+            box-shadow: var(--duo-shadow);
+        }
+
+        .quiz-timer {
+            background: var(--duo-gray-100);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            font-family: inherit;
+        }
+
+        .question-card {
+            position: relative;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--duo-green);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .choice-option {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .choice-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: var(--duo-gray-50);
+            border-radius: var(--duo-radius);
+            border: 2px solid var(--duo-gray-200);
+            transition: var(--duo-transition);
+        }
+
+        .choice-card:hover {
+            border-color: var(--duo-green);
+            background: rgba(88, 204, 113, 0.05);
+        }
+
+        .choice-card.selected {
+            border-color: var(--duo-green);
+            background: rgba(88, 204, 113, 0.1);
+        }
+
+        .choice-letter {
+            width: 36px;
+            height: 36px;
+            background: var(--duo-gray-300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .true-false {
+            display: flex;
+            gap: 20px;
+        }
+
+        .true-false .choice-card {
+            flex: 1;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fill-blank-container input {
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: var(--duo-radius);
+            border: 2px solid var(--duo-gray-200);
+        }
+
+        .fill-blank-container input:focus {
+            border-color: var(--duo-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(88, 204, 113, 0.2);
+        }
+
+        .save-indicator {
+            font-size: 1.2rem;
+        }
+    </style>
+{% endblock %}

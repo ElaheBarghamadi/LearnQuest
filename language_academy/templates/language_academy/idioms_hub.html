@@ -1,0 +1,131 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Idioms Learning Hub | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+.iq-hero { text-align: center; margin-bottom: 26px; }
+.iq-level-chip { display: inline-flex; align-items: center; gap: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; border-radius: 999px; padding: 10px 26px; font-weight: 800; font-size: 1.05rem; box-shadow: 0 12px 30px rgba(99, 102, 241, 0.35); }
+.iq-level-chip small { font-weight: 500; opacity: 0.85; }
+.iq-panel { border-radius: 20px; }
+.iq-topic { display: flex; align-items: center; gap: 14px; padding: 16px; border-radius: 18px; text-decoration: none; color: inherit; transition: transform 0.18s, box-shadow 0.18s; height: 100%; }
+.iq-topic:hover { transform: translateY(-3px); box-shadow: 0 16px 34px rgba(59, 130, 246, 0.16); color: inherit; }
+.iq-topic .t-ico { font-size: 1.7rem; width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; background: rgba(99, 102, 241, 0.12); border-radius: 16px; flex: 0 0 auto; }
+.iq-topic .t-name { font-weight: 800; text-transform: capitalize; }
+.iq-topic .t-sub { font-size: 0.78rem; color: var(--text-secondary, #64748b); }
+.iq-bar { height: 8px; background: rgba(99, 102, 241, 0.14); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+.iq-bar > span { display: block; height: 100%; background: linear-gradient(90deg, #8b5cf6, #3b82f6); border-radius: 99px; transition: width 0.4s; }
+.iq-lv { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.iq-lv span { padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 0.82rem; background: rgba(148, 163, 184, 0.15); color: var(--text-secondary, #64748b); }
+.iq-lv span.on { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; }
+.iq-actions a { height: 100%; }
+@media (max-width: 576px) { .iq-topic { padding: 12px; gap: 10px; } .iq-topic .t-ico { width: 42px; height: 42px; font-size: 1.3rem; border-radius: 12px; } }
+</style>
+
+<div class="container py-4">
+    <div class="iq-hero">
+        <h1 class="h2 mb-1">💬 Idioms Learning Hub</h1>
+        <p class="text-muted mb-3">Learn real English expressions, at exactly your level</p>
+        <span class="iq-level-chip">{{ level }} <small>· your level</small></span>
+        {% if not ai_available %}
+            <div class="mt-3"><span class="badge bg-warning text-dark">AI tutor offline — using the built-in question bank. Ask the admin to add the OpenRouter key.</span></div>
+        {% endif %}
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3 iq-panel">
+                <div class="stat-icon-wrapper bg-primary-soft"><i class="fas fa-comments fa-2x text-primary"></i></div>
+                <div class="fs-3 fw-bold mt-2">{{ total }}</div>
+                <div class="small text-muted">Idioms at {{ level }}</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3 iq-panel">
+                <div class="stat-icon-wrapper bg-success-soft"><i class="fas fa-check-circle fa-2x text-success"></i></div>
+                <div class="fs-3 fw-bold mt-2">{{ learned }}</div>
+                <div class="small text-muted">Learned</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3 iq-panel">
+                <div class="stat-icon-wrapper bg-danger-soft"><i class="fas fa-clock fa-2x text-danger"></i></div>
+                <div class="fs-3 fw-bold mt-2">{{ due }}</div>
+                <div class="small text-muted">Due for review</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <a href="{% url 'language_academy:idioms_placement' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift iq-panel">
+                    <div class="stat-icon-wrapper bg-warning-soft"><i class="fas fa-bullseye fa-2x text-warning"></i></div>
+                    <div class="fs-6 fw-bold mt-2">Placement Test</div>
+                    <div class="small text-muted">Retake / change level</div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4 iq-actions">
+        <div class="col-md-4 col-6">
+            <a href="{% url 'language_academy:idiom_learn' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift iq-panel">
+                    <i class="fas fa-list-ul fa-2x text-primary mb-2"></i>
+                    <h6 class="mb-0">Browse & Learn</h6>
+                    <small class="text-muted">All {{ level }} idioms by topic</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 col-6">
+            <a href="{% url 'language_academy:idiom_flashcards' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift iq-panel">
+                    <i class="fas fa-clone fa-2x text-success mb-2"></i>
+                    <h6 class="mb-0">Flashcards</h6>
+                    <small class="text-muted">Flip and memorize</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 col-6">
+            <a href="{% url 'language_academy:idiom_review' %}" class="text-decoration-none">
+                <div class="academy-card glass-card p-3 text-center hover-lift iq-panel">
+                    <i class="fas fa-repeat fa-2x text-danger mb-2"></i>
+                    <h6 class="mb-0">Smart Review</h6>
+                    <small class="text-muted">{{ due }} due now</small>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-4 col-6 offset-md-4 offset-3">
+            <button type="button" class="academy-card glass-card p-3 text-center hover-lift iq-panel w-100" id="iqChallengeBtn" style="border: none; cursor: pointer;">
+                <i class="fas fa-bolt fa-2x text-warning mb-2"></i>
+                <h6 class="mb-0">Smart Challenge ⚡</h6>
+                <small class="text-muted">Surprise quiz from your coach</small>
+            </button>
+        </div>
+    </div>
+
+    <h5 class="mb-3"><i class="fas fa-layer-group me-2 text-primary"></i>Topics at your level</h5>
+    <div class="row g-3 mb-4">
+        {% for t in topic_cards %}
+        <div class="col-lg-3 col-md-4 col-6">
+            <a class="academy-card glass-card iq-topic" href="{% url 'language_academy:idiom_learn' %}?topic={{ t.slug }}">
+                <span class="t-ico">{{ t.icon }}</span>
+                <span class="flex-grow-1">
+                    <span class="t-name">{{ t.slug }}</span><br>
+                    <span class="t-sub">{{ t.done }}/{{ t.total }} learned</span>
+                    <span class="iq-bar"><span style="width: {{ t.pct }}%"></span></span>
+                </span>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mb-4">
+        <div class="small text-muted mb-2">All levels in the idiom library</div>
+        <div class="iq-lv">
+            {% for l in other_levels %}<span{% if l.current %} class="on"{% endif %}>{{ l.code }} · {{ l.count }}</span>{% endfor %}
+        </div>
+    </div>
+</div>
+
+{% include 'language_academy/_ai_tutor.html' with chat_context='idiom' %}
+{% endblock %}

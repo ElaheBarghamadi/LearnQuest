@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}آجرشکن | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">توپ رو با راکت بگیر و همهٔ آجرها رو بشکن 🧱</span>
+</div>
+
+<style>
+    .bo-wrap { max-width: 560px; margin: 0 auto; padding: 16px; text-align: center; }
+    .bo-card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .bo-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg,#F97316,#DC2626); color: #fff; border-radius: 16px;
+        padding: 10px 16px; margin-bottom: 14px; }
+    .bo-stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .bo-stage { position: relative; width: 100%; max-width: 480px; margin: 0 auto; }
+    #boCanvas { width: 100%; border-radius: 16px; background: #0F172A; touch-action: none; display: block; }
+    .bo-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 10px;
+        align-items: center; justify-content: center; border-radius: 16px;
+        background: rgba(15,23,42,.82); color: #fff; font-weight: 800; cursor: pointer; padding: 20px; }
+    .bo-overlay .big { font-size: 1.3rem; }
+    .bo-overlay .small { font-size: .85rem; font-weight: 600; opacity: .9; line-height: 1.8; }
+    .bo-overlay.hidden { display: none; }
+    .bo-overlay button { border: none; border-radius: 999px; padding: 12px 34px; font-size: 1rem; font-weight: 900;
+        background: linear-gradient(135deg,#F97316,#FBBF24); color: #422006; cursor: pointer; transition: .2s; }
+    .bo-overlay button:active { transform: scale(.95); }
+    .bo-help { font-size: .75rem; color: #94A3B8; margin-top: 10px; }
+</style>
+
+<div class="bo-wrap">
+    <div class="bo-card">
+        <div class="bo-header">
+            <span>🧱 آجرشکن</span>
+            <span class="bo-stat">⭐ <span id="boScore">۰</span></span>
+            <span class="bo-stat">❤️ <span id="boLives">۳</span></span>
+            <span class="bo-stat">🏆 <span id="boBest">۰</span></span>
+        </div>
+        <div class="bo-stage">
+            <canvas id="boCanvas" width="480" height="560"></canvas>
+            <div class="bo-overlay" id="boOverlay">
+                <div class="big">🧱 آجرشکن</div>
+                <div class="small">راکت رو با انگشت / ماوس / کلیدهای چپ‌وراست حرکت بده<br>هر آجر +۱۰ امتیاز • ۳ جان داری</div>
+                <button id="boStartBtn">▶️ شروع</button>
+            </div>
+        </div>
+        <div class="bo-help">امتیاز آخر هر دست ثبت می‌شه و XP می‌گیری ⭐</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var W = 480, H = 560;
+    var canvas = document.getElementById('boCanvas'), ctx = canvas.getContext('2d');
+    if (!ctx.roundRect) {
+        CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
+            this.moveTo(x + r, y);
+            this.arcTo(x + w, y, x + w, y + h, r);
+            this.arcTo(x + w, y + h, x, y + h, r);
+            this.arcTo(x, y + h, x, y, r);
+            this.arcTo(x, y, x + w, y, r);
+            this.closePath();
+            return this;
+        };
+    }
+    var overlay = document.getElementById('boOverlay');
+    var scoreEl = document.getElementById('boScore'), livesEl = document.getElementById('boLives'), bestEl = document.getElementById('boBest');
+
+    var ROWS = 5, COLS = 8, BRICK_H = 22, GAP = 6, TOP = 60, SIDE = 14;
+    var COLORS = ['#F87171', '#FB923C', '#FBBF24', '#4ADE80', '#38BDF8'];
+    var BRICK_W = (W - SIDE * 2 - GAP * (COLS - 1)) / COLS;
+    var PADDLE_W = 92, PADDLE_H = 13;
+
+    var bricks, ball, paddleX, score, lives, running, dead, posted;
+
+    function fa(n) { return String(n).replace(/[0-9]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+
+    function buildBricks() {
+        bricks = [];
+        for (var r = 0; r < ROWS; r++) for (var c = 0; c < COLS; c++) {
+            bricks.push({
+                x: SIDE + c * (BRICK_W + GAP), y: TOP + r * (BRICK_H + GAP),
+                alive: true, color: COLORS[r]
+            });
+        }
+    }
+
+    function resetBall() {
+        ball = { x: W / 2, y: H - 90, r: 8, dx: (Math.random() < .5 ? -1 : 1) * 3.4, dy: -3.8 };
+        paddleX = (W - PADDLE_W) / 2;
+    }
+
+    function newGame() {
+        buildBricks();
+        resetBall();
+        score = 0; lives = 3; running = true; dead = false; posted = false;
+        scoreEl.textContent = '۰'; livesEl.textContent = '۳';
+        overlay.classList.add('hidden');
+    }
+
+    function movePaddle(clientX) {
+        var rect = canvas.getBoundingClientRect();
+        var x = (clientX - rect.left) * (W / rect.width);
+        paddleX = Math.max(0, Math.min(W - PADDLE_W, x - PADDLE_W / 2));
+    }
+    canvas.addEventListener('pointermove', function (e) { if (running) movePaddle(e.clientX); });
+    canvas.addEventListener('pointerdown', function (e) { if (running) movePaddle(e.clientX); });
+    document.addEventListener('keydown', function (e) {
+        if (!running) return;
+        if (e.key === 'ArrowLeft') paddleX = Math.max(0, paddleX - 28);
+        if (e.key === 'ArrowRight') paddleX = Math.min(W - PADDLE_W, paddleX + 28);
+    });
+
+    function circleRect(cx, cy, r, rect) {
+        var nx = Math.max(rect.x, Math.min(cx, rect.x + rect.w));
+        var ny = Math.max(rect.y, Math.min(cy, rect.y + rect.h));
+        var dx = cx - nx, dy = cy - ny;
+        return dx * dx + dy * dy <= r * r;
+    }
+
+    function step() {
+        if (!running) return;
+        ball.x += ball.dx; ball.y += ball.dy;
+
+        if (ball.x < ball.r || ball.x > W - ball.r) ball.dx *= -1;
+        if (ball.y < ball.r) ball.dy *= -1;
+
+        if (ball.dy > 0 && circleRect(ball.x, ball.y, ball.r, { x: paddleX, y: H - 40, w: PADDLE_W, h: PADDLE_H })) {
+            var hit = (ball.x - (paddleX + PADDLE_W / 2)) / (PADDLE_W / 2);
+            var speed = Math.min(8.5, Math.hypot(ball.dx, ball.dy) + 0.08);
+            ball.dx = hit * speed * 0.75;
+            ball.dy = -Math.sqrt(Math.max(4, speed * speed - ball.dx * ball.dx));
+            ball.y = H - 40 - ball.r - 1;
+        }
+
+        for (var i = 0; i < bricks.length; i++) {
+            var b = bricks[i];
+            if (b.alive && circleRect(ball.x, ball.y, ball.r, { x: b.x, y: b.y, w: BRICK_W, h: BRICK_H })) {
+                b.alive = false;
+                ball.dy *= -1;
+                score += 10;
+                scoreEl.textContent = fa(score);
+                break;
+            }
+        }
+
+        if (bricks.every(function (b) { return !b.alive; })) { endGame(true); return; }
+
+        if (ball.y > H + 20) {
+            lives--;
+            livesEl.textContent = fa(Math.max(0, lives));
+            if (lives <= 0) { endGame(false); return; }
+            resetBall();
+        }
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        bricks.forEach(function (b) {
+            if (!b.alive) return;
+            ctx.fillStyle = b.color;
+            ctx.beginPath();
+            ctx.roundRect(b.x, b.y, BRICK_W, BRICK_H, 6);
+            ctx.fill();
+        });
+
+        ctx.fillStyle = '#F8FAFC';
+        ctx.beginPath();
+        ctx.roundRect(paddleX, H - 40, PADDLE_W, PADDLE_H, 7);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#FBBF24';
+        ctx.fill();
+    }
+
+    function endGame(wonAll) {
+        running = false;
+        if (dead) return;
+        dead = true;
+        postScore(wonAll, function (msg) {
+            overlay.innerHTML =
+                '<div class="big">' + (wonAll ? '🏆 همهٔ آجرها شکست!' : '💀 بازی تموم شد') + '</div>' +
+                '<div class="small">امتیاز: ' + fa(score) + '<br>' + msg + '</div>' +
+                '<button id="boAgainBtn">🔄 دوباره</button>';
+            overlay.classList.remove('hidden');
+            document.getElementById('boAgainBtn').addEventListener('click', function (e) {
+                e.stopPropagation(); newGame();
+            });
+        });
+    }
+
+    function postScore(wonAll, done) {
+        if (posted) { done(''); return; }
+        posted = true;
+        GP.saveScore('/games/save-breakout-score/', { score: score, completed: true }, null)
+            .then(function (d) {
+                var b = +(localStorage.getItem('lq_bo_best') || 0);
+                if (score > b) { localStorage.setItem('lq_bo_best', score); bestEl.textContent = fa(score); }
+                done(GP.resultMessage(d));
+            });
+    }
+
+    overlay.addEventListener('click', function (e) {
+        if (e.target.tagName === 'BUTTON') return;
+        if (!running && !dead) newGame();
+    });
+    document.getElementById('boStartBtn').addEventListener('click', function (e) {
+        e.stopPropagation(); newGame();
+    });
+
+    bestEl.textContent = fa(+(localStorage.getItem('lq_bo_best') || 0));
+
+    function loop() { step(); draw(); requestAnimationFrame(loop); }
+    buildBricks(); resetBall();
+    loop();
+})();
+</script>
+{% endblock %}

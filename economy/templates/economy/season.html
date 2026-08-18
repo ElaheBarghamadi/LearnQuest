@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static jalali %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lq-wrap">
+{% if season %}
+    <div class="lq-hero sakura">
+        <h1>{{ season.emoji }} {{ season.name }}</h1>
+        <p>{{ season.description }}</p>
+        <div class="lq-hero-stats">
+            <div class="lq-hero-stat"><div class="n">⭐ {{ usp.season_xp }}</div><div class="l">XP فصل تو</div></div>
+            <div class="lq-hero-stat"><div class="n">{{ usp.current_level }}</div><div class="l">سطح فصل</div></div>
+            <div class="lq-hero-stat"><div class="n">{% if usp.has_pass %}👑{% else %}🆓{% endif %}</div>
+                <div class="l">{% if usp.has_pass %}پس ویژه{% else %}نسخه رایگان{% endif %}</div></div>
+            <div class="lq-hero-stat"><div class="n">🗓 {{ season.ends_at|jdatelong }}</div><div class="l">پایان فصل (از {{ season.starts_at|jdatelong }})</div></div>
+        </div>
+    </div>
+
+    
+    {% if not usp.has_pass %}
+    <div class="lq-panel" style="background:linear-gradient(135deg,#fffdf2,#fff6da);border:2px dashed #e8c765;display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+        <div style="font-size:3rem">👑</div>
+        <div style="flex:1;min-width:220px">
+            <b style="font-size:1.02rem;display:block;margin-bottom:4px">پس ویژهٔ فصل</b>
+            <div style="font-size:.83rem;color:#6b5b16;line-height:1.9">
+                با سیزن‌پس، ردیف جایزهٔ <b>ویژهٔ هر پله</b> باز می‌شود: الماس، سکهٔ بیشتر، آیتم‌های کمیاب.
+                {% if pass_product %}قیمت:
+                    {% if pass_product.final_price_gems %}💎 {{ pass_product.final_price_gems }}
+                    {% elif pass_product.final_price_coins %}🪙 {{ pass_product.final_price_coins }}{% endif %}
+                {% endif %}
+            </div>
+        </div>
+        {% if pass_product %}
+        <form method="post" action="{% url 'economy:season_pass_buy' %}">
+            {% csrf_token %}
+            <button type="submit" class="lq-btn gold lg">🛒 خرید سیزن‌پس</button>
+        </form>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="lq-panel" style="background:linear-gradient(135deg,#eafff3,#dfffe9);border:2px solid #b7e4c7;text-align:center;font-weight:800;color:#0b6b3a">
+        👑 پس ویژهٔ این فصل برای تو فعال است — تمام ردیف‌ها را کلایم کن!
+    </div>
+    {% endif %}
+
+    
+    <div class="lq-section">
+        <h2>🪜 پله‌های فصل</h2>
+    </div>
+    <div class="lq-ladder">
+        {% for sl in season.levels.all %}
+        <div class="lq-lvl {% if sl.level_number <= usp.current_level %}reached{% else %}locked{% endif %}">
+            <div class="n"><span class="ring">{% if sl.level_number <= usp.current_level %}✅{% else %}{{ sl.level_number }}{% endif %}</span></div>
+            <div class="rewards">
+                <span class="req">نیاز: ⭐ {{ sl.xp_required }} XP فصل</span>
+                <span class="rw">🆓
+                    {% if sl.free_reward.coins %}<span class="tk">🪙 {{ sl.free_reward.coins }}</span>{% endif %}
+                    {% if sl.free_reward.xp %}<span class="tk">⭐ {{ sl.free_reward.xp }}</span>{% endif %}
+                    {% if sl.free_reward.gems %}<span class="tk">💎 {{ sl.free_reward.gems }}</span>{% endif %}
+                    {% if sl.free_reward.product_slug %}<span class="tk">🎁 آیتم</span>{% endif %}
+                </span>
+                <span class="rw premium">👑
+                    {% if sl.premium_reward.coins %}<span class="tk">🪙 {{ sl.premium_reward.coins }}</span>{% endif %}
+                    {% if sl.premium_reward.xp %}<span class="tk">⭐ {{ sl.premium_reward.xp }}</span>{% endif %}
+                    {% if sl.premium_reward.gems %}<span class="tk">💎 {{ sl.premium_reward.gems }}</span>{% endif %}
+                    {% if sl.premium_reward.product_slug %}<span class="tk">🎁 آیتم</span>{% endif %}
+                </span>
+            </div>
+            <div class="lq-claim-col">
+                {% if sl.level_number <= usp.current_level %}
+                    {% if sl.level_number in claimed_free %}
+                        <span class="lq-done">🆓 گرفته‌شده ✔</span>
+                    {% else %}
+                        <button class="lq-btn sm ghost claim-btn" data-level="{{ sl.level_number }}" data-track="free">🎁 رایگان</button>
+                    {% endif %}
+                    {% if usp.has_pass %}
+                        {% if sl.level_number in claimed_premium %}
+                            <span class="lq-done">👑 گرفته‌شده ✔</span>
+                        {% else %}
+                            <button class="lq-btn sm gold claim-btn" data-level="{{ sl.level_number }}" data-track="premium">👑 ویژه</button>
+                        {% endif %}
+                    {% else %}
+                        <span class="lq-lock-note">👑 پس لازم</span>
+                    {% endif %}
+                {% else %}
+                    <span class="lq-lock-note">🔒 هنوز نرسیدی</span>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="lq-empty"><p>هنوز پله‌ای برای این فصل تعریف نشده.</p></div>
+        {% endfor %}
+    </div>
+{% else %}
+<div class="lq-empty" style="padding-top:60px">
+    <div class="big">🍂</div>
+    <p><b>الان فصل فعالی نداریم.</b><br>به‌زودی فصل جدیدی با جوایز تازه می‌آید!</p>
+</div>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.claim-btn').forEach(btn => {
+    btn.onclick = () => {
+        btn.disabled = true;
+        fetch(`/economy/season/claim/${btn.dataset.level}/${btn.dataset.track}/`, {
+            method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (d.ok) {
+                btn.textContent = '✅ گرفتی!';
+                setTimeout(() => location.reload(), 900);
+            } else {
+                alert(d.error || 'خطا در دریافت جایزه');
+                btn.disabled = false;
+            }
+        });
+    };
+});
+</script>
+{% endblock %}

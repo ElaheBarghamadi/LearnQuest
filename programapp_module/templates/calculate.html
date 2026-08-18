@@ -1,0 +1,770 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    محاسبه مساحت و محیط | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .area-container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .area-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .area-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .area-header::before {
+            content: '📐';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .area-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .area-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .area-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+
+        /* فرم */
+        .area-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .form-select-custom {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e8;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 18px center;
+            background-size: 16px;
+        }
+
+        .form-select-custom:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* بخش ورودی پویا */
+        .dynamic-inputs {
+            background: #f8f9ff;
+            border-radius: 25px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .dynamic-inputs.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .input-field-group {
+            margin-bottom: 0;
+        }
+
+        .input-field-group label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .area-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e8;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .area-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* دکمه */
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            animation: fadeInUp 0.5s ease;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed rgba(76, 175, 80, 0.3);
+        }
+
+        .result-header i {
+            font-size: 1.3rem;
+            color: #4CAF50;
+        }
+
+        .result-card.error .result-header i {
+            color: #f44336;
+        }
+
+        .result-header h3 {
+            font-size: 1rem;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .result-card.error .result-header h3 {
+            color: #c62828;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2e7d32;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+        }
+
+        .result-card.error .result-value {
+            color: #c62828;
+        }
+
+        .result-formula {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #555;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .extra-info {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        /* مثال‌ها */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .example-btn:hover {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* جداول فرمول‌ها */
+        .formulas-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .formulas-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .formulas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .formula-item {
+            background: #f8f9ff;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .formula-item strong {
+            color: #3B82F6;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .area-container {
+                padding: 15px;
+            }
+
+            .area-header {
+                padding: 25px 20px;
+            }
+
+            .area-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .area-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-value {
+                font-size: 1.4rem;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .formulas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .area-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge-group {
+                gap: 8px;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+            }
+
+            .calc-btn {
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="area-container">
+        <div class="area-card">
+            <div class="area-header">
+                <h1>
+                    <i class="fas fa-draw-polygon"></i>
+                    محاسبه مساحت و محیط
+                    <i class="fas fa-calculator"></i>
+                </h1>
+                <p>محاسبه مساحت و محیط اشکال هندسی مختلف</p>
+                <div class="badge-group">
+                    <span class="badge"><i class="fas fa-chart-line"></i> مساحت</span>
+                    <span class="badge"><i class="fas fa-chart-simple"></i> محیط</span>
+                    <span class="badge"><i class="fas fa-shapes"></i> ۴ شکل</span>
+                </div>
+            </div>
+
+            <form method="get" class="area-form" id="areaForm">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-shapes"></i>
+                        انتخاب شکل:
+                    </label>
+                    <select name="shape" id="shapeSelect" class="form-select-custom" required>
+                        <option value="">-- انتخاب کنید --</option>
+                        <option value="مثلث" {% if shape == "مثلث" %}selected{% endif %}>🔺 مثلث</option>
+                        <option value="مربع" {% if shape == "مربع" %}selected{% endif %}>⬛ مربع</option>
+                        <option value="دایره" {% if shape == "دایره" %}selected{% endif %}>⚪ دایره</option>
+                        <option value="چندضلعی منتظم" {% if shape == "چندضلعی منتظم" %}selected{% endif %}>🛑 شش ضلعی
+                            منتظم
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-chart-line"></i>
+                        نوع محاسبه:
+                    </label>
+                    <select name="calc_type" id="calcTypeSelect" class="form-select-custom" required>
+                        <option value="">-- انتخاب کنید --</option>
+                        <option value="area" {% if calc_type == "area" %}selected{% endif %}>📐 مساحت</option>
+                        <option value="perimeter" {% if calc_type == "perimeter" %}selected{% endif %}>📏 محیط</option>
+                    </select>
+                </div>
+
+                <!-- ورودی مثلث - مساحت -->
+                <div id="triangle-area-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-down"></i> قاعده:</label>
+                            <input type="number" name="base" class="area-input" step="any" placeholder="مقدار قاعده"
+                                   value="{{ base|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع:</label>
+                            <input type="number" name="height" class="area-input" step="any" placeholder="مقدار ارتفاع"
+                                   value="{{ height|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ورودی مثلث - محیط -->
+                <div id="triangle-perimeter-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> ضلع (مثلث متساوی الاضلاع):</label>
+                            <input type="number" name="side" class="area-input" step="any" placeholder="طول ضلع"
+                                   value="{{ side|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ورودی مربع -->
+                <div id="square-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> طول ضلع:</label>
+                            <input type="number" name="side" class="area-input" step="any" placeholder="طول ضلع مربع"
+                                   value="{{ side|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ورودی دایره -->
+                <div id="circle-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-circle-notch"></i> شعاع:</label>
+                            <input type="number" name="radius" class="area-input" step="any" placeholder="شعاع دایره"
+                                   value="{{ radius|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ورودی شش ضلعی -->
+                <div id="polygon-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> طول ضلع:</label>
+                            <input type="number" name="side" class="area-input" step="any" placeholder="طول ضلع شش ضلعی"
+                                   value="{{ side|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-hashtag"></i> تعداد اضلاع:</label>
+                            <input type="number" name="n" class="area-input" value="6" readonly
+                                   style="background:#f5f5ff;">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-calculator"></i>
+                    محاسبه کن
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            <div class="result-section">
+                <div id="resultCard"
+                     class="result-card {% if result == 'error' %}error{% endif %} {% if result %}show{% endif %}">
+                    <div class="result-header">
+                        <i class="fas {% if result != 'error' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        <h3>{% if result != 'error' %}نتیجه محاسبه{% else %}خطا{% endif %}</h3>
+                    </div>
+
+                    {% if result != 'error' and result %}
+                        <div class="result-value">
+                            {{ result|floatformat:2 }}
+                            <span style="font-size: 0.8rem;">
+                            {% if calc_type == 'area' %}
+                                واحد مربع
+                            {% else %}
+                                واحد
+                            {% endif %}
+                        </span>
+                        </div>
+                    {% elif result == 'error' %}
+                        <div class="result-value">
+                            {{ explanation }}
+                        </div>
+                    {% endif %}
+
+                    {% if explanation and result != 'error' %}
+                        <div class="result-formula">
+                            <i class="fas fa-lightbulb"></i> {{ explanation }}
+                        </div>
+                    {% endif %}
+
+                    {% if extra_info %}
+                        <div class="extra-info">
+                            {{ extra_info|safe }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- مثال‌ها -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📐 مثال‌های سریع
+            </div>
+            <div class="examples-grid">
+                <button class="example-btn" data-shape="مثلث" data-type="area" data-base="5" data-height="8">مساحت مثلث
+                    (5,8)
+                </button>
+                <button class="example-btn" data-shape="مثلث" data-type="perimeter" data-side="5">محیط مثلث (5)</button>
+                <button class="example-btn" data-shape="مربع" data-type="area" data-side="4">مساحت مربع (4)</button>
+                <button class="example-btn" data-shape="مربع" data-type="perimeter" data-side="6">محیط مربع (6)</button>
+                <button class="example-btn" data-shape="دایره" data-type="area" data-radius="3">مساحت دایره (3)</button>
+                <button class="example-btn" data-shape="دایره" data-type="perimeter" data-radius="5">محیط دایره (5)
+                </button>
+                <button class="example-btn" data-shape="چندضلعی منتظم" data-type="area" data-side="4">مساحت شش ضلعی
+                    (4)
+                </button>
+            </div>
+        </div>
+
+        <!-- جدول فرمول‌ها -->
+        <div class="formulas-section">
+            <div class="formulas-title">
+                <i class="fas fa-book-open"></i>
+                📚 فرمول‌های محاسباتی
+            </div>
+            <div class="formulas-grid">
+                <div class="formula-item">
+                    <strong>🔺 مثلث (مساحت)</strong>
+                    (قاعده × ارتفاع) ÷ ۲
+                </div>
+                <div class="formula-item">
+                    <strong>🔺 مثلث (محیط)</strong>
+                    ۳ × ضلع (متساوی الاضلاع)
+                </div>
+                <div class="formula-item">
+                    <strong>⬛ مربع (مساحت)</strong>
+                    ضلع × ضلع
+                </div>
+                <div class="formula-item">
+                    <strong>⬛ مربع (محیط)</strong>
+                    ۴ × ضلع
+                </div>
+                <div class="formula-item">
+                    <strong>⚪ دایره (مساحت)</strong>
+                    π × شعاع²
+                </div>
+                <div class="formula-item">
+                    <strong>⚪ دایره (محیط)</strong>
+                    ۲ × π × شعاع
+                </div>
+                <div class="formula-item">
+                    <strong>🛑 شش ضلعی (مساحت)</strong>
+                    (۳√۳ × ضلع²) ÷ ۲
+                </div>
+                <div class="formula-item">
+                    <strong>🛑 شش ضلعی (محیط)</strong>
+                    ۶ × ضلع
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const shapeSelect = document.getElementById('shapeSelect');
+        const calcTypeSelect = document.getElementById('calcTypeSelect');
+        const form = document.getElementById('areaForm');
+
+        // تعریف گروه‌های ورودی
+        const inputGroups = {
+            'triangle-area': ['triangle-area-inputs'],
+            'triangle-perimeter': ['triangle-perimeter-inputs'],
+            'square': ['square-inputs'],
+            'circle': ['circle-inputs'],
+            'polygon': ['polygon-inputs']
+        };
+
+        function updateInputFields() {
+            // مخفی کردن همه گروه‌ها
+            document.querySelectorAll('.dynamic-inputs').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            const shape = shapeSelect.value;
+            const calcType = calcTypeSelect.value;
+
+            if (!shape || !calcType) return;
+
+            let activeGroup = null;
+
+            if (shape === 'مثلث') {
+                activeGroup = calcType === 'area' ? 'triangle-area' : 'triangle-perimeter';
+            } else if (shape === 'مربع') {
+                activeGroup = 'square';
+            } else if (shape === 'دایره') {
+                activeGroup = 'circle';
+            } else if (shape === 'چندضلعی منتظم') {
+                activeGroup = 'polygon';
+            }
+
+            if (activeGroup && inputGroups[activeGroup]) {
+                inputGroups[activeGroup].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('active');
+                });
+            }
+        }
+
+        // اعتبارسنجی فرم
+        function validateForm() {
+            const activeInputs = document.querySelectorAll('.dynamic-inputs.active input');
+
+            for (let input of activeInputs) {
+                const value = parseFloat(input.value);
+                if (input.name !== 'n' && (isNaN(value) || value <= 0)) {
+                    alert('لطفاً تمام مقادیر را به صورت اعداد مثبت وارد کنید.');
+                    input.focus();
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // رویدادها
+        shapeSelect.addEventListener('change', updateInputFields);
+        calcTypeSelect.addEventListener('change', updateInputFields);
+
+        form.addEventListener('submit', function (e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+
+        // مثال‌ها
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const shape = this.getAttribute('data-shape');
+                const type = this.getAttribute('data-type');
+
+                shapeSelect.value = shape;
+                calcTypeSelect.value = type;
+
+                updateInputFields();
+
+                // پر کردن ورودی‌ها
+                setTimeout(() => {
+                    const base = this.getAttribute('data-base');
+                    const height = this.getAttribute('data-height');
+                    const side = this.getAttribute('data-side');
+                    const radius = this.getAttribute('data-radius');
+
+                    if (base) document.querySelector('input[name="base"]').value = base;
+                    if (height) document.querySelector('input[name="height"]').value = height;
+                    if (side) document.querySelectorAll('input[name="side"]').forEach(i => i.value = side);
+                    if (radius) document.querySelector('input[name="radius"]').value = radius;
+
+                    form.submit();
+                }, 100);
+            });
+        });
+
+        // اجرای اولیه
+        updateInputFields();
+
+        // اگر نتیجه وجود داشته باشه، اسکرول به نتیجه
+        {% if result %}
+            document.getElementById('resultCard')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        {% endif %}
+    </script>
+{% endblock %}

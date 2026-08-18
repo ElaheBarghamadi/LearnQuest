@@ -1,0 +1,74 @@
+{% extends 'language_academy/base_academy.html' %}
+{% block title %}Placement — Pick Your Level | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+.pl-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.pl-card { border: 2px solid transparent; border-radius: 20px; padding: 20px; cursor: pointer; text-align: center; transition: 0.18s; background: rgba(255, 255, 255, 0.55); backdrop-filter: blur(12px); }
+.pl-card:hover { transform: translateY(-3px); border-color: rgba(99, 102, 241, 0.5); box-shadow: 0 16px 34px rgba(99, 102, 241, 0.18); }
+.pl-card.sel { border-color: #6366f1; background: rgba(99, 102, 241, 0.10); box-shadow: 0 16px 34px rgba(99, 102, 241, 0.22); }
+.pl-card .lvl { font-size: 1.6rem; font-weight: 800; background: linear-gradient(135deg, #8b5cf6, #3b82f6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.pl-card .nm { font-weight: 700; margin-top: 2px; }
+.pl-card .ds { font-size: 0.8rem; color: var(--text-secondary, #64748b); margin-top: 6px; line-height: 1.5; }
+.pl-card .cur { position: absolute; top: 12px; right: 14px; }
+.pl-card { position: relative; }
+.pl-start { border: none; border-radius: 999px; padding: 13px 44px; font-weight: 800; font-size: 1rem; color: #fff; background: linear-gradient(135deg, #8b5cf6, #3b82f6); box-shadow: 0 12px 28px rgba(99, 102, 241, 0.4); transition: 0.18s; }
+.pl-start:hover { transform: translateY(-2px); }
+.pl-start:disabled { opacity: 0.45; box-shadow: none; cursor: not-allowed; }
+.pl-note { font-size: 0.85rem; color: var(--text-secondary, #64748b); }
+</style>
+
+<div class="container py-4" style="max-width: 900px;">
+    <div class="text-center mb-4">
+        <h1 class="h2 mb-2">🎯 First, tell us your level</h1>
+        {% if current %}
+            <p class="pl-note">Your saved level is <b>{{ current }}</b>. Want to re-check? Pick a level and take the quiz again.</p>
+        {% else %}
+            <p class="pl-note">Choose the level that feels right — then we'll check it with 8 quick questions.<br>
+            Do well, and we keep it. If not, no stress: pick again — higher or lower. 💪</p>
+        {% endif %}
+    </div>
+
+    <form method="post" id="placementForm">
+        {% csrf_token %}
+        <input type="hidden" name="level" id="levelInput" value="">
+        <div class="pl-grid mb-4">
+            {% for lv in levels %}
+            <div class="pl-card" data-lv="{{ lv }}">
+                {% if lv == current %}<span class="badge bg-success cur">current</span>{% endif %}
+                <div class="lvl">{{ lv }}</div>
+                <div class="nm">
+                    {% if lv == 'A1' %}Beginner{% elif lv == 'A2' %}Elementary{% elif lv == 'B1' %}Intermediate{% elif lv == 'B2' %}Upper-Intermediate{% elif lv == 'C1' %}Advanced{% else %}Proficient{% endif %}
+                </div>
+                <div class="ds">
+                    {% if lv == 'A1' %}I know basic words and simple sentences.{% elif lv == 'A2' %}I can talk about everyday topics in simple English.{% elif lv == 'B1' %}I can hold conversations and handle travel situations.{% elif lv == 'B2' %}I discuss opinions, news and work topics comfortably.{% elif lv == 'C1' %}I understand long texts and express ideas fluently.{% else %}I'm close to a native speaker's command.{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <button type="submit" class="pl-start" id="startBtn" disabled>Start the 8-question check 🚀</button>
+        </div>
+    </form>
+</div>
+
+<script>
+(function () {
+    const input = document.getElementById('levelInput');
+    const btn = document.getElementById('startBtn');
+    document.querySelectorAll('.pl-card').forEach((c) => {
+        c.addEventListener('click', () => {
+            document.querySelectorAll('.pl-card').forEach((x) => x.classList.remove('sel'));
+            c.classList.add('sel');
+            input.value = c.dataset.lv;
+            btn.disabled = false;
+        });
+    });
+    document.getElementById('placementForm').addEventListener('submit', function () {
+        if (!input.value) { btn.disabled = true; return; }
+        btn.disabled = true;
+        btn.textContent = 'Building your quiz… ⏳';
+    });
+})();
+</script>
+{% endblock %}

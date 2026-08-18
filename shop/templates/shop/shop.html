@@ -1,0 +1,260 @@
+{% extends 'base.html' %}
+{% load static shop_extras %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608078">
+{% endblock %}
+
+{% block content %}
+<div class="sp-shell">
+
+    <div class="sp-hero">
+        <span class="sp-hero-deco hd1"></span>
+        <span class="sp-hero-deco hd2"></span>
+        <span class="sp-hero-deco hd3"></span>
+        <div class="sp-hero-txt">
+            <h1>فروشگاه لرن‌کوئست</h1>
+            <p>سکه‌ها و الماس‌هایی که با یادگیری جمع کردی اینجا ارزش پیدا می‌کنه؛ قاب، تم، بوستر، پت و کلی آیتم باحال برای شخصی‌سازی پروفایلت.</p>
+            <div class="sp-links">
+                <a href="{% url 'shop:inventory' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7V6a6 6 0 1 1 12 0v1"/><path d="M4 7h16l-1.2 13a2 2 0 0 1-2 1.9H7.2a2 2 0 0 1-2-1.9z"/></svg>
+                    موجودی من
+                </a>
+                <a href="{% url 'shop:wishlist' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    علاقه‌مندی‌ها
+                </a>
+                <a href="{% url 'shop:history' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h12a1 1 0 0 1 1 1V21l-3-2-3 2-3-2-3 2V3.5a1 1 0 0 1 1-1z"/><path d="M9 7.5h6M9 11h6M9 14.5h4"/></svg>
+                    تاریخچه خرید
+                </a>
+            </div>
+        </div>
+        <div class="sp-wallet">
+            <span class="sp-w coin">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 1.8v3M12 19.2v3M1.8 12h3M19.2 12h3"/></svg>
+                <b>{{ lq_wallet.coins|default:0 }}</b><small>سکه</small>
+            </span>
+            <span class="sp-w gem">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/><path d="M3 9h18M12 21 8.5 9l2-6M12 21 15.5 9l-2-6"/></svg>
+                <b>{{ lq_wallet.gems|default:0 }}</b><small>الماس</small>
+            </span>
+        </div>
+    </div>
+
+    {% if featured_products %}
+    <section class="sp-feat">
+        <h2 class="sp-sec-t">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/><path d="M18.5 15.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg>
+            پیشنهادهای ویژهٔ امروز
+        </h2>
+        <div class="sp-feat-row">
+            {% for p in featured_products %}
+            <a class="sp-fcard sp-t{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+                <span class="sp-deco d1"></span>
+                <span class="sp-deco d2"></span>
+                <span class="sp-fic">{{ p.effect_type|effect_icon }}</span>
+                <b>{{ p.name }}</b>
+                <span class="sp-fprice">
+                    {% if p.price_c %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>{{ p.price_c }}
+                    {% elif p.price_g %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>{{ p.price_g }}
+                    {% else %}رایگان{% endif %}
+                    {% if p.disc %}<em>٪{{ p.disc }}</em>{% endif %}
+                </span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <div class="sp-layout">
+
+        <aside class="sp-rail">
+            <div class="sp-rail-card">
+                <div class="sp-rail-t">دسته‌بندی‌ها</div>
+                <div class="sp-catlist">
+                    <a class="sp-catlink {% if not cat %}active{% endif %}" href="?type={{ ptype }}&sort={{ sort }}&q={{ search }}">همهٔ محصولات</a>
+                    {% for c in categories %}
+                        <a class="sp-catlink {% if cat == c.slug %}active{% endif %}" href="?cat={{ c.slug }}&type={{ ptype }}&sort={{ sort }}&q={{ search }}">{{ c.name }}</a>
+                        {% for ch in c.children.all %}
+                            <a class="sp-catlink sub {% if cat == ch.slug %}active{% endif %}" href="?cat={{ ch.slug }}&type={{ ptype }}&sort={{ sort }}&q={{ search }}">{{ ch.name }}</a>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sp-rail-card">
+                <div class="sp-rail-t">نوع کالا</div>
+                <div class="sp-typegrid">
+                    <a class="sp-typechip {% if not ptype %}active{% endif %}" href="?cat={{ cat }}&sort={{ sort }}&q={{ search }}">همهٔ انواع</a>
+                    {% for val, fa in product_types %}
+                        <a class="sp-typechip {% if ptype == val %}active{% endif %}" href="?cat={{ cat }}&type={{ val }}&sort={{ sort }}&q={{ search }}">{{ fa }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="sp-rail-card">
+                <div class="sp-rail-t">جستجو و مرتب‌سازی</div>
+                <form class="sp-searchbox" method="get">
+                    {% if cat %}<input type="hidden" name="cat" value="{{ cat }}">{% endif %}
+                    {% if ptype %}<input type="hidden" name="type" value="{{ ptype }}">{% endif %}
+                    <div class="sp-searchin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                        <input type="text" name="q" value="{{ search }}" placeholder="دنبال چی می‌گردی؟">
+                    </div>
+                    <select name="sort" onchange="this.form.submit()">
+                        <option value="featured" {% if sort == 'featured' %}selected{% endif %}>مرتب‌سازی: ویژه‌ها</option>
+                        <option value="new" {% if sort == 'new' %}selected{% endif %}>جدیدترین</option>
+                        <option value="popular" {% if sort == 'popular' %}selected{% endif %}>پرفروش‌ترین</option>
+                        <option value="discount" {% if sort == 'discount' %}selected{% endif %}>بیشترین تخفیف</option>
+                        <option value="cheap" {% if sort == 'cheap' %}selected{% endif %}>ارزان‌ترین</option>
+                        <option value="expensive" {% if sort == 'expensive' %}selected{% endif %}>گران‌ترین</option>
+                    </select>
+                    <button type="submit" class="sp-btn block">جستجو</button>
+                </form>
+            </div>
+        </aside>
+
+        <div class="sp-main">
+
+            {% if recent_viewed %}
+            <div class="sp-recent">
+                <b>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>
+                    اخیراً دیدی:
+                </b>
+                {% for rv in recent_viewed %}
+                    <a href="{% url 'shop:product' rv.product.slug %}">{{ rv.product.name|truncatewords:3 }}</a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <h2 class="sp-sec-t" style="margin-top:0">
+                ویترین فروشگاه
+                <small class="sp-count">{{ page.paginator.count }} کالا</small>
+            </h2>
+
+            {% if page.object_list %}
+            <div class="sp-grid">
+                {% for p in page %}
+                <div class="sp-card{% if p.id in owned_ids %} owned{% endif %}">
+                    <a class="sp-tile sp-t{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+                        <span class="sp-deco d1"></span>
+                        <span class="sp-deco d2"></span>
+                        {% if p.tile_mode == 'img' %}
+                            <span class="sp-fic big">{{ p.effect_type|effect_icon }}</span>
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+                        {% elif p.tile_mode == 'frame' %}
+                            <span class="sp-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                            <span class="sp-livenote">پیش‌نمایش روی آواتار خودت</span>
+                        {% elif p.tile_mode == 'ucolor' %}
+                            <span class="sp-uc {{ p.preview_css }}">{{ request.user.username }}</span>
+                            <span class="sp-livenote">پیش‌نمایش با نام کاربریت</span>
+                        {% elif p.tile_mode == 'effect' %}
+                            <span class="sp-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                            <span class="sp-livenote">پیش‌نمایش روی پروفایل تو</span>
+                        {% elif p.tile_mode == 'theme' %}
+                            <span class="sp-theme"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                        {% elif p.tile_mode == 'pbg' %}
+                            <span class="sp-pbg {{ p.preview_css }}"></span>
+                        {% else %}
+                            <span class="sp-fic big">{{ p.effect_type|effect_icon }}</span>
+                        {% endif %}
+                        <span class="sp-ribs">
+                            {% if p.disc %}<span class="sp-rib off">٪{{ p.disc }}−</span>{% endif %}
+                            {% if p.is_featured %}<span class="sp-rib feat">ویژه</span>{% endif %}
+                            {% if p.remaining is not None and p.remaining <= 5 and p.remaining > 0 %}<span class="sp-rib ltd">فقط {{ p.remaining }} عدد</span>{% endif %}
+                            {% if p.id in owned_ids %}<span class="sp-rib own">داریش ✓</span>{% endif %}
+                        </span>
+                    </a>
+                    <div class="sp-cbody">
+                        <div class="sp-ccat">{{ p.category.name }} <span>·</span> {{ p.get_product_type_display }}</div>
+                        <h3 class="sp-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                        {% if p.remaining is not None and p.stock_limit %}
+                            <div class="sp-stock">
+                                <div class="bar"><i style="width:{% widthratio p.remaining p.stock_limit 100 %}%"></i></div>
+                                <small>{{ p.remaining }} از {{ p.stock_limit }} باقی</small>
+                            </div>
+                        {% endif %}
+                        <div class="sp-cfoot">
+                            <div class="sp-price">
+                                {% if p.price_c %}
+                                    <span class="val coin">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>
+                                        {{ p.price_c }}
+                                    </span>
+                                    {% if p.disc %}<span class="old">{{ p.price_coins }}</span>{% endif %}
+                                {% elif p.price_g %}
+                                    <span class="val gem">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>
+                                        {{ p.price_g }}
+                                    </span>
+                                    {% if p.disc %}<span class="old">{{ p.price_gems }}</span>{% endif %}
+                                {% else %}
+                                    <span class="val free">رایگان</span>
+                                {% endif %}
+                            </div>
+                            <div class="sp-actions">
+                                <a href="{% url 'shop:product' p.slug %}" class="sp-btn">مشاهده و خرید</a>
+                                <button class="sp-heart wish-btn {% if p.id in wish_ids %}on{% endif %}" data-id="{{ p.id }}" title="علاقه‌مندی" type="button" aria-label="علاقه‌مندی">
+                                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if page.paginator.num_pages > 1 %}
+            <div class="sp-pager">
+                {% if page.has_previous %}<a class="arr" href="?cat={{ cat }}&type={{ ptype }}&sort={{ sort }}&q={{ search }}&page={{ page.previous_page_number }}">‹</a>{% endif %}
+                {% for n in page.paginator.page_range %}
+                    {% if n == page.number %}<span class="cur">{{ n }}</span>{% else %}<a href="?cat={{ cat }}&type={{ ptype }}&sort={{ sort }}&q={{ search }}&page={{ n }}">{{ n }}</a>{% endif %}
+                {% endfor %}
+                {% if page.has_next %}<a class="arr" href="?cat={{ cat }}&type={{ ptype }}&sort={{ sort }}&q={{ search }}&page={{ page.next_page_number }}">›</a>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="sp-empty">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/><path d="M8.5 11h5"/></svg>
+                <p>با این فیلتر چیزی پیدا نشد — یک کلمهٔ دیگر یا دستهٔ دیگر امتحان کن!</p>
+                <a href="{% url 'shop:home' %}" class="sp-btn">دیدن همهٔ محصولات</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+    function csrfTok() {
+        const h = document.getElementById('lqCsrf');
+        if (h && h.value) return h.value;
+        const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return c ? c.pop() : '';
+    }
+    document.querySelectorAll('.wish-btn').forEach(btn => {
+        btn.onclick = () => {
+            fetch(`/shop/wishlist/toggle/${btn.dataset.id}/`, {
+                method: 'POST',
+                headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}
+            })
+                .then(r => r.json())
+                .then(d => { btn.classList.toggle('on', !!d.in_wishlist); })
+                .catch(() => {});
+        };
+    });
+})();
+</script>
+{% endblock %}

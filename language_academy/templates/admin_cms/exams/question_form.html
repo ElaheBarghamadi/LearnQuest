@@ -1,0 +1,108 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">{{ title }}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="mb-3">
+                <label class="form-label">Question Text *</label>
+                <textarea name="question" class="form-control" rows="4" required>{{ question.question|default:'' }}</textarea>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Question Type *</label>
+                    <select name="question_type" class="form-select" id="questionType" required>
+                        <option value="mcq" {% if question.question_type == 'mcq' %}selected{% endif %}>Multiple Choice</option>
+                        <option value="fill_blank" {% if question.question_type == 'fill_blank' %}selected{% endif %}>Fill in the Blank</option>
+                        <option value="true_false" {% if question.question_type == 'true_false' %}selected{% endif %}>True/False</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Points</label>
+                    <input type="number" name="points" class="form-control" value="{{ question.points|default:10 }}">
+                </div>
+            </div>
+            
+            <div id="correctAnswerSection" class="mb-3">
+                <label class="form-label">Correct Answer *</label>
+                <input type="text" name="correct_answer" class="form-control" value="{{ question.correct_answer|default:'' }}" required>
+            </div>
+            
+            <div id="optionsSection">
+                <label class="form-label">Options (for Multiple Choice)</label>
+                <div id="optionsContainer">
+                    {% if question.options %}
+                        {% for opt in question.options %}
+                        <div class="input-group mb-2">
+                            <input type="text" name="options" class="form-control" value="{{ opt }}">
+                            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="input-group mb-2">
+                            <input type="text" name="options" class="form-control" placeholder="Option 1">
+                            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="display: none;">✖</button>
+                        </div>
+                        <div class="input-group mb-2">
+                            <input type="text" name="options" class="form-control" placeholder="Option 2">
+                            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="display: none;">✖</button>
+                        </div>
+                    {% endif %}
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOption()">
+                    <i class="fas fa-plus"></i> Add Option
+                </button>
+            </div>
+            
+            <hr class="mt-4">
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'admin_cms:exam_question_list' exam.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Question</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function addOption() {
+    const container = document.getElementById('optionsContainer');
+    const newDiv = document.createElement('div');
+    newDiv.className = 'input-group mb-2';
+    newDiv.innerHTML = `
+        <input type="text" name="options" class="form-control" placeholder="New option">
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">✖</button>
+    `;
+    container.appendChild(newDiv);
+}
+
+const typeSelect = document.getElementById('questionType');
+const optionsSection = document.getElementById('optionsSection');
+const correctAnswerSection = document.getElementById('correctAnswerSection');
+
+function toggleSections() {
+    const type = typeSelect.value;
+    if (type === 'mcq') {
+        optionsSection.style.display = 'block';
+        correctAnswerSection.querySelector('input').placeholder = 'Enter the correct option text exactly as written above';
+    } else if (type === 'fill_blank') {
+        optionsSection.style.display = 'none';
+        correctAnswerSection.querySelector('input').placeholder = 'Enter the correct word/phrase';
+    } else if (type === 'true_false') {
+        optionsSection.style.display = 'none';
+        correctAnswerSection.querySelector('input').placeholder = 'Enter "True" or "False"';
+    }
+}
+
+typeSelect.addEventListener('change', toggleSections);
+toggleSections();
+</script>
+{% endblock %}

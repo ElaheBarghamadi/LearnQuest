@@ -1,0 +1,170 @@
+{% if visual_edit %}
+<div class="vae-bar" id="vaeBar">
+    <span class="vae-title">✏️ Academy Visual Editor</span>
+    <span class="vae-status"><span class="vae-dot" id="vaeDot"></span><span id="vaeState">Ready</span></span>
+    <span class="vae-hint">متن‌ها را مستقیم ویرایش کن · کارت‌ها را با ⠿ جابه‌جا کن</span>
+    <button type="button" class="vae-btn primary" id="vaeSave">💾 Save</button>
+    <a class="vae-btn" href="{{ request.path }}">✕ Exit</a>
+</div>
+<style>
+    .vae-bar { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 3500; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: min(94vw, 880px); justify-content: center; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%); border: 1px solid rgba(255, 255, 255, 0.75); border-radius: 20px; padding: 9px 14px; box-shadow: 0 18px 46px rgba(8, 30, 70, 0.28); direction: ltr; }
+    .vae-title { font-size: 0.8rem; font-weight: 900; color: #1d4ed8; white-space: nowrap; }
+    .vae-hint { font-size: 0.66rem; color: #6b6f9b; white-space: nowrap; }
+    .vae-status { display: inline-flex; align-items: center; gap: 6px; font-size: 0.7rem; font-weight: 800; color: #4A4A6A; white-space: nowrap; }
+    .vae-dot { width: 9px; height: 9px; border-radius: 50%; background: #cbd5e1; display: inline-block; }
+    .vae-dot.busy { background: #f59e0b; animation: vaePulse 0.9s infinite; }
+    .vae-dot.saved { background: #10b981; }
+    .vae-dot.error { background: #ef4444; }
+    @keyframes vaePulse { 50% { opacity: 0.35; } }
+    .vae-btn { display: inline-flex; align-items: center; gap: 5px; border: 1.5px solid rgba(59, 130, 246, 0.4); background: #fff; color: #1d4ed8; font-size: 0.74rem; font-weight: 800; padding: 7px 13px; border-radius: 11px; cursor: pointer; text-decoration: none; transition: 0.18s; white-space: nowrap; }
+    .vae-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(8, 30, 70, 0.16); }
+    .vae-btn.primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; border-color: transparent; }
+    [data-vae] { outline: 1.5px dashed transparent; outline-offset: 3px; border-radius: 6px; transition: outline-color 0.15s, background 0.15s; cursor: text; min-width: 30px; }
+    [data-vae]:hover { outline-color: rgba(59, 130, 246, 0.55); }
+    [data-vae]:focus { outline-color: #3b82f6; outline-style: solid; background: rgba(59, 130, 246, 0.07); }
+    body.vae-on [data-vae-id] { position: relative; }
+    .vae-drag { position: absolute; top: 8px; left: 8px; z-index: 40; width: 26px; height: 26px; display: grid; place-items: center; background: rgba(255,255,255,0.92); border: 1px solid rgba(59,130,246,0.4); border-radius: 8px; color: #1d4ed8; font-size: 0.8rem; cursor: grab; box-shadow: 0 4px 10px rgba(8,30,70,0.15); }
+    .vae-drag:active { cursor: grabbing; }
+    .vae-ghost { opacity: 0.4; }
+    .vae-insertline { height: 3px; border-radius: 99px; background: linear-gradient(90deg, #3b82f6, #60a5fa); margin: 6px 10px; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .vae-add { display: inline-flex; align-items: center; gap: 6px; margin: 10px 0; background: rgba(59,130,246,0.08); color: #1d4ed8; border: 1.5px dashed rgba(59,130,246,0.45); padding: 10px 18px; border-radius: 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer; transition: 0.18s; }
+    .vae-add:hover { background: rgba(59,130,246,0.16); border-style: solid; }
+    @media (max-width: 760px) {
+        .vae-bar { bottom: 0; left: 0; right: 0; transform: none; border-radius: 18px 18px 0 0; max-width: 100vw; padding: 8px 10px; gap: 7px; }
+        .vae-hint { display: none; }
+    }
+</style>
+<script>
+(function () {
+    document.body.classList.add('vae-on');
+    var bar = document.getElementById('vaeBar');
+    if (bar && bar.parentElement !== document.documentElement) document.documentElement.appendChild(bar);
+    var SAVE_URL = "{% url 'admin_cms:academy_visual_save' %}";
+    function csrf() {
+        var m = document.cookie.match(/(^|;\s*)csrftoken\s*=\s*([^;]+)/);
+        return m ? decodeURIComponent(m[2]) : '';
+    }
+    var dot = document.getElementById('vaeDot'), state = document.getElementById('vaeState');
+    var pending = {}, dirty = false, timer = null, needsReload = false;
+    function setState(cls, txt) { dot.className = 'vae-dot' + (cls ? ' ' + cls : ''); state.textContent = txt; }
+    function mark(key, value) { pending[key] = value; dirty = true; setState('', 'Editing…'); schedule(); }
+    function schedule() { clearTimeout(timer); timer = setTimeout(flush, 1100); }
+    async function flush() {
+        var keys = Object.keys(pending);
+        if (!keys.length) return;
+        var payload = { updates: Object.assign({}, pending) };
+        pending = {};
+        setState('busy', 'Saving…');
+        var ok = false;
+        try {
+            var r = await fetch(SAVE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() }, body: JSON.stringify(payload) });
+            var j = await r.json();
+            ok = r.ok && j && j.ok;
+        } catch (e) { ok = false; }
+        if (!ok) {
+            pending = Object.assign(payload.updates, pending);
+            dirty = true;
+            setState('error', 'Save failed — retry');
+            schedule();
+            return;
+        }
+        if (needsReload) {
+            sessionStorage.setItem('vaeScroll', String(window.scrollY));
+            location.href = location.pathname + '?edit=1';
+            return;
+        }
+        dirty = Object.keys(pending).length > 0;
+        setState('saved', 'All saved ✓');
+        setTimeout(function () { if (!dirty) setState('', 'Ready'); }, 2200);
+    }
+    document.querySelectorAll('[data-vae]').forEach(function (el) {
+        el.contentEditable = 'true';
+        el.spellcheck = false;
+        el.addEventListener('input', function () { mark(el.dataset.vae, el.textContent.trim()); });
+    });
+    var dragEl = null, line = null;
+    function hideLine() { if (line) { line.remove(); line = null; } }
+    document.querySelectorAll('[data-vae-list]').forEach(function (list) {
+        var kind = list.dataset.vaeList;
+        Array.from(list.querySelectorAll(':scope [data-vae-id]')).forEach(function (item) {
+            var h = document.createElement('span');
+            h.className = 'vae-drag';
+            h.textContent = '⠿';
+            h.draggable = true;
+            item.appendChild(h);
+            h.addEventListener('dragstart', function (e) {
+                dragEl = item;
+                item.classList.add('vae-ghost');
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', item.dataset.vaeId); } catch (err) {}
+            });
+            h.addEventListener('dragend', function () {
+                item.classList.remove('vae-ghost');
+                dragEl = null;
+                hideLine();
+                var ids = Array.from(list.querySelectorAll(':scope [data-vae-id]')).map(function (n) { return parseInt(n.dataset.vaeId, 10); }).filter(function (n) { return !isNaN(n); });
+                if (ids.length > 1) mark('reorder.' + kind, ids);
+            });
+        });
+        list.addEventListener('dragover', function (e) {
+            if (!dragEl) return;
+            e.preventDefault();
+            var after = null;
+            var items = Array.from(list.querySelectorAll(':scope [data-vae-id]')).filter(function (n) { return n !== dragEl; });
+            for (var i = 0; i < items.length; i++) {
+                var r = items[i].getBoundingClientRect();
+                var mid = list.classList.contains('row') ? r.left + r.width / 2 : r.top + r.height / 2;
+                var pos = list.classList.contains('row') ? e.clientX : e.clientY;
+                if (pos < mid) { after = items[i]; break; }
+            }
+            hideLine();
+            line = document.createElement('div');
+            line.className = 'vae-insertline';
+            if (list.classList.contains('row')) { line.style.cssText = 'width:4px;min-height:60px;height:auto;align-self:stretch;margin:0 6px;'; }
+            try {
+                if (after) { if (list.classList.contains('row')) list.insertBefore(line, after); else list.insertBefore(line, after); }
+                else list.appendChild(line);
+            } catch (err) {}
+        });
+        list.addEventListener('drop', function (e) {
+            if (!dragEl) return;
+            e.preventDefault();
+            if (line && line.parentElement === list) list.insertBefore(dragEl, line);
+            else list.appendChild(dragEl);
+            hideLine();
+        });
+    });
+    document.querySelectorAll('[data-vae-add]').forEach(function (btn) {
+        btn.addEventListener('click', async function () {
+            btn.disabled = true;
+            var updates = {};
+            updates[btn.dataset.vaeAdd] = { name: btn.dataset.vaeName || '' };
+            if (btn.dataset.parent) {
+                var pv = btn.dataset.parent.split(':');
+                updates[btn.dataset.vaeAdd][pv[0]] = parseInt(pv[1], 10);
+            }
+            setState('busy', 'Creating…');
+            var ok = false;
+            try {
+                var r = await fetch(SAVE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() }, body: JSON.stringify({ updates: updates }) });
+                var j = await r.json();
+                ok = r.ok && j && j.ok;
+            } catch (e) { ok = false; }
+            if (ok) {
+                sessionStorage.setItem('vaeScroll', String(window.scrollY));
+                location.href = location.pathname + '?edit=1';
+            } else {
+                btn.disabled = false;
+                setState('error', 'Create failed');
+            }
+        });
+    });
+    document.getElementById('vaeSave').addEventListener('click', flush);
+    window.addEventListener('beforeunload', function (e) {
+        if (dirty) { e.preventDefault(); e.returnValue = ''; }
+    });
+    var sc = sessionStorage.getItem('vaeScroll');
+    if (sc) { sessionStorage.removeItem('vaeScroll'); setTimeout(function () { window.scrollTo(0, parseInt(sc, 10) || 0); }, 60); }
+})();
+</script>
+{% endif %}

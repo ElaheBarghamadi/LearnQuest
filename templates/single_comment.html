@@ -1,0 +1,55 @@
+{% load jalali %}<div class="c-item" data-comment-id="{{ comment.id }}">
+    <div class="c-avatar" style="--h:{{ comment.user_id|hue }}">
+        {% if comment.user.avatar %}
+            <img src="{{ comment.user.avatar.url }}" alt="{{ comment.user.username }}" loading="lazy">
+        {% else %}
+            <span>{{ comment.user.username|slice:":1" }}</span>
+        {% endif %}
+    </div>
+
+    <div class="c-main">
+        <div class="c-head">
+            <a class="c-user" href="/u/{{ comment.user.username }}/">{{ comment.user.get_full_name|default:comment.user.username }}</a>
+            <span class="c-date">{{ comment.created_at|jdatetime }}</span>
+        </div>
+        <div class="c-text">{{ comment.content|linebreaksbr }}</div>
+
+        <div class="c-foot">
+            {% if user.is_authenticated %}
+            <button type="button" class="c-like {% if comment.id in liked_comments %}liked{% endif %}" data-comment-id="{{ comment.id }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span class="c-like-cnt">{{ comment.likes|fadigits }}</span>
+            </button>
+            <button type="button" class="c-reply-btn">↩ پاسخ</button>
+            {% else %}
+            <span class="c-date">❤ {{ comment.likes|fadigits }}</span>
+            {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="c-inline-form">
+            <form class="c-form comment-form-ajax" method="post" action="{% url 'blog:add_comment' %}">
+                {% csrf_token %}
+                <input type="hidden" name="article_id" value="{{ comment.article_id }}">
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                <textarea name="content" maxlength="1000" rows="2" placeholder="پاسخت به {{ comment.user.username }}..." required></textarea>
+                <div class="c-form-foot">
+                    <span class="c-counter"><b class="c-count-num">0</b> / 1000</span>
+                    <button type="submit" class="btn-send">ارسال پاسخ ✈️</button>
+                </div>
+                <div class="c-error"></div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if comment.replies.all %}
+    <div class="c-replies">
+        {% for reply in comment.replies.all %}
+            {% include 'single_comment.html' with comment=reply %}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>

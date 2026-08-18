@@ -1,0 +1,258 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}مدیریت جهان‌ها | CMS{% endblock %}
+{% block page_title %}مدیریت جهان‌ها{% endblock %}
+
+{% block content %}
+<style>
+    .wz-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 18px; }
+    .wz-stat { border-radius: 16px; padding: 14px 16px; color: #fff; box-shadow: 0 8px 20px rgba(15,23,42,.12); }
+    .wz-stat b { font-size: 1.5rem; display: block; font-variant-numeric: tabular-nums; }
+    .wz-stat span { font-size: .78rem; opacity: .92; font-weight: 600; }
+    .wz-s1 { background: linear-gradient(135deg,#6366F1,#4F46E5); }
+    .wz-s2 { background: linear-gradient(135deg,#22C55E,#15803D); }
+    .wz-s3 { background: linear-gradient(135deg,#06B6D4,#0369A1); }
+    .wz-s4 { background: linear-gradient(135deg,#F59E0B,#D97706); }
+
+    .wz-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+    .wz-search { flex: 1; min-width: 220px; display: flex; gap: 8px; }
+    .wz-search input { flex: 1; border: 1px solid #E2E8F0; border-radius: 12px; padding: 9px 14px; font-family: inherit; font-size: .9rem; }
+    .wz-search input:focus { outline: none; border-color: #6366F1; box-shadow: 0 0 0 3px rgba(99,102,241,.15); }
+    .wz-pill { border: 1px solid #E2E8F0; background: #fff; color: #475569; border-radius: 999px;
+        padding: 8px 16px; font-weight: 700; font-size: .8rem; text-decoration: none; transition: .15s; }
+    .wz-pill.on, .wz-pill:hover { background: linear-gradient(135deg,#6366F1,#4F46E5); color: #fff; border-color: transparent; }
+
+    .wz-table-card { background: #fff; border-radius: 18px; box-shadow: 0 8px 24px rgba(15,23,42,.08); overflow: hidden; }
+    .wz-table { width: 100%; border-collapse: collapse; }
+    .wz-table th { background: #F8FAFC; font-size: .74rem; color: #64748B; font-weight: 800; padding: 11px 12px; text-align: right; white-space: nowrap; }
+    .wz-table td { padding: 12px; border-top: 1px solid #F1F5F9; vertical-align: middle; font-size: .86rem; }
+    .wz-world-name { display: flex; align-items: center; gap: 10px; min-width: 170px; }
+    .wz-thumb { width: 44px; height: 44px; border-radius: 12px; object-fit: cover; flex: none;
+        box-shadow: 0 3px 8px rgba(0,0,0,.15); }
+    .wz-thumb-ph { width: 44px; height: 44px; border-radius: 12px; flex: none; display: grid; place-items: center;
+        background: linear-gradient(145deg,#A5B4FC,#6366F1); color: #fff; font-size: 1.2rem; }
+    .wz-name b { display: block; color: #1E293B; }
+    .wz-name small { color: #94A3B8; font-size: .72rem; }
+
+    .wz-counts { display: flex; flex-direction: column; gap: 3px; font-size: .76rem; color: #475569; white-space: nowrap; }
+    .wz-badge { display: inline-flex; align-items: center; gap: 4px; border-radius: 999px; padding: 3px 11px; font-size: .72rem; font-weight: 800; }
+    .wz-b-pub { background: #DCFCE7; color: #166534; }
+    .wz-b-draft { background: #F1F5F9; color: #64748B; }
+    .wz-b-diff { background: #E0E7FF; color: #3730A3; }
+
+    .wz-acts { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+    .wz-btn { width: 32px; height: 32px; border-radius: 10px; border: 1px solid #E2E8F0; background: #fff; color: #475569;
+        display: inline-grid; place-items: center; cursor: pointer; text-decoration: none; transition: .15s; font-size: .8rem; }
+    .wz-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.12); color: #1E293B; }
+    .wz-btn.pub-on { background: #DCFCE7; border-color: #86EFAC; color: #166534; }
+    .wz-btn.pub-off { background: #FEE2E2; border-color: #FCA5A5; color: #991B1B; }
+    .wz-btn:disabled { opacity: .35; cursor: default; transform: none; box-shadow: none; }
+    .wz-btn.danger:hover { background: #FEE2E2; color: #B91C1C; }
+    .wz-btn.wide { width: auto; padding: 0 10px; font-weight: 800; }
+
+    .wz-chapters { background: #F8FAFC; }
+    .wz-chapters > td { padding: 0 12px 12px; }
+    .wz-chapters-in { border: 1px dashed #CBD5E1; border-radius: 12px; padding: 10px 14px; background: #fff; }
+    .wz-ch-row { display: flex; align-items: center; gap: 10px; padding: 7px 4px; border-bottom: 1px solid #F1F5F9; font-size: .8rem; }
+    .wz-ch-row:last-child { border-bottom: none; }
+    .wz-ch-order { width: 24px; height: 24px; border-radius: 8px; background: #E0E7FF; color: #3730A3; font-weight: 800;
+        display: grid; place-items: center; font-size: .72rem; flex: none; }
+    .wz-ch-name { flex: 1; font-weight: 700; color: #334155; }
+    .wz-ch-name small { color: #94A3B8; font-weight: 500; margin-inline-start: 6px; }
+    .wz-ch-meta { color: #64748B; font-size: .72rem; white-space: nowrap; }
+    .wz-ch-add { display: inline-block; margin-top: 8px; font-size: .76rem; font-weight: 800; color: #4F46E5; text-decoration: none; }
+
+    .wz-details summary { cursor: pointer; list-style: none; }
+    .wz-details summary::-webkit-details-marker { display: none; }
+    .wz-toast { position: fixed; bottom: 22px; inset-inline-start: 50%; transform: translateX(-50%);
+        background: #1E293B; color: #fff; padding: 10px 22px; border-radius: 999px; font-weight: 800; font-size: .82rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,.3); opacity: 0; transition: opacity .25s, transform .25s; z-index: 99; pointer-events: none; }
+    .wz-toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+
+    .wz-empty { text-align: center; padding: 46px 16px; color: #94A3B8; }
+    .wz-empty .big { font-size: 2.4rem; display: block; margin-bottom: 8px; }
+
+    @media (max-width: 860px) {
+        .wz-stats { grid-template-columns: repeat(2, 1fr); }
+        .wz-table thead { display: none; }
+        .wz-table, .wz-table tbody, .wz-table tr, .wz-table td { display: block; width: 100%; }
+        .wz-table tr { border-top: 8px solid #F1F5F9; padding: 10px 12px; }
+        .wz-table tr:first-child { border-top: none; }
+        .wz-table td { border: none; padding: 5px 2px; }
+        .wz-table td.wz-hide-m { display: none; }
+        .wz-row-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+    }
+</style>
+
+<div class="wz-stats">
+    <div class="wz-stat wz-s1"><b>{{ stats.total }}</b><span>🌍 جهان</span></div>
+    <div class="wz-stat wz-s2"><b>{{ stats.published }}</b><span>✅ منتشرشده</span></div>
+    <div class="wz-stat wz-s3"><b>{{ stats.chapters }}</b><span>📚 فصل</span></div>
+    <div class="wz-stat wz-s4"><b>{{ stats.lessons }}</b><span>📖 درس</span></div>
+</div>
+
+<div class="wz-toolbar">
+    <a href="{% url 'admin_cms:world_create' %}" class="btn btn-primary btn-sm">
+        <i class="fas fa-plus me-1"></i> جهان جدید
+    </a>
+    <form class="wz-search" method="get">
+        <input type="text" name="q" value="{{ q }}" placeholder="جستجو در نام جهان‌ها…">
+        {% if status %}<input type="hidden" name="status" value="{{ status }}">{% endif %}
+        <button class="btn btn-outline-secondary btn-sm" type="submit"><i class="fas fa-search"></i></button>
+    </form>
+    <a class="wz-pill {% if not status %}on{% endif %}" href="?{% if q %}q={{ q }}{% endif %}">همه</a>
+    <a class="wz-pill {% if status == 'published' %}on{% endif %}" href="?status=published{% if q %}&q={{ q }}{% endif %}">منتشرشده</a>
+    <a class="wz-pill {% if status == 'draft' %}on{% endif %}" href="?status=draft{% if q %}&q={{ q }}{% endif %}">پیش‌نویس</a>
+</div>
+
+<div class="wz-table-card">
+    <table class="wz-table">
+        <thead>
+            <tr>
+                <th style="width:86px">ترتیب</th>
+                <th>جهان</th>
+                <th>سطح</th>
+                <th>محتوا</th>
+                <th>پاداش</th>
+                <th>وضعیت</th>
+                <th style="width:230px">عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for world in worlds %}
+            <tr class="wz-row" data-world="{{ world.id }}">
+                <td class="wz-row-top">
+                    <div class="d-flex flex-column gap-1">
+                        <button class="wz-btn wz-move" data-dir="up" title="بالا" {% if forloop.first %}disabled{% endif %}>▲</button>
+                        <span class="text-center fw-bold text-muted" style="font-size:.85rem">{{ world.order }}</span>
+                        <button class="wz-btn wz-move" data-dir="down" title="پایین" {% if forloop.last %}disabled{% endif %}>▼</button>
+                    </div>
+                </td>
+                <td>
+                    <div class="wz-world-name">
+                        {% if world.image %}
+                        <img class="wz-thumb" src="{{ world.image.url }}" onerror="this.outerHTML='<span class=\'wz-thumb-ph\'>🌍</span>'" alt="">
+                        {% else %}
+                        <span class="wz-thumb-ph">🌍</span>
+                        {% endif %}
+                        <span class="wz-name">
+                            <b>{{ world.name }}</b>
+                            {% if world.name_fa %}<small>{{ world.name_fa }}</small>{% endif %}
+                            <small class="d-block text-muted">{{ world.description|truncatechars:60 }}</small>
+                        </span>
+                    </div>
+                </td>
+                <td class="wz-hide-m"><span class="wz-badge wz-b-diff">{{ world.difficulty_level }}</span></td>
+                <td class="wz-hide-m">
+                    <div class="wz-counts">
+                        <span>📚 {{ world.chapters_count }} فصل</span>
+                        <span>📖 {{ world.published_lessons }}/{{ world.lessons_count }} درس منتشر</span>
+                    </div>
+                </td>
+                <td class="wz-hide-m"><span class="text-muted" style="font-size:.78rem">+{{ world.xp_reward }} XP · +{{ world.coin_reward }} 🪙</span></td>
+                <td>
+                    <span class="wz-badge {% if world.is_published %}wz-b-pub{% else %}wz-b-draft{% endif %}" data-role="status-badge">
+                        {% if world.is_published %}✅ منتشرشده{% else %}📝 پیش‌نویس{% endif %}
+                    </span>
+                </td>
+                <td>
+                    <div class="wz-acts">
+                        <a class="wz-btn" href="{% url 'language_academy:world_detail' world.id %}" target="_blank" title="مشاهده در سایت"><i class="fas fa-eye"></i></a>
+                        <a class="wz-btn" href="{% url 'admin_cms:world_edit' world.id %}" title="ویرایش"><i class="fas fa-edit"></i></a>
+                        <button class="wz-btn {% if world.is_published %}pub-on{% else %}pub-off{% endif %} wz-pub" title="تغییر وضعیت انتشار">
+                            {% if world.is_published %}<i class="fas fa-toggle-on"></i>{% else %}<i class="fas fa-toggle-off"></i>{% endif %}
+                        </button>
+                        <a class="wz-btn" href="{% url 'admin_cms:chapter_create' world.id %}" title="فصل جدید"><i class="fas fa-folder-plus"></i></a>
+                        <details class="wz-details">
+                            <summary class="wz-btn" title="فصل‌ها"><i class="fas fa-chevron-down"></i></summary>
+                        </details>
+                        <a class="wz-btn danger" href="{% url 'admin_cms:world_delete' world.id %}" title="حذف"
+                           onclick="return confirm('حذف «{{ world.name }}»؟ همهٔ فصل‌ها و درس‌هایش هم حذف می‌شوند!')"><i class="fas fa-trash"></i></a>
+                    </div>
+                </td>
+            </tr>
+            <tr class="wz-chapters">
+                <td colspan="7">
+                    <div class="wz-chapters-in">
+                        {% if world.chapters_sorted %}
+                            {% for ch in world.chapters_sorted %}
+                            <div class="wz-ch-row">
+                                <span class="wz-ch-order">{{ ch.order }}</span>
+                                <span class="wz-ch-name">{{ ch.name }}{% if ch.name_fa %}<small>{{ ch.name_fa }}</small>{% endif %}</span>
+                                <span class="wz-ch-meta">📖 {{ ch.lessons.count }} درس ·
+                                    {% if ch.is_published %}<span class="wz-badge wz-b-pub">منتشر</span>{% else %}<span class="wz-badge wz-b-draft">پیش‌نویس</span>{% endif %}
+                                </span>
+                                <a class="wz-btn" href="{% url 'admin_cms:chapter_edit' ch.id %}" title="ویرایش فصل"><i class="fas fa-edit"></i></a>
+                                <a class="wz-btn" href="{% url 'admin_cms:lesson_create' ch.id %}" title="درس جدید"><i class="fas fa-plus"></i></a>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-muted" style="font-size:.8rem;padding:4px">هنوز فصلی ندارد.</div>
+                        {% endif %}
+                        <a class="wz-ch-add" href="{% url 'admin_cms:chapter_create' world.id %}">➕ فصل جدید در «{{ world.name }}»</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">
+                <div class="wz-empty">
+                    <span class="big">🌍</span>
+                    <b>{% if q or status %}چیزی با این فیلتر پیدا نشد{% else %}هنوز جهانی ساخته نشده{% endif %}</b>
+                    {% if not q and not status %}<div class="mt-2"><a href="{% url 'admin_cms:world_create' %}">اولین جهان را بساز →</a></div>{% endif %}
+                </div>
+            </td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="wz-toast" id="wzToast"></div>
+
+<script>
+(function () {
+    function csrf() {
+        var m = document.cookie.match(/(^|;\s*)csrftoken=([^;]+)/);
+        return m ? m[2] : '';
+    }
+    function toast(msg) {
+        var t = document.getElementById('wzToast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(function () { t.classList.remove('show'); }, 2400);
+    }
+    function post(url) {
+        return fetch(url, { method: 'POST', headers: { 'X-CSRFToken': csrf() } })
+            .then(function (r) { return r.json(); });
+    }
+
+    document.querySelectorAll('.wz-row').forEach(function (row) {
+        var id = row.dataset.world;
+
+        var pubBtn = row.querySelector('.wz-pub');
+        pubBtn.addEventListener('click', function () {
+            pubBtn.disabled = true;
+            post('/academy/manage/worlds/' + id + '/toggle-publish/').then(function (d) {
+                pubBtn.disabled = false;
+                if (d.success) {
+                    var badge = row.querySelector('[data-role="status-badge"]');
+                    badge.className = 'wz-badge ' + (d.is_published ? 'wz-b-pub' : 'wz-b-draft');
+                    badge.textContent = d.is_published ? '✅ منتشرشده' : '📝 پیش‌نویس';
+                    pubBtn.className = 'wz-btn wz-pub ' + (d.is_published ? 'pub-on' : 'pub-off');
+                    pubBtn.innerHTML = d.is_published ? '<i class="fas fa-toggle-on"></i>' : '<i class="fas fa-toggle-off"></i>';
+                    toast(d.message);
+                } else { toast('خطا رخ داد'); }
+            }).catch(function () { pubBtn.disabled = false; toast('خطا در اتصال'); });
+        });
+
+        row.querySelectorAll('.wz-move').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                post('/academy/manage/worlds/' + id + '/move/' + btn.dataset.dir + '/').then(function (d) {
+                    if (d.success) { toast('ترتیب تغییر کرد ✅'); setTimeout(function () { location.reload(); }, 500); }
+                    else { toast(d.error || 'جابه‌جایی ممکن نیست'); }
+                }).catch(function () { toast('خطا در اتصال'); });
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

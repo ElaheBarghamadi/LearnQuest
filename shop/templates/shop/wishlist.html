@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608058">
+{% endblock %}
+
+{% block content %}
+<div class="sh-shell">
+    <div class="sh-hero hero-pink">
+        <div>
+            <h1>❤️ علاقه‌مندی‌ها</h1>
+            <p>چیزهایی که قراره بعداً بگیری — با اولین سکه‌هات این‌جا برگرد!</p>
+        </div>
+        <a class="sh-btn ghost" href="{% url 'shop:home' %}">🛍️ برگشت به بازار</a>
+    </div>
+
+    {% if rows %}
+    <h2 class="sh-sec-t" style="margin-top:0">💝 لیست آرزوی تو <small class="sh-pill" style="font-size:.68rem;padding:4px 12px">{{ rows|length }} کالا</small></h2>
+    <div class="sh-grid">
+        {% for w in rows %}
+        {% with p=w.product %}
+        <div class="sh-card">
+            <a class="sh-tile sh-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+                {% if p.tile_mode == 'img' %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                {% elif p.tile_mode == 'frame' %}
+                    <span class="sh-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                {% elif p.tile_mode == 'ucolor' %}
+                    <span class="sh-tile-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
+                {% elif p.tile_mode == 'effect' %}
+                    <span class="sh-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                {% elif p.tile_mode == 'theme' %}
+                    <span class="sh-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                {% elif p.tile_mode == 'pbg' %}
+                    <span class="sh-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
+                {% else %}
+                    <span class="sh-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                {% endif %}
+            </a>
+            <div class="sh-cbody">
+                <div class="sh-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
+                <h3 class="sh-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="sh-price">
+                    {% if p.final_price_coins %}<span class="val coin">🪙 {{ p.final_price_coins }}</span>
+                    {% elif p.final_price_gems %}<span class="val gem">💎 {{ p.final_price_gems }}</span>
+                    {% else %}<span class="val free">رایگان 🎉</span>{% endif %}
+                </div>
+                <div class="sh-actions">
+                    <a href="{% url 'shop:product' p.slug %}" class="sh-btn sm">مشاهده و خرید</a>
+                    <button class="sh-btn sm ghost sh-heart rm-btn" data-id="{{ p.id }}" title="حذف از علاقه‌مندی">💔</button>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="sh-empty">
+        <span class="big">💔</span>
+        <p><b>لیست علاقه‌مندی‌ات خالی است.</b></p>
+        <a href="{% url 'shop:home' %}" class="sh-btn">🛒 بگردیم تو بازار؟</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function csrfTok() {
+    const h = document.getElementById('lqCsrf');
+    if (h && h.value) return h.value;
+    const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+    return c ? c.pop() : '';
+}
+document.querySelectorAll('.rm-btn').forEach(btn => {
+    btn.onclick = () => {
+        fetch(`/shop/wishlist/toggle/${btn.dataset.id}/`, {method: 'POST', headers: {'X-CSRFToken': csrfTok()}})
+            .then(r => r.json())
+            .then(() => location.reload());
+    };
+});
+</script>
+{% endblock %}

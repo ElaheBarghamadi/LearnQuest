@@ -1,0 +1,126 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}Shop Products | CMS{% endblock %}
+{% block page_title %}Shop Products{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-3">
+    <div class="col-6 col-md-3">
+        <div class="card text-center py-3"><h4 class="mb-0">{{ totals.total|default:0 }}</h4><small class="text-muted">کل محصولات</small></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center py-3"><h4 class="mb-0 text-success">{{ totals.active|default:0 }}</h4><small class="text-muted">فعال</small></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center py-3"><h4 class="mb-0 text-warning">{{ totals.featured|default:0 }}</h4><small class="text-muted">ویژه</small></div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-center py-3"><h4 class="mb-0 text-primary">{{ totals.sold|default:0 }}</h4><small class="text-muted">فروش کل (عدد)</small></div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0"><i class="fas fa-store me-2"></i> محصولات فروشگاه</h5>
+        <a href="{% url 'admin_cms:shop_product_create' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> افزودن محصول
+        </a>
+    </div>
+
+    <div class="card-body">
+        <form method="get" class="row g-3 mb-4">
+            <div class="col-md-4">
+                <input type="text" name="q" class="form-control" placeholder="جستجوی نام / اسلاگ / اثر…" value="{{ q }}">
+            </div>
+            <div class="col-md-3">
+                <select name="type" class="form-select">
+                    <option value="">همهٔ نوع‌ها</option>
+                    {% for val, label in product_types %}
+                        <option value="{{ val }}" {% if current_type == val %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select name="status" class="form-select">
+                    <option value="">همهٔ وضعیت‌ها</option>
+                    <option value="active" {% if current_status == 'active' %}selected{% endif %}>فعال</option>
+                    <option value="inactive" {% if current_status == 'inactive' %}selected{% endif %}>غیرفعال</option>
+                    <option value="featured" {% if current_status == 'featured' %}selected{% endif %}>ویژه</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">فیلتر</button>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>محصول</th>
+                        <th>نوع</th>
+                        <th>قیمت</th>
+                        <th>تخفیف</th>
+                        <th>موجودی</th>
+                        <th>فروش</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in products %}
+                    <tr>
+                        <td>
+                            <span style="font-size:1.3rem;">{{ p.preview_emoji|default:'🛍️' }}</span>
+                            <strong>{{ p.name }}</strong>
+                            {% if p.is_featured %}<span class="badge bg-warning text-dark">ویژه</span>{% endif %}
+                            <br><small class="text-muted" dir="ltr">{{ p.slug }}</small>
+                        </td>
+                        <td><span class="badge bg-info">{{ p.get_product_type_display }}</span><br><small class="text-muted">{{ p.effect_type }}</small></td>
+                        <td>🪙 {{ p.final_price_coins }}{% if p.price_gems %}<br>💎 {{ p.final_price_gems }}{% endif %}</td>
+                        <td>{% if p.active_discount %}<span class="badge bg-danger">{{ p.active_discount }}٪</span>{% else %}—{% endif %}</td>
+                        <td>{% if p.stock_limit is None %}∞{% else %}{{ p.remaining_stock }} / {{ p.stock_limit }}{% endif %}</td>
+                        <td>{{ p.sold_count }}</td>
+                        <td>
+                            {% if p.is_active %}<span class="badge bg-success">فعال</span>{% else %}<span class="badge bg-danger">غیرفعال</span>{% endif %}
+                        </td>
+                        <td class="text-nowrap">
+                            <a href="{% url 'admin_cms:shop_product_edit' p.id %}" class="btn btn-outline-primary btn-sm" title="ویرایش"><i class="fas fa-edit"></i></a>
+                            <form method="post" action="{% url 'admin_cms:shop_product_toggle' p.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-warning btn-sm" title="فعال/غیرفعال"><i class="fas fa-power-off"></i></button>
+                            </form>
+                            <form method="post" action="{% url 'admin_cms:shop_product_delete' p.id %}" class="d-inline"
+                                  onsubmit="return confirm('حذف «{{ p.name }}»؟ در صورت داشتن خرید، حذف ممکن نیست.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger btn-sm" title="حذف"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="8" class="text-center py-4">محصولی پیدا نشد.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if products.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if products.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.previous_page_number }}&q={{ q }}&type={{ current_type }}&status={{ current_status }}">قبلی</a></li>
+                {% endif %}
+                {% for num in products.paginator.page_range %}
+                    <li class="page-item {% if products.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&q={{ q }}&type={{ current_type }}&status={{ current_status }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+                {% if products.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ products.next_page_number }}&q={{ q }}&type={{ current_type }}&status={{ current_status }}">بعدی</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

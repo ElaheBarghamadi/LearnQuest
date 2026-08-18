@@ -1,0 +1,148 @@
+{% extends 'panel/base_panel.html' %}
+{% load static jalali %}
+
+{% block title %}{{ target.username }} | پنل مدیریت لرن‌کوئست{% endblock %}
+
+{% block content %}
+<div class="pn-back"><a href="{% url 'panel:users' %}">→ بازگشت به کاربران</a></div>
+
+<section class="pn-card pn-uhead" data-user-id="{{ target.pk }}">
+    <div class="pn-uhead-id">
+        <span class="pn-ava xl">{% if target.avatar %}<img src="{{ target.avatar.url }}" alt="">{% else %}{{ target.username|first|upper }}{% endif %}</span>
+        <div>
+            <h1>
+                <a href="/u/{{ target.username }}/" class="pn-uname">{{ target.username }}</a>
+                {% if target.is_staff %}<span class="pn-badge staff">ادمین</span>{% endif %}
+                <span class="pn-badge {% if target.is_active %}on{% else %}off{% endif %}" id="udActiveBadge">
+                    {% if target.is_active %}فعال{% else %}تعلیق{% endif %}
+                </span>
+            </h1>
+            <p class="pn-usub">
+                {{ target.email|default:'—' }} · عضویت {{ target.jalali_joined }} · آخرین ورود {{ target.jalali_last_login }}
+            </p>
+        </div>
+    </div>
+    <div class="pn-uhead-actions">
+        <button class="pn-btn {% if target.is_active %}danger{% else %}ok{% endif %}" id="btnToggleActive"
+                data-user-id="{{ target.pk }}" data-active="{% if target.is_active %}1{% else %}0{% endif %}">
+            {% if target.is_active %}⛔ تعلیق حساب{% else %}✅ فعال‌سازی حساب{% endif %}
+        </button>
+    </div>
+</section>
+
+<section class="pn-stats-strip">
+    <div class="pn-stat"><span>🪙 سکه</span><b id="statCoins">{{ wallet.coins|fadigits }}</b></div>
+    <div class="pn-stat"><span>💎 الماس</span><b id="statGems">{{ wallet.gems|fadigits }}</b></div>
+    <div class="pn-stat"><span>⚡ XP / سطح</span><b><span id="statXp">{{ target.xp|fadigits }}</span> · ل{{ target.level|fadigits }}</b></div>
+    <div class="pn-stat"><span>🎯 امتیاز</span><b id="statPoints">{{ target.points|fadigits }}</b></div>
+    <div class="pn-stat"><span>🔥 استریک</span><b id="statStreak">{{ target.streak|fadigits }}</b></div>
+    <div class="pn-stat"><span>🎒 آیتم</span><b>{{ inventory_count|fadigits }}</b></div>
+</section>
+
+<div class="pn-grid-2">
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">🎁 اهدای ارز و امتیاز</h2>
+        <p class="pn-hint">به هر مقداری — عدد منفی یعنی کسر. موجودی منفی نمی‌شود؛ همه‌چیز اتمیک و لاگ‌دار است.</p>
+        <form id="grantForm" data-url="{% url 'panel:grant' target.pk %}">
+            <div class="pn-row-3">
+                <div class="pn-field">
+                    <label>مورد</label>
+                    <select id="gTarget" name="target">
+                        <option value="coins">🪙 سکه</option>
+                        <option value="gems">💎 الماس</option>
+                        <option value="xp">⚡ XP</option>
+                        <option value="points">🎯 امتیاز</option>
+                        <option value="streak">🔥 استریک</option>
+                    </select>
+                </div>
+                <div class="pn-field">
+                    <label>مقدار</label>
+                    <input type="number" id="gAmount" value="100" step="1" dir="ltr" required>
+                </div>
+                <div class="pn-field">
+                    <label>دلیل (اختیاری)</label>
+                    <input type="text" id="gNote" maxlength="220" placeholder="مثلاً: جبران باگ">
+                </div>
+            </div>
+            <div class="pn-chips-amt">
+                <button type="button" data-amt="100">+۱۰۰</button>
+                <button type="button" data-amt="1000">+۱٬۰۰۰</button>
+                <button type="button" data-amt="10000">+۱۰٬۰۰۰</button>
+                <button type="button" data-amt="-100">−۱۰۰</button>
+                <button type="button" data-amt="-1000">−۱٬۰۰۰</button>
+            </div>
+            <button type="submit" class="pn-btn primary wide" id="gSubmit">🎁 اعمال</button>
+        </form>
+    </section>
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">🎒 اهدای آیتم فروشگاه</h2>
+        <p class="pn-hint">آیتم مستقیم به موجودی کاربر می‌رود (اثر آنی پت/سیزن‌پس هم اعمال می‌شود).</p>
+        <form id="itemForm" data-url="{% url 'panel:grant_item' target.pk %}">
+            <div class="pn-field">
+                <label>محصول</label>
+                <select id="iProduct">
+                    {% for p in products %}
+                    <option value="{{ p.pk }}">{{ p.category.emoji|default:'🎁' }} {{ p.name }} — {{ p.price_coins|fadigits }}🪙{% if p.price_gems %} + {{ p.price_gems|fadigits }}💎{% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="pn-field">
+                <label>دلیل (اختیاری)</label>
+                <input type="text" id="iNote" maxlength="220" placeholder="مثلاً: قهرمان رویداد">
+            </div>
+            <button type="submit" class="pn-btn violet wide" id="iSubmit">🎁 اهدا به کاربر</button>
+        </form>
+    </section>
+
+</div>
+
+<div class="pn-grid-2">
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">🛠️ تاریخچهٔ اقدامات پنل روی این کاربر</h2>
+        <div class="pn-tablewrap">
+            <table class="pn-table">
+                <thead><tr><th>مورد</th><th>مقدار</th><th>دلیل</th><th>ادمین</th><th>زمان</th></tr></thead>
+                <tbody>
+                    {% for a in adjustments %}
+                    <tr>
+                        <td>{{ a.get_target_display }}</td>
+                        <td class="pn-num {% if a.amount > 0 %}pos{% elif a.amount < 0 %}neg{% endif %}">{% if a.amount %}{% if a.amount > 0 %}+{% endif %}{{ a.amount|fadigits }}{% else %}—{% endif %}</td>
+                        <td>{{ a.note|default:'—' }}</td>
+                        <td>{{ a.actor.username|default:'—' }}</td>
+                        <td>{{ a.created_at|jhuman }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="pn-empty">اقدامی ثبت نشده.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">💳 تراکنش‌های اخیر کاربر</h2>
+        <div class="pn-tablewrap">
+            <table class="pn-table">
+                <thead><tr><th>ارز</th><th>مقدار</th><th>موجودی بعد</th><th>نوع</th><th>زمان</th></tr></thead>
+                <tbody>
+                    {% for t in transactions %}
+                    <tr>
+                        <td>{{ t.get_currency_display }}</td>
+                        <td class="pn-num {% if t.amount > 0 %}pos{% else %}neg{% endif %}">{% if t.amount > 0 %}+{% endif %}{{ t.amount|fadigits }}</td>
+                        <td class="pn-num">{{ t.balance_after|fadigits }}</td>
+                        <td>{{ t.get_type_display }}</td>
+                        <td>{{ t.jcreated }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="pn-empty">تراکنشی نیست.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,671 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+{% load academy_filters %}
+
+{% block title %}{{ exam.title }} | Exam{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .bg-gradient-warning {
+            background: linear-gradient(135deg, #FFC800, #FF9800);
+        }
+
+        .exam-info-bar {
+            background: var(--duo-white);
+            padding: 15px 20px;
+            border-radius: var(--duo-radius);
+            box-shadow: var(--duo-shadow);
+        }
+
+        .exam-timer {
+            background: var(--duo-gray-100);
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            font-family: inherit;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .exam-timer.warning {
+            background: #fff3cd;
+            color: #856404;
+            animation: pulse-warning 1s infinite;
+        }
+
+        .exam-timer.danger {
+            background: #f8d7da;
+            color: #721c24;
+            animation: pulse-danger 0.5s infinite;
+        }
+
+        @keyframes pulse-warning {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.5;
+                transform: scale(0.98);
+            }
+        }
+
+        .question-card {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .question-card.answered {
+            border-left: 4px solid var(--duo-green);
+        }
+
+        .question-card.unanswered {
+            border-left: 4px solid #ffc107;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--duo-green);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-size: 0.9rem;
+            margin-right: 12px;
+        }
+
+        .choice-option {
+            display: block;
+            margin-bottom: 12px;
+            cursor: pointer;
+        }
+
+        .choice-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: var(--duo-gray-50);
+            border-radius: var(--duo-radius);
+            border: 2px solid var(--duo-gray-200);
+            transition: var(--duo-transition);
+        }
+
+        .choice-card:hover {
+            border-color: var(--duo-green);
+            background: rgba(88, 204, 113, 0.05);
+        }
+
+        .choice-card.selected {
+            border-color: var(--duo-green);
+            background: rgba(88, 204, 113, 0.1);
+        }
+
+        .choice-letter {
+            width: 36px;
+            height: 36px;
+            background: var(--duo-gray-300);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .true-false {
+            display: flex;
+            gap: 20px;
+        }
+
+        .true-false .choice-card {
+            flex: 1;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .fill-blank-container input {
+            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: var(--duo-radius);
+            border: 2px solid var(--duo-gray-200);
+            width: 100%;
+        }
+
+        .fill-blank-container input:focus {
+            border-color: var(--duo-green);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(88, 204, 113, 0.2);
+        }
+
+        .save-indicator {
+            font-size: 1.2rem;
+        }
+
+        .answered-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .answered-indicator.answered {
+            background: var(--duo-green);
+        }
+
+        .answered-indicator.unanswered {
+            background: #ffc107;
+        }
+
+        .progress-stats {
+            background: var(--duo-gray-50);
+            padding: 10px 15px;
+            border-radius: var(--duo-radius);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .exam-timer {
+                font-size: 0.9rem;
+                padding: 5px 12px;
+                min-width: 80px;
+            }
+
+            .true-false {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .choice-card {
+                padding: 12px 15px;
+            }
+        }
+
+        
+        .question-progress-bar {
+            height: 4px;
+            background: var(--duo-gray-200);
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .question-progress-bar .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--duo-green), #28a745);
+            transition: width 0.5s ease;
+            border-radius: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container py-4">
+        <div class="academy-card mb-4 bg-gradient-warning">
+            <div class="card-body p-4 text-white">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div>
+                        <h1 class="h2 mb-2">{{ exam.title }}</h1>
+                        <p class="mb-0 opacity-90">{{ exam.description }}</p>
+                        <div class="mt-2">
+                        <span class="badge bg-white text-dark me-2">
+                            <i class="fas fa-layer-group"></i> {{ exam.exam_type|get_question_type_display }}
+                        </span>
+                            <span class="badge bg-white text-dark">
+                            <i class="fas fa-tag"></i> Attempt {{ attempt_number }} of {{ max_attempts }}
+                        </span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="badge bg-white text-dark fs-6 mb-1">⏱ {{ exam.time_limit_minutes }} min</div>
+                        <div class="badge bg-white text-dark fs-6">🎯 {{ exam.passing_score }}% to pass</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="exam-info-bar mb-4">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex gap-3 flex-wrap">
+                    <div><i class="fas fa-question-circle text-primary"></i> <span
+                            id="totalQuestions">{{ questions|length }}</span> Questions
+                    </div>
+                    <div><i class="fas fa-check-circle text-success"></i> Answered: <span id="answeredCount">0</span>
+                    </div>
+                    <div><i class="fas fa-star text-warning"></i> +{{ exam.xp_reward }} XP</div>
+                    <div><i class="fas fa-coins text-info"></i> +{{ exam.coin_reward }} Coins</div>
+                </div>
+                <div class="exam-timer" id="examTimer">
+                    <i class="fas fa-hourglass-half me-2"></i>
+                    <span id="timerDisplay">--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="question-progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+        </div>
+
+        <form method="post" id="examForm" action="{% url 'language_academy:submit_exam' exam.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="session_key" value="{{ session.session_key }}" id="sessionKey">
+            <input type="hidden" name="time_spent" value="0" id="timeSpent">
+
+            {% for question in questions %}
+                <div class="question-card academy-card mb-4 unanswered" data-question-id="{{ question.id }}">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h3 class="h5 mb-0">
+                                <span class="question-number">{{ forloop.counter }}</span>
+                                {{ question.question }}
+                                {% if question.question_fa %}
+                                    <small class="text-muted d-block mt-1">{{ question.question_fa }}</small>
+                                {% endif %}
+                            </h3>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-secondary">{{ question.points }} pts</span>
+                                <span class="answered-indicator unanswered" id="indicator_{{ question.id }}"></span>
+                            </div>
+                        </div>
+
+                        {% if question.question_type == 'mcq' %}
+                            <div class="choices-container">
+                                {% for option in question.options %}
+                                    <label class="choice-option">
+                                        <input type="radio"
+                                               name="question_{{ question.id }}"
+                                               value="{{ option }}"
+                                                {% with saved_answers|get_item:question.id as saved_answer %}
+                                               {% if saved_answer|stringformat:"s" == option %}checked{% endif %}
+                                                {% endwith %}
+                                               class="d-none"
+                                               data-question-id="{{ question.id }}">
+                                        <div class="choice-card
+                                                {% with saved_answers|get_item:question.id as saved_answer %}{% if saved_answer|stringformat:"s" == option %}selected{% endif %}{% endwith %}">
+                                            <span class="choice-letter">{{ forloop.counter|to_letter }}</span>
+                                            <span class="choice-text">{{ option }}</span>
+                                        </div>
+                                    </label>
+                                {% endfor %}
+                            </div>
+
+                        {% elif question.question_type == 'fill_blank' %}
+                            <div class="fill-blank-container">
+                                <input type="text"
+                                       name="question_{{ question.id }}"
+                                       class="form-control form-control-lg fill-blank-input"
+                                       placeholder="Type your answer here..."
+                                       value="
+                                               {% with saved_answers|get_item:question.id as saved_answer %}{{ saved_answer|default:'' }}{% endwith %}"
+                                       data-question-id="{{ question.id }}"
+                                       autocomplete="off">
+                                <div class="form-text text-muted mt-2">
+                                    <i class="fas fa-info-circle"></i> Enter the correct word or phrase
+                                </div>
+                            </div>
+
+                        {% elif question.question_type == 'true_false' %}
+                            <div class="choices-container true-false">
+                                <label class="choice-option">
+                                    <input type="radio"
+                                           name="question_{{ question.id }}"
+                                           value="True"
+                                            {% with saved_answers|get_item:question.id as saved_answer %}
+                                           {% if saved_answer == 'True' %}checked{% endif %}
+                                            {% endwith %}
+                                           class="d-none"
+                                           data-question-id="{{ question.id }}">
+                                    <div class="choice-card true
+                                            {% with saved_answers|get_item:question.id as saved_answer %}{% if saved_answer == 'True' %}selected{% endif %}{% endwith %}">
+                                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                                        <span>True</span>
+                                    </div>
+                                </label>
+                                <label class="choice-option">
+                                    <input type="radio"
+                                           name="question_{{ question.id }}"
+                                           value="False"
+                                            {% with saved_answers|get_item:question.id as saved_answer %}
+                                           {% if saved_answer == 'False' %}checked{% endif %}
+                                            {% endwith %}
+                                           class="d-none"
+                                           data-question-id="{{ question.id }}">
+                                    <div class="choice-card false
+                                            {% with saved_answers|get_item:question.id as saved_answer %}{% if saved_answer == 'False' %}selected{% endif %}{% endwith %}">
+                                        <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                        <span>False</span>
+                                    </div>
+                                </label>
+                            </div>
+                        {% endif %}
+
+                        <div class="save-indicator" data-qid="{{ question.id }}" style="opacity: 0;">
+                            <i class="fas fa-check-circle text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <div class="progress-stats mb-3 d-inline-block">
+                    <span id="answeredStatus">0</span> of <span id="totalStatus">{{ questions|length }}</span> questions
+                    answered
+                    <span class="ms-2">|</span>
+                    <span id="progressPercent">0%</span> complete
+                </div>
+                <div>
+                    <button type="submit" class="btn-academy btn-lg px-5" id="submitBtn">
+                        <i class="fas fa-paper-plane me-2"></i> Submit Exam
+                    </button>
+                    <button type="button" class="btn btn-secondary btn-lg px-4 ms-2"
+                            onclick="window.location.href='{% url 'language_academy:chapter_detail' exam.chapter.id %}'">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>
+                </div>
+                <p class="text-muted small mt-2">
+                    <i class="fas fa-save"></i> Your answers are automatically saved
+                </p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+
+        const TOTAL_TIME = {{ remaining_seconds }};
+        let timeLeft = TOTAL_TIME;
+        let timerInterval;
+        const sessionKey = document.getElementById('sessionKey').value;
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timerContainer = document.getElementById('examTimer');
+
+        function getSavedTime() {
+            try {
+                const saved = sessionStorage.getItem(`exam_time_${sessionKey}`);
+                if (saved) {
+                    const parsed = parseInt(saved);
+                    if (parsed > 0 && parsed < TOTAL_TIME) {
+                        return parsed;
+                    }
+                }
+            } catch (e) {
+            }
+            return TOTAL_TIME;
+        }
+
+        function saveTimeToStorage(time) {
+            try {
+                sessionStorage.setItem(`exam_time_${sessionKey}`, time.toString());
+            } catch (e) {
+            }
+        }
+
+        timeLeft = getSavedTime();
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.innerText = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+            timerContainer.classList.remove('warning', 'danger');
+            if (timeLeft <= 60) {
+                timerContainer.classList.add('danger');
+            } else if (timeLeft <= 300) {
+                timerContainer.classList.add('warning');
+            }
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (!formSubmitted) {
+                    if (confirm('⏰ Time is up! Do you want to submit your answers?')) {
+                        document.getElementById('examForm').submit();
+                    } else {
+                        timeLeft = 1;
+                        updateTimerDisplay();
+                    }
+                }
+            }
+        }
+
+        function saveTimeToServer() {
+            const timeSpent = TOTAL_TIME - timeLeft;
+            document.getElementById('timeSpent').value = timeSpent;
+
+            fetch('/academy/exam/save-time/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'session_key': sessionKey,
+                    'time_spent': timeSpent
+                })
+            }).catch(error => console.error('Error saving time:', error));
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            saveTimeToStorage(timeLeft);
+
+            timerInterval = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    saveTimeToStorage(timeLeft);
+
+                    if (timeLeft % 10 === 0) {
+                        saveTimeToServer();
+                    }
+                } else {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        let saveTimeout = null;
+        let formSubmitted = false;
+
+        function saveAnswer(questionId, answer) {
+            clearTimeout(saveTimeout);
+
+            updateQuestionStatus(questionId, answer);
+
+            saveTimeout = setTimeout(() => {
+                fetch('/academy/exam/save-answer/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        'question_id': questionId,
+                        'answer': answer,
+                        'session_key': sessionKey
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            showSavedIndicator(questionId);
+                        }
+                    })
+                    .catch(err => console.warn('⚠️ Save failed:', err));
+            }, 500);
+        }
+
+        function updateQuestionStatus(questionId, answer) {
+            const card = document.querySelector(`.question-card[data-question-id="${questionId}"]`);
+            if (!card) return;
+
+            const indicator = document.getElementById(`indicator_${questionId}`);
+            const isAnswered = answer && answer.trim() !== '';
+
+            card.classList.remove('answered', 'unanswered');
+            card.classList.add(isAnswered ? 'answered' : 'unanswered');
+
+            if (indicator) {
+                indicator.className = `answered-indicator ${isAnswered ? 'answered' : 'unanswered'}`;
+            }
+
+            updateProgress();
+        }
+
+        function showSavedIndicator(questionId) {
+            const indicator = document.querySelector(`.save-indicator[data-qid="${questionId}"]`);
+            if (indicator) {
+                indicator.style.opacity = '1';
+                setTimeout(() => {
+                    indicator.style.opacity = '0';
+                }, 1500);
+            }
+        }
+
+        function updateProgress() {
+            const total = parseInt(document.getElementById('totalQuestions').textContent);
+            const cards = document.querySelectorAll('.question-card');
+            let answered = 0;
+
+            cards.forEach(card => {
+                if (card.classList.contains('answered')) {
+                    answered++;
+                }
+            });
+
+            const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+            document.getElementById('answeredCount').textContent = answered;
+            document.getElementById('answeredStatus').textContent = answered;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                const questionId = this.dataset.questionId;
+                const answer = this.value;
+                saveAnswer(questionId, answer);
+
+                const parentCard = this.closest('.question-card');
+                parentCard.querySelectorAll('.choice-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                if (this.nextElementSibling) {
+                    this.nextElementSibling.classList.add('selected');
+                }
+            });
+        });
+
+        document.querySelectorAll('.fill-blank-input').forEach(input => {
+            input.addEventListener('input', function () {
+                const questionId = this.dataset.questionId;
+                saveAnswer(questionId, this.value);
+            });
+
+            input.addEventListener('blur', function () {
+                const questionId = this.dataset.questionId;
+                saveAnswer(questionId, this.value);
+            });
+        });
+
+        document.getElementById('examForm').addEventListener('submit', function (e) {
+            if (formSubmitted) {
+                e.preventDefault();
+                return;
+            }
+
+            const total = parseInt(document.getElementById('totalQuestions').textContent);
+            const cards = document.querySelectorAll('.question-card');
+            let answered = 0;
+            let unansweredIds = [];
+
+            cards.forEach(card => {
+                if (card.classList.contains('answered')) {
+                    answered++;
+                } else {
+                    const qId = card.dataset.questionId;
+                    unansweredIds.push(qId);
+                }
+            });
+
+            if (unansweredIds.length > 0) {
+                const confirmMsg = `⚠️ You have ${unansweredIds.length} unanswered question(s). Are you sure you want to submit?`;
+                if (!confirm(confirmMsg)) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+
+            if (!confirm('Are you sure you want to submit your exam? You cannot change your answers after submission!')) {
+                e.preventDefault();
+                return;
+            }
+
+            formSubmitted = true;
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Submitting...';
+
+            saveTimeToServer();
+        });
+
+        window.addEventListener('beforeunload', function (e) {
+            if (timeLeft > 0 && !formSubmitted) {
+                saveTimeToServer();
+                e.preventDefault();
+                e.returnValue = 'You have not finished the exam. Are you sure you want to leave?';
+                return e.returnValue;
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('examForm').submit();
+            }
+
+            if (e.key === 'Escape') {
+                if (confirm('Are you sure you want to cancel the exam?')) {
+                    window.location.href = '{% url "language_academy:chapter_detail" exam.chapter.id %}';
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                const card = radio.closest('.choice-card');
+                if (card) {
+                    card.classList.add('selected');
+                }
+                const questionId = radio.dataset.questionId;
+                updateQuestionStatus(questionId, radio.value);
+            });
+
+            document.querySelectorAll('.fill-blank-input').forEach(input => {
+                if (input.value.trim() !== '') {
+                    const questionId = input.dataset.questionId;
+                    updateQuestionStatus(questionId, input.value);
+                }
+            });
+
+            updateProgress();
+
+            startTimer();
+
+            console.log('✅ Exam system initialized');
+            console.log(`📊 Time left: ${timeLeft} seconds`);
+            console.log(`📝 Session: ${sessionKey}`);
+        });
+    </script>
+{% endblock %}

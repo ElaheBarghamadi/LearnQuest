@@ -1,0 +1,607 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}
+    ماشین حساب فاکتوریل | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .factorial-container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .factorial-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر با طراحی خاص */
+        .factorial-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .factorial-header::before {
+            content: '!';
+            position: absolute;
+            bottom: -30px;
+            right: -30px;
+            font-size: 180px;
+            opacity: 0.1;
+            font-weight: 800;
+            font-family: inherit;
+        }
+
+        .factorial-header::after {
+            content: 'n!';
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            font-size: 100px;
+            opacity: 0.08;
+            font-weight: 800;
+            font-family: inherit;
+        }
+
+        .factorial-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .factorial-header h1 i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .factorial-header p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .factorial-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            margin-top: 15px;
+        }
+
+        /* فرم */
+        .factorial-form {
+            padding: 40px 35px 30px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1.2rem;
+        }
+
+        .factorial-input {
+            width: 100%;
+            padding: 16px 55px 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .factorial-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .factorial-input:hover {
+            border-color: #36D1DC;
+        }
+
+        /* دکمه محاسبه */
+        .calc-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
+        }
+
+        .calc-btn:active {
+            transform: translateY(0);
+        }
+
+        /* بخش نتیجه */
+        .result-section {
+            padding: 0 35px 40px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+            border-right: 5px solid #4CAF50;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-right-color: #f44336;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .result-icon i {
+            font-size: 2rem;
+        }
+
+        .result-card:not(.error) .result-icon i {
+            color: #4CAF50;
+        }
+
+        .result-card.error .result-icon i {
+            color: #f44336;
+        }
+
+        .result-label {
+            font-size: 0.85rem;
+            color: #555;
+            letter-spacing: 1px;
+        }
+
+        .result-number {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2e7d32;
+            margin: 10px 0;
+            word-break: break-word;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 15px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 1rem;
+            direction: ltr;
+        }
+
+        .result-card.error .result-number {
+            color: #c62828;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2e7d32;
+            margin-top: 10px;
+            word-break: break-word;
+        }
+
+        .small-note {
+            margin-top: 15px;
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* جدول اعداد فاکتوریل */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-title i {
+            color: #3B82F6;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .example-item {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            padding: 12px 8px;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .example-item:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+        }
+
+        .example-item:hover .example-num,
+        .example-item:hover .example-fact {
+            color: white;
+        }
+
+        .example-num {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #3B82F6;
+        }
+
+        .example-fact {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 4px;
+            direction: ltr;
+        }
+
+        /* توضیحات */
+        .info-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .info-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.8;
+            text-align: justify;
+        }
+
+        .formula {
+            background: #2d3047;
+            color: #36D1DC;
+            padding: 12px;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-align: center;
+            margin: 15px 0;
+            direction: ltr;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .factorial-container {
+                padding: 15px;
+            }
+
+            .factorial-header {
+                padding: 25px 20px;
+            }
+
+            .factorial-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .factorial-header h1 i {
+                font-size: 1.4rem;
+            }
+
+            .factorial-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-value {
+                font-size: 1.3rem;
+            }
+
+            .result-number {
+                font-size: 0.85rem;
+            }
+
+            .examples-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+
+        @media (max-width: 480px) {
+            .factorial-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .factorial-input {
+                padding: 14px 50px 14px 15px;
+                font-size: 1rem;
+            }
+
+            .calc-btn {
+                padding: 14px;
+                font-size: 1rem;
+            }
+
+            .examples-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .result-value {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="factorial-container">
+        <div class="factorial-card">
+            <div class="factorial-header">
+                <h1>
+                    <i class="fas fa-calculator"></i>
+                    ماشین حساب فاکتوریل
+                    <i class="fas fa-exclamation"></i>
+                </h1>
+                <p>محاسبه فاکتوریل اعداد صحیح با سرعت بالا</p>
+                <div class="factorial-badge">
+                    <i class="fas fa-chart-line"></i> اعداد ۰ تا ۳۰
+                </div>
+            </div>
+
+            <form method="post" class="factorial-form">
+                {% csrf_token %}
+                <div class="input-wrapper">
+                    <i class="fas fa-hashtag"></i>
+                    <input type="text"
+                           name="number"
+                           class="factorial-input"
+                           placeholder="عدد مورد نظر را وارد کنید..."
+                           value="{{ input_value }}"
+                           autocomplete="off">
+                </div>
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-calculator"></i>
+                    محاسبه فاکتوریل
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            {% if result %}
+                <div class="result-section">
+                    <div class="result-card">
+                        <div class="result-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="result-label">
+                            فاکتوریل {{ input_value|intcomma }} برابر است با:
+                        </div>
+                        <div class="result-number">
+                            {{ input_value }}! = {{ result }}
+                        </div>
+                        <div class="result-value">
+                            {{ result|intcomma }}
+                        </div>
+                        <div class="small-note">
+                            <i class="fas fa-info-circle"></i>
+                            {{ input_value }}! = {{ result|intcomma }}
+                        </div>
+                    </div>
+                </div>
+            {% elif error %}
+                <div class="result-section">
+                    <div class="result-card error">
+                        <div class="result-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="result-label">
+                            خطا
+                        </div>
+                        <div class="result-number">
+                            {{ error }}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- جدول اعداد فاکتوریل معروف -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📊 فاکتوریل اعداد معروف
+            </div>
+            <div class="examples-grid">
+                <div class="example-item" data-number="0">
+                    <div class="example-num">0!</div>
+                    <div class="example-fact">= 1</div>
+                </div>
+                <div class="example-item" data-number="1">
+                    <div class="example-num">1!</div>
+                    <div class="example-fact">= 1</div>
+                </div>
+                <div class="example-item" data-number="2">
+                    <div class="example-num">2!</div>
+                    <div class="example-fact">= 2</div>
+                </div>
+                <div class="example-item" data-number="3">
+                    <div class="example-num">3!</div>
+                    <div class="example-fact">= 6</div>
+                </div>
+                <div class="example-item" data-number="4">
+                    <div class="example-num">4!</div>
+                    <div class="example-fact">= 24</div>
+                </div>
+                <div class="example-item" data-number="5">
+                    <div class="example-num">5!</div>
+                    <div class="example-fact">= 120</div>
+                </div>
+                <div class="example-item" data-number="6">
+                    <div class="example-num">6!</div>
+                    <div class="example-fact">= 720</div>
+                </div>
+                <div class="example-item" data-number="7">
+                    <div class="example-num">7!</div>
+                    <div class="example-fact">= 5,040</div>
+                </div>
+                <div class="example-item" data-number="8">
+                    <div class="example-num">8!</div>
+                    <div class="example-fact">= 40,320</div>
+                </div>
+                <div class="example-item" data-number="9">
+                    <div class="example-num">9!</div>
+                    <div class="example-fact">= 362,880</div>
+                </div>
+                <div class="example-item" data-number="10">
+                    <div class="example-num">10!</div>
+                    <div class="example-fact">= 3,628,800</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- توضیحات فاکتوریل -->
+        <div class="info-section">
+            <div class="info-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 فاکتوریل چیست؟
+            </div>
+            <div class="info-text">
+                فاکتوریل یک عدد صحیح مثبت <strong>n</strong> (نمایش با <strong>n!</strong>) برابر است با حاصل‌ضرب همه
+                اعداد صحیح مثبت کوچک‌تر یا مساوی آن عدد.
+            </div>
+            <div class="formula">
+                n! = n × (n-1) × (n-2) × ... × 3 × 2 × 1
+            </div>
+            <div class="info-text">
+                <strong>مثال:</strong> 5! = 5 × 4 × 3 × 2 × 1 = 120<br>
+                <strong>نکته:</strong> فاکتوریل صفر برابر با یک است: 0! = 1<br>
+                <strong>محدودیت:</strong> به دلیل بزرگ شدن سریع اعداد، فقط اعداد ۰ تا ۳۰ پشتیبانی می‌شوند.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // کلیک روی مثال‌ها برای پر کردن خودکار ورودی
+        document.querySelectorAll('.example-item').forEach(item => {
+            item.addEventListener('click', function () {
+                const number = this.getAttribute('data-number');
+                if (number) {
+                    const input = document.querySelector('.factorial-input');
+                    if (input) {
+                        input.value = number;
+                        // اختیاری: ارسال خودکار فرم
+                        // input.closest('form').submit();
+                    }
+                }
+            });
+        });
+
+        // اعتبارسنجی ورودی قبل از ارسال
+        document.querySelector('.factorial-form')?.addEventListener('submit', function (e) {
+            const input = document.querySelector('.factorial-input');
+            const value = input.value.trim();
+
+            if (value === '') {
+                alert('لطفاً یک عدد وارد کنید.');
+                e.preventDefault();
+                return;
+            }
+
+            if (!/^\d+$/.test(value)) {
+                alert('لطفاً فقط عدد صحیح وارد کنید.');
+                e.preventDefault();
+                return;
+            }
+
+            const num = parseInt(value);
+            if (num > 30) {
+                alert('عدد نباید بزرگتر از ۳۰ باشد. فاکتوریل اعداد بزرگتر از ۳۰ بسیار بزرگ می‌شوند!');
+                e.preventDefault();
+                return;
+            }
+
+            if (num < 0) {
+                alert('لطفاً عدد مثبت وارد کنید.');
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+{% endblock %}

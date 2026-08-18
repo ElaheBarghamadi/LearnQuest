@@ -1,0 +1,75 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}CMS Settings | CMS{% endblock %}
+{% block page_title %}CMS Settings{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> System Information</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Django Version</th>
+                        <td>5.2.8</td>
+                    </tr>
+                    <tr>
+                        <th>Python Version</th>
+                        <td>3.11</td>
+                    </tr>
+                    <tr>
+                        <th>Database</th>
+                        <td>SQLite3</td>
+                    </tr>
+                    <tr>
+                        <th>Debug Mode</th>
+                        <td><span class="badge bg-warning">Enabled</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-database me-2"></i> Database Stats</h5>
+            </div>
+            <div class="card-body">
+                <table class="table">
+                    <tr>
+                        <th>Worlds</th>
+                        <td id="worldCount">-</td>
+                    </tr>
+                    <tr>
+                        <th>Chapters</th>
+                        <td id="chapterCount">-</td>
+                    </tr>
+                    <tr>
+                        <th>Lessons</th>
+                        <td id="lessonCount">-</td>
+                    </tr>
+                    <tr>
+                        <th>Vocabulary</th>
+                        <td id="vocabCount">-</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+fetch('/cms/academy/api/stats/')
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('worldCount').innerText = data.worlds;
+        document.getElementById('chapterCount').innerText = data.chapters;
+        document.getElementById('lessonCount').innerText = data.lessons;
+        document.getElementById('vocabCount').innerText = data.vocabulary;
+    });
+</script>
+{% endblock %}

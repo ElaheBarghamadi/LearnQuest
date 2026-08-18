@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}مین‌روب | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">همهٔ خانه‌های امن رو باز کن، مین‌ها رو پرچم بزن 🚩</span>
+</div>
+
+<style>
+    .ms-wrap { max-width: 520px; margin: 0 auto; padding: 16px; text-align: center; }
+    .ms-card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .ms-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg,#64748B,#1E293B); color: #fff; border-radius: 16px;
+        padding: 10px 16px; margin-bottom: 14px; }
+    .ms-stat { background: rgba(255,255,255,.18); border-radius: 30px; padding: 4px 14px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .ms-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; width: 100%;
+        max-width: 430px; margin: 0 auto; background: #CBD5E1; border-radius: 12px; padding: 6px; touch-action: manipulation; }
+    .ms-cell { aspect-ratio: 1; border: none; border-radius: 6px; background: linear-gradient(145deg,#F1F5F9,#E2E8F0);
+        font-weight: 900; font-size: clamp(12px, 3.4vw, 17px); cursor: pointer; color: #333; padding: 0;
+        display: flex; align-items: center; justify-content: center; transition: transform .08s, background .15s;
+        user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+    .ms-cell:not(.open):hover { background: #E2E8F0; }
+    .ms-cell:not(.open):active { transform: scale(.88); }
+    .ms-cell.open { background: #FFFFFF; box-shadow: inset 0 1px 3px rgba(0,0,0,.14); cursor: default; }
+    .ms-cell.mine-hit { background: #EF4444 !important; }
+    .ms-cell.mine-show { background: #FCA5A5; }
+    .ms-c1 { color: #2563EB; } .ms-c2 { color: #059669; } .ms-c3 { color: #DC2626; } .ms-c4 { color: #7C3AED; }
+    .ms-c5 { color: #B45309; } .ms-c6 { color: #0D9488; } .ms-c7 { color: #111827; } .ms-c8 { color: #6B7280; }
+    .ms-controls { margin-top: 14px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .ms-btn { border: none; border-radius: 14px; padding: 11px 22px; font-weight: 800; font-size: .95rem;
+        cursor: pointer; color: #fff; background: linear-gradient(135deg,#64748B,#334155); transition: .2s; }
+    .ms-btn:active { transform: scale(.95); }
+    .ms-btn.flag-on { background: linear-gradient(135deg,#EF4444,#B91C1C); box-shadow: 0 0 0 3px rgba(239,68,68,.3); }
+    .ms-overlay { display: none; margin-top: 14px; border-radius: 18px; padding: 18px; font-weight: 800;
+        animation: msPop .35s ease; }
+    .ms-overlay.show { display: block; }
+    .ms-overlay.win  { background: linear-gradient(135deg,#DCFCE7,#BBF7D0); color: #166534; }
+    .ms-overlay.lose { background: linear-gradient(135deg,#FEE2E2,#FECACA); color: #991B1B; }
+    .ms-overlay small { display: block; font-weight: 600; margin-top: 6px; }
+    @keyframes msPop { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .ms-help { font-size: .75rem; color: #94A3B8; margin-top: 10px; }
+</style>
+
+<div class="ms-wrap">
+    <div class="ms-card">
+        <div class="ms-header">
+            <span>💣 مین‌روب</span>
+            <span class="ms-stat">🚩 <span id="msFlags">۱۰</span></span>
+            <span class="ms-stat">⏱ <span id="msTime">۰</span></span>
+            <span class="ms-stat">🏆 <span id="msBest">—</span></span>
+        </div>
+        <div class="ms-grid" id="msGrid" oncontextmenu="return false"></div>
+        <div class="ms-controls">
+            <button class="ms-btn" id="msFlagBtn">🚩 حالت پرچم</button>
+            <button class="ms-btn" id="msNewBtn">🔄 بازی جدید</button>
+        </div>
+        <div class="ms-overlay" id="msOverlay"></div>
+        <div class="ms-help">کلیک چپ = باز کردن • کلیک راست / نگه‌داشتن / حالت پرچم = 🚩</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    var SIZE = 9, MINES = 10;
+    var grid = document.getElementById('msGrid'),
+        flagsEl = document.getElementById('msFlags'),
+        timeEl = document.getElementById('msTime'),
+        overlay = document.getElementById('msOverlay'),
+        flagBtn = document.getElementById('msFlagBtn');
+
+    var cells = [], started = false, over = false, flagMode = false,
+        flagsLeft = MINES, seconds = 0, timerId = null, pressTimer = null;
+
+    function fa(n) { return String(n).replace(/[0-9]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+
+    function idx(r, c) { return r * SIZE + c; }
+    function rc(i) { return [Math.floor(i / SIZE), i % SIZE]; }
+
+    function neighbours(i) {
+        var out = [], p = rc(i), r = p[0], c = p[1];
+        for (var dr = -1; dr <= 1; dr++) for (var dc = -1; dc <= 1; dc++) {
+            if (!dr && !dc) continue;
+            var nr = r + dr, nc = c + dc;
+            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) out.push(idx(nr, nc));
+        }
+        return out;
+    }
+
+    function newGame() {
+        stopTimer();
+        started = false; over = false; flagsLeft = MINES; seconds = 0;
+        timeEl.textContent = '۰'; flagsEl.textContent = fa(MINES);
+        overlay.className = 'ms-overlay'; overlay.innerHTML = '';
+        cells = [];
+        grid.innerHTML = '';
+        for (var i = 0; i < SIZE * SIZE; i++) {
+            cells.push({ mine: false, open: false, flag: false, n: 0 });
+            var b = document.createElement('button');
+            b.className = 'ms-cell';
+            b.dataset.i = i;
+            bindCell(b);
+            grid.appendChild(b);
+        }
+    }
+
+    function plant(safeIndex) {
+        var banned = {};
+        banned[safeIndex] = true;
+        neighbours(safeIndex).forEach(function (i) { banned[i] = true; });
+        var placed = 0;
+        while (placed < MINES) {
+            var i = Math.floor(Math.random() * SIZE * SIZE);
+            if (banned[i] || cells[i].mine) continue;
+            cells[i].mine = true; placed++;
+        }
+        for (var i = 0; i < cells.length; i++) {
+            cells[i].n = neighbours(i).filter(function (j) { return cells[j].mine; }).length;
+        }
+    }
+
+    function startTimer() {
+        timerId = setInterval(function () {
+            seconds++;
+            timeEl.textContent = fa(seconds);
+        }, 1000);
+    }
+    function stopTimer() { if (timerId) { clearInterval(timerId); timerId = null; } }
+
+    function bindCell(b) {
+        var longPressed = false;
+        b.addEventListener('click', function () {
+            if (longPressed) { longPressed = false; return; }
+            onTap(+b.dataset.i, false);
+        });
+        b.addEventListener('contextmenu', function (e) { e.preventDefault(); onTap(+b.dataset.i, true); });
+        b.addEventListener('touchstart', function () {
+            pressTimer = setTimeout(function () { longPressed = true; onTap(+b.dataset.i, true); }, 450);
+        }, { passive: true });
+        b.addEventListener('touchend', function () {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        });
+        b.addEventListener('touchmove', function () {
+            if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+        });
+    }
+
+    function onTap(i, wantsFlag) {
+        if (over) return;
+        var cell = cells[i];
+        if (cell.open) return;
+        if (wantsFlag || flagMode) {
+            if (!started) return;
+            if (!cell.flag && flagsLeft <= 0) return;
+            cell.flag = !cell.flag;
+            flagsLeft += cell.flag ? -1 : 1;
+            flagsEl.textContent = fa(flagsLeft);
+            paint(i);
+            return;
+        }
+        if (cell.flag) return;
+        if (!started) { plant(i); started = true; startTimer(); }
+        if (cell.mine) { lose(i); return; }
+        flood(i);
+        checkWin();
+    }
+
+    function flood(start) {
+        var stack = [start];
+        while (stack.length) {
+            var i = stack.pop(), cell = cells[i];
+            if (cell.open || cell.flag || cell.mine) continue;
+            cell.open = true;
+            paint(i);
+            if (cell.n === 0) neighbours(i).forEach(function (j) { if (!cells[j].open) stack.push(j); });
+        }
+    }
+
+    function paint(i) {
+        var b = grid.children[i], cell = cells[i];
+        if (!cell.open) { b.textContent = cell.flag ? '🚩' : ''; b.className = 'ms-cell'; return; }
+        b.className = 'ms-cell open' + (cell.n ? ' ms-c' + cell.n : '');
+        b.textContent = cell.n ? cell.n : '';
+    }
+
+    function checkWin() {
+        var closedSafe = cells.filter(function (c) { return !c.open && !c.mine; }).length;
+        if (closedSafe === 0) win();
+    }
+
+    function revealMines(hitIndex) {
+        cells.forEach(function (cell, i) {
+            if (cell.mine) {
+                var b = grid.children[i];
+                b.className = 'ms-cell ' + (i === hitIndex ? 'mine-hit' : 'mine-show');
+                b.textContent = '💣';
+            }
+        });
+    }
+
+    function win() {
+        over = true; stopTimer();
+        finish(true, '🎉 تمیز! همهٔ میدان پاک شد', 'win');
+    }
+
+    function lose(hitIndex) {
+        over = true; stopTimer();
+        revealMines(hitIndex);
+        finish(false, '💥 بوم! به مین خوردی', 'lose');
+    }
+
+    function finish(won, title, kind) {
+        var o = overlay;
+        o.className = 'ms-overlay show ' + kind;
+        o.innerHTML = title + '<small id="msXpLine">در حال ثبت نتیجه…</small>';
+        GP.saveScore('/games/save-minesweeper-score/', { time: seconds, won: won }, 'msXpLine',
+                     { noXp: won ? '' : 'این بار XP نداشت — دوباره امتحان کن 💪' })
+            .then(function (d) { if (d && d.status === 'success' && won) markBestDone(seconds); });
+    }
+
+    var bestKey = 'lq_ms_best';
+    function showBest() {
+        var b = +(localStorage.getItem(bestKey) || 0);
+        document.getElementById('msBest').textContent = b ? fa(b) + ' ث' : '—';
+    }
+    function markBestDone(t) {
+        var b = +(localStorage.getItem(bestKey) || 0);
+        if (!b || t < b) localStorage.setItem(bestKey, t);
+        showBest();
+    }
+
+    flagBtn.addEventListener('click', function () {
+        flagMode = !flagMode;
+        flagBtn.classList.toggle('flag-on', flagMode);
+    });
+    document.getElementById('msNewBtn').addEventListener('click', newGame);
+
+    showBest();
+    newGame();
+})();
+</script>
+{% endblock %}

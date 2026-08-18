@@ -1,0 +1,70 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}Vocabulary Categories | CMS{% endblock %}
+{% block page_title %}Vocabulary Categories{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-tags me-2"></i> Existing Categories</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr><th>Order</th><th>Name</th><th>Icon</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in categories %}
+                        <tr>
+                            <td>{{ cat.order }}</td>
+                            <td>{{ cat.name }}<br><small class="text-muted">{{ cat.name_fa }}</small></td>
+                            <td><i class="{{ cat.icon }}"></i> {{ cat.icon }}</td>
+                            <td><a href="#" class="text-danger" onclick="return confirm('Delete?')"><i class="fas fa-trash"></i></a></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-4">No categories yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus me-2"></i> Add New Category</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        {{ form.name }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Name (Persian)</label>
+                        {{ form.name_fa }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Icon Class</label>
+                        {{ form.icon }}
+                        <small class="text-muted">e.g., fas fa-plane, fas fa-home</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Order</label>
+                        {{ form.order }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

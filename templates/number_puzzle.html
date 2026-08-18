@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}پازل عددی | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+    <style>
+        .puzzle-container {
+            max-width: 550px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .puzzle-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .puzzle-header h2 {
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f5f7fb;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            background: white;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            background: #1a1a2e;
+            padding: 12px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            aspect-ratio: 1 / 1;
+        }
+
+        .tile {
+            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            aspect-ratio: 1 / 1;
+        }
+
+        .tile.empty {
+            background: #e8ecf0;
+            cursor: default;
+            color: transparent;
+        }
+
+        .tile:hover:not(.empty) {
+            transform: scale(0.96);
+            background: linear-gradient(135deg, #3B82F6, #0EA5E9);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            background: #e8ecf0;
+            color: #4b5563;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .result-modal.active {
+            display: flex;
+        }
+
+        .result-content {
+            background: white;
+            padding: 30px;
+            border-radius: 28px;
+            text-align: center;
+            max-width: 320px;
+        }
+
+        @media (max-width: 500px) {
+            .tile {
+                font-size: 20px;
+            }
+
+            .stat {
+                font-size: 12px;
+                padding: 4px 12px;
+            }
+        }
+    </style>
+
+    <div class="puzzle-container">
+        <div class="puzzle-header">
+            <h2>🧩 پازل عددی 15</h2>
+            <p style="color: #6b7280;">اعداد 1 تا 15 را به ترتیب مرتب کنید</p>
+        </div>
+
+        <div class="game-stats">
+            <div class="stat">🔀 حرکت: <span id="moves">0</span></div>
+            <div class="stat">⏱ زمان: <span id="timer">00:00</span></div>
+            <div class="stat">⭐ XP شما: <span id="userXp">{{ user.xp }}</span></div>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div class="control-buttons">
+            <button class="btn" id="shuffleBtn">🔁 بر هم زدن</button>
+            <button class="btn btn-primary" id="newGameBtn">➕ بازی جدید</button>
+        </div>
+    </div>
+
+    <div class="result-modal" id="resultModal">
+        <div class="result-content">
+            <h2>🎉 تبریک! 🎉</h2>
+            <p id="resultText"></p>
+            <div style="background:#f0f0f0; padding:12px; border-radius:16px; margin:15px 0;">
+                <span id="xpGainText"></span>
+            </div>
+            <button class="btn btn-primary" id="closeModal">بازی جدید</button>
+        </div>
+    </div>
+
+    <script>
+        let board = [];
+        let emptyRow = 3;
+        let emptyCol = 3;
+        let moves = 0;
+        let timerSeconds = 0;
+        let timerInterval = null;
+        let gameActive = true;
+
+        const boardSize = 4;
+        const totalTiles = 16;
+
+        function initBoard() {
+            let numbers = [];
+            for (let i = 1; i < totalTiles; i++) {
+                numbers.push(i);
+            }
+            numbers.push(null); // خونه خالی
+
+            board = [];
+            for (let i = 0; i < boardSize; i++) {
+                board[i] = [];
+                for (let j = 0; j < boardSize; j++) {
+                    board[i][j] = numbers[i * boardSize + j];
+                    if (board[i][j] === null) {
+                        emptyRow = i;
+                        emptyCol = j;
+                    }
+                }
+            }
+        }
+
+        function shuffleBoard() {
+            for (let step = 0; step < 200; step++) {
+                const possibleMoves = [];
+
+                if (emptyRow > 0) possibleMoves.push({row: emptyRow - 1, col: emptyCol}); // بالا
+                if (emptyRow < 3) possibleMoves.push({row: emptyRow + 1, col: emptyCol}); // پایین
+                if (emptyCol > 0) possibleMoves.push({row: emptyRow, col: emptyCol - 1}); // چپ
+                if (emptyCol < 3) possibleMoves.push({row: emptyRow, col: emptyCol + 1}); // راست
+
+                const randomMove = possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+                swapTiles(randomMove.row, randomMove.col);
+            }
+            moves = 0;
+            document.getElementById('moves').textContent = moves;
+            renderBoard();
+        }
+
+        function swapTiles(row, col) {
+            if (!gameActive) return;
+
+            board[emptyRow][emptyCol] = board[row][col];
+            board[row][col] = null;
+            emptyRow = row;
+            emptyCol = col;
+            moves++;
+            document.getElementById('moves').textContent = moves;
+            renderBoard();
+
+            if (checkWin()) {
+                endGame();
+            }
+        }
+
+        function checkWin() {
+            let expected = 1;
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (i === 3 && j === 3) {
+                        if (board[i][j] !== null) return false;
+                    } else {
+                        if (board[i][j] !== expected) return false;
+                        expected++;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function renderBoard() {
+            const boardContainer = document.getElementById('board');
+            boardContainer.innerHTML = '';
+
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    const value = board[i][j];
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+
+                    if (value === null) {
+                        tile.classList.add('empty');
+                        tile.textContent = '';
+                    } else {
+                        tile.textContent = value;
+                    }
+
+                    if (value !== null) {
+                        tile.addEventListener('click', (function (row, col) {
+                            return function () {
+                                moveTile(row, col);
+                            };
+                        })(i, j));
+                    }
+
+                    boardContainer.appendChild(tile);
+                }
+            }
+        }
+
+        function moveTile(row, col) {
+            if (!gameActive) return;
+
+            if ((Math.abs(row - emptyRow) + Math.abs(col - emptyCol)) === 1) {
+                swapTiles(row, col);
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameActive) {
+                    timerSeconds++;
+                    const mins = Math.floor(timerSeconds / 60);
+                    const secs = timerSeconds % 60;
+                    document.getElementById('timer').textContent =
+                        `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            if (timerInterval) clearInterval(timerInterval);
+
+            let xpGained = 40;
+            if (moves < 100) xpGained += Math.floor((100 - moves) / 5);
+            if (timerSeconds < 120) xpGained += Math.floor((120 - timerSeconds) / 10);
+
+            fetch('/games/save-puzzle-score/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    moves: moves,
+                    time: timerSeconds
+                })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('userXp').textContent = data.total_xp;
+                        document.getElementById('resultText').innerHTML = `با <strong>${moves}</strong> حرکت و <strong>${document.getElementById('timer').textContent}</strong> زمان`;
+                        document.getElementById('xpGainText').innerHTML = `✨ <strong>+${data.xp_gained} XP</strong> دریافت کردی! ✨`;
+                        document.getElementById('resultModal').classList.add('active');
+                    }
+                });
+        }
+
+        function newGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            initBoard();
+            shuffleBoard();
+            moves = 0;
+            timerSeconds = 0;
+            gameActive = true;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('timer').textContent = '00:00';
+            document.getElementById('resultModal').classList.remove('active');
+            startTimer();
+            renderBoard();
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        document.getElementById('shuffleBtn').addEventListener('click', () => {
+            if (timerInterval) clearInterval(timerInterval);
+            initBoard();
+            shuffleBoard();
+            moves = 0;
+            timerSeconds = 0;
+            gameActive = true;
+            document.getElementById('moves').textContent = moves;
+            document.getElementById('timer').textContent = '00:00';
+            startTimer();
+            renderBoard();
+        });
+
+        document.getElementById('newGameBtn').addEventListener('click', newGame);
+        document.getElementById('closeModal').addEventListener('click', newGame);
+
+        initBoard();
+        shuffleBoard();
+        startTimer();
+        renderBoard();
+    </script>
+{% endblock %}

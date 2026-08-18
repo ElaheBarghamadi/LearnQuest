@@ -1,0 +1,560 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}بازی وصل کن - لرن کویست{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .game-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3B82F6;
+            margin-bottom: 10px;
+        }
+
+        .game-subtitle {
+            text-align: center;
+            color: #6C757D;
+            margin-bottom: 30px;
+        }
+
+        .english-words-area {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .words-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .word-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .word-card h3 {
+            font-size: 1.5rem;
+            color: #3B82F6;
+            margin-bottom: 5px;
+        }
+
+        .word-card p {
+            color: #6C757D;
+            font-size: 0.8rem;
+        }
+
+        .word-card.drop-area {
+            border: 3px dashed #3B82F6;
+            background: #f0f8ff;
+        }
+
+        .word-card.completed {
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            border: 2px solid #4CAF50;
+            cursor: default;
+        }
+
+        .word-card.completed h3 {
+            color: #2d3748;
+        }
+
+        .word-card.completed .matched-meaning {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #2d3748;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .persian-meanings-area {
+            background: linear-gradient(135deg, #4C9BF8 0%, #1D4ED8 100%);
+            border-radius: 20px;
+            padding: 30px;
+        }
+
+        .meanings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+        }
+
+        .meaning-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid transparent;
+        }
+
+        .meaning-card:active {
+            transform: scale(0.98);
+        }
+
+        .meaning-card h4 {
+            font-size: 1.1rem;
+            color: #FF6584;
+            margin-bottom: 5px;
+        }
+
+        .meaning-card p {
+            font-size: 0.7rem;
+            color: #6C757D;
+        }
+
+        .meaning-card.selected {
+            border-color: #FFD700;
+            background: #fff9e6;
+            transform: scale(1.02);
+        }
+
+        .meaning-card.locked {
+            background: #e8f5e9;
+            opacity: 0.8;
+            cursor: default;
+            border: 2px solid #4CAF50;
+        }
+
+        .meaning-card.locked h4 {
+            color: #4CAF50;
+        }
+
+        .meaning-card.locked:active {
+            transform: none;
+        }
+
+        .meaning-card.hidden-card {
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .game-messages {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .message-toast {
+            background: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.3s ease;
+        }
+
+        .message-toast.success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .message-toast.error {
+            background: #f44336;
+            color: white;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .game-controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn-new-game {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-new-game:active {
+            transform: scale(0.97);
+        }
+
+        .score-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #3B82F6;
+        }
+
+        .completion-message {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #60A5FA 0%, #2563EB 100%);
+            border-radius: 15px;
+            color: white;
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            75% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake-effect {
+            animation: shake 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            .words-grid, .meanings-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 10px;
+            }
+
+            .word-card h3 {
+                font-size: 1rem;
+            }
+
+            .meaning-card h4 {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+    <div class="game-container">
+        <div class="game-title">
+            🎯 بازی وصل کن
+        </div>
+        <div class="game-subtitle">
+            کلمه انگلیسی درست رو به معنی فارسی وصل کن!
+        </div>
+
+        <div class="english-words-area">
+            <div class="words-grid" id="wordsGrid">
+                {% for word in words %}
+                    <div class="word-card" data-word-id="{{ word.id }}" data-word="{{ word.english_word }}"
+                         data-persian="{{ word.persian_meaning }}">
+                        <h3>{{ word.english_word }}</h3>
+                        <p>کلمه انگلیسی</p>
+                        <div class="matched-meaning" style="display: none;"></div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="persian-meanings-area">
+            <div class="meanings-grid" id="meaningsGrid">
+                {% for meaning in persian_meanings %}
+                    <div class="meaning-card" data-meaning-id="{{ meaning.id }}"
+                         data-correct-word="{{ meaning.correct_word }}">
+                        <h4>{{ meaning.meaning }}</h4>
+                        <p>معنی فارسی</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="score-display" id="scoreDisplay">
+            امتیاز: 0 از {{ total_words }}
+        </div>
+
+        <div class="game-controls">
+            <button class="btn-new-game" id="newGameBtn">
+                🎮 بازی جدید
+            </button>
+        </div>
+
+        <div id="completionMessage" style="display: none;"></div>
+    </div>
+
+    <div class="game-messages" id="messageContainer"></div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        class ConnectGame {
+            constructor() {
+                this.totalWords = {{ total_words }};
+                this.matchedCount = 0;
+                this.mistakes = 0;
+                this.currentXP = 0;
+                this.gameCompleted = false;
+                this.selectedMeaning = null;
+                this.MAX_XP = 40;
+
+                this.init();
+            }
+
+            init() {
+                this.updateScore();
+                this.setupEventListeners();
+            }
+
+            showMessage(text, type) {
+                const container = document.getElementById('messageContainer');
+                const message = document.createElement('div');
+                message.className = `message-toast ${type}`;
+                message.innerHTML = `${type === 'success' ? '✅' : '❌'} ${text}`;
+                container.innerHTML = '';
+                container.appendChild(message);
+
+                setTimeout(() => {
+                    message.style.opacity = '0';
+                    setTimeout(() => message.remove(), 300);
+                }, 1000);
+            }
+
+            updateScore() {
+                const scoreDisplay = document.getElementById('scoreDisplay');
+                if (scoreDisplay) {
+                    scoreDisplay.textContent = `امتیاز: ${this.matchedCount} از ${this.totalWords}`;
+                }
+            }
+
+            updateXP() {
+                console.log(`XP: ${this.currentXP}/${this.MAX_XP}`);
+            }
+
+            saveScore() {
+                fetch('{% url "language:save_game_score" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        matched_count: this.matchedCount,
+                        total_words: this.totalWords,
+                        mistakes: this.mistakes
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.showCompletion(data);
+                        } else {
+                            this.showSimpleCompletion();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.showSimpleCompletion();
+                    });
+            }
+
+            showCompletion(data) {
+                const completionDiv = document.getElementById('completionMessage');
+                completionDiv.innerHTML = `
+                <div class="completion-message">
+                    🎉 تبریک! 🎉<br>
+                    شما امتیاز کامل ${this.totalWords} از ${this.totalWords} رو کسب کردید!<br>
+                    ⭐ ${data.xp_gained} XP دریافت کردی! ⭐<br>
+                    📊 امتیاز کل: ${data.total_xp} XP | سطح: ${data.level}<br>
+                    🎯 ${data.points_gained} امتیاز به رتبه‌بندی اضافه شد!
+                </div>
+            `;
+                completionDiv.style.display = 'block';
+                this.showMessage(`تبریک! ${data.xp_gained} XP دریافت کردی!`, 'success');
+            }
+
+            showSimpleCompletion() {
+                const completionDiv = document.getElementById('completionMessage');
+                completionDiv.innerHTML = `
+                <div class="completion-message">
+                    🎉 تبریک! 🎉<br>
+                    شما امتیاز کامل ${this.totalWords} از ${this.totalWords} رو کسب کردید!<br>
+                    ⭐ عالی بود! ⭐
+                </div>
+            `;
+                completionDiv.style.display = 'block';
+                this.showMessage(`تبریک! امتیاز کامل ${this.totalWords} از ${this.totalWords}`, 'success');
+            }
+
+            checkMatch(wordCard, meaningCard) {
+                if (this.gameCompleted) return;
+
+                if (wordCard.classList.contains('completed')) {
+                    this.showMessage('این کلمه قبلاً تکمیل شده!', 'error');
+                    return;
+                }
+
+                if (meaningCard.classList.contains('locked')) {
+                    this.showMessage('این معنی قبلاً استفاده شده!', 'error');
+                    return;
+                }
+
+                const wordId = wordCard.dataset.wordId;
+                const meaningId = meaningCard.dataset.meaningId;
+                const meaningText = meaningCard.querySelector('h4').textContent;
+
+                fetch('{% url "language:check_match" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        word_id: wordId,
+                        meaning_id: meaningId
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.correct) {
+                            this.showMessage('درست! ✓ +10 XP', 'success');
+
+                            meaningCard.classList.add('locked');
+                            meaningCard.classList.remove('selected');
+
+                            wordCard.classList.add('completed');
+                            const matchedMeaning = wordCard.querySelector('.matched-meaning');
+                            matchedMeaning.textContent = meaningText;
+                            matchedMeaning.style.display = 'block';
+
+                            this.matchedCount++;
+                            this.currentXP = Math.min(this.currentXP + 10, this.MAX_XP);
+                            this.updateScore();
+                            this.updateXP();
+
+                            if (this.selectedMeaning === meaningCard) {
+                                this.selectedMeaning = null;
+                            }
+
+                            if (this.matchedCount === this.totalWords && !this.gameCompleted) {
+                                this.gameCompleted = true;
+                                this.saveScore();
+                            }
+                        } else {
+                            this.mistakes++;
+                            this.currentXP = Math.max(this.currentXP - 2, 0);
+                            this.showMessage('نادرست! ✗ -2 XP دوباره تلاش کن', 'error');
+                            this.updateScore();
+                            this.updateXP();
+
+                            wordCard.classList.add('shake-effect');
+                            setTimeout(() => {
+                                wordCard.classList.remove('shake-effect');
+                            }, 300);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        this.showMessage('خطا در ارتباط با سرور!', 'error');
+                    });
+            }
+
+            setupEventListeners() {
+                const meaningCards = document.querySelectorAll('.meaning-card');
+                meaningCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        if (this.gameCompleted) return;
+                        if (card.classList.contains('locked')) {
+                            this.showMessage('این معنی قبلاً استفاده شده!', 'error');
+                            return;
+                        }
+
+                        if (this.selectedMeaning) {
+                            this.selectedMeaning.classList.remove('selected');
+                        }
+
+                        this.selectedMeaning = card;
+                        card.classList.add('selected');
+                        this.showMessage(`"${card.querySelector('h4').textContent}" انتخاب شد! حالا کلمه رو بزن`, 'success');
+                    });
+                });
+
+                const wordCards = document.querySelectorAll('.word-card');
+                wordCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        if (this.gameCompleted) return;
+
+                        if (!this.selectedMeaning) {
+                            this.showMessage('اول یک معنی رو انتخاب کن!', 'error');
+                            return;
+                        }
+
+                        this.checkMatch(card, this.selectedMeaning);
+                    });
+                });
+
+                const newGameBtn = document.getElementById('newGameBtn');
+                if (newGameBtn) {
+                    newGameBtn.addEventListener('click', () => {
+                        if (confirm('آیا مطمئنی میخوای بازی جدید شروع کنی؟')) {
+                            window.location.reload();
+                        }
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new ConnectGame();
+        });
+    </script>
+{% endblock %}

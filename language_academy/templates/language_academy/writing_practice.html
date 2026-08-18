@@ -1,0 +1,117 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Writing Practice | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="h2">✍️ Writing Practice</h1>
+                <p class="text-muted">Improve your writing skills with AI feedback</p>
+            </div>
+
+            <div class="academy-card">
+                <div class="card-body p-4">
+                    <form method="post" id="writingForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Choose a topic:</label>
+                            <select name="prompt" id="promptSelect" class="form-select form-select-lg" required>
+                                <option value="">Select a writing topic...</option>
+                                {% for p in prompts %}
+                                <option value="{{ p }}">{{ p }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check mb-2">
+                                <input type="checkbox" class="form-check-input" id="customPromptCheck">
+                                <label class="form-check-label" for="customPromptCheck">
+                                    Or write your own topic
+                                </label>
+                            </div>
+                            <input type="text" name="custom_prompt" id="customPrompt" class="form-control" 
+                                   placeholder="Enter your own writing topic..." style="display: none;">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Your Writing:</label>
+                            <textarea name="submission" id="writingSubmission" class="form-control" 
+                                      rows="12" placeholder="Write your response here... (minimum 50 words)" 
+                                      required></textarea>
+                            <div class="text-muted small mt-2">
+                                <i class="fas fa-info-circle"></i> 
+                                <span id="wordCount">0</span> words written
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-academy w-100 py-3" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i> Get AI Feedback
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="academy-card mt-4">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i> Writing Tips</h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Use clear topic sentences</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Include examples</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Check your grammar</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Vary your vocabulary</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Use transition words</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i> Review your work</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const submissionTextarea = document.getElementById('writingSubmission');
+const wordCountSpan = document.getElementById('wordCount');
+
+submissionTextarea.addEventListener('input', function() {
+    const text = this.value.trim();
+    const words = text.length > 0 ? text.split(/\s+/).length : 0;
+    wordCountSpan.textContent = words;
+});
+
+const customCheck = document.getElementById('customPromptCheck');
+const customPromptInput = document.getElementById('customPrompt');
+const promptSelect = document.getElementById('promptSelect');
+
+customCheck.addEventListener('change', function() {
+    if (this.checked) {
+        customPromptInput.style.display = 'block';
+        promptSelect.disabled = true;
+        promptSelect.value = '';
+    } else {
+        customPromptInput.style.display = 'none';
+        promptSelect.disabled = false;
+    }
+});
+
+document.getElementById('writingForm').addEventListener('submit', function(e) {
+    const words = submissionTextarea.value.trim().split(/\s+/).length;
+    if (words < 20) {
+        e.preventDefault();
+        alert('Please write at least 20 words for better feedback!');
+    }
+});
+</script>
+{% endblock %}

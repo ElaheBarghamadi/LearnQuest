@@ -1,0 +1,75 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}User Management | CMS{% endblock %}
+{% block page_title %}User Management{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-users me-2"></i> All Users</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Level</th>
+                        <th>XP</th>
+                        <th>Coins</th>
+                        <th>Lessons Completed</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                            {% if user.is_staff %}<span class="badge bg-warning ms-1">Staff</span>{% endif %}
+                        </td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.level }}</td>
+                        <td>{{ user.xp }}</td>
+                        <td>{{ user.coins }}</td>
+                        <td>{{ user.total_lessons_completed }}</td>
+                        <td>{% load jalali %}{{ user.date_joined|jdate }}</td>
+                        <td class="table-actions">
+                            <a href="{% url 'admin_cms:user_progress' user.id %}" class="text-info me-2"><i class="fas fa-chart-line"></i></a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4">No users found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        {% if users.has_other_pages %}
+        <div class="card-footer">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    {% if users.has_previous %}
+                        <li class="page-item"><a class="page-link" href="?page={{ users.previous_page_number }}">Previous</a></li>
+                    {% endif %}
+                    
+                    {% for num in users.paginator.page_range %}
+                        <li class="page-item {% if users.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endfor %}
+                    
+                    {% if users.has_next %}
+                        <li class="page-item"><a class="page-link" href="?page={{ users.next_page_number }}">Next</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

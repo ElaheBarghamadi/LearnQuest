@@ -1,0 +1,478 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static jalali %}
+
+{% block title %}Dashboard | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="academy-card glass-card mb-4">
+        <div class="card-body p-4 p-md-5">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h1 class="h2 mb-1 fw-800">
+                        Welcome back, {{ request.user.username }}! 👋
+                    </h1>
+                    <p class="text-muted mb-0">Keep up the great work! You're making progress every day.</p>
+                </div>
+                <div class="text-center level-badge">
+                    <div class="level-circle">
+                        <span class="level-number">{{ request.user.level }}</span>
+                    </div>
+                    <div class="small text-muted mt-1">Current Level</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center">
+                <div class="card-body p-3 p-md-4">
+                    <div class="stat-icon-wrapper bg-primary-soft">
+                        <i class="fas fa-book-open fa-2x text-primary"></i>
+                    </div>
+                    <div class="display-6 fw-bold mt-2">{{ total_lessons_completed }}</div>
+                    <div class="small text-muted">Lessons Completed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center">
+                <div class="card-body p-3 p-md-4">
+                    <div class="stat-icon-wrapper bg-success-soft">
+                        <i class="fas fa-question-circle fa-2x text-success"></i>
+                    </div>
+                    <div class="display-6 fw-bold mt-2">{{ total_quizzes_passed }}</div>
+                    <div class="small text-muted">Quizzes Passed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center">
+                <div class="card-body p-3 p-md-4">
+                    <div class="stat-icon-wrapper bg-info-soft">
+                        <i class="fas fa-file-alt fa-2x text-info"></i>
+                    </div>
+                    <div class="display-6 fw-bold mt-2">{{ total_exams_passed }}</div>
+                    <div class="small text-muted">Exams Passed</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center">
+                <div class="card-body p-3 p-md-4">
+                    <div class="stat-icon-wrapper bg-warning-soft">
+                        <i class="fas fa-globe fa-2x text-warning"></i>
+                    </div>
+                    <div class="display-6 fw-bold mt-2">{{ worlds_completed }}/{{ total_worlds }}</div>
+                    <div class="small text-muted">Worlds Completed</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-8">
+            <div class="academy-card glass-card">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Level {{ current_level }} Progress</span>
+                        <span class="badge bg-primary-soft text-primary">{{ level_progress|floatformat:0 }}% to Level {{ current_level|add:"1" }}</span>
+                    </div>
+                    <div class="academy-progress mb-2" style="height: 12px;">
+                        <div class="academy-progress-bar" style="width: {{ level_progress }}%;"></div>
+                    </div>
+                    <div class="text-muted small">
+                        <i class="fas fa-bolt me-1"></i> {{ xp_to_next_level }} XP needed for next level
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="academy-card glass-card streak-card">
+                <div class="card-body p-4 text-center">
+                    <div class="streak-icon-wrapper">
+                        <i class="fas fa-fire fa-3x"></i>
+                    </div>
+                    <div class="display-6 fw-bold mt-2">{{ streak }} days</div>
+                    <div class="small">Current Streak</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i> Today's Goal</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="goal-item">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span><i class="fas fa-star me-1 text-warning"></i> XP Goal</span>
+                            <span class="fw-bold">{{ daily_goal.current_xp }}/{{ daily_goal.target_xp }}</span>
+                        </div>
+                        <div class="academy-progress">
+                            <div class="academy-progress-bar" style="width: {% widthratio daily_goal.current_xp daily_goal.target_xp 100 %}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="goal-item">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span><i class="fas fa-book me-1 text-primary"></i> Lessons</span>
+                            <span class="fw-bold">{{ daily_goal.current_lessons }}/{{ daily_goal.target_lessons }}</span>
+                        </div>
+                        <div class="academy-progress">
+                            <div class="academy-progress-bar" style="width: {% widthratio daily_goal.current_lessons daily_goal.target_lessons 100 %}%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="goal-item">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span><i class="fas fa-spell-check me-1 text-success"></i> Vocabulary</span>
+                            <span class="fw-bold">{{ daily_goal.current_vocabulary }}/{{ daily_goal.target_vocabulary }}</span>
+                        </div>
+                        <div class="academy-progress">
+                            <div class="academy-progress-bar" style="width: {% widthratio daily_goal.current_vocabulary daily_goal.target_vocabulary 100 %}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="academy-card glass-card">
+                <div class="card-header glass-header">
+                    <h5 class="mb-0"><i class="fas fa-globe me-2 text-primary"></i> World Progress</h5>
+                </div>
+                <div class="card-body p-4">
+                    {% for world in worlds_progress %}
+                    <div class="world-progress-item mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <div>
+                                <span class="fw-bold">🌍 {{ world.order }}. {{ world.name }}</span>
+                                {% if world.is_completed %}
+                                    <span class="badge bg-success ms-2"><i class="fas fa-check me-1"></i> Completed</span>
+                                {% endif %}
+                            </div>
+                            <span class="small fw-bold">{{ world.completion_percentage|floatformat:0 }}%</span>
+                        </div>
+                        <div class="academy-progress">
+                            <div class="academy-progress-bar {% if world.is_completed %}bg-success{% endif %}"
+                                 style="width: {{ world.completion_percentage }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="academy-card glass-card mb-4">
+                <div class="card-header glass-header">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2 text-info"></i> Recent Activity</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for progress in recent_lessons %}
+                        <a href="{% url 'language_academy:lesson_detail' progress.lesson.id %}" class="list-group-item list-group-item-action glass-list-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ progress.lesson.name }}</strong>
+                                    <br><small class="text-muted"><i class="far fa-clock me-1"></i> {{ progress.last_activity|jdatetime }}</small>
+                                </div>
+                                {% if progress.status == 'completed' %}
+                                    <span class="badge bg-success rounded-pill"><i class="fas fa-check me-1"></i> Done</span>
+                                {% elif progress.status == 'in_progress' %}
+                                    <span class="badge bg-warning rounded-pill">{{ progress.progress_percentage|floatformat:0 }}%</span>
+                                {% endif %}
+                            </div>
+                        </a>
+                        {% empty %}
+                        <div class="list-group-item text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+                            No recent activity
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="academy-card glass-card">
+                <div class="card-header glass-header">
+                    <h5 class="mb-0"><i class="fas fa-medal me-2 text-warning"></i> Your Badges</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-3">
+                        {% for ub in badges %}
+                        <div class="col-4 text-center">
+                            <div class="badge-item">
+                                {% if ub.badge.icon %}
+                                    <img src="{{ ub.badge.icon.url }}" class="badge-icon" alt="{{ ub.badge.name }}">
+                                {% else %}
+                                    <div class="badge-placeholder">
+                                        <i class="fas fa-medal fa-2x text-warning"></i>
+                                    </div>
+                                {% endif %}
+                                <div class="small text-muted mt-1">{{ ub.badge.name|truncatechars:12 }}</div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12 text-center text-muted py-3">
+                            <i class="fas fa-medal fa-3x mb-2 d-block opacity-50"></i>
+                            No badges yet. Keep learning!
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if certificates %}
+    <div class="academy-card glass-card mt-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-certificate me-2 text-success"></i> Your Certificates</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                {% for cert in certificates %}
+                <div class="col-md-4">
+                    <a href="{% url 'language_academy:certificate_detail' cert.id %}" class="text-decoration-none">
+                        <div class="certificate-card text-center p-3">
+                            <div class="cert-icon-wrapper">
+                                <i class="fas fa-certificate fa-3x"></i>
+                            </div>
+                            <div class="fw-bold mt-2">{{ cert.world.name }}</div>
+                            <div class="small text-muted"><i class="far fa-calendar-alt me-1"></i> {{ cert.issued_at|jdatelong }}</div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(26, 26, 46, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--glass-shadow), var(--shadow) !important;
+    transition: var(--transition);
+}
+
+.glass-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--glass-shadow), var(--shadow-hover) !important;
+}
+
+.glass-header {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 16px 24px !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+.level-badge .level-circle {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+}
+
+.level-badge .level-number {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: white;
+}
+
+.stat-card {
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.stat-icon-wrapper {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.bg-primary-soft { background: rgba(59, 130, 246, 0.12); }
+.bg-success-soft { background: rgba(46, 204, 113, 0.12); }
+.bg-info-soft { background: rgba(0, 210, 255, 0.12); }
+.bg-warning-soft { background: rgba(241, 196, 15, 0.12); }
+
+.streak-card {
+    background: linear-gradient(135deg, rgba(255, 75, 75, 0.1), rgba(255, 107, 107, 0.05)) !important;
+    border-color: rgba(255, 75, 75, 0.2) !important;
+}
+
+.streak-icon-wrapper {
+    font-size: 2rem;
+    color: #FF4B4B;
+    animation: pulse-fire 2s ease-in-out infinite;
+}
+
+@keyframes pulse-fire {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.goal-item {
+    background: rgba(59, 130, 246, 0.05);
+    padding: 14px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    transition: var(--transition);
+}
+
+.goal-item:hover {
+    background: rgba(59, 130, 246, 0.08);
+    transform: translateX(4px);
+}
+
+.world-progress-item:last-child {
+    margin-bottom: 0;
+}
+
+.world-progress-item .academy-progress {
+    background: rgba(59, 130, 246, 0.08);
+}
+
+.glass-list-item {
+    background: transparent !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 14px 20px !important;
+    transition: var(--transition);
+}
+
+.glass-list-item:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+}
+
+.glass-list-item:last-child {
+    border-bottom: none !important;
+}
+
+.badge-item {
+    transition: var(--transition);
+}
+
+.badge-item:hover {
+    transform: scale(1.05);
+}
+
+.badge-icon {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.05);
+    padding: 6px;
+}
+
+.badge-placeholder {
+    width: 50px;
+    height: 50px;
+    background: rgba(59, 130, 246, 0.05);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    border: 2px dashed rgba(59, 130, 246, 0.2);
+}
+
+.certificate-card {
+    background: rgba(59, 130, 246, 0.03);
+    border-radius: var(--radius-sm);
+    transition: var(--transition);
+    border: 1px solid var(--glass-border);
+    padding: 20px !important;
+}
+
+.certificate-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--success);
+    box-shadow: var(--shadow-hover);
+}
+
+.cert-icon-wrapper {
+    color: #2ECC71;
+    filter: drop-shadow(0 4px 12px rgba(46, 204, 113, 0.3));
+}
+
+@media (max-width: 768px) {
+    .level-badge .level-circle {
+        width: 50px;
+        height: 50px;
+    }
+    .level-badge .level-number {
+        font-size: 1.4rem;
+    }
+    .stat-icon-wrapper {
+        width: 44px;
+        height: 44px;
+    }
+    .stat-icon-wrapper i {
+        font-size: 1.3rem !important;
+    }
+    .display-6 {
+        font-size: 1.3rem !important;
+    }
+    .glass-header {
+        padding: 12px 16px !important;
+    }
+    .glass-card .card-body {
+        padding: 16px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .goal-item {
+        padding: 10px 12px;
+    }
+    .certificate-card {
+        padding: 14px !important;
+    }
+    .badge-icon, .badge-placeholder {
+        width: 40px;
+        height: 40px;
+    }
+}
+</style>
+{% endblock %}

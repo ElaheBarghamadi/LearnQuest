@@ -1,0 +1,41 @@
+
+
+img, video { max-width: 100%; height: auto; }
+canvas    { max-width: 100%; }
+iframe    { max-width: 100%; }
+
+html, body { overflow-x: hidden; overflow-x: clip; }
+
+.table-scroll,
+table.table-scroll-wrap {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 767.98px) {
+    .academy-card table,
+    .card table,
+    .table-card table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+@media (max-width: 560px) {
+    [style*="width: 480px"],
+    [style*="width: 400px"] { width: 92vw !important; }
+}
+
+input, select, textarea { max-width: 100%; }
+
+@media (max-width: 575.98px) {
+    .games-list { gap: 10px; }
+    .btn { white-space: normal; }
+}
+
+@media (max-width: 480px) {
+    html { font-size: 15.5px; }
+}

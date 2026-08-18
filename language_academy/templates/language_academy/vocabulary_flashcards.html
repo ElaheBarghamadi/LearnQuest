@@ -1,0 +1,467 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Flashcards | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="h2">🃏 Flashcards</h1>
+        <p class="text-muted">Learn new words with interactive flashcards</p>
+        <div class="mt-2">
+            <span class="badge bg-primary">{{ mode|title }} Mode</span>
+            <span class="badge bg-secondary ms-1">{{ total }} words</span>
+        </div>
+    </div>
+
+    {% if words %}
+        <div id="flashcardContainer">
+            {% for word_data in words %}
+                <div class="flashcard-wrapper" data-word-id="{{ word_data.word.id }}" data-index="{{ forloop.counter0 }}"
+                     style="display: {% if forloop.first %}block{% else %}none{% endif %}">
+                    <div class="flashcard glass-card">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <div class="card-content text-center p-4 p-md-5">
+                                    <div class="mb-3">
+                                        <span class="badge {% if word_data.word.difficulty == 'A1' %}bg-success{% elif word_data.word.difficulty == 'A2' %}bg-info{% else %}bg-warning{% endif %}">
+                                            {{ word_data.word.get_difficulty_display }}
+                                        </span>
+                                        <span class="badge bg-secondary ms-1">
+                                            Level {{ word_data.mastery_level }}/4
+                                        </span>
+                                    </div>
+                                    <div class="display-1 fw-bold text-gradient mb-2">
+                                        {{ word_data.word.word }}
+                                    </div>
+                                    {% if word_data.word.pronunciation %}
+                                        <div class="text-muted mb-3">
+                                            <i class="fas fa-volume-up me-1" style="cursor:pointer;" onclick="pronounceWord('{{ word_data.word.word }}')"></i>
+                                            {{ word_data.word.pronunciation }}
+                                        </div>
+                                    {% endif %}
+                                    <div class="text-muted small">
+                                        <i class="fas fa-eye me-1"></i> Click or press Space to flip
+                                    </div>
+                                    <div class="mt-3">
+                                        <button class="btn btn-sm btn-outline-primary" onclick="pronounceWord('{{ word_data.word.word }}')">
+                                            <i class="fas fa-volume-up me-1"></i> Listen
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flashcard-back">
+                                <div class="card-content p-4 p-md-5">
+                                    <h6 class="text-muted mb-3">Meaning</h6>
+                                    <div class="display-6 mb-2">{{ word_data.word.meaning }}</div>
+                                    {% if word_data.word.meaning_fa %}
+                                        <div class="text-muted">{{ word_data.word.meaning_fa }}</div>
+                                    {% endif %}
+                                    <hr>
+                                    {% with example=word_data.word.get_random_example %}
+                                        {% if example %}
+                                            <h6 class="text-muted mb-2">Example</h6>
+                                            <p class="mb-2">"{{ example.sentence }}"</p>
+                                            {% if example.sentence_fa %}
+                                                <small class="text-muted">{{ example.sentence_fa }}</small>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endwith %}
+                                    <div class="mt-3">
+                                        {% for cat in word_data.word.categories.all %}
+                                            <span class="category-tag">{{ cat.name }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="mt-3">
+                                        <div class="d-flex justify-content-between small mb-1">
+                                            <span>Mastery</span>
+                                            <span>{{ word_data.mastery_score|floatformat:0 }}%</span>
+                                        </div>
+                                        <div class="academy-progress">
+                                            <div class="academy-progress-bar" style="width: {{ word_data.mastery_score }}%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-4 col-md-3">
+                                <button class="btn btn-success w-100 py-3 flashcard-action" data-action="easy">
+                                    <i class="fas fa-check-circle me-2"></i> Easy
+                                </button>
+                            </div>
+                            <div class="col-4 col-md-3">
+                                <button class="btn btn-primary w-100 py-3 flashcard-action" data-action="know">
+                                    <i class="fas fa-check me-2"></i> Know
+                                </button>
+                            </div>
+                            <div class="col-4 col-md-3">
+                                <button class="btn btn-danger w-100 py-3 flashcard-action" data-action="hard">
+                                    <i class="fas fa-times-circle me-2"></i> Hard
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <span id="currentIndex">1</span> / <span id="totalCount">{{ words|length }}</span>
+                        <span class="ms-3 text-muted">|</span>
+                        <span class="ms-3 text-success" id="correctCount">0</span>
+                        <span class="text-muted"> correct</span>
+                    </div>
+                    <div class="mt-2">
+                        <div class="academy-progress" style="height: 4px;">
+                            <div class="academy-progress-bar" id="progressBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center small text-muted mt-3">
+            <kbd>Space</kbd> Flip · <kbd>1</kbd> Easy · <kbd>2</kbd> Know · <kbd>3</kbd> Hard
+        </div>
+    {% else %}
+        <div class="academy-card glass-card text-center py-5">
+            <div class="card-body p-5">
+                <i class="fas fa-check-circle fa-5x text-success mb-3"></i>
+                <h3>No words to review! 🎉</h3>
+                <p class="text-muted">All caught up! Check back later or learn new words.</p>
+                <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy mt-3">
+                    <i class="fas fa-brain me-2"></i> Learning Hub
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy-outline">
+            <i class="fas fa-arrow-left me-2"></i> Back to Hub
+        </a>
+        <a href="{% url 'language_academy:vocabulary_review' %}" class="btn-academy ms-2">
+            <i class="fas fa-repeat me-2"></i> Review
+        </a>
+    </div>
+</div>
+
+<style>
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(26, 26, 46, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--glass-shadow), var(--shadow) !important;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.flashcard-wrapper {
+    max-width: 650px;
+    margin: 0 auto;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flashcard {
+    perspective: 1000px;
+    min-height: 400px;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.flashcard.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    min-height: 400px;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flashcard-front {
+    z-index: 2;
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+
+.card-content {
+    width: 100%;
+}
+
+.display-1 {
+    font-size: 4rem;
+}
+
+.flashcard-action {
+    transition: var(--transition);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+}
+
+.flashcard-action:hover {
+    transform: scale(1.05);
+}
+
+.flashcard-action:active {
+    transform: scale(0.95);
+}
+
+.category-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 10px;
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 20px;
+    margin-right: 4px;
+    color: var(--text-secondary);
+    border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.btn-academy-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-academy-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+kbd {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    font-size: 0.7rem;
+}
+
+@media (max-width: 768px) {
+    .display-1 {
+        font-size: 2.5rem !important;
+    }
+    .flashcard {
+        min-height: 300px;
+    }
+    .flashcard-inner {
+        min-height: 300px;
+    }
+    .flashcard-front,
+    .flashcard-back {
+        min-height: 300px;
+    }
+    .card-content {
+        padding: 16px !important;
+    }
+    .display-6 {
+        font-size: 1.2rem !important;
+    }
+}
+</style>
+
+<script>
+(function() {
+    'use strict';
+
+    let currentIndex = 0;
+    let correctCount = 0;
+    let totalCards = {{ words|length }};
+
+    const cards = document.querySelectorAll('.flashcard-wrapper');
+    const currentIndexSpan = document.getElementById('currentIndex');
+    const totalCountSpan = document.getElementById('totalCount');
+    const correctCountSpan = document.getElementById('correctCount');
+    const progressBar = document.getElementById('progressBar');
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function updateDisplay() {
+        cards.forEach((card, idx) => {
+            card.style.display = idx === currentIndex ? 'block' : 'none';
+        });
+        if (currentIndexSpan) {
+            currentIndexSpan.innerText = currentIndex + 1;
+        }
+        if (totalCountSpan) {
+            totalCountSpan.innerText = totalCards;
+        }
+        if (progressBar) {
+            const progress = ((currentIndex + 1) / totalCards) * 100;
+            progressBar.style.width = progress + '%';
+        }
+        const flashcard = cards[currentIndex]?.querySelector('.flashcard');
+        if (flashcard) {
+            flashcard.classList.remove('flipped');
+        }
+    }
+
+    function handleAction(wordId, action) {
+        fetch('{% url "language_academy:vocabulary_flashcard_action" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                word_id: wordId,
+                action: action
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (action === 'easy' || action === 'know') {
+                    correctCount++;
+                    if (correctCountSpan) {
+                        correctCountSpan.innerText = correctCount;
+                    }
+                    showXPPopup(data.xp_earned || 10, '✨');
+                }
+
+                if (currentIndex + 1 < totalCards) {
+                    currentIndex++;
+                    updateDisplay();
+                } else {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                }
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    document.querySelectorAll('.flashcard-action').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const wrapper = this.closest('.flashcard-wrapper');
+            if (!wrapper) return;
+            const wordId = wrapper.dataset.wordId;
+            const action = this.dataset.action;
+
+            document.querySelectorAll('.flashcard-action').forEach(b => b.disabled = true);
+            handleAction(wordId, action);
+            setTimeout(() => {
+                document.querySelectorAll('.flashcard-action').forEach(b => b.disabled = false);
+            }, 500);
+        });
+    });
+
+    document.querySelectorAll('.flashcard').forEach(card => {
+        card.addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+    });
+
+    window.pronounceWord = function(word) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(word);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            speechSynthesis.speak(utterance);
+        }
+    };
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === ' ' || e.key === 'Space') {
+            e.preventDefault();
+            const currentCard = cards[currentIndex];
+            if (currentCard) {
+                const flashcard = currentCard.querySelector('.flashcard');
+                if (flashcard) flashcard.classList.toggle('flipped');
+            }
+        } else if (e.key === '1') {
+            const easyBtn = document.querySelector('.flashcard-action[data-action="easy"]');
+            if (easyBtn) easyBtn.click();
+        } else if (e.key === '2') {
+            const knowBtn = document.querySelector('.flashcard-action[data-action="know"]');
+            if (knowBtn) knowBtn.click();
+        } else if (e.key === '3') {
+            const hardBtn = document.querySelector('.flashcard-action[data-action="hard"]');
+            if (hardBtn) hardBtn.click();
+        }
+    });
+
+    function showXPPopup(amount, emoji = '✨') {
+        const popup = document.createElement('div');
+        popup.className = 'xp-popup';
+        popup.innerHTML = `${emoji} +${amount} XP`;
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            if (popup.parentNode) popup.remove();
+        }, 1500);
+    }
+
+    updateDisplay();
+
+    console.log('🃏 Flashcards Loaded!');
+    console.log('Shortcuts: Space=Flip, 1=Easy, 2=Know, 3=Hard');
+
+})();
+</script>
+{% endblock %}

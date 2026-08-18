@@ -1,0 +1,741 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    رسم و محاسبه مثلث قائم‌الزاویه | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .triangle-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .triangle-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .triangle-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .triangle-header::before {
+            content: '▲';
+            position: absolute;
+            bottom: -30px;
+            right: -20px;
+            font-size: 150px;
+            opacity: 0.1;
+        }
+
+        .triangle-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .triangle-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .triangle-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* فرم */
+        .triangle-form {
+            padding: 35px 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #3B82F6;
+            font-size: 1rem;
+        }
+
+        .triangle-input {
+            width: 100%;
+            padding: 14px 50px 14px 18px;
+            font-size: 1rem;
+            border: 2px solid #e0e0e8;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .triangle-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+        }
+
+        .calc-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* بخش نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, #f0f0ff, #e8e8ff);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .result-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-box .result-label {
+            font-size: 0.7rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .result-box .result-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #3B82F6;
+        }
+
+        .result-box .result-unit {
+            font-size: 0.6rem;
+            color: #aaa;
+        }
+
+        /* بخش رسم */
+        .canvas-section {
+            background: #f8f9ff;
+            border-radius: 25px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .canvas-title {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .canvas-wrapper {
+            background: white;
+            border-radius: 20px;
+            padding: 15px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        #triangleCanvas {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* خطا */
+        .error-card {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-radius: 25px;
+            padding: 15px 20px;
+            text-align: center;
+            border-right: 5px solid #f44336;
+            margin-top: 20px;
+        }
+
+        .error-card i {
+            font-size: 1.5rem;
+            color: #f44336;
+            margin-left: 10px;
+        }
+
+        .error-card span {
+            color: #c62828;
+            font-weight: 500;
+        }
+
+        /* لودینگ */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* مثال‌ها */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .example-btn:hover {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* راهنما */
+        .help-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .help-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .theorem-box {
+            background: #2d3047;
+            color: #36D1DC;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            font-family: inherit;
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .triangle-container {
+                padding: 15px;
+            }
+
+            .triangle-header {
+                padding: 25px 20px;
+            }
+
+            .triangle-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .triangle-form {
+                padding: 25px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .result-box .result-value {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .triangle-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .triangle-input {
+                padding: 12px 45px 12px 15px;
+            }
+
+            .calc-btn {
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="triangle-container">
+        <div class="triangle-card">
+            <div class="triangle-header">
+                <h1>
+                    <i class="fas fa-drafting-compass"></i>
+                    رسم و محاسبه مثلث قائم‌الزاویه
+                    <i class="fas fa-triangle"></i>
+                </h1>
+                <p>با وارد کردن دو ضلع قائمه، مثلث را رسم کنید و وتر را محاسبه کنید</p>
+            </div>
+
+            <div class="triangle-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-arrow-left"></i>
+                            طول ضلع اول (قائمه a):
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-chart-line"></i>
+                            <input type="number"
+                                   step="0.01"
+                                   id="sideA"
+                                   class="triangle-input"
+                                   placeholder="مثال: 3"
+                                   value="3">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-arrow-up"></i>
+                            طول ضلع دوم (قائمه b):
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-chart-line"></i>
+                            <input type="number"
+                                   step="0.01"
+                                   id="sideB"
+                                   class="triangle-input"
+                                   placeholder="مثال: 4"
+                                   value="4">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="drawBtn" class="calc-btn">
+                    <i class="fas fa-chart-simple"></i>
+                    رسم و محاسبه مثلث
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+
+            <div class="result-section">
+                <div class="results-grid" id="resultsGrid" style="display: none;">
+                    <div class="result-box">
+                        <div class="result-label">
+                            <i class="fas fa-arrow-left"></i> ضلع a
+                        </div>
+                        <div class="result-value" id="resultA">0</div>
+                        <div class="result-unit">واحد</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-label">
+                            <i class="fas fa-arrow-up"></i> ضلع b
+                        </div>
+                        <div class="result-value" id="resultB">0</div>
+                        <div class="result-unit">واحد</div>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-label">
+                            <i class="fas fa-chart-line"></i> وتر c
+                        </div>
+                        <div class="result-value" id="resultC">0</div>
+                        <div class="result-unit">واحد</div>
+                    </div>
+                </div>
+
+                <div class="canvas-section" id="canvasSection" style="display: none;">
+                    <div class="canvas-title">
+                        <i class="fas fa-chart-simple"></i>
+                        نمایش گرافیکی مثلث
+                        <i class="fas fa-mouse-pointer"></i>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="triangleCanvas" width="500" height="500"
+                                style="width:100%; height:auto; max-width:500px; max-height:500px"></canvas>
+                    </div>
+                </div>
+
+                <div id="errorContainer"></div>
+            </div>
+        </div>
+
+        <!-- مثال‌ها -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📐 مثال‌های معروف
+            </div>
+            <div class="examples-grid">
+                <button class="example-btn" data-a="3" data-b="4">مثلث 3-4-5</button>
+                <button class="example-btn" data-a="5" data-b="12">مثلث 5-12-13</button>
+                <button class="example-btn" data-a="6" data-b="8">مثلث 6-8-10</button>
+                <button class="example-btn" data-a="8" data-b="15">مثلث 8-15-17</button>
+                <button class="example-btn" data-a="7" data-b="24">مثلث 7-24-25</button>
+                <button class="example-btn" data-a="9" data-b="12">مثلث 9-12-15</button>
+            </div>
+        </div>
+
+        <!-- راهنما -->
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 قضیه فیثاغورث
+            </div>
+            <div class="theorem-box">
+                در مثلث قائم‌الزاویه: a² + b² = c²
+            </div>
+            <div style="font-size: 0.8rem; color: #555; line-height: 1.8;">
+                <strong>🤔 محاسبه وتر:</strong><br>
+                با داشتن دو ضلع قائمه (a و b)، وتر (c) از رابطه زیر محاسبه می‌شود:<br>
+                <code style="background: #f0f0ff; padding: 2px 6px; border-radius: 8px;">c = √(a² + b²)</code><br><br>
+                <strong>📌 مثال:</strong> اگر a=3 و b=4 باشد:<br>
+                <code style="background: #f0f0ff; padding: 2px 6px; border-radius: 8px;">c = √(3² + 4²) = √(9 + 16) =
+                    √25 = 5</code>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('triangleCanvas');
+        const ctx = canvas.getContext('2d');
+        const sideAInput = document.getElementById('sideA');
+        const sideBInput = document.getElementById('sideB');
+        const drawBtn = document.getElementById('drawBtn');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const canvasSection = document.getElementById('canvasSection');
+        const errorContainer = document.getElementById('errorContainer');
+        const resultASpan = document.getElementById('resultA');
+        const resultBSpan = document.getElementById('resultB');
+        const resultCSpan = document.getElementById('resultC');
+
+        // تنظیم ابعاد بوم
+        function resizeCanvas() {
+            const size = Math.min(canvas.parentElement.clientWidth, 500);
+            canvas.width = size;
+            canvas.height = size;
+            canvas.style.width = `${size}px`;
+            canvas.style.height = `${size}px`;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // رسم مثلث
+        function drawTriangle(a, b) {
+            if (a <= 0 || b <= 0) {
+                showError('ضلع‌ها باید بزرگتر از صفر باشند.');
+                return false;
+            }
+
+            // محاسبه وتر
+            const c = Math.sqrt(a * a + b * b);
+
+            // محاسبه مقیاس مناسب برای نمایش
+            const maxSide = Math.max(a, b, c);
+            const padding = 60;
+            const availableSize = canvas.width - padding;
+            const scale = availableSize / maxSide;
+
+            // نقاط مثلث (با زاویه قائمه در گوشه پایین-چپ)
+            const startX = padding / 2;
+            const startY = canvas.height - padding / 2;
+            const pointA = {x: startX, y: startY};                    // رأس A (زاویه قائمه)
+            const pointB = {x: startX + b * scale, y: startY};        // رأس B (ضلع افقی)
+            const pointC = {x: startX, y: startY - a * scale};        // رأس C (ضلع عمودی)
+
+            // پاک کردن بوم
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم مثلث
+            ctx.beginPath();
+            ctx.moveTo(pointA.x, pointA.y);
+            ctx.lineTo(pointB.x, pointB.y);
+            ctx.lineTo(pointC.x, pointC.y);
+            ctx.closePath();
+
+            // پر کردن با رنگ ملایم
+            ctx.fillStyle = '#cce5ff';
+            ctx.fill();
+
+            // رسم خطوط
+            ctx.strokeStyle = '#3B82F6';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // رسم نقاط
+            ctx.fillStyle = '#3B82F6';
+            ctx.beginPath();
+            ctx.arc(pointA.x, pointA.y, 4, 0, 2 * Math.PI);
+            ctx.arc(pointB.x, pointB.y, 4, 0, 2 * Math.PI);
+            ctx.arc(pointC.x, pointC.y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // نوشتن برچسب‌ها
+            ctx.font = 'bold 14px Vazirmatn';
+            ctx.fillStyle = '#3B82F6';
+            ctx.fillText('A', pointA.x - 15, pointA.y + 5);
+            ctx.fillText('B', pointB.x + 5, pointB.y + 10);
+            ctx.fillText('C', pointC.x - 15, pointC.y - 5);
+
+            // نوشتن مقادیر کنار ضلع‌ها
+            ctx.font = '12px Vazirmatn, sans-serif';
+            ctx.fillStyle = '#555';
+
+            // ضلع AB (افقی)
+            const abMidX = (pointA.x + pointB.x) / 2;
+            const abMidY = pointA.y + 12;
+            ctx.fillText(`${b}`, abMidX, abMidY);
+
+            // ضلع AC (عمودی)
+            const acMidX = pointA.x - 20;
+            const acMidY = (pointA.y + pointC.y) / 2;
+            ctx.fillText(`${a}`, acMidX, acMidY);
+
+            // ضلع BC (وتر)
+            const bcMidX = (pointB.x + pointC.x) / 2 + 10;
+            const bcMidY = (pointB.y + pointC.y) / 2 - 10;
+            ctx.fillText(`${c.toFixed(2)}`, bcMidX, bcMidY);
+
+            return c;
+        }
+
+        // نمایش خطا
+        function showError(message) {
+            errorContainer.innerHTML = `
+            <div class="error-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>${message}</span>
+            </div>
+        `;
+            resultsGrid.style.display = 'none';
+            canvasSection.style.display = 'none';
+        }
+
+        // پاک کردن خطا
+        function clearError() {
+            errorContainer.innerHTML = '';
+        }
+
+        // به‌روزرسانی نتایج
+        function updateResults(a, b, c) {
+            resultASpan.textContent = a.toFixed(2);
+            resultBSpan.textContent = b.toFixed(2);
+            resultCSpan.textContent = c.toFixed(2);
+            resultsGrid.style.display = 'grid';
+            canvasSection.style.display = 'block';
+        }
+
+        // عملیات اصلی
+        function calculateAndDraw() {
+            let a = parseFloat(sideAInput.value);
+            let b = parseFloat(sideBInput.value);
+
+            // اعتبارسنجی
+            if (isNaN(a) || isNaN(b)) {
+                showError('لطفاً هر دو ضلع را وارد کنید.');
+                return;
+            }
+
+            if (a <= 0 || b <= 0) {
+                showError('ضلع‌ها باید بزرگتر از صفر باشند.');
+                return;
+            }
+
+            if (a > 500 || b > 500) {
+                showError('ضلع‌ها باید کمتر از 500 باشند.');
+                return;
+            }
+
+            clearError();
+
+            // محاسبه و رسم
+            const c = drawTriangle(a, b);
+            updateResults(a, b, c);
+
+            // تغییر URL بدون ریلود
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.set('a', a);
+            newUrl.searchParams.set('b', b);
+            window.history.pushState({}, '', newUrl);
+        }
+
+        // بارگذاری از URL
+        function loadFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const a = urlParams.get('a');
+            const b = urlParams.get('b');
+
+            if (a && b) {
+                sideAInput.value = a;
+                sideBInput.value = b;
+                calculateAndDraw();
+            }
+        }
+
+        // رویدادها
+        drawBtn.addEventListener('click', calculateAndDraw);
+
+        // اینتر زدن در ورودی‌ها
+        sideAInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') calculateAndDraw();
+        });
+        sideBInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') calculateAndDraw();
+        });
+
+        // کلیک روی مثال‌ها
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const a = this.getAttribute('data-a');
+                const b = this.getAttribute('data-b');
+                sideAInput.value = a;
+                sideBInput.value = b;
+                calculateAndDraw();
+            });
+        });
+
+        // بارگذاری اولیه
+        loadFromURL();
+
+        // رسم اولیه اگر مقادیر پیش‌فرض وجود داشته باشند
+        if (sideAInput.value && sideBInput.value) {
+            calculateAndDraw();
+        }
+
+        // تنظیم مجدد بوم هنگام تغییر سایز
+        window.addEventListener('resize', function () {
+            if (sideAInput.value && sideBInput.value) {
+                const a = parseFloat(sideAInput.value);
+                const b = parseFloat(sideBInput.value);
+                if (a > 0 && b > 0) drawTriangle(a, b);
+            }
+        });
+    </script>
+{% endblock %}

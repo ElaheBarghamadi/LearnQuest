@@ -1,0 +1,250 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}World Map | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if is_guest %}
+    <div class="alert guest-banner mb-4" role="alert">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <b>👀 You're browsing as a guest.</b>
+                <div class="small mt-1">You can explore every world — log in to start lessons, take quizzes and earn XP & coins.</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/login/?next={{ request.path }}" class="btn btn-primary btn-sm px-3 fw-bold">Log in 👋</a>
+                <a href="/register/?next={{ request.path }}" class="btn btn-outline-light btn-sm px-3 fw-bold">Sign up ✨</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .guest-banner { background: linear-gradient(135deg, rgba(30, 58, 138, 0.94), rgba(37, 99, 235, 0.88)); border: 1px solid rgba(13, 110, 253, 0.5); color: #fff; border-radius: 16px; padding: 14px 18px; }
+        .guest-banner .small { color: rgba(255, 255, 255, 0.78); }
+        .guest-banner b { color: #fff; }
+        .guest-banner .btn-primary { box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4); }
+        .guest-banner .btn-outline-light { border-color: rgba(255,255,255,0.6); color: #fff; }
+        .guest-banner .btn-outline-light:hover { background: rgba(255,255,255,0.16); color: #fff; }
+    </style>
+    {% endif %}
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+            <span class="text-gradient">🌍 Your Language Journey</span>
+        </h1>
+        <p class="lead text-muted">Choose a world to start learning English through real-life scenarios</p>
+    </div>
+
+    <div class="row g-4"{% if visual_edit %} data-vae-list="worlds"{% endif %}>
+        {% for world in worlds %}
+        <div class="col-lg-4 col-md-6"{% if visual_edit %} data-vae-id="{{ world.id }}"{% endif %}>
+            <div class="academy-card h-100 {% if world.is_locked %}opacity-75{% endif %}">
+                <div class="card-body text-center p-4">
+                    <div class="world-icon mb-3">
+                        {% if world.order == 1 %}
+                            <div class="icon-circle bg-gradient-green">✈️</div>
+                        {% elif world.order == 2 %}
+                            <div class="icon-circle bg-gradient-blue">🚌</div>
+                        {% elif world.order == 3 %}
+                            <div class="icon-circle bg-gradient-purple">🏠</div>
+                        {% elif world.order == 4 %}
+                            <div class="icon-circle bg-gradient-yellow">🛍️</div>
+                        {% elif world.order == 5 %}
+                            <div class="icon-circle bg-gradient-red">🍽️</div>
+                        {% elif world.order == 6 %}
+                            <div class="icon-circle bg-gradient-green">🏥</div>
+                        {% elif world.order == 7 %}
+                            <div class="icon-circle bg-gradient-blue">🏦</div>
+                        {% elif world.order == 8 %}
+                            <div class="icon-circle bg-gradient-purple">🎓</div>
+                        {% elif world.order == 9 %}
+                            <div class="icon-circle bg-gradient-yellow">💼</div>
+                        {% else %}
+                            <div class="icon-circle bg-gradient-red">🌟</div>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="h4 fw-bold mb-2"{% if visual_edit %} data-vae="world.{{ world.id }}.name"{% endif %}>{{ world.name }}</h3>
+                    <p class="text-muted small mb-3"{% if visual_edit %} data-vae="world.{{ world.id }}.description"{% endif %}>{{ world.description|truncatewords:12 }}</p>
+
+                    <div class="mb-3">
+                        {% if world.difficulty_level == 'A1' %}
+                            <span class="badge bg-success px-3 py-2">Beginner A1</span>
+                        {% elif world.difficulty_level == 'A2' %}
+                            <span class="badge bg-info px-3 py-2">Elementary A2</span>
+                        {% else %}
+                            <span class="badge bg-warning px-3 py-2">Intermediate B1</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>Progress</span>
+                            <span class="fw-bold">{{ world.completion_percentage|default:0|floatformat:0 }}%</span>
+                        </div>
+                        <div class="academy-progress">
+                            <div class="academy-progress-bar" style="width: {{ world.completion_percentage|default:0 }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mb-3">
+                        <div class="reward-badge">
+                            <i class="fas fa-star text-warning"></i> +{{ world.xp_reward }} XP
+                        </div>
+                        <div class="reward-badge">
+                            <i class="fas fa-coins text-info"></i> +{{ world.coin_reward }}
+                        </div>
+                    </div>
+
+                    {% if world.is_locked %}
+                        <button class="btn btn-secondary w-100" disabled>
+                            <i class="fas fa-lock me-2"></i> Locked
+                        </button>
+                    {% elif world.is_completed %}
+                        <a href="{% url 'language_academy:world_detail' world.id %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-redo me-2"></i> Review World
+                        </a>
+                    {% else %}
+                        <a href="{% url 'language_academy:world_detail' world.id %}" class="btn-academy w-100">
+                            Start Journey <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-globe fa-4x text-muted mb-3"></i>
+            <h3>No Worlds Available Yet</h3>
+            <p class="text-muted">Check back soon for new content!</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if exclusive_lessons %}
+    <div class="row mt-5 exclusive-section">
+        <div class="col-12 mb-3 text-center">
+            <h2 class="fw-bold mb-2"><span class="text-gradient-gold">👑 Exclusive Lessons</span></h2>
+            <p class="text-muted mb-0">Premium, pro-level content — grab a lesson ticket once and it stays unlocked forever!</p>
+        </div>
+        {% for item in exclusive_lessons %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="academy-card h-100 {% if item.owned %}exclusive-owned{% else %}exclusive-locked{% endif %}">
+                <div class="card-body p-4 text-center">
+                    <div class="icon-circle {% if item.owned %}bg-gradient-green{% else %}bg-gradient-yellow{% endif %} mb-3">
+                        {% if item.owned %}✅{% else %}🔒{% endif %}
+                    </div>
+                    <h5 class="fw-bold mb-1">{{ item.lesson.name }}</h5>
+                    <div class="small text-muted mb-3">{{ item.lesson.chapter.name }} · {{ item.lesson.name }}</div>
+                    <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
+                        <span class="reward-badge">⏱ {{ item.lesson.estimated_time_minutes }} min</span>
+                        <span class="reward-badge">⭐ {{ item.lesson.xp_reward }} XP</span>
+                        <span class="reward-badge">🪙 {{ item.lesson.coin_reward }}</span>
+                    </div>
+                    {% if item.owned %}
+                        <a href="{% url 'language_academy:lesson_detail' item.lesson.id %}" class="btn-academy d-block">Enter Lesson ⭐</a>
+                    {% elif item.product %}
+                        <a href="{% url 'shop:product' item.product.slug %}" class="btn-academy d-block exclusive-buy">
+                            Buy Ticket 🛒
+                            {% if item.product.price_coins %}<span class="small">({{ item.product.price_coins }} 🪙)</span>{% endif %}
+                        </a>
+                    {% else %}
+                        <span class="btn-academy-outline d-block">Coming soon</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="academy-card bg-gradient-green text-white">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <div>
+                            <h4 class="mb-1"><i class="fas fa-tasks me-2"></i> Daily Challenge</h4>
+                            <p class="mb-0 opacity-75">Complete your daily goal to earn bonus rewards!</p>
+                        </div>
+                        <div class="text-end">
+                            <div class="d-flex gap-3">
+                                <div>
+                                    <div class="small">XP Goal</div>
+                                    <div class="h5 mb-0">{{ daily_goal.current_xp }}/{{ daily_goal.target_xp }}</div>
+                                </div>
+                                <div>
+                                    <div class="small">Lessons</div>
+                                    <div class="h5 mb-0">{{ daily_goal.current_lessons }}/{{ daily_goal.target_lessons }}</div>
+                                </div>
+                                <div>
+                                    <div class="small">Words</div>
+                                    <div class="h5 mb-0">{{ daily_goal.current_vocabulary }}/{{ daily_goal.target_vocabulary }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-gradient {
+    background: linear-gradient(135deg, #58CC71, #1CB0F6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto;
+    box-shadow: var(--duo-shadow);
+}
+
+.bg-gradient-green { background: linear-gradient(135deg, #58CC71, #3C9B4A); }
+.bg-gradient-blue { background: linear-gradient(135deg, #1CB0F6, #0B8FCC); }
+.bg-gradient-purple { background: linear-gradient(135deg, #9D4EDD, #7B2FBF); }
+.bg-gradient-yellow { background: linear-gradient(135deg, #FFC800, #D4A500); }
+.bg-gradient-red { background: linear-gradient(135deg, #FF4B4B, #CC2E2E); }
+
+.reward-badge {
+    font-size: 0.8rem;
+    background: var(--duo-gray-100);
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: var(--duo-gray-700);
+}
+
+.text-gradient-gold {
+    background: linear-gradient(135deg, #FFC800, #FF9600);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.exclusive-locked {
+    border: 2px solid #FFC800 !important;
+    background: linear-gradient(180deg, #FFF9E6, #ffffff);
+}
+
+.exclusive-owned {
+    border: 2px solid #58CC71 !important;
+    background: linear-gradient(180deg, #F0FBF2, #ffffff);
+}
+
+.exclusive-buy {
+    background: linear-gradient(135deg, #FFC800, #FF9600) !important;
+    box-shadow: 0 6px 18px rgba(255, 150, 0, 0.4) !important;
+    color: #fff !important;
+}
+</style>
+{% include "language_academy/ve_structure.html" %}
+{% endblock %}

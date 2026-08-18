@@ -1,0 +1,776 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    محاسبه حجم اشکال سه‌بعدی | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .volume-container {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .volume-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 40px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.15);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .volume-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .volume-header::before {
+            content: '📦';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 120px;
+            opacity: 0.1;
+        }
+
+        .volume-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+            color: white;
+        }
+
+        .volume-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .volume-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+        }
+
+        /* فرم */
+        .volume-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .form-select-custom {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e8;
+            border-radius: 25px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 18px center;
+            background-size: 16px;
+        }
+
+        .form-select-custom:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* بخش ورودی پویا */
+        .dynamic-inputs {
+            background: #f8f9ff;
+            border-radius: 25px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .dynamic-inputs.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .input-field-group {
+            margin-bottom: 0;
+        }
+
+        .input-field-group label {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .volume-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e8;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .volume-input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* دکمه */
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.35);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            animation: fadeInUp 0.5s ease;
+            display: none;
+        }
+
+        .result-card.show {
+            display: block;
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed rgba(76, 175, 80, 0.3);
+        }
+
+        .result-header i {
+            font-size: 1.3rem;
+            color: #4CAF50;
+        }
+
+        .result-card.error .result-header i {
+            color: #f44336;
+        }
+
+        .result-header h3 {
+            font-size: 1rem;
+            color: #2e7d32;
+            margin: 0;
+        }
+
+        .result-card.error .result-header h3 {
+            color: #c62828;
+        }
+
+        .result-formula {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2e7d32;
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+        }
+
+        .result-card.error .result-value {
+            color: #c62828;
+            font-size: 1.2rem;
+        }
+
+        /* مثال‌ها */
+        .examples-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .examples-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .examples-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .example-btn {
+            background: linear-gradient(135deg, #f5f5ff, #eeeeff);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #3B82F6;
+            font-weight: 500;
+        }
+
+        .example-btn:hover {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* جدول فرمول‌ها */
+        .formulas-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .formulas-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .formulas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .formula-item {
+            background: #f8f9ff;
+            padding: 10px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .formula-item strong {
+            color: #3B82F6;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .volume-container {
+                padding: 15px;
+            }
+
+            .volume-header {
+                padding: 25px 20px;
+            }
+
+            .volume-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .volume-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-value {
+                font-size: 1.4rem;
+            }
+
+            .input-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .formulas-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .volume-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .badge-group {
+                gap: 8px;
+            }
+
+            .badge {
+                font-size: 0.65rem;
+            }
+
+            .calc-btn {
+                padding: 12px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="volume-container">
+        <div class="volume-card">
+            <div class="volume-header">
+                <h1>
+                    <i class="fas fa-cube"></i>
+                    محاسبه حجم اشکال سه‌بعدی
+                    <i class="fas fa-chart-line"></i>
+                </h1>
+                <p>محاسبه حجم مکعب، کره، استوانه، مخروط و ...</p>
+                <div class="badge-group">
+                    <span class="badge"><i class="fas fa-cube"></i> ۷ شکل</span>
+                    <span class="badge"><i class="fas fa-calculator"></i> محاسبه سریع</span>
+                    <span class="badge"><i class="fas fa-chart-simple"></i> فرمول خودکار</span>
+                </div>
+            </div>
+
+            <form method="get" class="volume-form" id="volumeForm">
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-shapes"></i>
+                        شکل مورد نظر را انتخاب کنید:
+                    </label>
+                    <select name="shape" id="shapeSelect" class="form-select-custom" required>
+                        <option value="">-- انتخاب شکل --</option>
+                        <option value="cube" {% if shape == 'cube' %}selected{% endif %}>🧊 مکعب</option>
+                        <option value="cuboid" {% if shape == 'cuboid' %}selected{% endif %}>📦 مکعب مستطیل</option>
+                        <option value="sphere" {% if shape == 'sphere' %}selected{% endif %}>⚽ کره</option>
+                        <option value="cylinder" {% if shape == 'cylinder' %}selected{% endif %}>🥫 استوانه</option>
+                        <option value="cone" {% if shape == 'cone' %}selected{% endif %}>🎩 مخروط</option>
+                        <option value="pyramid" {% if shape == 'pyramid' %}selected{% endif %}>🔺 هرم مربعی</option>
+                        <option value="triangular_prism" {% if shape == 'triangular_prism' %}selected{% endif %}>📐 منشور
+                            مثلثی
+                        </option>
+                    </select>
+                </div>
+
+                <!-- مکعب -->
+                <div id="cube-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> طول ضلع (a):</label>
+                            <input type="number" step="any" name="a" class="volume-input" placeholder="مثال: 5"
+                                   value="{{ request.GET.a|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مکعب مستطیل -->
+                <div id="cuboid-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> طول (l):</label>
+                            <input type="number" step="any" name="l" class="volume-input" placeholder="مثال: 5"
+                                   value="{{ request.GET.l|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-right"></i> عرض (w):</label>
+                            <input type="number" step="any" name="w" class="volume-input" placeholder="مثال: 3"
+                                   value="{{ request.GET.w|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع (h):</label>
+                            <input type="number" step="any" name="h" class="volume-input" placeholder="مثال: 4"
+                                   value="{{ request.GET.h|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- کره -->
+                <div id="sphere-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-circle-notch"></i> شعاع (r):</label>
+                            <input type="number" step="any" name="r" class="volume-input" placeholder="مثال: 3"
+                                   value="{{ request.GET.r|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- استوانه -->
+                <div id="cylinder-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-circle-notch"></i> شعاع قاعده (r):</label>
+                            <input type="number" step="any" name="r" class="volume-input" placeholder="مثال: 3"
+                                   value="{{ request.GET.r|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع (h):</label>
+                            <input type="number" step="any" name="h" class="volume-input" placeholder="مثال: 7"
+                                   value="{{ request.GET.h|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مخروط -->
+                <div id="cone-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-circle-notch"></i> شعاع قاعده (r):</label>
+                            <input type="number" step="any" name="r" class="volume-input" placeholder="مثال: 3"
+                                   value="{{ request.GET.r|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع (h):</label>
+                            <input type="number" step="any" name="h" class="volume-input" placeholder="مثال: 5"
+                                   value="{{ request.GET.h|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- هرم مربعی -->
+                <div id="pyramid-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-left"></i> ضلع قاعده (a):</label>
+                            <input type="number" step="any" name="a" class="volume-input" placeholder="مثال: 4"
+                                   value="{{ request.GET.a|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع (h):</label>
+                            <input type="number" step="any" name="h" class="volume-input" placeholder="مثال: 6"
+                                   value="{{ request.GET.h|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- منشور مثلثی (تصحیح شده) -->
+                <div id="triangular_prism-inputs" class="dynamic-inputs">
+                    <div class="input-row">
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-down"></i> قاعده مثلث (b):</label>
+                            <input type="number" step="any" name="b" class="volume-input" placeholder="مثال: 4"
+                                   value="{{ request.GET.b|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-up"></i> ارتفاع مثلث (h):</label>
+                            <input type="number" step="any" name="h" class="volume-input" placeholder="مثال: 3"
+                                   value="{{ request.GET.h|default:'' }}">
+                        </div>
+                        <div class="input-field-group">
+                            <label><i class="fas fa-arrow-right"></i> طول منشور (l):</label>
+                            <input type="number" step="any" name="l" class="volume-input" placeholder="مثال: 10"
+                                   value="{{ request.GET.l|default:'' }}">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-calculator"></i>
+                    محاسبه حجم
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            <div class="result-section">
+                <div id="resultCard" class="result-card {% if error %}error{% endif %} {% if result %}show{% endif %}">
+                    <div class="result-header">
+                        <i class="fas {% if not error %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                        <h3>{% if not error %}نتیجه محاسبه{% else %}خطا{% endif %}</h3>
+                    </div>
+
+                    {% if formula %}
+                        <div class="result-formula">
+                            <i class="fas fa-lightbulb"></i> {{ formula }}
+                        </div>
+                    {% endif %}
+
+                    {% if result %}
+                        <div class="result-value">
+                            {{ result|floatformat:3 }}
+                            <span style="font-size: 0.8rem;">واحد مکعب</span>
+                        </div>
+                    {% elif error %}
+                        <div class="result-value">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- مثال‌ها -->
+        <div class="examples-section">
+            <div class="examples-title">
+                <i class="fas fa-star"></i>
+                📐 مثال‌های سریع
+            </div>
+            <div class="examples-grid">
+                <button class="example-btn" data-shape="cube" data-a="3">مکعب (a=3)</button>
+                <button class="example-btn" data-shape="cuboid" data-l="4" data-w="3" data-h="2">مکعب مستطیل (4,3,2)
+                </button>
+                <button class="example-btn" data-shape="sphere" data-r="3">کره (r=3)</button>
+                <button class="example-btn" data-shape="cylinder" data-r="3" data-h="5">استوانه (r=3,h=5)</button>
+                <button class="example-btn" data-shape="cone" data-r="3" data-h="7">مخروط (r=3,h=7)</button>
+                <button class="example-btn" data-shape="pyramid" data-a="4" data-h="6">هرم (a=4,h=6)</button>
+                <button class="example-btn" data-shape="triangular_prism" data-b="4" data-h="3" data-l="10">منشور مثلثی (b=4,h=3,l=10)</button>
+            </div>
+        </div>
+
+        <!-- جدول فرمول‌ها -->
+        <div class="formulas-section">
+            <div class="formulas-title">
+                <i class="fas fa-book-open"></i>
+                📚 فرمول‌های محاسبه حجم
+            </div>
+            <div class="formulas-grid">
+                <div class="formula-item">
+                    <strong>🧊 مکعب</strong>
+                    V = a³
+                </div>
+                <div class="formula-item">
+                    <strong>📦 مکعب مستطیل</strong>
+                    V = l × w × h
+                </div>
+                <div class="formula-item">
+                    <strong>⚽ کره</strong>
+                    V = 4⁄3 × π × r³
+                </div>
+                <div class="formula-item">
+                    <strong>🥫 استوانه</strong>
+                    V = π × r² × h
+                </div>
+                <div class="formula-item">
+                    <strong>🎩 مخروط</strong>
+                    V = 1⁄3 × π × r² × h
+                </div>
+                <div class="formula-item">
+                    <strong>🔺 هرم مربعی</strong>
+                    V = 1⁄3 × a² × h
+                </div>
+                <div class="formula-item">
+                    <strong>📐 منشور مثلثی</strong>
+                    V = ½ × b × h × l
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const shapeSelect = document.getElementById('shapeSelect');
+        const form = document.getElementById('volumeForm');
+
+        // تعریف گروه‌های ورودی برای هر شکل
+        const inputGroups = {
+            'cube': ['cube-inputs'],
+            'cuboid': ['cuboid-inputs'],
+            'sphere': ['sphere-inputs'],
+            'cylinder': ['cylinder-inputs'],
+            'cone': ['cone-inputs'],
+            'pyramid': ['pyramid-inputs'],
+            'triangular_prism': ['triangular_prism-inputs']
+        };
+
+        function updateInputFields() {
+            // مخفی کردن همه گروه‌ها
+            document.querySelectorAll('.dynamic-inputs').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            const shape = shapeSelect.value;
+
+            if (shape && inputGroups[shape]) {
+                inputGroups[shape].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('active');
+                });
+            }
+        }
+
+        // اعتبارسنجی فرم
+        function validateForm() {
+            const shape = shapeSelect.value;
+            if (!shape) {
+                alert('لطفاً یک شکل را انتخاب کنید.');
+                return false;
+            }
+
+            const activeInputs = document.querySelectorAll('.dynamic-inputs.active input');
+            let hasValue = false;
+
+            for (let input of activeInputs) {
+                const value = parseFloat(input.value);
+                if (!isNaN(value) && value > 0) {
+                    hasValue = true;
+                } else if (input.value !== '') {
+                    alert('لطفاً مقادیر را به صورت اعداد مثبت وارد کنید.');
+                    input.focus();
+                    return false;
+                }
+            }
+
+            if (!hasValue) {
+                alert('لطفاً حداقل یک مقدار معتبر وارد کنید.');
+                return false;
+            }
+
+            return true;
+        }
+
+        // رویدادها
+        shapeSelect.addEventListener('change', function () {
+            updateInputFields();
+            // پاک کردن نتیجه قبلی
+            const resultCard = document.getElementById('resultCard');
+            if (resultCard) resultCard.classList.remove('show');
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (!validateForm()) {
+                e.preventDefault();
+            }
+        });
+
+        // مثال‌ها
+        document.querySelectorAll('.example-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const shape = this.getAttribute('data-shape');
+                shapeSelect.value = shape;
+                updateInputFields();
+
+                setTimeout(() => {
+                    const attrs = ['a', 'l', 'w', 'h', 'r', 'b'];
+                    attrs.forEach(attr => {
+                        const val = this.getAttribute(`data-${attr}`);
+                        const inputs = document.querySelectorAll(`input[name="${attr}"]`);
+                        if (val && inputs.length) {
+                            inputs.forEach(input => input.value = val);
+                        }
+                    });
+
+                    form.submit();
+                }, 100);
+            });
+        });
+
+        // اجرای اولیه
+        updateInputFields();
+
+        // اگر نتیجه وجود داشته باشه، اسکرول به نتیجه
+        {% if result or error %}
+            document.getElementById('resultCard')?.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        {% endif %}
+    </script>
+{% endblock %}

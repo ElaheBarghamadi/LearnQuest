@@ -1,0 +1,307 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}Dashboard | CMS{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Worlds</h6>
+                        <h2 class="mb-0">{{ total_worlds }}</h2>
+                    </div>
+                    <i class="fas fa-globe fa-3x opacity-50"></i>
+                </div>
+                <a href="{% url 'admin_cms:world_list' %}" class="text-white text-decoration-none small">Manage →</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Chapters</h6>
+                        <h2 class="mb-0">{{ total_chapters }}</h2>
+                    </div>
+                    <i class="fas fa-layer-group fa-3x opacity-50"></i>
+                </div>
+                <span class="small">Published</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Lessons</h6>
+                        <h2 class="mb-0">{{ total_lessons }}</h2>
+                    </div>
+                    <i class="fas fa-book fa-3x opacity-50"></i>
+                </div>
+                <span class="small">Published</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-warning text-dark">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Vocabulary</h6>
+                        <h2 class="mb-0">{{ total_vocabulary }}</h2>
+                    </div>
+                    <i class="fas fa-spell-check fa-3x opacity-50"></i>
+                </div>
+                <a href="{% url 'admin_cms:vocabulary_list' %}" class="text-dark text-decoration-none small">Manage →</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Total Users</h6>
+                        <h2 class="mb-0">{{ total_users }}</h2>
+                    </div>
+                    <i class="fas fa-users fa-3x opacity-50"></i>
+                </div>
+                <a href="{% url 'admin_cms:user_list' %}" class="text-white text-decoration-none small">View →</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-secondary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Active Users</h6>
+                        <h2 class="mb-0">{{ active_users }}</h2>
+                        <small>({{ active_percentage }}% of total)</small>
+                    </div>
+                    <i class="fas fa-user-check fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-dark text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Quiz Attempts</h6>
+                        <h2 class="mb-0">{{ total_quiz_attempts }}</h2>
+                    </div>
+                    <i class="fas fa-question-circle fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card bg-dark text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Exam Attempts</h6>
+                        <h2 class="mb-0">{{ total_exam_attempts }}</h2>
+                    </div>
+                    <i class="fas fa-file-alt fa-3x opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Shop Products</h6>
+                        <h2 class="mb-0">{{ total_products }}</h2>
+                    </div>
+                    <i class="fas fa-store fa-3x opacity-50"></i>
+                </div>
+                <a href="{% url 'admin_cms:shop_product_list' %}" class="text-white text-decoration-none small">Manage →</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-4">
+        <div class="card stat-card text-white" style="background: linear-gradient(135deg, #0ea5e9, #0369a1);">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="mb-0">Certificates</h6>
+                        <h2 class="mb-0">{{ total_certificates }}</h2>
+                    </div>
+                    <i class="fas fa-certificate fa-3x opacity-50"></i>
+                </div>
+                <a href="{% url 'admin_cms:certificate_manage' %}" class="text-white text-decoration-none small">Manage →</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i> Recent Worlds</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr><th>Name</th><th>Difficulty</th><th>Order</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for world in recent_worlds %}
+                        <tr>
+                            <td>{{ world.name }}</td>
+                            <td><span class="badge bg-info">{{ world.get_difficulty_level_display }}</span></td>
+                            <td>{{ world.order }}</td>
+                            <td>{% if world.is_published %}<span class="badge bg-success">Published</span>{% else %}<span class="badge bg-secondary">Draft</span>{% endif %}</td>
+                            <td class="table-actions">
+                                <a href="{% url 'admin_cms:world_edit' world.id %}" class="text-primary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_cms:world_delete' world.id %}" class="text-danger" onclick="return confirm('Delete this world?')"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center">No worlds yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i> Recent Lessons</h5>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr><th>Lesson</th><th>Chapter</th><th>World</th><th>Status</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for lesson in recent_lessons %}
+                        <tr>
+                            <td>{{ lesson.name }}</td>
+                            <td>{{ lesson.chapter.name }}</td>
+                            <td>{{ lesson.chapter.world.name }}</td>
+                            <td>{% if lesson.is_published %}<span class="badge bg-success">Published</span>{% else %}<span class="badge bg-secondary">Draft</span>{% endif %}</td>
+                            <td class="table-actions">
+                                <a href="{% url 'language_academy:lesson_detail' lesson.id %}?edit=1" class="text-success" title="✏️ ویرایشگر زنده (همان صفحه‌ای که کاربر می‌بیند)"><i class="fas fa-magic"></i></a>
+                                <a href="{% url 'admin_cms:lesson_edit' lesson.id %}" class="text-primary"><i class="fas fa-edit"></i></a>
+                                <a href="{% url 'admin_cms:lesson_delete' lesson.id %}" class="text-danger" onclick="return confirm('Delete this lesson?')"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center">No lessons yet</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="#ve-hub" class="btn btn-success w-100" data-bs-toggle="collapse">
+                            <i class="fas fa-magic me-2"></i> ✏️ ویرایشگر زندهٔ درس‌ها
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:world_create' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-plus me-2"></i> Create World
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:vocabulary_create' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-plus me-2"></i> Add Vocabulary
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:blog_article_create' %}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-pen-fancy me-2"></i> ✍️ مقالهٔ جدید
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:blog_article_list' %}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-newspaper me-2"></i> 📰 مدیریت بلاگ
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:badge_list' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-medal me-2"></i> Manage Badges
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{% url 'admin_cms:analytics' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-chart-line me-2"></i> View Analytics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4 collapse" id="ve-hub">
+    <div class="col-12">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-magic me-2"></i> ✏️ ویرایشگر زنده — همان صفحه‌ای که کاربر می‌بیند، ولی قابل‌ویرایش</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">متن، رنگ، عکس، افزودن آیتم با درگ‌اند‌دراپ (Objective / Word / Example / Sentence / Takeaway / 💡Note / ⚠️Alert / 🌟Tip / 🔘Button) و 📝 Quiz Builder — همه مستقیم روی خود صفحهٔ درس. صفحات جهان و فصل هم با ?edit=1 قابل ویرایش‌اند.</p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a href="{% url 'language_academy:world_map' %}?edit=1" class="btn btn-success btn-sm"><i class="fas fa-map-marked-alt me-1"></i> 🌍 ویرایش زندهٔ نقشهٔ جهان‌ها</a>
+                    {% regroup all_lessons by chapter.world as world_groups %}
+                    {% for wg in world_groups %}
+                    <a href="{% url 'language_academy:world_detail' wg.grouper.id %}?edit=1" class="btn btn-outline-success btn-sm">🗺️ {{ wg.grouper.name }}</a>
+                    {% endfor %}
+                </div>
+                {% for lesson in all_lessons %}
+                    {% ifchanged lesson.chapter %}
+                        {% if not forloop.first %}</div></div>{% endif %}
+                        <div class="mb-3">
+                            <h6 class="text-primary fw-bold mb-2">
+                                <i class="fas fa-globe me-1"></i> {{ lesson.chapter.world.name }} <span class="text-muted">/</span> <i class="fas fa-book-open me-1"></i> {{ lesson.chapter.name }}
+                                <a href="{% url 'language_academy:chapter_detail' lesson.chapter.id %}?edit=1" class="badge bg-success text-white text-decoration-none ms-1" title="ویرایش زندهٔ همین فصل روی صفحهٔ کاربر">✏️ فصل</a>
+                            </h6>
+                            <div class="d-flex flex-wrap gap-2">
+                    {% endifchanged %}
+                        <a href="{% url 'language_academy:lesson_detail' lesson.id %}?edit=1" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-magic me-1"></i> {{ lesson.name }}
+                        </a>
+                    {% if forloop.last %}</div></div>{% endif %}
+                    {% empty %}
+                    <div class="text-muted">هنوز درسی ساخته نشده است.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

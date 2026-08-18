@@ -1,0 +1,634 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}
+    محاسبه‌گر تخفیف و درصد | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .discount-container {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .discount-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 35px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.12);
+            overflow: hidden;
+        }
+
+        /* هدر */
+        .discount-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .discount-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .discount-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .discount-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        /* فرم */
+        .discount-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e8;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        select.form-control-custom {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 18px center;
+            background-size: 16px;
+        }
+
+        .input-group-calc {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .input-group-calc.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* دکمه */
+        .calc-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .calc-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* نتیجه */
+        .result-section {
+            padding: 0 30px 35px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-radius: 25px;
+            padding: 25px;
+            border-right: 5px solid #4CAF50;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .result-card.error {
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-right-color: #f44336;
+        }
+
+        .result-title {
+            font-size: 0.85rem;
+            color: #555;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-title i {
+            color: #3B82F6;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+
+        .result-card.error .result-value {
+            color: #c62828;
+        }
+
+        .result-detail {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        /* نمودار دایره‌ای */
+        .chart-container {
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .chart-wrapper {
+            max-width: 250px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .chart-label {
+            text-align: center;
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            font-size: 0.8rem;
+        }
+
+        .chart-label-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chart-label-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .chart-label-color.discount {
+            background: #ff6384;
+        }
+
+        .chart-label-color.remaining {
+            background: #36a2eb;
+        }
+
+        /* راهنما */
+        .help-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .help-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-title i {
+            color: #3B82F6;
+        }
+
+        .help-examples {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .example-item {
+            background: #f5f5ff;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+        }
+
+        .example-item i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .discount-container {
+                padding: 15px;
+            }
+
+            .discount-header {
+                padding: 25px 20px;
+            }
+
+            .discount-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .discount-form {
+                padding: 25px 20px;
+            }
+
+            .result-section {
+                padding: 0 20px 25px;
+            }
+
+            .result-value {
+                font-size: 1.4rem;
+            }
+
+            .chart-wrapper {
+                max-width: 200px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .discount-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-control-custom {
+                padding: 12px 15px;
+            }
+
+            .result-value {
+                font-size: 1.2rem;
+            }
+
+            .chart-label {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="discount-container">
+        <div class="discount-card">
+            <div class="discount-header">
+                <h1>
+                    <i class="fas fa-tags"></i>
+                    محاسبه‌گر تخفیف و درصد
+                    <i class="fas fa-percent"></i>
+                </h1>
+                <p>محاسبه سریع قیمت نهایی، درصد تخفیف و قیمت اصلی</p>
+            </div>
+
+            <form method="post" class="discount-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-cog"></i>
+                        نوع محاسبه:
+                    </label>
+                    <select name="mode" id="mode" class="form-control-custom" required>
+                        <option value="1" {% if mode == 1 %}selected{% endif %}>
+                            🏷️ محاسبه قیمت نهایی (با درصد تخفیف)
+                        </option>
+                        <option value="2" {% if mode == 2 %}selected{% endif %}>
+                            📊 محاسبه درصد تخفیف (با قیمت اصلی و نهایی)
+                        </option>
+                        <option value="3" {% if mode == 3 %}selected{% endif %}>
+                            💰 محاسبه قیمت اصلی (با قیمت نهایی و درصد)
+                        </option>
+                        <option value="4" {% if mode == 4 %}selected{% endif %}>
+                            🔢 محاسبه درصد ساده بین دو عدد
+                        </option>
+                    </select>
+                </div>
+
+                <!-- حالت 1 و 2: قیمت اصلی -->
+                <div id="field_price" class="input-group-calc">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-dollar-sign"></i>
+                            قیمت اصلی:
+                        </label>
+                        <input type="number"
+                               name="price"
+                               class="form-control-custom"
+                               placeholder="مثال: 500,000"
+                               value="{{ price|default:'' }}"
+                               step="any">
+                    </div>
+                </div>
+
+                <!-- حالت 1 و 3: درصد تخفیف -->
+                <div id="field_discount" class="input-group-calc">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-percent"></i>
+                            درصد تخفیف:
+                        </label>
+                        <input type="number"
+                               name="discount"
+                               class="form-control-custom"
+                               placeholder="مثال: 20"
+                               value="{{ discount|default:'' }}"
+                               step="any">
+                    </div>
+                </div>
+
+                <!-- حالت 2 و 3: قیمت نهایی -->
+                <div id="field_final_price" class="input-group-calc">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-tag"></i>
+                            قیمت نهایی:
+                        </label>
+                        <input type="number"
+                               name="final_price"
+                               class="form-control-custom"
+                               placeholder="مثال: 400,000"
+                               value="{{ final_price|default:'' }}"
+                               step="any">
+                    </div>
+                </div>
+
+                <!-- حالت 4: درصد ساده -->
+                <div id="field_simple_percent_a" class="input-group-calc">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-chart-line"></i>
+                            عدد اول:
+                        </label>
+                        <input type="number"
+                               name="a"
+                               class="form-control-custom"
+                               placeholder="مثال: 25"
+                               value="{{ a|default:'' }}"
+                               step="any">
+                    </div>
+                </div>
+
+                <div id="field_simple_percent_b" class="input-group-calc">
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-chart-simple"></i>
+                            عدد دوم (کل):
+                        </label>
+                        <input type="number"
+                               name="b"
+                               class="form-control-custom"
+                               placeholder="مثال: 200"
+                               value="{{ b|default:'' }}"
+                               step="any">
+                    </div>
+                </div>
+
+                <button type="submit" class="calc-btn">
+                    <i class="fas fa-calculator"></i>
+                    محاسبه کن
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </form>
+
+            {% if error %}
+                <div class="result-section">
+                    <div class="result-card error">
+                        <div class="result-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            خطا
+                        </div>
+                        <div class="result-value">{{ error }}</div>
+                    </div>
+                </div>
+            {% elif discount_amount is not None %}
+                <div class="result-section">
+                    <div class="result-card">
+                        <div class="result-title">
+                            <i class="fas fa-check-circle"></i>
+                            نتیجه محاسبه
+                        </div>
+
+                        {% if mode == 1 or mode == 3 %}
+                            <div class="result-value">
+                                {{ price|floatformat:0|intcomma|default:final_price|floatformat:0|intcomma }}
+                                <span style="font-size: 0.9rem;">تومان</span>
+                            </div>
+                            {% if mode == 1 %}
+                                <div class="result-detail">
+                                    قیمت نهایی: {{ final_price|floatformat:0|intcomma }} تومان
+                                </div>
+                            {% else %}
+                                <div class="result-detail">
+                                    قیمت اصلی: {{ price|floatformat:0|intcomma }} تومان
+                                </div>
+                            {% endif %}
+                            <div class="result-detail">
+                                مبلغ تخفیف: {{ discount_amount|floatformat:0|intcomma }} تومان
+                                ({{ discount|floatformat:1 }}%)
+                            </div>
+                        {% elif mode == 2 %}
+                            <div class="result-value">
+                                {{ discount|floatformat:1 }}%
+                            </div>
+                            <div class="result-detail">
+                                مبلغ تخفیف: {{ discount_amount|floatformat:0|intcomma }} تومان
+                            </div>
+                            <div class="result-detail">
+                                قیمت نهایی: {{ final_price|floatformat:0|intcomma }} تومان
+                            </div>
+                        {% elif mode == 4 %}
+                            <div class="result-value">
+                                {{ percent|floatformat:2 }}%
+                            </div>
+                            <div class="result-detail">
+                                {{ a }} از {{ b }} برابر با {{ percent|floatformat:2 }} درصد است
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- نمودار دایره‌ای -->
+                    {% if show_chart and chart_discount is not None %}
+                        <div class="chart-container">
+                            <div class="chart-wrapper">
+                                <canvas id="discountChart" width="250" height="250"></canvas>
+                            </div>
+                            <div class="chart-label">
+                                <div class="chart-label-item">
+                                    <div class="chart-label-color discount"></div>
+                                    <span>تخفیف: {{ chart_discount|floatformat:1 }}%</span>
+                                </div>
+                                <div class="chart-label-item">
+                                    <div class="chart-label-color remaining"></div>
+                                    <span>قیمت نهایی: {{ chart_remaining|floatformat:1 }}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- راهنما و مثال‌ها -->
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-lightbulb"></i>
+                📚 مثال‌های کاربردی:
+            </div>
+            <div class="help-examples">
+                <div class="example-item">
+                    <i class="fas fa-tag"></i>
+                    <strong>محاسبه قیمت نهایی:</strong>
+                    قیمت 500,000 تومان با 20% تخفیف = 400,000 تومان
+                </div>
+                <div class="example-item">
+                    <i class="fas fa-chart-line"></i>
+                    <strong>محاسبه درصد تخفیف:</strong>
+                    قیمت 500,000 تومان با قیمت نهایی 400,000 = 20% تخفیف
+                </div>
+                <div class="example-item">
+                    <i class="fas fa-search"></i>
+                    <strong>محاسبه قیمت اصلی:</strong>
+                    قیمت نهایی 400,000 تومان با 20% تخفیف = قیمت اصلی 500,000 تومان
+                </div>
+                <div class="example-item">
+                    <i class="fas fa-percent"></i>
+                    <strong>درصد ساده:</strong>
+                    25 از 200 = 12.5%
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateFields() {
+            const mode = document.getElementById('mode').value;
+
+            // مخفی کردن همه گروه‌ها
+            document.querySelectorAll('.input-group-calc').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // نمایش گروه‌های مربوطه
+            if (mode === '1') {
+                document.getElementById('field_price').classList.add('active');
+                document.getElementById('field_discount').classList.add('active');
+            } else if (mode === '2') {
+                document.getElementById('field_price').classList.add('active');
+                document.getElementById('field_final_price').classList.add('active');
+            } else if (mode === '3') {
+                document.getElementById('field_final_price').classList.add('active');
+                document.getElementById('field_discount').classList.add('active');
+            } else if (mode === '4') {
+                document.getElementById('field_simple_percent_a').classList.add('active');
+                document.getElementById('field_simple_percent_b').classList.add('active');
+            }
+        }
+
+        // راه‌اندازی اولیه
+        document.addEventListener('DOMContentLoaded', function () {
+            updateFields();
+
+            // تغییر mode
+            const modeSelect = document.getElementById('mode');
+            if (modeSelect) {
+                modeSelect.addEventListener('change', updateFields);
+            }
+        });
+
+        // رسم نمودار اگر وجود داشته باشد
+        {% if show_chart and chart_discount is not None %}
+            const ctx = document.getElementById('discountChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['تخفیف', 'قیمت نهایی'],
+                    datasets: [{
+                        data: [{{ chart_discount }}, {{ chart_remaining }}],
+                        backgroundColor: ['#ff6384', '#36a2eb'],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.label + ': ' + context.raw.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '60%'
+                }
+            });
+        {% endif %}
+    </script>
+{% endblock %}

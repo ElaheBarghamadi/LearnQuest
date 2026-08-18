@@ -1,0 +1,145 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static jalali %}
+
+{% block title %}My Certificates | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">
+            <span class="text-gradient">🏆 Your Certificates</span>
+        </h1>
+        <p class="lead text-muted">Proof of your achievements in learning English</p>
+    </div>
+
+    {% if certificates %}
+        <div class="row g-4">
+            {% for cert in certificates %}
+            <div class="col-md-6 col-lg-4">
+                <div class="certificate-card" data-cert-id="{{ cert.id }}">
+                    <div class="certificate-inner">
+                        <div class="certificate-icon">
+                            <i class="fas fa-certificate fa-3x text-success"></i>
+                        </div>
+                        <h3 class="h5 fw-bold mt-3">{{ cert.world.name }}</h3>
+                        <p class="text-muted small">Completion Certificate</p>
+                        <div class="certificate-details">
+                            <div class="detail-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>{{ cert.issued_at|jdatelong }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <i class="fas fa-hashtag"></i>
+                                <span>{{ cert.certificate_number }}</span>
+                            </div>
+                        </div>
+                        <div class="certificate-badge">
+                            <i class="fas fa-check-circle"></i> Verified
+                        </div>
+                        <a href="{% url 'language_academy:certificate_detail' cert.id %}" class="btn-academy-outline btn-sm mt-3 w-100">
+                            <i class="fas fa-eye me-2"></i> View Certificate
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="academy-card text-center py-5">
+            <div class="card-body">
+                <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+                <h3>No Certificates Yet</h3>
+                <p class="text-muted mb-4">Complete worlds to earn certificates and showcase your achievements!</p>
+                <a href="{% url 'language_academy:world_map' %}" class="btn-academy">
+                    <i class="fas fa-globe me-2"></i> Start Learning
+                </a>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="academy-card mt-5 bg-gradient-info">
+        <div class="card-body p-4 text-white">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <i class="fas fa-lightbulb fa-3x"></i>
+                <div>
+                    <h5 class="mb-1">Keep Learning!</h5>
+                    <p class="mb-0 opacity-90">Complete all chapters in a world to earn a certificate. Each certificate is unique and verifiable.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-gradient {
+    background: linear-gradient(135deg, #58CC71, #1CB0F6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.certificate-card {
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+.certificate-inner {
+    background: var(--duo-white);
+    border-radius: var(--duo-radius);
+    padding: 25px 20px;
+    text-align: center;
+    transition: var(--duo-transition);
+    border: 1px solid var(--duo-gray-200);
+    position: relative;
+    overflow: hidden;
+}
+
+.certificate-inner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #58CC71, #1CB0F6);
+}
+
+.certificate-card:hover .certificate-inner {
+    transform: translateY(-5px);
+    box-shadow: var(--duo-shadow-lg);
+    border-color: var(--duo-green);
+}
+
+.certificate-icon i {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.certificate-details {
+    margin: 15px 0;
+    font-size: 0.8rem;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 5px;
+    color: var(--duo-gray-600);
+}
+
+.certificate-badge {
+    display: inline-block;
+    background: rgba(88, 204, 113, 0.1);
+    color: var(--duo-green);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #1CB0F6, #0B8FCC);
+}
+</style>
+{% endblock %}

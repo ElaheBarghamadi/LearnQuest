@@ -1,0 +1,176 @@
+{% extends 'panel/base_panel.html' %}
+{% load static jalali %}
+
+{% block title %}داشبورد | پنل مدیریت لرن‌کوئست{% endblock %}
+
+{% block content %}
+<section class="pn-hello">
+    <div>
+        <h1>سلام {{ user.username }} 👋</h1>
+        <p>نمای کلی سایت — {{ today_jalali }}</p>
+    </div>
+    <a class="pn-btn primary" href="{% url 'panel:users' %}">👥 مدیریت کاربران</a>
+</section>
+
+<section class="pn-kpis">
+    <div class="pn-kpi k1">
+        <div class="k-ico">👥</div>
+        <div class="k-num">{{ stats.users_total|fadigits }}</div>
+        <div class="k-lbl">کاربران <span class="k-sub">+{{ stats.users_week|fadigits }} این هفته</span></div>
+    </div>
+    <div class="pn-kpi k2">
+        <div class="k-ico">🪙</div>
+        <div class="k-num">{{ stats.coins_total|fadigits }}</div>
+        <div class="k-lbl">سکه در چرخه</div>
+    </div>
+    <div class="pn-kpi k3">
+        <div class="k-ico">💎</div>
+        <div class="k-num">{{ stats.gems_total|fadigits }}</div>
+        <div class="k-lbl">الماس در چرخه</div>
+    </div>
+    <div class="pn-kpi k4">
+        <div class="k-ico">⚡</div>
+        <div class="k-num">{{ stats.xp_total|fadigits }}</div>
+        <div class="k-lbl">مجموع XP کاربران</div>
+    </div>
+    <div class="pn-kpi k5">
+        <div class="k-ico">💳</div>
+        <div class="k-num">{{ stats.tx_24h|fadigits }}</div>
+        <div class="k-lbl">تراکنش ۲۴ساعت اخیر</div>
+    </div>
+    <div class="pn-kpi k6">
+        <div class="k-ico">🧾</div>
+        <div class="k-num">{{ stats.purchases_24h|fadigits }}</div>
+        <div class="k-lbl">خرید ۲۴ساعت اخیر</div>
+    </div>
+</section>
+
+<section class="pn-mini-stats">
+    <div class="pn-mini"><span>✅ کاربران فعال</span><b>{{ stats.users_active|fadigits }}</b></div>
+    <div class="pn-mini"><span>📝 مقالات</span><b>{{ stats.articles|fadigits }}</b></div>
+    <div class="pn-mini"><span>💬 نظرات</span><b>{{ stats.comments|fadigits }}</b></div>
+    <div class="pn-mini"><span>🗨️ گفت‌وگوها</span><b>{{ stats.conversations|fadigits }}</b></div>
+    <div class="pn-mini"><span>✉️ پیام‌ها</span><b>{{ stats.messages|fadigits }}</b></div>
+    <div class="pn-mini"><span>🛍️ محصولات فعال</span><b>{{ stats.products_active|fadigits }}</b></div>
+</section>
+
+<div class="pn-grid-2">
+
+    <section class="pn-card" id="quickGrantCard">
+        <h2 class="pn-card-t">⚡ اهدای سریع</h2>
+        <p class="pn-hint">کاربر را جستجو کن، مورد و مقدار را انتخاب کن (عدد منفی = کسر) و اعمال کن. هر اقدام لاگ می‌شود.</p>
+        <form id="quickGrantForm" autocomplete="off">
+            <div class="pn-field">
+                <label>کاربر</label>
+                <input type="text" id="qgUser" placeholder="نام کاربری را بنویس…" dir="ltr">
+                <input type="hidden" id="qgUserId">
+                <div class="pn-suggest" id="qgSuggest"></div>
+            </div>
+            <div class="pn-row-3">
+                <div class="pn-field">
+                    <label>مورد</label>
+                    <select id="qgTarget">
+                        <option value="coins">🪙 سکه</option>
+                        <option value="gems">💎 الماس</option>
+                        <option value="xp">⚡ XP</option>
+                        <option value="points">🎯 امتیاز</option>
+                        <option value="streak">🔥 استریک</option>
+                    </select>
+                </div>
+                <div class="pn-field">
+                    <label>مقدار</label>
+                    <input type="number" id="qgAmount" value="100" step="1" dir="ltr">
+                </div>
+                <div class="pn-field">
+                    <label>دلیل (اختیاری)</label>
+                    <input type="text" id="qgNote" maxlength="220" placeholder="مثلاً: جایزه رویداد">
+                </div>
+            </div>
+            <button type="submit" class="pn-btn primary wide" id="qgSubmit">🎁 اعمال برای کاربر</button>
+        </form>
+    </section>
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">🏆 ۵ کاربر برتر (XP)</h2>
+        <div class="pn-toplist">
+            {% for u in top_users %}
+            <a class="pn-toplist-row" href="{% url 'panel:user_detail' u.pk %}">
+                <span class="pn-rank r{{ forloop.counter }}">{{ forloop.counter|fadigits }}</span>
+                <span class="pn-toplist-name">{{ u.username }}</span>
+                <span class="pn-toplist-val">⚡ {{ u.xp|fadigits }}</span>
+            </a>
+            {% empty %}
+            <p class="pn-empty">کاربری نیست.</p>
+            {% endfor %}
+        </div>
+
+        <h2 class="pn-card-t" style="margin-top:22px">🆕 تازه‌ترین عضوها</h2>
+        <div class="pn-toplist">
+            {% for u in recent_users %}
+            <a class="pn-toplist-row" href="{% url 'panel:user_detail' u.pk %}">
+                <span class="pn-ava">{{ u.username|first|upper }}</span>
+                <span class="pn-toplist-name">{{ u.username }}{% if not u.is_active %} <span class="pn-badge off">تعلیق</span>{% endif %}</span>
+                <span class="pn-toplist-val">{{ u.date_joined|jdate }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+
+<div class="pn-grid-2">
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">🛠️ آخرین اقدامات پنل</h2>
+        <div class="pn-tablewrap">
+            <table class="pn-table">
+                <thead><tr><th>کاربر</th><th>مورد</th><th>مقدار</th><th>ادمین</th><th>زمان</th></tr></thead>
+                <tbody>
+                    {% for a in recent_adjustments %}
+                    <tr>
+                        <td><a href="{% url 'panel:user_detail' a.user_id %}">{{ a.user.username }}</a></td>
+                        <td>{{ a.get_target_display }}</td>
+                        <td class="pn-num {% if a.amount > 0 %}pos{% elif a.amount < 0 %}neg{% endif %}">{% if a.amount %}{% if a.amount > 0 %}+{% endif %}{{ a.amount|fadigits }}{% else %}—{% endif %}</td>
+                        <td>{{ a.actor.username|default:'—' }}</td>
+                        <td>{{ a.created_at|jhuman }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="pn-empty">هنوز اقدامی ثبت نشده.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section class="pn-card">
+        <h2 class="pn-card-t">💳 آخرین تراکنش‌های اقتصادی</h2>
+        <div class="pn-tablewrap">
+            <table class="pn-table">
+                <thead><tr><th>کاربر</th><th>ارز</th><th>مقدار</th><th>نوع</th><th>زمان</th></tr></thead>
+                <tbody>
+                    {% for t in recent_tx %}
+                    <tr>
+                        <td><a href="{% url 'panel:user_detail' t.user_id %}">{{ t.user.username }}</a></td>
+                        <td>{{ t.get_currency_display }}</td>
+                        <td class="pn-num {% if t.amount > 0 %}pos{% else %}neg{% endif %}">{% if t.amount > 0 %}+{% endif %}{{ t.amount|fadigits }}</td>
+                        <td>{{ t.get_type_display }}</td>
+                        <td>{{ t.jcreated }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="pn-empty">تراکنشی نیست.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<div class="pn-card pn-quicklinks">
+    <a href="{% url 'admin:index' %}">⚙️ ادمین جنگو</a>
+    <a href="{% url 'admin_cms:dashboard' %}">🎓 مدیریت محتوای اکادمی</a>
+    <a href="{% url 'shop:home' %}">🛒 فروشگاه</a>
+    <a href="{% url 'economy:leaderboard' %}">🏆 رتبه‌بندی</a>
+    <a href="{% url 'blog:blog_home' %}">📝 وبلاگ</a>
+</div>
+{% endblock %}

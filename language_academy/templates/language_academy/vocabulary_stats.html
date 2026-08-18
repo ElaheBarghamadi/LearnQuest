@@ -1,0 +1,345 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static jalali %}
+
+{% block title %}Vocabulary Statistics | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="h2">📊 Vocabulary Statistics</h1>
+        <p class="text-muted">Track your vocabulary learning progress</p>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-primary-soft">
+                    <i class="fas fa-book fa-2x text-primary"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ total_words|default:0 }}</div>
+                <div class="small text-muted">Total Words</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-success-soft">
+                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ learned|default:0 }}</div>
+                <div class="small text-muted">Learning</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-warning-soft">
+                    <i class="fas fa-star fa-2x text-warning"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ mastered|default:0 }}</div>
+                <div class="small text-muted">Mastered</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="academy-card glass-card stat-card text-center p-3">
+                <div class="stat-icon-wrapper bg-info-soft">
+                    <i class="fas fa-percent fa-2x text-info"></i>
+                </div>
+                <div class="fs-3 fw-bold mt-2">{{ progress_percentage|default:0 }}%</div>
+                <div class="small text-muted">Progress</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i> Mastery Level Distribution</h5>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="level-distribution">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Not Started</span>
+                            <span>{{ level_distribution.not_started|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-secondary" style="width: {% widthratio level_distribution.not_started total_words 100 %}%;">
+                                {{ level_distribution.not_started|default:0 }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Level 0 - Introduced</span>
+                            <span>{{ level_distribution.level_0|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-info" style="width: {% widthratio level_distribution.level_0 total_words 100 %}%;">
+                                {{ level_distribution.level_0|default:0 }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Level 1 - Reviewed</span>
+                            <span>{{ level_distribution.level_1|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-primary" style="width: {% widthratio level_distribution.level_1 total_words 100 %}%;">
+                                {{ level_distribution.level_1|default:0 }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="level-distribution">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Level 2 - Practiced</span>
+                            <span>{{ level_distribution.level_2|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-warning" style="width: {% widthratio level_distribution.level_2 total_words 100 %}%;">
+                                {{ level_distribution.level_2|default:0 }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Level 3 - Proficient</span>
+                            <span>{{ level_distribution.level_3|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" style="width: {% widthratio level_distribution.level_3 total_words 100 %}%;">
+                                {{ level_distribution.level_3|default:0 }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Level 4 - Mastered</span>
+                            <span>{{ level_distribution.level_4|default:0 }}</span>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" style="width: {% widthratio level_distribution.level_4 total_words 100 %}%; background: linear-gradient(90deg, #2ECC71, #27AE60);">
+                                {{ level_distribution.level_4|default:0 }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-header glass-header">
+            <h5 class="mb-0"><i class="fas fa-calendar-week me-2 text-info"></i> Weekly Activity</h5>
+        </div>
+        <div class="card-body p-4">
+            {% if weekly_stats %}
+                <div class="table-responsive">
+                    <div class="table-scroll"><table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Words Reviewed</th>
+                                <th>Average Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in weekly_stats %}
+                            <tr>
+                                <td>{{ stat.day|jdate }}</td>
+                                <td>{{ stat.count }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar" style="width: {{ stat.avg_score|floatformat:0 }}%;"></div>
+                                        </div>
+                                        <span>{{ stat.avg_score|floatformat:0 }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table></div>
+                </div>
+            {% else %}
+                <div class="text-center text-muted py-3">
+                    <i class="fas fa-chart-line fa-2x mb-2 d-block"></i>
+                    No activity recorded this week. Start learning!
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="academy-card glass-card">
+                <div class="card-header glass-header">
+                    <h5 class="mb-0"><i class="fas fa-trophy me-2 text-success"></i> Best Words</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for progress in best_words %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ progress.vocabulary.word }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ progress.vocabulary.meaning|truncatechars:30 }}</small>
+                                </div>
+                                <span class="badge bg-success">{{ progress.mastery_score|floatformat:0 }}%</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="list-group-item text-center text-muted py-3">
+                            No words mastered yet. Keep learning!
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="academy-card glass-card">
+                <div class="card-header glass-header">
+                    <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2 text-danger"></i> Words Needing Practice</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for progress in worst_words %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong>{{ progress.vocabulary.word }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ progress.vocabulary.meaning|truncatechars:30 }}</small>
+                                </div>
+                                <span class="badge bg-danger">{{ progress.mastery_score|floatformat:0 }}%</span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="list-group-item text-center text-muted py-3">
+                            <i class="fas fa-check-circle fa-2x mb-2 d-block text-success"></i>
+                            No weak words! Great job! 🎉
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3 mt-4">
+        <div class="col-md-4">
+            <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy w-100">
+                <i class="fas fa-brain me-2"></i> Learning Hub
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'language_academy:vocabulary_review' %}" class="btn-academy-outline w-100">
+                <i class="fas fa-repeat me-2"></i> Review Words
+            </a>
+        </div>
+        <div class="col-md-4">
+            <a href="{% url 'language_academy:vocabulary_flashcards' %}?mode=all" class="btn-academy-outline w-100">
+                <i class="fas fa-cards me-2"></i> Flashcards
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(26, 26, 46, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--glass-shadow), var(--shadow) !important;
+    transition: var(--transition);
+}
+
+.glass-header {
+    background: rgba(59, 130, 246, 0.05) !important;
+    border-bottom: 1px solid var(--glass-border) !important;
+    padding: 12px 20px !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+.stat-card {
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px) scale(1.02);
+}
+
+.stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.bg-primary-soft { background: rgba(59, 130, 246, 0.12); }
+.bg-success-soft { background: rgba(46, 204, 113, 0.12); }
+.bg-warning-soft { background: rgba(241, 196, 15, 0.12); }
+.bg-info-soft { background: rgba(0, 210, 255, 0.12); }
+
+.btn-academy-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-academy-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.list-group-item {
+    background: transparent !important;
+    border-color: var(--glass-border) !important;
+    transition: var(--transition);
+}
+
+.list-group-item:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+}
+
+.progress {
+    background: rgba(59, 130, 246, 0.08);
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .stat-icon-wrapper {
+        width: 40px;
+        height: 40px;
+    }
+    .stat-icon-wrapper i {
+        font-size: 1.3rem !important;
+    }
+    .fs-3 {
+        font-size: 1.5rem !important;
+    }
+}
+</style>
+{% endblock %}

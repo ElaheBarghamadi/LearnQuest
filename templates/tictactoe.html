@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}دوز باهوش | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+<style>
+    .ttt-wrap { max-width: 480px; margin: 0 auto; padding: 16px; text-align: center; }
+    .ttt-card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .ttt-header {
+        display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg, #36D1DC, #3B82F6); color: white;
+        border-radius: 16px; padding: 10px 16px; margin-bottom: 14px;
+    }
+    .ttt-header .stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: bold; }
+    .ttt-diff { display: flex; gap: 8px; justify-content: center; margin-bottom: 12px; }
+    .diff-btn {
+        border: 2px solid #3B82F6; background: white; color: #3B82F6;
+        border-radius: 30px; padding: 6px 20px; font-weight: bold; cursor: pointer; transition: .2s;
+    }
+    .diff-btn.active { background: #3B82F6; color: white; }
+    #tttBoard {
+        display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        width: 100%; max-width: 330px; margin: 10px auto 16px;
+    }
+    .ttt-cell {
+        aspect-ratio: 1; border: none; border-radius: 14px; background: #eef0ff;
+        font-size: clamp(2rem, 12vw, 3rem); font-weight: 900; cursor: pointer;
+        transition: background .15s, transform .1s; color: #3B82F6;
+    }
+    .ttt-cell.o { color: #FF6584; }
+    .ttt-cell:hover:not(:disabled) { background: #d9ddff; transform: scale(1.03); }
+    .ttt-cell.win { background: #c8f7c5; color: #2E7D32; animation: pulse .5s; }
+    @keyframes pulse { 50% { transform: scale(1.07); } }
+    #tttMsg { min-height: 1.5em; font-weight: bold; color: #3B82F6; }
+    .ttt-btn {
+        border: none; border-radius: 14px; padding: 10px 22px; font-weight: bold;
+        background: linear-gradient(135deg, #36D1DC, #3B82F6); color: white;
+        cursor: pointer; font-size: 1rem; transition: .2s;
+    }
+    .ttt-btn:active { transform: scale(.95); }
+</style>
+
+<div class="ttt-wrap">
+    <div class="ttt-card">
+        <div class="ttt-header">
+            <span class="stat">🔥 برد پیاپی: <span id="streak">0</span></span>
+            <span class="stat">🏆 رکورد: <span id="best">0</span></span>
+        </div>
+
+        <div class="ttt-diff">
+            <button class="diff-btn active" data-diff="easy">😊 آسان</button>
+            <button class="diff-btn" data-diff="hard">🤖 هوشمند</button>
+        </div>
+
+        <div id="tttBoard"></div>
+        <div id="tttMsg">تو با ❌ شروع می‌کنی!</div>
+        <div class="gp-xpline" id="tttXpLine"></div>
+        <button class="ttt-btn" id="restartBtn">🔄 دوباره</button>
+    </div>
+</div>
+
+<script>
+(function () {
+    const boardEl = document.getElementById('tttBoard');
+    const msgEl = document.getElementById('tttMsg');
+    const streakEl = document.getElementById('streak');
+    const bestEl = document.getElementById('best');
+    const diffBtns = [...document.querySelectorAll('.diff-btn')];
+
+    const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    let board, turn, diff = 'easy', over = true, streak = 0, best = 0;
+
+    function winner(b) {
+        for (const line of LINES) {
+            const [a, c, d] = line;
+            if (b[a] && b[a] === b[c] && b[a] === b[d]) return { w: b[a], line };
+        }
+        return b.every(x => x) ? { w: 'draw', line: null } : null;
+    }
+
+    function minimax(b, isMax) {
+        const res = winner(b);
+        if (res) return res.w === 'O' ? 1 : res.w === 'X' ? -1 : 0;
+        let bestScore = isMax ? -2 : 2;
+        for (let i = 0; i < 9; i++) {
+            if (!b[i]) {
+                b[i] = isMax ? 'O' : 'X';
+                const s = minimax(b, !isMax);
+                b[i] = '';
+                bestScore = isMax ? Math.max(bestScore, s) : Math.min(bestScore, s);
+            }
+        }
+        return bestScore;
+    }
+
+    function aiMove() {
+        const empties = board.map((v, i) => v ? null : i).filter(v => v !== null);
+        let choice;
+        if (diff === 'easy' || Math.random() < 0.15) {
+            choice = empties[Math.floor(Math.random() * empties.length)];
+        } else {
+            let bestScore = -2, moves = [];
+            for (const i of empties) {
+                board[i] = 'O';
+                const s = minimax(board, false);
+                board[i] = '';
+                if (s > bestScore) { bestScore = s; moves = [i]; }
+                else if (s === bestScore) moves.push(i);
+            }
+            choice = moves[Math.floor(Math.random() * moves.length)];
+        }
+        board[choice] = 'O';
+        render();
+        const res = winner(board);
+        if (res) finish(res); else turn = 'X';
+    }
+
+    function render(highlight) {
+        boardEl.innerHTML = '';
+        board.forEach((v, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'ttt-cell' + (v === 'O' ? ' o' : '');
+            if (highlight && highlight.includes(i)) btn.classList.add('win');
+            btn.textContent = v === 'X' ? '❌' : v === 'O' ? '⭕' : '';
+            btn.disabled = over || !!v || turn !== 'X';
+            btn.addEventListener('click', () => {
+                board[i] = 'X';
+                render();
+                const res = winner(board);
+                if (res) finish(res);
+                else { turn = 'O'; setTimeout(aiMove, 350); }
+            });
+            boardEl.appendChild(btn);
+        });
+    }
+
+    function finish(res) {
+        over = true;
+        if (res.line) render(res.line); else render();
+        if (res.w === 'X') {
+            streak++;
+            streakEl.textContent = streak;
+            msgEl.textContent = '🎉 بردی! بردهای پیاپی: ' + streak;
+            if (streak > best) { best = streak; bestEl.textContent = best; }
+            GP.saveScore('/games/save-tictactoe-score/', {score: streak, completed: true}, 'tttXpLine')
+                .then(d => { if (d.best_score) { best = d.best_score; bestEl.textContent = best; } });
+        } else if (res.w === 'O') {
+            streak = 0;
+            streakEl.textContent = 0;
+            msgEl.textContent = '🤖 هوش مصنوعی برد!';
+        } else {
+            msgEl.textContent = '🤝 مساوی شد!';
+        }
+    }
+
+    function start() {
+        board = Array(9).fill('');
+        over = false;
+        turn = 'X';
+        msgEl.textContent = 'تو با ❌ شروع می‌کنی!';
+        render();
+    }
+
+    diffBtns.forEach(b => b.addEventListener('click', () => {
+        diffBtns.forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        diff = b.dataset.diff;
+        start();
+    }));
+
+    document.getElementById('restartBtn').addEventListener('click', start);
+    start();
+})();
+</script>
+{% endblock %}

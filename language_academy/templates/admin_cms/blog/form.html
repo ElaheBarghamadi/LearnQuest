@@ -1,0 +1,78 @@
+{% extends 'admin_cms/base.html' %}
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0">{{ title }}</h5></div>
+            <div class="card-body">
+                {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">عنوان *</label>
+                        {{ form.title }}{{ form.title.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">اسلاگ (اتوماتیک اگر خالی بماند)</label>
+                        {{ form.slug }}{{ form.slug.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">خلاصه *</label>
+                        {{ form.excerpt }}{{ form.excerpt.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">متن کامل مقاله *</label>
+                        {{ form.content }}{{ form.content.errors }}
+                        <small class="text-muted">پاراگراف‌ها با Enter جدا می‌شوند.</small>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">تصویر شاخص</label>
+                            {{ form.image }}{{ form.image.errors }}
+                            {% if article.image %}<div class="mt-2"><img src="{{ article.image.url }}" style="max-height:120px;border-radius:10px;"></div>{% endif %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">دسته‌بندی *</label>
+                            {{ form.category }}{{ form.category.errors }}
+                            <div class="mt-2">
+                                <label class="form-label">تاریخ انتشار</label>
+                                {{ form.published_at }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-check mb-3">
+                        {{ form.is_featured }}
+                        <label class="form-check-label">⭐ مقالهٔ ویژه (در بالای بلاگ و لندینگ نمایش داده می‌شود)</label>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'admin_cms:blog_article_list' %}" class="btn btn-secondary">انصراف</a>
+                        <button type="submit" class="btn btn-primary px-4">ذخیره و انتشار 🚀</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card mb-3">
+            <div class="card-header"><h6 class="mb-0"><i class="fas fa-folder-plus me-2"></i>دستهٔ جدید</h6></div>
+            <div class="card-body">
+                <form method="post" action="{% url 'admin_cms:blog_category_quick_create' %}" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    <input type="text" name="name" class="form-control" placeholder="نام دسته…" required>
+                    <button class="btn btn-outline-primary flex-shrink-0">افزودن</button>
+                </form>
+            </div>
+        </div>
+        {% if article %}
+        <div class="card"><div class="card-body small text-muted">
+            <b>آمار مقاله:</b><br>👁 {{ article.views }} بازدید · ❤ {{ article.likes }} لایک · 💬 {{ article.comments.count }} نظر
+        </div></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

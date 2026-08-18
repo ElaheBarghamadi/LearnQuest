@@ -1,0 +1,247 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}دیکته صوتی | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">کلمه رو بشنو و درست تایپش کن 🎧</span>
+</div>
+
+<style>
+    .dt-wrap { max-width: 560px; margin: 0 auto; padding: 16px; }
+    .dt-card { background: #fff; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 22px; text-align: center; }
+    .dt-title { font-size: 1.35rem; font-weight: 900; color: #1E293B; margin-bottom: 4px; }
+    .dt-sub { color: #64748B; font-size: .85rem; margin-bottom: 18px; }
+    .dt-diffs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 18px; }
+    .dt-diff { border: 2px solid #E2E8F0; border-radius: 16px; padding: 14px 6px; cursor: pointer; transition: .2s; background: #fff; font-family: inherit; }
+    .dt-diff:hover { transform: translateY(-3px); }
+    .dt-diff.sel { border-color: #8B5CF6; background: linear-gradient(145deg,#F5F3FF,#EDE9FE); box-shadow: 0 6px 16px rgba(139,92,246,.22); }
+    .dt-diff .d-ico { font-size: 1.6rem; display: block; }
+    .dt-diff .d-name { font-weight: 900; color: #1E293B; margin-top: 4px; display: block; }
+    .dt-diff .d-desc { font-size: .68rem; color: #64748B; display: block; margin-top: 2px; }
+    .dt-btn { border: none; border-radius: 999px; padding: 13px 38px; font-size: 1rem; font-weight: 900; cursor: pointer;
+        background: linear-gradient(135deg,#8B5CF6,#6366F1); color: #fff; transition: .2s; font-family: inherit; }
+    .dt-btn:active { transform: scale(.96); }
+    .dt-btn.ghost { background: #F1F5F9; color: #475569; }
+    .dt-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+    .dt-dots { display: flex; gap: 5px; flex-wrap: wrap; }
+    .dt-dot { width: 12px; height: 12px; border-radius: 50%; background: #E2E8F0; transition: .2s; }
+    .dt-dot.ok { background: #22C55E; } .dt-dot.no { background: #EF4444; } .dt-dot.cur { background: #8B5CF6; transform: scale(1.3); }
+    .dt-score { background: linear-gradient(135deg,#8B5CF6,#6366F1); color: #fff; border-radius: 30px; padding: 5px 16px; font-weight: 900; }
+    .dt-stage { display: none; }
+    .dt-speak { width: 96px; height: 96px; border-radius: 50%; border: none; font-size: 2.4rem; cursor: pointer; margin: 8px auto 4px;
+        background: linear-gradient(145deg,#A78BFA,#7C3AED); color: #fff; display: block;
+        box-shadow: 0 10px 24px rgba(124,58,237,.35); transition: .15s; }
+    .dt-speak:active { transform: scale(.92); }
+    .dt-speak.pulse { animation: dtPulse 1s ease infinite; }
+    @keyframes dtPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(124,58,237,.45); } 50% { box-shadow: 0 0 0 16px rgba(124,58,237,0); } }
+    .dt-letters { color: #94A3B8; font-size: .8rem; margin-bottom: 12px; }
+    .dt-meaning { display: inline-block; background: #FEF3C7; color: #92400E; border-radius: 999px; padding: 6px 18px; font-weight: 800; font-size: .85rem; margin-bottom: 14px; cursor: pointer; }
+    .dt-input { width: 100%; max-width: 320px; padding: 14px 18px; font-size: 1.3rem; text-align: center; letter-spacing: 2px;
+        border: 3px solid #E2E8F0; border-radius: 16px; outline: none; direction: ltr; font-weight: 800; color: #1E293B; transition: .2s; }
+    .dt-input:focus { border-color: #8B5CF6; box-shadow: 0 0 0 4px rgba(139,92,246,.14); }
+    .dt-input.good { border-color: #22C55E; background: #F0FDF4; }
+    .dt-input.bad { border-color: #EF4444; background: #FEF2F2; }
+    .dt-actions { display: flex; gap: 10px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+    .dt-feedback { min-height: 44px; margin-top: 12px; font-weight: 900; font-size: .95rem; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center; padding: 8px; transition: .2s; }
+    .dt-feedback.ok { background: #DCFCE7; color: #166534; }
+    .dt-feedback.no { background: #FEE2E2; color: #991B1B; }
+    .dt-end { display: none; }
+    .dt-end .emo { font-size: 3rem; }
+    .dt-end .res { font-size: 1.6rem; font-weight: 900; color: #1E293B; margin: 8px 0; }
+    .dt-end .xp-line { color: #7C3AED; font-weight: 800; margin-bottom: 16px; min-height: 1.4em; }
+    .dt-nosound { background: #FEF9C3; color: #854D0E; border-radius: 12px; padding: 8px 14px; font-size: .78rem; font-weight: 700; margin-bottom: 12px; display: none; }
+    @media (max-width: 480px) { .dt-diffs { gap: 6px; } .dt-diff .d-desc { display: none; } }
+</style>
+
+<div class="dt-wrap">
+    <div class="dt-card">
+
+        <div id="dtStart">
+            <div class="dt-title">🎧 دیکته صوتی</div>
+            <div class="dt-sub">کلمه پخش می‌شه — تو املای درستش رو تایپ کن. معنی هم کمکت می‌کنه!</div>
+            <div class="dt-diffs">
+                <button class="dt-diff" data-diff="easy"><span class="d-ico">🌱</span><span class="d-name">آسان</span><span class="d-desc">کلمات کوتاه ۲ تا ۵ حرفی</span></button>
+                <button class="dt-diff sel" data-diff="medium"><span class="d-ico">🌿</span><span class="d-name">متوسط</span><span class="d-desc">کلمات ۶ تا ۸ حرفی</span></button>
+                <button class="dt-diff" data-diff="hard"><span class="d-ico">🌳</span><span class="d-name">سخت</span><span class="d-desc">کلمات بلند ۹+ حرف</span></button>
+            </div>
+            <button class="dt-btn" id="dtStartBtn">▶️ شروع بازی</button>
+            <div class="dt-nosound" id="dtNoSound">⚠️ مرورگر تو صدای گویا نداره — به جای صدا، حروف به‌هم‌ریختهٔ کلمه رو می‌بینی.</div>
+        </div>
+
+        <div class="dt-stage" id="dtPlay">
+            <div class="dt-topbar">
+                <div class="dt-dots" id="dtDots"></div>
+                <span class="dt-score">⭐ <span id="dtScore">۰</span></span>
+            </div>
+            <button class="dt-speak" id="dtSpeak">🔊</button>
+            <div class="dt-letters" id="dtLetters"></div>
+            <div><span class="dt-meaning" id="dtMeaning" title="معنی"></span></div>
+            <div id="dtScramble" style="display:none; font-size:1.2rem; font-weight:900; letter-spacing:4px; color:#7C3AED; margin-bottom:10px;" dir="ltr"></div>
+            <input class="dt-input" id="dtInput" placeholder="اینجا تایپ کن..." autocomplete="off" autocapitalize="off" spellcheck="false" dir="ltr">
+            <div class="dt-actions">
+                <button class="dt-btn" id="dtCheck">✔️ بررسی</button>
+                <button class="dt-btn ghost" id="dtSkip">⏭ نمی‌دونم</button>
+            </div>
+            <div class="dt-feedback" id="dtFeedback"></div>
+        </div>
+
+        <div class="dt-end" id="dtEnd">
+            <div class="emo" id="dtEndEmo">🏆</div>
+            <div class="res" id="dtEndRes"></div>
+            <div class="xp-line" id="dtXpLine"></div>
+            <div class="dt-actions">
+                <button class="dt-btn" id="dtAgain">🔄 دوباره همین سطح</button>
+                <button class="dt-btn ghost" id="dtChange">🎚 تغییر سختی</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    var ROUNDS = 12;
+    var canSpeak = 'speechSynthesis' in window;
+    var deck = [], idx = 0, score = 0, busy = false, diff = 'medium';
+
+    var startEl = document.getElementById('dtStart'), playEl = document.getElementById('dtPlay'), endEl = document.getElementById('dtEnd');
+    var dotsEl = document.getElementById('dtDots'), scoreEl = document.getElementById('dtScore'),
+        lettersEl = document.getElementById('dtLetters'), meaningEl = document.getElementById('dtMeaning'),
+        scrambleEl = document.getElementById('dtScramble'), input = document.getElementById('dtInput'),
+        feedback = document.getElementById('dtFeedback'), speakBtn = document.getElementById('dtSpeak');
+
+    if (!canSpeak) document.getElementById('dtNoSound').style.display = 'block';
+
+    function fa(n) { return String(n).replace(/[0-9]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }); }
+
+    document.querySelectorAll('.dt-diff').forEach(function (b) {
+        b.addEventListener('click', function () {
+            document.querySelectorAll('.dt-diff').forEach(function (x) { x.classList.remove('sel'); });
+            b.classList.add('sel');
+            diff = b.dataset.diff;
+        });
+    });
+
+    function speak(text) {
+        if (!canSpeak) return;
+        try {
+            window.speechSynthesis.cancel();
+            var u = new SpeechSynthesisUtterance(text);
+            u.lang = 'en-US'; u.rate = 0.82;
+            speakBtn.classList.add('pulse');
+            u.onend = u.onerror = function () { speakBtn.classList.remove('pulse'); };
+            window.speechSynthesis.speak(u);
+        } catch (e) { speakBtn.classList.remove('pulse'); }
+    }
+
+    function scrambled(word) {
+        var arr = word.split('');
+        for (var t = 0; t < 20; t++) {
+            arr.sort(function () { return Math.random() - 0.5; });
+            if (arr.join('') !== word) break;
+        }
+        return arr.join(' ');
+    }
+
+    function fetchDeck(cb) {
+        fetch('/language/dictation/?deck=json&diff=' + diff)
+            .then(function (r) { return r.json(); })
+            .then(function (d) { cb(d.words || []); })
+            .catch(function () { cb([]); });
+    }
+
+    function startGame() {
+        fetchDeck(function (words) {
+            deck = words; idx = 0; score = 0;
+            scoreEl.textContent = '۰';
+            dotsEl.innerHTML = '';
+            for (var i = 0; i < deck.length; i++) {
+                var d = document.createElement('span');
+                d.className = 'dt-dot';
+                dotsEl.appendChild(d);
+            }
+            startEl.style.display = 'none';
+            endEl.style.display = 'none';
+            playEl.style.display = 'block';
+            renderRound();
+        });
+    }
+
+    function renderRound() {
+        busy = false;
+        var w = deck[idx];
+        feedback.textContent = ''; feedback.className = 'dt-feedback';
+        input.value = ''; input.className = 'dt-input';
+        dotsEl.querySelectorAll('.dt-dot').forEach(function (d, i) {
+            d.classList.toggle('cur', i === idx);
+        });
+        lettersEl.textContent = 'کلمهٔ ' + fa(idx + 1) + ' از ' + fa(deck.length) + ' • ' + fa(w.letters) + ' حرف';
+        meaningEl.textContent = '💡 ' + w.meaning;
+        if (!canSpeak) {
+            scrambleEl.style.display = 'block';
+            scrambleEl.textContent = scrambled(w.word);
+        } else {
+            scrambleEl.style.display = 'none';
+        }
+        speakBtn.disabled = false;
+        setTimeout(function () { speak(w.word); input.focus(); }, 350);
+    }
+
+    function normalize(s) { return (s || '').trim().toLowerCase().replace(/[^a-z']/g, ''); }
+
+    function answer(given) {
+        if (busy) return;
+        busy = true;
+        var w = deck[idx];
+        var ok = normalize(given) === normalize(w.word) && given !== null;
+        var dot = dotsEl.children[idx];
+        dot.classList.remove('cur');
+        dot.classList.add(ok ? 'ok' : 'no');
+        if (ok) {
+            score++;
+            scoreEl.textContent = fa(score);
+            input.classList.add('good');
+            feedback.className = 'dt-feedback ok';
+            feedback.textContent = '✅ آفرین! ' + w.word + ' = ' + w.meaning;
+        } else {
+            input.classList.add('bad');
+            feedback.className = 'dt-feedback no';
+            feedback.textContent = '❌ درستش این بود: ' + w.word + ' (' + w.meaning + ')';
+        }
+        idx++;
+        setTimeout(function () {
+            if (idx >= deck.length) finish();
+            else renderRound();
+        }, 1250);
+    }
+
+    function finish() {
+        playEl.style.display = 'none';
+        endEl.style.display = 'block';
+        var perfect = score === deck.length;
+        document.getElementById('dtEndEmo').textContent = perfect ? '🏆' : (score >= deck.length / 2 ? '🎉' : '💪');
+        document.getElementById('dtEndRes').textContent = fa(score) + ' از ' + fa(deck.length) + ' درست';
+        var xpLine = document.getElementById('dtXpLine');
+        xpLine.textContent = 'در حال ثبت نتیجه…';
+        GP.saveScore('/language/save-dictation-score/', { score: score, total: deck.length, diff: diff }, xpLine);
+    }
+
+    document.getElementById('dtStartBtn').addEventListener('click', startGame);
+    document.getElementById('dtAgain').addEventListener('click', startGame);
+    document.getElementById('dtChange').addEventListener('click', function () {
+        endEl.style.display = 'none';
+        startEl.style.display = 'block';
+    });
+    speakBtn.addEventListener('click', function () { if (deck[idx]) speak(deck[idx].word); });
+    document.getElementById('dtCheck').addEventListener('click', function () { answer(input.value); });
+    document.getElementById('dtSkip').addEventListener('click', function () { answer(null); });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') answer(input.value); });
+    meaningEl.addEventListener('click', function () { if (deck[idx]) speak(deck[idx].word); });
+})();
+</script>
+{% endblock %}

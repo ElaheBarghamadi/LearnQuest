@@ -1,0 +1,540 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    مبدل واحدها | لرن کویست
+{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .converter-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* کارت اصلی */
+        .converter-card {
+            background: rgba(255, 255, 255, 0.97);
+            border-radius: 35px;
+            box-shadow: 0 25px 50px rgba(59, 130, 246, 0.12);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* هدر */
+        .converter-header {
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            padding: 35px 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .converter-header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: white;
+        }
+
+        .converter-header h1 i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .converter-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+            margin: 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* فرم */
+        .converter-form {
+            padding: 35px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: #3B82F6;
+            margin-left: 8px;
+        }
+
+        .form-control-custom {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e8;
+            border-radius: 20px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+
+        .form-control-custom:focus {
+            outline: none;
+            border-color: #3B82F6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        select.form-control-custom {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236C63FF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: left 18px center;
+            background-size: 16px;
+        }
+
+        /* دسته‌بندی در select */
+        optgroup {
+            font-weight: 600;
+            color: #3B82F6;
+            background: #f8f9ff;
+            padding: 8px;
+        }
+
+        option {
+            padding: 8px;
+            font-weight: normal;
+            color: #333;
+        }
+
+        /* دکمه */
+        .convert-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #3B82F6, #36D1DC);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .convert-btn:active {
+            transform: translateY(0);
+        }
+
+        /* نتیجه */
+        .result-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+            display: none;
+        }
+
+        .result-box.success {
+            display: block;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            border-right: 4px solid #4CAF50;
+        }
+
+        .result-box.error {
+            display: block;
+            background: linear-gradient(135deg, #ffebee, #ffcdd2);
+            border-right: 4px solid #f44336;
+        }
+
+        .result-value {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #2e7d32;
+            margin: 10px 0;
+        }
+
+        .result-box.error .result-value {
+            color: #c62828;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .result-unit {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* انیمیشن */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* راهنما */
+        .help-section {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 20px;
+        }
+
+        .help-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-title i {
+            color: #3B82F6;
+        }
+
+        .help-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .help-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: #555;
+            padding: 5px 0;
+        }
+
+        .help-item i {
+            color: #36D1DC;
+            font-size: 0.7rem;
+        }
+
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .converter-container {
+                padding: 15px;
+            }
+
+            .converter-header {
+                padding: 25px 20px;
+            }
+
+            .converter-header h1 {
+                font-size: 1.4rem;
+            }
+
+            .converter-form {
+                padding: 25px 20px;
+            }
+
+            .result-value {
+                font-size: 1.3rem;
+            }
+
+            .help-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .converter-header h1 {
+                font-size: 1.2rem;
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .form-control-custom {
+                padding: 12px 15px;
+            }
+
+            .convert-btn {
+                padding: 12px;
+            }
+        }
+
+        /* اسپینر لودینگ */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .btn-text {
+            display: inline-block;
+        }
+
+        .convert-btn.loading .btn-text {
+            display: none;
+        }
+
+        .convert-btn.loading .loading {
+            display: inline-block;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="converter-container">
+        <div class="converter-card">
+            <div class="converter-header">
+                <h1>
+                    <i class="fas fa-exchange-alt"></i>
+                    مبدل واحدها
+                    <i class="fas fa-arrows-alt-h"></i>
+                </h1>
+                <p>تبدیل سریع و دقیق واحدهای طول و زمان</p>
+            </div>
+
+            <div class="converter-form">
+                <form id="converterForm">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-cog"></i>
+                            نوع تبدیل:
+                        </label>
+                        <select name="conversion_type" id="conversionType" class="form-control-custom" required>
+                            <optgroup label="📏 طول">
+                                <option value="meter_to_cm">متر ➜ سانتی‌متر</option>
+                                <option value="meter_to_mm">متر ➜ میلی‌متر</option>
+                                <option value="cm_to_mm">سانتی‌متر ➜ میلی‌متر</option>
+                                <option value="km_to_m">کیلومتر ➜ متر</option>
+                                <option value="m_to_km">متر ➜ کیلومتر</option>
+                            </optgroup>
+                            <optgroup label="⏱️ زمان">
+                                <option value="hour_to_min">ساعت ➜ دقیقه</option>
+                                <option value="hour_to_sec">ساعت ➜ ثانیه</option>
+                                <option value="min_to_sec">دقیقه ➜ ثانیه</option>
+                                <option value="sec_to_min">ثانیه ➜ دقیقه</option>
+                                <option value="min_to_hour">دقیقه ➜ ساعت</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-keyboard"></i>
+                            مقدار:
+                        </label>
+                        <input type="number"
+                               step="any"
+                               name="value"
+                               id="inputValue"
+                               class="form-control-custom"
+                               placeholder="مقدار را وارد کنید..."
+                               required>
+                    </div>
+
+                    <button type="submit" class="convert-btn" id="convertBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span class="btn-text">تبدیل کن</span>
+                        <span class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+
+                <div id="resultBox" class="result-box">
+                    <div class="result-label">
+                        <i class="fas fa-equals"></i> نتیجه تبدیل:
+                    </div>
+                    <div class="result-value" id="resultValue">—</div>
+                    <div class="result-unit" id="resultUnit"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- راهنما -->
+        <div class="help-section">
+            <div class="help-title">
+                <i class="fas fa-lightbulb"></i>
+                📐 روابط تبدیل:
+            </div>
+            <div class="help-grid">
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 متر = 100 سانتی‌متر</div>
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 متر = 1000 میلی‌متر</div>
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 کیلومتر = 1000 متر</div>
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 ساعت = 60 دقیقه</div>
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 ساعت = 3600 ثانیه</div>
+                <div class="help-item"><i class="fas fa-check-circle"></i> 1 دقیقه = 60 ثانیه</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('converterForm');
+        const convertBtn = document.getElementById('convertBtn');
+        const resultBox = document.getElementById('resultBox');
+        const resultValue = document.getElementById('resultValue');
+        const resultUnit = document.getElementById('resultUnit');
+        const inputValue = document.getElementById('inputValue');
+        const conversionType = document.getElementById('conversionType');
+
+        // تابع نمایش نتیجه
+        function showResult(value, unit, isError = false) {
+            resultBox.classList.remove('success', 'error');
+            resultBox.classList.add(isError ? 'error' : 'success');
+
+            if (isError) {
+                resultValue.textContent = value;
+                resultUnit.textContent = '';
+            } else {
+                resultValue.textContent = value.toLocaleString('fa-IR');
+                resultUnit.textContent = unit;
+            }
+
+            // اسکرول به نتیجه
+            resultBox.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+        }
+
+        // تابع لودینگ
+        function setLoading(isLoading) {
+            if (isLoading) {
+                convertBtn.classList.add('loading');
+                const loadingSpan = convertBtn.querySelector('.loading');
+                const btnText = convertBtn.querySelector('.btn-text');
+                if (loadingSpan) loadingSpan.style.display = 'inline-block';
+                if (btnText) btnText.style.display = 'none';
+                convertBtn.disabled = true;
+            } else {
+                convertBtn.classList.remove('loading');
+                const loadingSpan = convertBtn.querySelector('.loading');
+                const btnText = convertBtn.querySelector('.btn-text');
+                if (loadingSpan) loadingSpan.style.display = 'none';
+                if (btnText) btnText.style.display = 'inline-block';
+                convertBtn.disabled = false;
+            }
+        }
+
+        // اعتبارسنجی ورودی
+        inputValue.addEventListener('input', function () {
+            const value = parseFloat(this.value);
+            if (value < 0) {
+                this.setCustomValidity('لطفاً عدد مثبت وارد کنید');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // ارسال فرم با Ajax
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const value = parseFloat(inputValue.value);
+
+            // اعتبارسنجی
+            if (isNaN(value)) {
+                showResult('لطفاً یک عدد معتبر وارد کنید', '', true);
+                return;
+            }
+
+            if (value < 0) {
+                showResult('لطفاً عدد مثبت وارد کنید', '', true);
+                return;
+            }
+
+            // آماده‌سازی داده‌ها
+            const formData = new FormData();
+            formData.append('value', value);
+            formData.append('conversion_type', conversionType.value);
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+
+            // نمایش لودینگ
+            setLoading(true);
+
+            try {
+                const response = await fetch('', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showResult(data.error, '', true);
+                } else {
+                    // نمایش نتیجه با فرمت مناسب
+                    let formattedResult = data.result;
+                    if (Number.isInteger(data.result)) {
+                        formattedResult = data.result.toLocaleString('fa-IR');
+                    } else {
+                        formattedResult = data.result.toFixed(4).toLocaleString('fa-IR');
+                    }
+                    showResult(formattedResult, data.unit);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showResult('خطا در ارتباط با سرور', '', true);
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // تبدیل خودکار هنگام تغییر نوع تبدیل (اختیاری)
+        let timeoutId;
+
+        function autoConvert() {
+            if (inputValue.value && parseFloat(inputValue.value) >= 0) {
+                // شبیه‌سازی کلیک روی دکمه تبدیل
+                const event = new Event('submit');
+                form.dispatchEvent(event);
+            }
+        }
+
+        conversionType.addEventListener('change', function () {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(autoConvert, 300);
+        });
+
+        // تبدیل خودکار هنگام تایپ (با تأخیر)
+        inputValue.addEventListener('input', function () {
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(autoConvert, 500);
+        });
+    </script>
+{% endblock %}

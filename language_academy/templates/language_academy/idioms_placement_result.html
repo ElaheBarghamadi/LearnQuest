@@ -1,0 +1,54 @@
+{% extends 'language_academy/base_academy.html' %}
+{% block title %}Placement Result | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+.pr-wrap { max-width: 620px; margin: 0 auto; text-align: center; }
+.pr-card { border-radius: 26px; padding: 34px 26px; }
+.pr-score { width: 130px; height: 130px; margin: 0 auto 18px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; color: #fff; box-shadow: 0 16px 38px rgba(30, 45, 90, 0.25); }
+.pr-score .big { font-size: 2rem; line-height: 1; }
+.pr-score .sml { font-size: 0.78rem; opacity: 0.9; }
+.pr-ok { background: linear-gradient(135deg, #10b981, #059669); }
+.pr-maybe { background: linear-gradient(135deg, #f59e0b, #d97706); }
+.pr-low { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.pr-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+.pr-text { color: var(--text-secondary, #64748b); line-height: 1.8; margin-bottom: 20px; }
+.pr-text b { color: #4f46e5; }
+.pr-btns a, .pr-btns button { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 12px 26px; font-weight: 800; font-size: 0.92rem; text-decoration: none; border: none; cursor: pointer; margin: 4px; transition: 0.15s; }
+.pr-primary { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff !important; box-shadow: 0 12px 26px rgba(99, 102, 241, 0.4); }
+.pr-ghost { background: rgba(148, 163, 184, 0.18); color: var(--text, #1e293b) !important; }
+.pr-btns a:hover, .pr-btns button:hover { transform: translateY(-2px); }
+</style>
+
+<div class="container py-5">
+    <div class="pr-wrap">
+        <div class="academy-card glass-card pr-card">
+            {% if attempt.verdict == 'confirmed' %}
+                <div class="pr-score pr-ok"><span class="big">{{ attempt.score }}/{{ attempt.quiz|length }}</span><span class="sml">correct</span></div>
+                <div class="pr-title">🎉 Your level is confirmed!</div>
+                <p class="pr-text">Great job — your answers really look like a <b>{{ attempt.chosen_level }}</b> learner.
+                    We'll build your idiom journey around this level. Have fun! 💬✨</p>
+                <div class="pr-btns">
+                    <a class="pr-primary" href="{% url 'language_academy:idioms_hub' %}">💬 Start learning idioms</a>
+                    <a class="pr-ghost" href="{% url 'language_academy:idiom_flashcards' %}">🃏 Jump to flashcards</a>
+                </div>
+            {% else %}
+                {% widthratio attempt.score attempt.quiz|length 100 as pct %}
+                <div class="pr-score {% if pct >= 50 %}pr-maybe{% else %}pr-low{% endif %}"><span class="big">{{ attempt.score }}/{{ attempt.quiz|length }}</span><span class="sml">correct</span></div>
+                <div class="pr-title">🤔 Hmm — maybe not {{ attempt.chosen_level }} yet</div>
+                <p class="pr-text">Your answers point more toward <b>{{ attempt.recommended_level }}</b> — and that's totally fine!
+                    Learning at the right level is faster and way more fun.<br>
+                    Pick your level again — <b>higher or lower</b> — and take a fresh check. 💪</p>
+                <div class="pr-btns mb-3">
+                    <a class="pr-primary" href="{% url 'language_academy:idioms_placement' %}">🔄 Choose level again</a>
+                </div>
+                <form method="post" action="{% url 'language_academy:idioms_placement' %}" class="pr-btns">
+                    {% csrf_token %}
+                    <input type="hidden" name="force_level" value="{{ attempt.chosen_level }}">
+                    <button type="submit" class="pr-ghost">No thanks — keep {{ attempt.chosen_level }} anyway</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

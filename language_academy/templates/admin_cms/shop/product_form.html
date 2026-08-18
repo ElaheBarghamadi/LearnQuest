@@ -1,0 +1,136 @@
+{% extends 'admin_cms/base.html' %}
+
+{% block title %}{{ title }} | CMS{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-store me-2"></i> {{ title }}</h5>
+        <a href="{% url 'admin_cms:shop_product_list' %}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-arrow-right me-1"></i> بازگشت</a>
+    </div>
+    <div class="card-body">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">نام محصول *</label>
+                    {{ form.name }}{{ form.name.errors }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">اسلاگ (خالی = خودکار)</label>
+                    {{ form.slug }}{{ form.slug.errors }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">دسته‌بندی</label>
+                    {{ form.category }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">نوع محصول</label>
+                    {{ form.product_type }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">ایموجی پیش‌نمایش</label>
+                    {{ form.preview_emoji }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">کد اثر *</label>
+                    {{ form.effect_type }}{{ form.effect_type.errors }}
+                    <small class="text-muted d-block mt-1">
+                        رایج‌ها: <code dir="ltr">frame</code>، <code dir="ltr">username_color</code>، <code dir="ltr">xp_booster</code>، <code dir="ltr">pet</code>، <code dir="ltr">mystery_box</code>،
+                        <code dir="ltr">exclusive_lesson</code> (بلیط درس اختصاصی — پیلود: <code dir="ltr">{"lesson_id": 5}</code>)
+                    </small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">پیلود اثر (JSON)</label>
+                    {{ form.effect_payload }}{{ form.effect_payload.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">توضیحات</label>
+                {{ form.description }}
+            </div>
+
+            <div class="row">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">قیمت (سکه)</label>
+                    {{ form.price_coins }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">قیمت (الماس)</label>
+                    {{ form.price_gems }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">تخفیف ٪</label>
+                    {{ form.discount_percent }}
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">پایان تخفیف</label>
+                    {{ form.discount_ends_at }}{{ form.discount_ends_at.errors }}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">موجودی محدود (خالی = نامحدود)</label>
+                    {{ form.stock_limit }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">سقف خرید هر کاربر (۰ = نامحدود)</label>
+                    {{ form.per_user_limit }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">تصویر محصول</label>
+                    {{ form.image }}
+                    {% if product.image %}<small class="d-block mt-1"><a href="{{ product.image.url }}" target="_blank">تصویر فعلی</a></small>{% endif %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">موجود از</label>
+                    {{ form.available_from }}{{ form.available_from.errors }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">موجود تا</label>
+                    {{ form.available_until }}{{ form.available_until.errors }}
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">آیتم‌های باندل</label>
+                {{ form.bundle_items }}{{ form.bundle_items.errors }}
+                <small class="text-muted d-block">{{ form.fields.bundle_items.help_text }}</small>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        {{ form.is_active }}
+                        <label class="form-check-label">فعال (در فروشگاه دیده شود)</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        {{ form.is_featured }}
+                        <label class="form-check-label">ویژه ⭐</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> ذخیره محصول</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

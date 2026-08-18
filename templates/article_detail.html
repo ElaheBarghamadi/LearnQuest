@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static jalali %}
+
+{% block title %}{{ article.title }} | گالری دانش{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<link rel="stylesheet" href="{% static 'css/blog.css' %}?v=202608099">
+<style>
+    .main-content { padding: 22px clamp(10px, 2vw, 34px) 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="blog-shell gl" id="blog-config"
+     data-auth="{% if user.is_authenticated %}1{% else %}0{% endif %}"
+     data-like-url="{% url 'blog:like_article' article.id %}"
+     data-comment-like-url="{% url 'blog:like_comment' 0 %}">
+
+    <div class="d-read-progress" id="read-progress"></div>
+
+    <nav class="dt-crumb" aria-label="مسیر">
+        <a href="{% url 'blog:blog_home' %}">گالری دانش</a>
+        <span class="sep">‹</span>
+        <a href="{% url 'blog:blog_home' %}?cat={{ article.category.slug }}">{{ article.category.name }}</a>
+        <span class="sep">‹</span>
+        <span>{{ article.title|truncatechars:40 }}</span>
+    </nav>
+
+    <article class="art">
+        <header class="art-head" style="--h:{{ article.id|hue }}">
+            <span class="blm-orb o1"></span>
+            <span class="blm-orb o2"></span>
+            <span class="blm-orb o3"></span>
+            <div class="art-tags">
+                <a class="art-pill" href="{% url 'blog:blog_home' %}?cat={{ article.category.slug }}">{{ article.category.name }}</a>
+                {% if article.is_featured %}<span class="art-pill gold">⭐ ویژه</span>{% endif %}
+            </div>
+            <h1>{{ article.title }}</h1>
+            <div class="art-meta">
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>{{ article.published_at|jdatelong }}</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>{{ article.reading_time|fadigits }} دقیقه مطالعه</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>{{ article.views|fadigits }} بازدید</span>
+                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><span id="article-likes-hero">{{ article.likes|fadigits }}</span></span>
+                <span>💬 <span id="comments-count-hero">{{ comments_count|fadigits }}</span></span>
+            </div>
+        </header>
+
+        {% if article.image %}
+        <figure class="art-cover" style="--h:{{ article.id|hue }}">
+            <span class="art-cover-bgfx" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg></span>
+            <img src="{{ article.image.url }}" onerror="this.remove()" alt="{{ article.title }}">
+        </figure>
+        {% else %}
+        <figure class="art-cover art-cover-art" style="--h:{{ article.id|hue }}">
+            <span class="bl-art-emo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="width:72px;height:72px;color:rgba(255,255,255,.55)"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg></span>
+        </figure>
+        {% endif %}
+
+        <div class="d-prose">{{ article.content|safe|linebreaks }}</div>
+
+        <footer class="art-actions">
+            <button class="act-btn like-btn {% if article_liked %}liked{% endif %}" id="article-like-btn" type="button">
+                <span class="burst"></span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span class="cnt" id="article-likes-count">{{ article.likes|fadigits }}</span>
+                <span>{% if article_liked %}پسندیدی!{% else %}بپسند{% endif %}</span>
+            </button>
+            <button class="act-btn" id="copy-link-btn" type="button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                کپی لینک
+            </button>
+            <a class="act-btn" href="#comments" style="text-decoration:none">
+                💬 نظرات (<span id="comments-count-btn">{{ comments_count|fadigits }}</span>)
+            </a>
+        </footer>
+    </article>
+
+    <section class="cmts" id="comments">
+        <h2 class="cmts-title">💬 نظرات خوانندگان <span class="cc-badge" id="comments-count">{{ comments_count|fadigits }}</span></h2>
+
+        {% if user.is_authenticated %}
+        <form class="c-form comment-form-ajax" method="post" action="{% url 'blog:add_comment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="article_id" value="{{ article.id }}">
+            <div class="c-form-row">
+                <span class="c-form-ava" aria-hidden="true">{{ user.username|first|upper }}</span>
+                <textarea name="content" maxlength="1000" placeholder="نظرت رو بنویس… سوالت چیه؟ چی یاد گرفتی؟ 💡" required></textarea>
+            </div>
+            <div class="c-form-foot">
+                <span class="c-counter"><b class="c-count-num">0</b> / 1000</span>
+                <button type="submit" class="btn-send">ارسال نظر ✈️</button>
+            </div>
+            <div class="c-error"></div>
+        </form>
+        {% else %}
+        <p class="login-hint">برای ثبت نظر و لایک‌کردن باید <a href="{% url 'login' %}?next={{ request.path|urlencode }}">وارد حسابت</a> بشی — رایگان! 🚀</p>
+        {% endif %}
+
+        <div class="c-list" id="comments-list">
+            {% for comment in comments %}
+                {% include 'single_comment.html' with comment=comment %}
+            {% empty %}
+                <p class="c-empty" id="comments-empty">هنوز نظری ثبت نشده؛ اولین نفر باش! ✍️</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if related_articles %}
+    <section class="related">
+        <h2 class="bl-title"><span>🧩 مقالات مرتبط</span></h2>
+        <div class="related-grid">
+            {% for a in related_articles %}
+            <article class="bl-card reveal in">
+                <a class="bl-thumb" href="{% url 'blog:article_detail' a.id %}">
+                    {% if a.image %}
+                    <img src="{{ a.image.url }}" onerror="this.remove()" alt="{{ a.title }}" loading="lazy">
+                    {% else %}
+                    <span class="bl-art" style="--h:{{ a.id|hue }}"><i class="bl-art-emo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="width:44px;height:44px;color:rgba(255,255,255,.55)"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg></i></span>
+                    {% endif %}
+                    <span class="bl-tcat">{{ a.category.name }}</span>
+                </a>
+                <div class="bl-cbody">
+                    <h3 class="bl-ctitle"><a href="{% url 'blog:article_detail' a.id %}">{{ a.title }}</a></h3>
+                    <div class="bl-cmeta">
+                        <span>{{ a.published_at|jdate }}</span>
+                        <span>👁 {{ a.views|fadigits }}</span>
+                        <span>❤ {{ a.likes|fadigits }}</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/blog.js' %}?v=202608059"></script>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+<style>
+.lq-userlink{color:inherit;text-decoration:none;transition:.15s}
+.lq-userlink:hover{color:var(--lq-teal-deep,#0d8488);text-decoration:underline}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="lq-wrap">
+    <div class="lq-hero gold">
+        <h1>🏆 تالار قهرمانان</h1>
+        <p>رقابت کن، بالا برو — هر درس و بازی یعنی قدم تازه‌ای به سمت تاج!</p>
+    </div>
+
+    
+    <div class="lq-filterbar" style="margin-bottom:8px">
+        <div class="lq-filterrow" style="justify-content:center">
+            <a class="lq-chip gold {% if period == 'global' %}active{% endif %}" href="?type=global">🌍 رتبه‌بندی کلی</a>
+            <a class="lq-chip gold {% if period == 'weekly' %}active{% endif %}" href="?type=weekly">📅 هفتهٔ اخیر</a>
+            <a class="lq-chip gold {% if period == 'season' %}active{% endif %}" href="?type=season">🌸 فصل جاری</a>
+        </div>
+    </div>
+
+    {% if rows %}
+    
+    {% if rows|length >= 3 %}
+    <div class="lq-podium">
+        <div class="pod p2">
+            <div class="medal">🥈</div>
+            <div class="name">{% with rows.1 as r %}<a class="lq-userlink" href="/u/{{ r.username }}/">{{ r.username }}</a>{% endwith %}</div>
+            <div class="pts">⭐ {% with rows.1 as r %}{{ r.xp }}{% endwith %}</div>
+        </div>
+        <div class="pod p1">
+            <div class="medal">🥇</div>
+            <div class="name">{% with rows.0 as r %}<a class="lq-userlink" href="/u/{{ r.username }}/">{{ r.username }}</a>{% endwith %}</div>
+            <div class="pts">⭐ {% with rows.0 as r %}{{ r.xp }}{% endwith %}</div>
+        </div>
+        <div class="pod p3">
+            <div class="medal">🥉</div>
+            <div class="name">{% with rows.2 as r %}<a class="lq-userlink" href="/u/{{ r.username }}/">{{ r.username }}</a>{% endwith %}</div>
+            <div class="pts">⭐ {% with rows.2 as r %}{{ r.xp }}{% endwith %}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="lq-tablewrap" style="margin-top:18px">
+        <table class="lq-table">
+            <thead>
+                <tr><th>رتبه</th><th>کاربر</th><th>سطح</th><th>⭐ XP</th></tr>
+            </thead>
+            <tbody>
+                {% for r in rows %}
+                <tr class="{% if r.username == user.username %}me{% endif %}">
+                    <td style="font-weight:900;font-size:1.05rem">
+                        {% if forloop.counter == 1 %}🥇
+                        {% elif forloop.counter == 2 %}🥈
+                        {% elif forloop.counter == 3 %}🥉
+                        {% else %}{{ forloop.counter }}{% endif %}
+                    </td>
+                    <td style="font-weight:{% if r.username == user.username %}900{% else %}600{% endif %}">
+                        <a class="lq-userlink" href="/u/{{ r.username }}/">{{ r.username }}</a>
+                        {% if r.username == user.username %}<span style="color:var(--lq-gold);font-size:.68rem">(تو 👑)</span>{% endif %}
+                    </td>
+                    <td>{{ r.level }}</td>
+                    <td class="pos">{{ r.xp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="lq-panel" style="margin-top:16px;text-align:center;font-size:.83rem;color:var(--lq-muted)">
+        امتیاز تو: <b style="color:var(--lq-ink)">{{ my_xp }}</b> ⭐ —
+        {% if period == 'global' %}بر اساس کل XP{% elif period == 'weekly' %}XP کسب‌شدهٔ ۷ روز اخیر{% else %}XP کسب‌شدهٔ فصل جاری{% endif %}
+    </div>
+    {% else %}
+    <div class="lq-empty">
+        <div class="big">🏜️</div>
+        <p>هنوز رکوردی ثبت نشده — اولین نام روی تابلو باش! 💪</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

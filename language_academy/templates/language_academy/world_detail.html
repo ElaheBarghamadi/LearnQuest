@@ -1,0 +1,195 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}{{ world.name }} | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if is_guest %}
+    <div class="alert guest-banner mb-4" role="alert">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <b>👀 You're browsing as a guest.</b>
+                <div class="small mt-1">You can explore every world — log in to start lessons, take quizzes and earn XP & coins.</div>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/login/?next={{ request.path }}" class="btn btn-primary btn-sm px-3 fw-bold">Log in 👋</a>
+                <a href="/register/?next={{ request.path }}" class="btn btn-outline-light btn-sm px-3 fw-bold">Sign up ✨</a>
+            </div>
+        </div>
+    </div>
+    <style>
+        .guest-banner { background: linear-gradient(135deg, rgba(30, 58, 138, 0.94), rgba(37, 99, 235, 0.88)); border: 1px solid rgba(13, 110, 253, 0.5); color: #fff; border-radius: 16px; padding: 14px 18px; }
+        .guest-banner .small { color: rgba(255, 255, 255, 0.78); }
+        .guest-banner b { color: #fff; }
+        .guest-banner .btn-primary { box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4); }
+        .guest-banner .btn-outline-light { border-color: rgba(255,255,255,0.6); color: #fff; }
+        .guest-banner .btn-outline-light:hover { background: rgba(255,255,255,0.16); color: #fff; }
+    </style>
+    {% endif %}
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'language_academy:world_map' %}" class="text-decoration-none">🌍 Worlds</a></li>
+            <li class="breadcrumb-item active">{{ world.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="academy-card mb-4 overflow-hidden">
+        <div class="row g-0">
+            <div class="col-md-8">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="icon-circle-sm bg-gradient-green">✈️</div>
+                        <div>
+                            <h1 class="h2 mb-0"{% if visual_edit %} data-vae="world.{{ world.id }}.name"{% endif %}>{{ world.name }}</h1>
+                            <p class="text-muted mb-0">{{ world.get_difficulty_level_display }}</p>
+                        </div>
+                    </div>
+                    <p class="lead"{% if visual_edit %} data-vae="world.{{ world.id }}.description"{% endif %}>{{ world.description }}</p>
+                    <div class="d-flex gap-3 mt-3">
+                        <div><i class="fas fa-star text-warning"></i> +{{ world.xp_reward }} XP</div>
+                        <div><i class="fas fa-coins text-info"></i> +{{ world.coin_reward }} Coins</div>
+                        <div><i class="fas fa-book"></i> {{ world.get_chapter_count }} Chapters</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 bg-gradient-green text-white">
+                <div class="card-body p-4 text-center">
+                    <h3 class="h5">Your Progress</h3>
+                    <div class="display-4 fw-bold">{{ world_progress.chapters_completed|default:0 }}/{{ world_progress.total_chapters|default:0 }}</div>
+                    <div class="academy-progress mt-2">
+                        <div class="academy-progress-bar bg-white" style="width: {{ world.get_completion_percentage|default:0 }}%"></div>
+                    </div>
+                    <p class="mt-2 mb-0 small">{{ world.get_completion_percentage|default:0|floatformat:0 }}% Complete</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h3 mb-4"><i class="fas fa-list-ol me-2"></i> Chapters</h2>
+
+    <div class="row">
+        <div class="col-lg-8"{% if visual_edit %} data-vae-list="chapters"{% endif %}>
+            {% for chapter in chapters %}
+            <div class="chapter-card {% if chapter.is_completed %}completed{% elif chapter.is_locked %}locked{% endif %} mb-3"{% if visual_edit %} data-vae-id="{{ chapter.id }}"{% endif %}>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chapter-number {% if chapter.is_completed %}completed{% endif %}">
+                        {{ chapter.order }}
+                    </div>
+
+                    <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between align-items-start flex-wrap">
+                            <div>
+                                <h3 class="h5 mb-1"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h3>
+                                <p class="text-muted small mb-1"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description|truncatewords:20 }}</p>
+                            </div>
+                            <div class="text-end">
+                                <div class="small text-muted">
+                                    <i class="fas fa-clock"></i> {{ chapter.estimated_time_minutes }} min
+                                </div>
+                                <div class="small">
+                                    <i class="fas fa-star text-warning"></i> +{{ chapter.xp_reward }} XP
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between small mb-1">
+                                <span>Progress</span>
+                                <span>{{ chapter.completion_percentage|default:0|floatformat:0 }}%</span>
+                            </div>
+                            <div class="academy-progress">
+                                <div class="academy-progress-bar" style="width: {{ chapter.completion_percentage|default:0 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if chapter.is_locked %}
+                        <button class="btn btn-secondary btn-sm" disabled>
+                            <i class="fas fa-lock"></i>
+                        </button>
+                    {% elif chapter.is_completed %}
+                        <a href="{% url 'language_academy:chapter_detail' chapter.id %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-redo"></i> Review
+                        </a>
+                    {% else %}
+                        <a href="{% url 'language_academy:chapter_detail' chapter.id %}" class="btn-academy btn-sm">
+                            Start <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-lg-4">
+            <div class="academy-card sticky-top" style="top: 20px;">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-lightbulb text-warning me-2"></i> Tips</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Complete all lessons in each chapter</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Pass the chapter exam to unlock next</li>
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Review vocabulary daily</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i> Earn XP to level up</li>
+                    </ul>
+                    <hr>
+                    <div class="text-center">
+                        <i class="fas fa-trophy fa-2x text-warning mb-2"></i>
+                        <p class="small text-muted mb-0">Complete all chapters to earn a certificate!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.chapter-card {
+    background: var(--duo-white);
+    border-radius: var(--duo-radius);
+    padding: 20px;
+    transition: var(--duo-transition);
+    border-left: 4px solid var(--duo-gray-300);
+}
+
+.chapter-card.completed {
+    border-left-color: var(--duo-green);
+}
+
+.chapter-card.locked {
+    opacity: 0.7;
+    background: var(--duo-gray-100);
+}
+
+.chapter-number {
+    width: 45px;
+    height: 45px;
+    background: var(--duo-gray-200);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.chapter-number.completed {
+    background: var(--duo-green);
+    color: white;
+}
+
+.icon-circle-sm {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+</style>
+{% if visual_edit %}
+<div class="container"><button type="button" class="vae-add" data-vae-add="new_chapter.0" data-parent="world:{{ world.id }}" data-vae-name="New Chapter">＋ Add Chapter</button></div>
+{% endif %}
+{% include "language_academy/ve_structure.html" %}
+{% endblock %}

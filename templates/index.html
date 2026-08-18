@@ -1,0 +1,766 @@
+{% extends 'base.html' %}
+{% load static jalali %}
+
+{% block title %}داشبورد | لرن کویست{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<style>
+    .db-shell {
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
+        max-width: 1180px;
+        margin: 0 auto;
+        --db-ink: #17171c;
+        --db-soft: #71717a;
+        --db-faint: #a1a1aa;
+        --db-line: rgba(23, 23, 28, 0.08);
+        --db-line-strong: rgba(23, 23, 28, 0.16);
+        --db-card: #ffffff;
+        --db-chip: #f4f4f7;
+        --db-accent: #3B82F6;
+        --db-radius: 22px;
+        --db-shadow: 0 2px 12px rgba(23, 23, 28, 0.05);
+        animation: db-fade 0.45s ease both;
+    }
+    @keyframes db-fade { from { opacity: 0; transform: translateY(6px); } }
+
+    .db-blob {
+        position: fixed;
+        z-index: -1;
+        border-radius: 50%;
+        filter: blur(90px);
+        -webkit-filter: blur(90px);
+        pointer-events: none;
+        opacity: 0.1;
+        background: #D3E7FE;
+    }
+    .db-blob.b1 { width: 460px; height: 460px; top: -160px; right: -140px; }
+    .db-blob.b2 { width: 380px; height: 380px; bottom: -150px; left: -130px; background: #DCEBFE; }
+    .db-blob.b3 { width: 260px; height: 260px; top: 44%; left: 7%; background: #E0EDFB; }
+
+    .db-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 26px;
+        padding: clamp(22px, 3.4vw, 36px) clamp(18px, 3.4vw, 36px);
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        box-shadow: var(--db-shadow);
+        margin-bottom: 22px;
+    }
+    .db-orb { display: none; }
+
+    .db-hero-in {
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 3vw, 30px);
+        flex-wrap: wrap;
+    }
+
+    .db-ring {
+        position: relative;
+        width: 118px;
+        height: 118px;
+        flex: 0 0 auto;
+    }
+    .db-ring svg { transform: rotate(-90deg); display: block; }
+    .db-ring .track { stroke: rgba(23, 23, 28, 0.08); }
+    .db-ring .fill {
+        stroke: var(--db-accent);
+        stroke-linecap: round;
+        transition: stroke-dashoffset 1s cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    .db-ring-mid {
+        position: absolute;
+        inset: 9px;
+        border-radius: 50%;
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+        color: var(--db-accent);
+        font-size: 1.9rem;
+        font-weight: 900;
+    }
+    .db-ring-mid img { width: 100%; height: 100%; object-fit: cover; }
+    .db-ring-lv {
+        position: absolute;
+        bottom: -4px;
+        right: 50%;
+        transform: translateX(50%);
+        background: var(--db-ink);
+        color: #fff;
+        font-size: 0.66rem;
+        font-weight: 800;
+        padding: 3px 11px;
+        border-radius: 999px;
+        white-space: nowrap;
+    }
+
+    .db-hello { flex: 1 1 260px; min-width: 0; }
+    .db-when {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--db-chip);
+        border: 1px solid var(--db-line);
+        color: var(--db-soft);
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 5px 13px;
+        border-radius: 999px;
+        margin-bottom: 11px;
+    }
+    .db-hello h1 {
+        margin: 0 0 5px;
+        font-size: clamp(1.3rem, 3.2vw, 1.8rem);
+        font-weight: 900;
+        line-height: 1.55;
+        color: var(--db-ink);
+    }
+    .db-hello p { margin: 0; font-size: 0.85rem; color: var(--db-soft); line-height: 1.9; }
+
+    .db-hero-cta { display: flex; gap: 9px; margin-top: 16px; flex-wrap: wrap; }
+    .db-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--db-ink);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.82rem;
+        padding: 10px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    }
+    .db-cta:hover { background: #000; transform: translateY(-2px); }
+    .db-cta.ghost {
+        background: var(--db-card);
+        color: var(--db-ink);
+        border: 1px solid var(--db-line-strong);
+    }
+    .db-cta.ghost:hover { border-color: var(--db-ink); background: var(--db-card); }
+
+    .db-hero-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        flex: 0 0 auto;
+    }
+    .db-hstat {
+        background: var(--db-chip);
+        border: 1px solid var(--db-line);
+        border-radius: 16px;
+        padding: 9px 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-width: 172px;
+        color: var(--db-ink);
+        transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    }
+    a.db-hstat { color: var(--db-ink); text-decoration: none; }
+    a.db-hstat:hover { transform: translateY(-2px); background: var(--db-card); border-color: var(--db-line-strong); }
+    .db-hstat .ic { font-size: 1.2rem; }
+    .db-hstat b { font-size: 1rem; font-weight: 800; display: block; line-height: 1.45; }
+    .db-hstat small { font-size: 0.64rem; color: var(--db-soft); font-weight: 600; }
+
+    .db-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(158px, 1fr));
+        gap: 13px;
+        margin-bottom: 22px;
+    }
+    .db-kpi {
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        border-radius: var(--db-radius);
+        padding: 18px 16px 16px;
+        box-shadow: var(--db-shadow);
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+    }
+    .db-kpi:hover {
+        transform: translateY(-3px);
+        border-color: var(--db-line-strong);
+        box-shadow: 0 8px 24px rgba(23, 23, 28, 0.08);
+    }
+    .db-kpi .ic {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        background: #f4f4f7;
+        border: 1px solid var(--db-line);
+        display: grid;
+        place-items: center;
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    .db-kpi .val {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--db-ink);
+        line-height: 1.35;
+    }
+    .db-kpi .lbl { font-size: 0.7rem; color: var(--db-soft); font-weight: 700; }
+    .db-kpi .sub { font-size: 0.62rem; color: var(--db-faint); font-weight: 600; margin-top: 3px; }
+
+    .db-cols {
+        display: grid;
+        grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+        margin-bottom: 22px;
+    }
+
+    .db-panel {
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        border-radius: var(--db-radius);
+        box-shadow: var(--db-shadow);
+        padding: 20px;
+        position: relative;
+    }
+    .db-panel + .db-panel { margin-top: 16px; }
+    .db-pt {
+        margin: 0 0 15px;
+        font-size: 0.92rem;
+        font-weight: 800;
+        color: var(--db-ink);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .db-pt .go {
+        margin-right: auto;
+        font-size: 0.68rem;
+        font-weight: 700;
+        color: var(--db-soft);
+        text-decoration: none;
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        border-radius: 999px;
+        padding: 4px 12px;
+        transition: color 0.2s, border-color 0.2s;
+    }
+    .db-pt .go:hover { color: var(--db-ink); border-color: var(--db-line-strong); }
+
+    .db-level-flex { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .db-lv-badge {
+        background: var(--db-ink);
+        color: #fff;
+        font-weight: 800;
+        font-size: 0.8rem;
+        padding: 6px 16px;
+        border-radius: 999px;
+    }
+    .db-lv-next { color: var(--db-soft); font-size: 0.76rem; font-weight: 700; }
+    .db-pbar {
+        position: relative;
+        height: 10px;
+        background: #f0f0f5;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+    .db-pfill {
+        height: 100%;
+        width: 0;
+        border-radius: 999px;
+        background: var(--db-accent);
+        transition: width 0.9s cubic-bezier(0.2, 0.8, 0.3, 1);
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-left: 9px;
+    }
+    .db-pfill span { color: #fff; font-size: 0.6rem; font-weight: 800; white-space: nowrap; }
+    .db-scale { display: flex; justify-content: space-between; font-size: 0.66rem; color: var(--db-faint); font-weight: 700; margin-top: 8px; }
+
+    .db-season-band {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--db-chip);
+        border: 1px solid var(--db-line);
+        border-radius: 16px;
+        padding: 13px 15px;
+        margin-bottom: 12px;
+    }
+    .db-season-band .sem { font-size: 1.9rem; }
+    .db-season-band b { display: block; font-size: 0.88rem; color: var(--db-ink); }
+    .db-season-band small { font-size: 0.68rem; color: var(--db-soft); font-weight: 700; }
+    .db-season-band .pass-flag {
+        margin-right: auto;
+        background: var(--db-ink);
+        color: #fff;
+        font-size: 0.64rem;
+        font-weight: 800;
+        padding: 5px 12px;
+        border-radius: 999px;
+        white-space: nowrap;
+        text-decoration: none;
+        transition: border-color 0.2s, background 0.2s;
+    }
+    .db-season-band .pass-flag.free { background: var(--db-card); color: var(--db-ink); border: 1px solid var(--db-line-strong); }
+    .db-season-band .pass-flag.free:hover { border-color: var(--db-ink); }
+
+    .db-petline { display: flex; align-items: center; gap: 13px; }
+    .db-petline .pem {
+        width: 56px; height: 56px;
+        border-radius: 16px;
+        background: var(--db-chip);
+        border: 1px solid var(--db-line);
+        display: grid;
+        place-items: center;
+        font-size: 1.85rem;
+        flex: 0 0 auto;
+    }
+    .db-petline b { font-size: 0.88rem; color: var(--db-ink); }
+    .db-petline small { display: block; font-size: 0.66rem; color: var(--db-soft); font-weight: 700; margin-top: 2px; }
+    .db-hbar { flex: 1; min-width: 90px; }
+    .db-hbar .db-pbar { height: 8px; margin-top: 6px; }
+    .db-hfill { background: #10b981; }
+
+    .db-quick {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+        gap: 12px;
+    }
+    .db-q {
+        border-radius: 18px;
+        padding: 17px 15px 15px;
+        text-decoration: none;
+        color: var(--db-ink);
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        box-shadow: var(--db-shadow);
+        transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+        display: block;
+    }
+    .db-q:hover {
+        transform: translateY(-3px);
+        border-color: var(--db-line-strong);
+        box-shadow: 0 8px 22px rgba(23, 23, 28, 0.08);
+    }
+    .db-q .qe { display: none; }
+    .db-q .qi {
+        width: 40px; height: 40px;
+        border-radius: 12px;
+        background: #f4f4f7;
+        border: 1px solid var(--db-line);
+        display: grid;
+        place-items: center;
+        font-size: 1.15rem;
+        margin-bottom: 11px;
+    }
+    .db-q b { display: block; font-size: 0.84rem; font-weight: 800; }
+    .db-q small { display: block; font-size: 0.64rem; color: var(--db-soft); font-weight: 600; margin-top: 3px; }
+
+    .db-acts { display: flex; flex-direction: column; }
+    .db-act {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 9px 2px;
+        border-bottom: 1px solid var(--db-line);
+    }
+    .db-act:last-child { border-bottom: none; }
+    .db-act .ai {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        background: var(--db-chip);
+        border: 1px solid var(--db-line);
+        display: grid;
+        place-items: center;
+        font-size: 0.95rem;
+        flex: 0 0 auto;
+    }
+    .db-act .at { min-width: 0; flex: 1; }
+    .db-act .at b { display: block; font-size: 0.78rem; color: var(--db-ink); font-weight: 700; }
+    .db-act .at small { font-size: 0.62rem; color: var(--db-soft); }
+    .db-act .ad { font-size: 0.62rem; color: var(--db-faint); font-weight: 700; white-space: nowrap; }
+    .db-empty-mini {
+        text-align: center;
+        color: var(--db-soft);
+        font-size: 0.76rem;
+        padding: 20px 10px;
+        line-height: 1.9;
+    }
+    .db-empty-mini .big { display: block; font-size: 1.9rem; margin-bottom: 7px; }
+
+    .db-sec-title {
+        font-size: 1.02rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 10px 0 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 1px 8px rgba(15, 45, 110, 0.35);
+    }
+    .db-sec-title .all {
+        margin-right: auto;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #fff;
+        background: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 999px;
+        padding: 5px 14px;
+        text-decoration: none;
+        transition: background 0.2s, border-color 0.2s;
+    }
+    .db-sec-title .all:hover { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.8); }
+
+    .db-arts {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+    }
+    .db-art {
+        background: var(--db-card);
+        border: 1px solid var(--db-line);
+        border-radius: var(--db-radius);
+        overflow: hidden;
+        box-shadow: var(--db-shadow);
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
+    }
+    .db-art:hover { transform: translateY(-3px); border-color: var(--db-line-strong); box-shadow: 0 8px 24px rgba(23, 23, 28, 0.08); }
+    .db-art-cov {
+        position: relative;
+        aspect-ratio: 16 / 8.2;
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+    }
+    .db-art-cov img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.45s; }
+    .db-art:hover .db-art-cov img { transform: scale(1.04); }
+    .db-art-cov .huecover {
+        position: absolute; inset: 0;
+        background:
+            radial-gradient(400px 180px at 82% -30px, hsla(var(--h, 212), 70%, 88%, 0.85), transparent 70%),
+            radial-gradient(300px 200px at 8% 108%, hsla(calc(var(--h, 212) + 46), 66%, 82%, 0.8), transparent 68%),
+            linear-gradient(135deg, hsl(var(--h, 212), 55%, 70%), hsl(calc(var(--h, 212) + 42), 52%, 58%));
+        display: grid;
+        place-items: center;
+    }
+    .db-art-cov .huecover i {
+        font-style: normal;
+        font-size: 2.7rem;
+        filter: drop-shadow(0 6px 14px rgba(38, 43, 71, 0.2));
+        transition: transform 0.3s;
+    }
+    .db-art:hover .huecover i { transform: scale(1.08); }
+    .db-art-cov .catc {
+        position: absolute;
+        top: 10px; right: 10px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid var(--db-line);
+        color: var(--db-ink);
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 999px;
+    }
+    .db-art-body { padding: 14px 16px 15px; display: flex; flex-direction: column; gap: 7px; flex: 1; border-top: 1px solid var(--db-line); }
+    .db-art-body b { font-size: 0.89rem; color: var(--db-ink); font-weight: 800; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .db-art-body p { margin: 0; font-size: 0.75rem; color: var(--db-soft); line-height: 1.9; flex: 1; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .db-art-meta { display: flex; gap: 12px; font-size: 0.64rem; color: var(--db-faint); font-weight: 700; border-top: 1px solid var(--db-line); padding-top: 10px; }
+
+    .db-cont { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+    @media (max-width: 980px) {
+        .db-cols { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 660px) {
+        .db-hero { border-radius: 20px; }
+        .db-hero-in { flex-direction: column; text-align: center; }
+        .db-hero-cta { justify-content: center; }
+        .db-hero-stats { flex-direction: row; flex-wrap: wrap; width: 100%; }
+        .db-hstat { flex: 1 1 46%; min-width: 0; padding: 8px 12px; }
+        .db-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .db-kpi .val { font-size: 1.25rem; }
+        .db-quick { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .db-shell { animation: none; }
+        .db-pfill, .db-ring .fill, .db-art-cov img, .db-art-cov .huecover i { transition: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="db-shell">
+    <span class="db-blob b1"></span>
+    <span class="db-blob b2"></span>
+    <span class="db-blob b3"></span>
+
+    <section class="db-hero">
+        <span class="db-orb o1"></span>
+        <span class="db-orb o2"></span>
+        <span class="db-orb o3"></span>
+        <div class="db-hero-in">
+
+            <div class="db-ring" title="پیشرفت سطح">
+                <svg width="118" height="118" viewBox="0 0 118 118">
+                    <circle class="track" cx="59" cy="59" r="50" fill="none" stroke-width="9"/>
+                    <circle id="lvRing" class="fill" cx="59" cy="59" r="50" fill="none" stroke-width="9"
+                            stroke-dasharray="314.16" stroke-dashoffset="314.16"
+                            data-off="{{ 314.16|floatformat:2 }}-{{ ring_pct|floatformat:2 }}"/>
+                </svg>
+                <div class="db-ring-mid {% if lq_cosmetics.frame and lq_cosmetics.frame.0.css_class %}lq-framed {{ lq_cosmetics.frame.0.css_class }}{% endif %}">
+                    {% if user.avatar %}<img src="{{ user.avatar.url }}" alt="آواتار">{% else %}<span>{{ user.username|first|default:"👤" }}</span>{% endif %}
+                </div>
+                <span class="db-ring-lv">سطح {{ user.level|default:1 }}</span>
+            </div>
+
+            <div class="db-hello">
+                <span class="db-when">{{ daypart.0 }} {{ daypart.1 }} · {{ now|jdatelong }}</span>
+                <h1>سلام،
+                    {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %} 👋
+                </h1>
+                <p>امروز روز خوبی برای یادگیریه؛ بیا یک چیز جدید یاد بگیریم! 🚀</p>
+                <div class="db-hero-cta">
+                    <a class="db-cta" href="{% url 'language_academy:world_map' %}">🎓 ادامهٔ یادگیری</a>
+                    <a class="db-cta ghost" href="{% url 'games' %}">🎮 یک دست بازی</a>
+                </div>
+            </div>
+
+            <div class="db-hero-stats">
+                <div class="db-hstat"><span class="ic">🏆</span><span><b>سطح {{ user.level|default:1 }}</b><small>رتبه‌ات در سفر</small></span></div>
+                <div class="db-hstat"><span class="ic">🔥</span><span><b>{{ user.streak|default:0 }} روز</b><small>تداول مطالعه</small></span></div>
+                {% if lb_rank %}
+                <a class="db-hstat" href="{% url 'economy:leaderboard' %}"><span class="ic">🥇</span><span><b>رتبهٔ {{ lb_rank }}</b><small>لیدربورد جهانی</small></span></a>
+                {% else %}
+                <div class="db-hstat"><span class="ic">👁</span><span><b>{{ user.last_active|jdate }}</b><small>آخرین فعالیت</small></span></div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <div class="db-grid">
+        <a class="db-kpi" href="{% url 'profile' %}">
+            <span class="ic">⚡</span>
+            <div class="val" data-count="{{ user.xp|default:0 }}">۰</div>
+            <div class="lbl">امتیاز تجربه (XP)</div>
+            <div class="sub">با یادگیری و بازی جمعش کن</div>
+        </a>
+        <a class="db-kpi" href="{% url 'profile' %}">
+            <span class="ic">🏆</span>
+            <div class="val" data-count="{{ user.level|default:1 }}">۰</div>
+            <div class="lbl">سطح فعلی</div>
+            <div class="sub">تا سطح بعدی {{ xp_needed }} XP</div>
+        </a>
+        <a class="db-kpi" href="{% url 'economy:wallet' %}">
+            <span class="ic">🪙</span>
+            <div class="val" data-count="{{ lq_wallet.coins|default:0 }}">۰</div>
+            <div class="lbl">سکه</div>
+            <div class="sub">قابل خرج در فروشگاه</div>
+        </a>
+        <a class="db-kpi" href="{% url 'economy:wallet' %}">
+            <span class="ic">💎</span>
+            <div class="val" data-count="{{ lq_wallet.gems|default:0 }}">۰</div>
+            <div class="lbl">الماس</div>
+            <div class="sub">ارزشمند و کمیاب</div>
+        </a>
+        <a class="db-kpi" href="{% url 'economy:season' %}">
+            <span class="ic">🔥</span>
+            <div class="val" data-count="{{ user.streak|default:0 }}">۰</div>
+            <div class="lbl">روز متوالی</div>
+            <div class="sub">{% if claimed_today %}امروز جایزه گرفتی ✓{% else %}امروز هنوز جایزه نگرفتی!{% endif %}</div>
+        </a>
+        <a class="db-kpi" href="{% url 'profile' %}">
+            <span class="ic">🎯</span>
+            <div class="val" data-count="{{ user.points|default:0 }}">۰</div>
+            <div class="lbl">امتیاز کل</div>
+            <div class="sub">مجموع امتیازهای ویژه</div>
+        </a>
+    </div>
+
+    <div class="db-cols">
+        <div>
+            <div class="db-panel">
+                <h2 class="db-pt">📊 پیشرفت سطح <a class="go" href="{% url 'profile' %}">پروفایل کامل ←</a></h2>
+                <div class="db-level-flex">
+                    <div class="db-lv-badge">سطح {{ user.level|default:1 }}</div>
+                    <div class="db-lv-next">تا سطح {{ user.level|add:"1" }}: نیاز به {{ xp_needed }} XP</div>
+                </div>
+                <div class="db-pbar"><div class="db-pfill" id="lvBar" data-w="{{ progress_percentage }}"><span>{{ progress_percentage }}٪</span></div></div>
+                <div class="db-scale"><span>۰ XP</span><span>سطح {{ user.level }}</span><span>{{ xp_needed }} XP مانده</span></div>
+            </div>
+
+            {% if season_info %}
+            <div class="db-panel">
+                <h2 class="db-pt">🌸 فصل جاری <a class="go" href="{% url 'economy:season' %}">فصل و سیزن‌پس ←</a></h2>
+                <div class="db-season-band">
+                    <span class="sem">{{ season_info.season.emoji }}</span>
+                    <span>
+                        <b>{{ season_info.season.name }}</b>
+                        <small>سطح فصل {{ season_info.level }} از {{ season_info.max_level }} · {{ season_info.xp }} XP فصل</small>
+                    </span>
+                    {% if season_info.has_pass %}
+                        <span class="pass-flag">👑 دارای پس ویژه</span>
+                    {% else %}
+                        <a class="pass-flag free" href="{% url 'economy:season' %}">دریافت پس ✨</a>
+                    {% endif %}
+                </div>
+                <div class="db-pbar"><div class="db-pfill" data-w="{{ season_info.pct }}"><span>{% if season_info.next_xp %}{{ season_info.next_xp }} XP تا پلهٔ بعد{% else %}تکمیل شد 🎉{% endif %}</span></div></div>
+            </div>
+            {% endif %}
+
+            <div class="db-panel">
+                <h2 class="db-pt">⚡ دسترسی سریع</h2>
+                <div class="db-quick">
+                    <a class="db-q" href="{% url 'language_academy:world_map' %}">
+                        <span class="qe">🎓</span>
+                        <span class="qi">🎓</span>
+                        <b>اکادمی زبان</b>
+                        <small>درس‌های رایگان + ویژه</small>
+                    </a>
+                    <a class="db-q" href="{% url 'language:home' %}">
+                        <span class="qe">🌐</span>
+                        <span class="qi">🌐</span>
+                        <b>بازی زبان</b>
+                        <small>لغت با بازی یاد بگیر</small>
+                    </a>
+                    <a class="db-q" href="{% url 'games' %}">
+                        <span class="qe">🎮</span>
+                        <span class="qi">🎮</span>
+                        <b>بازی‌های ذهنی</b>
+                        <small>مار، ۲۰۴۸، حافظه و…</small>
+                    </a>
+                    <a class="db-q" href="{% url 'shop:home' %}">
+                        <span class="qe">🛒</span>
+                        <span class="qi">🛒</span>
+                        <b>فروشگاه</b>
+                        <small>قاب، تم، پت و بوستر</small>
+                    </a>
+                    <a class="db-q" href="{% url 'messenger:chat' %}">
+                        <span class="qe">💬</span>
+                        <span class="qi">💬</span>
+                        <b>پیامرسان</b>
+                        <small>چت با دوستان و گروه</small>
+                    </a>
+                    <a class="db-q" href="{% url 'economy:leaderboard' %}">
+                        <span class="qe">🏆</span>
+                        <span class="qi">🏆</span>
+                        <b>رتبه‌بندی</b>
+                        <small>با بقیه رقابت کن</small>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            {% if pet %}
+            <div class="db-panel">
+                <h2 class="db-pt">🐾 پت من <a class="go" href="{% url 'economy:pet' %}">مدیریت پت ←</a></h2>
+                <div class="db-petline">
+                    <span class="pem">{{ pet.species.emoji }}</span>
+                    <span>
+                        <b>{{ pet.name }}</b>
+                        <small>سطح {{ pet.level }} · {% if pet.can_feed %}🍽 گرسنه‌ست، غذاش بده!{% else %}سیر و راضی 😊{% endif %}</small>
+                    </span>
+                </div>
+                <div class="db-hbar">
+                    <small style="font-size:.66rem;color:var(--db-soft);font-weight:700">سیری: {{ pet.hunger_val }}٪</small>
+                    <div class="db-pbar"><div class="db-pfill db-hfill" data-w="{{ pet.hunger_val }}"></div></div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="db-panel">
+                <h2 class="db-pt">🕘 فعالیت‌های اخیر</h2>
+                {% if activities %}
+                <div class="db-acts">
+                    {% for a in activities %}
+                    <div class="db-act">
+                        <span class="ai">{% if a.icon == 'trophy' %}🏆{% elif a.icon == 'flask' %}🧪{% elif a.icon == 'book' %}📚{% elif a.icon == 'star' %}⭐{% elif a.icon == 'gift' %}🎁{% elif a.icon == 'game' or a.icon == 'gamepad' %}🎮{% else %}🔔{% endif %}</span>
+                        <span class="at"><b>{{ a.title|truncatechars:48 }}</b><small>{{ a.description|truncatechars:60 }}</small></span>
+                        <span class="ad">{{ a.created_at|jhuman }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="db-empty-mini">
+                    <span class="big">🌱</span>
+                    هنوز فعالیتی ثبت نشده؛ شروع کن به یادگیری!</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <h2 class="db-sec-title">📚 تازه‌های گالری دانش <a class="all" href="{% url 'blog:blog_home' %}">همهٔ مقالات ←</a></h2>
+    {% if recent_articles %}
+    <div class="db-arts">
+        {% for article in recent_articles %}
+        <a class="db-art" href="{% url 'blog:article_detail' article.id %}">
+            <span class="db-art-cov">
+                {% if article.image %}
+                    <img src="{{ article.image.url }}" alt="{{ article.title }}" loading="lazy">
+                {% else %}
+                    <span class="huecover" style="--h:{{ article.id|hue }}"><i>📖</i></span>
+                {% endif %}
+                <span class="catc">{{ article.category.name }}</span>
+            </span>
+            <span class="db-art-body">
+                <b>{{ article.title|truncatechars:60 }}</b>
+                <p>{{ article.excerpt|truncatechars:90 }}</p>
+                <span class="db-art-meta">
+                    <span>📅 {{ article.published_at|jdate }}</span>
+                    <span>👁 {{ article.views|fadigits }}</span>
+                    <span>❤ {{ article.likes|fadigits }}</span>
+                </span>
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="db-panel"><div class="db-empty-mini"><span class="big">📭</span>هنوز مقاله‌ای منتشر نشده است</div></div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const FA = '۰۱۲۳۴۵۶۷۸۹';
+    const fa = (n) => String(n).replace(/\d/g, d => FA[d]);
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    document.querySelectorAll('.db-kpi .val[data-count]').forEach(el => {
+        const finalValue = parseInt(el.dataset.count, 10) || 0;
+        if (finalValue === 0 || calm) { el.textContent = fa(finalValue); return; }
+        const steps = 42;
+        let i = 0;
+        const timer = setInterval(() => {
+            i++;
+            const cur = Math.round(finalValue * (i / steps));
+            el.textContent = fa(cur);
+            if (i >= steps) { el.textContent = fa(finalValue); clearInterval(timer); }
+        }, 24);
+    });
+
+    document.querySelectorAll('.db-pfill[data-w]').forEach(el => {
+        const w = Math.max(4, Math.min(100, parseFloat(el.dataset.w) || 0));
+        if (calm) { el.style.width = w + '%'; return; }
+        requestAnimationFrame(() => { setTimeout(() => { el.style.width = w + '%'; }, 60); });
+    });
+
+    const ring = document.getElementById('lvRing');
+    if (ring) {
+        const parts = ring.dataset.off.split('-');
+        const target = parseFloat(parts[1]) || 0;
+        if (calm) { ring.style.strokeDashoffset = String(314.16 - target); }
+        else requestAnimationFrame(() => { setTimeout(() => { ring.style.strokeDashoffset = String(314.16 - target); }, 120); });
+    }
+});
+</script>
+{% endblock %}

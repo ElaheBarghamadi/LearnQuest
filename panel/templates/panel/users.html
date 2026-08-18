@@ -1,0 +1,83 @@
+{% extends 'panel/base_panel.html' %}
+{% load static jalali %}
+
+{% block title %}کاربران | پنل مدیریت لرن‌کوئست{% endblock %}
+
+{% block content %}
+<section class="pn-hello slim">
+    <div>
+        <h1>👥 کاربران</h1>
+        <p>جستجو، مشاهدهٔ جزئیات و اهدای سکه/الماس/امتیاز</p>
+    </div>
+    <form class="pn-search" method="get" action="{% url 'panel:users' %}">
+        <input type="text" name="q" value="{{ q }}" placeholder="جستجوی نام کاربری / ایمیل…">
+        <button type="submit" class="pn-btn primary">🔎 جستجو</button>
+    </form>
+</section>
+
+<div class="pn-card">
+    <div class="pn-tablewrap">
+        <table class="pn-table users">
+            <thead>
+                <tr>
+                    <th>کاربر</th>
+                    <th>سطح</th>
+                    <th>XP</th>
+                    <th>🪙</th>
+                    <th>💎</th>
+                    <th class="hide-m">استریک</th>
+                    <th class="hide-m">عضویت</th>
+                    <th>وضعیت</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                {% with u=row.user %}
+                <tr>
+                    <td>
+                        <div class="pn-ucell">
+                            <span class="pn-ava">{% if u.avatar %}<img src="{{ u.avatar.url }}" alt="">{% else %}{{ u.username|first|upper }}{% endif %}</span>
+                            <span>
+                                <b>{{ u.username }}</b>
+                                <small>{{ u.email|default:'—' }}</small>
+                            </span>
+                        </div>
+                    </td>
+                    <td class="pn-num">{{ u.level|fadigits }}</td>
+                    <td class="pn-num">{{ u.xp|fadigits }}</td>
+                    <td class="pn-num">{{ row.coins|fadigits }}</td>
+                    <td class="pn-num">{{ row.gems|fadigits }}</td>
+                    <td class="pn-num hide-m">{{ u.streak|fadigits }}🔥</td>
+                    <td class="hide-m">{{ u.date_joined|jdate }}</td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="pn-badge on">فعال</span>
+                        {% else %}
+                            <span class="pn-badge off">تعلیق</span>
+                        {% endif %}
+                        {% if u.is_staff %}<span class="pn-badge staff">ادمین</span>{% endif %}
+                    </td>
+                    <td><a class="pn-btn ghost sm" href="{% url 'panel:user_detail' u.pk %}">مدیریت ←</a></td>
+                </tr>
+                {% endwith %}
+                {% empty %}
+                <tr><td colspan="9" class="pn-empty">{% if q %}نتیجه‌ای برای «{{ q }}» نیست.{% else %}کاربری نیست.{% endif %}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if paginator.num_pages > 1 %}
+    <nav class="pn-pages">
+        {% for n in paginator.page_range %}
+            {% if n == page_obj.number %}
+                <span class="cur">{{ n|fadigits }}</span>
+            {% elif n >= page_obj.number|add:-2 and n <= page_obj.number|add:2 %}
+                <a href="?page={{ n }}{% if q %}&q={{ q }}{% endif %}">{{ n|fadigits }}</a>
+            {% endif %}
+        {% endfor %}
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

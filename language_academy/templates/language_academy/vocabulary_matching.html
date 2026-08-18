@@ -1,0 +1,501 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Matching Game | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h1 class="h2">🧩 Matching Game</h1>
+        <p class="text-muted">Match words with their correct meanings</p>
+        <div class="mt-2">
+            <span class="badge bg-primary">Level: {{ level|default:"A1" }}</span>
+            <span class="badge bg-secondary ms-1">{{ total_words|default:0 }} words</span>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="academy-card glass-card text-center p-3">
+                <div class="text-muted small">Matches</div>
+                <div class="fs-3 fw-bold text-success" id="matchCount">0</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="academy-card glass-card text-center p-3">
+                <div class="text-muted small">Attempts</div>
+                <div class="fs-3 fw-bold text-primary" id="attemptCount">0</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="academy-card glass-card text-center p-3">
+                <div class="text-muted small">Accuracy</div>
+                <div class="fs-3 fw-bold text-warning" id="accuracyDisplay">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="academy-card glass-card mb-4">
+        <div class="card-body p-3 p-md-4">
+            <div class="row g-3" id="gameBoard">
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button class="btn-academy" id="resetGameBtn" onclick="resetGame()">
+            <i class="fas fa-redo me-2"></i> New Game
+        </button>
+        <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy-outline ms-2">
+            <i class="fas fa-arrow-left me-2"></i> Back to Hub
+        </a>
+    </div>
+
+    <div class="modal fade" id="resultModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card">
+                <div class="modal-body text-center p-4">
+                    <div id="resultIcon" class="display-1 mb-3">🎉</div>
+                    <h3 id="resultTitle">Great Job!</h3>
+                    <p id="resultMessage" class="text-muted"></p>
+                    <div class="mt-3">
+                        <button class="btn-academy" onclick="closeModalAndReset()">
+                            <i class="fas fa-redo me-2"></i> Play Again
+                        </button>
+                        <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy-outline ms-2">
+                            <i class="fas fa-home me-2"></i> Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(59, 130, 246, 0.08);
+}
+
+[data-theme="dark"] {
+    --glass-bg: rgba(26, 26, 46, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--glass-shadow), var(--shadow) !important;
+}
+
+.matching-card {
+    background: var(--glass-bg);
+    border: 2px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.matching-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.matching-card.selected {
+    border-color: var(--primary);
+    background: rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.matching-card.matched {
+    border-color: var(--success);
+    background: rgba(46, 204, 113, 0.1);
+    cursor: default;
+    opacity: 0.7;
+    transform: scale(0.95);
+}
+
+.matching-card.matched .match-check {
+    display: inline-block !important;
+}
+
+.matching-card.wrong {
+    border-color: var(--danger);
+    background: rgba(231, 76, 60, 0.1);
+    animation: shake 0.5s ease;
+}
+
+.matching-card .match-check {
+    display: none;
+    margin-left: 6px;
+    color: var(--success);
+}
+
+.matching-card .word-meaning {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.match-item {
+    font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+    .matching-card {
+        min-height: 60px;
+        font-size: 0.85rem;
+        padding: 12px;
+    }
+    .match-item {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .matching-card {
+        min-height: 50px;
+        font-size: 0.75rem;
+        padding: 8px;
+    }
+    .match-item {
+        font-size: 0.8rem;
+    }
+}
+
+.modal-content {
+    border: none !important;
+}
+
+.btn-academy-outline {
+    background: transparent;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.btn-academy-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+</style>
+
+<script>
+
+let gameData = [];
+let selectedCard = null;
+let matchedPairs = 0;
+let attempts = 0;
+let isProcessing = false;
+let gameWords = [];
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function initGame(words) {
+    gameWords = words || {{ words|safe|default:'[]' }};
+    if (gameWords.length === 0) {
+        document.getElementById('gameBoard').innerHTML = `
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-gamepad fa-4x text-muted mb-3"></i>
+                <h4>No words available</h4>
+                <p class="text-muted">Please add some words to play!</p>
+                <a href="{% url 'language_academy:vocabulary_hub' %}" class="btn-academy">
+                    Go to Learning Hub
+                </a>
+            </div>
+        `;
+        return;
+    }
+
+    const wordItems = gameWords.map(w => ({
+        id: w.id,
+        type: 'word',
+        text: w.word,
+        pairId: w.id,
+        display: w.word
+    }));
+
+    const meaningItems = gameWords.map(w => ({
+        id: w.id,
+        type: 'meaning',
+        text: w.meaning,
+        pairId: w.id,
+        display: w.meaning.length > 30 ? w.meaning.substring(0, 30) + '...' : w.meaning
+    }));
+
+    gameData = [...wordItems, ...meaningItems];
+    shuffleArray(gameData);
+
+    matchedPairs = 0;
+    attempts = 0;
+    selectedCard = null;
+    isProcessing = false;
+
+    updateStats();
+    renderBoard();
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
+function renderBoard() {
+    const board = document.getElementById('gameBoard');
+    board.innerHTML = '';
+
+    gameData.forEach((item, index) => {
+        const col = document.createElement('div');
+        col.className = 'col-6 col-md-4 col-lg-3';
+        
+        const card = document.createElement('div');
+        card.className = 'matching-card match-item';
+        card.dataset.index = index;
+        card.dataset.pairId = item.pairId;
+        card.dataset.type = item.type;
+        card.dataset.matched = 'false';
+        
+        card.innerHTML = `
+            <div>
+                ${item.display}
+                <span class="match-check"><i class="fas fa-check-circle"></i></span>
+            </div>
+        `;
+        
+        card.addEventListener('click', function() {
+            handleCardClick(this);
+        });
+        
+        col.appendChild(card);
+        board.appendChild(col);
+    });
+}
+
+function handleCardClick(card) {
+    if (isProcessing || card.dataset.matched === 'true') return;
+    if (card === selectedCard) {
+        card.classList.remove('selected');
+        selectedCard = null;
+        return;
+    }
+
+    if (!selectedCard) {
+        card.classList.add('selected');
+        selectedCard = card;
+        return;
+    }
+
+    isProcessing = true;
+    attempts++;
+    updateStats();
+
+    const firstCard = selectedCard;
+    const secondCard = card;
+    
+    const isMatch = (firstCard.dataset.pairId === secondCard.dataset.pairId) && 
+                    (firstCard.dataset.type !== secondCard.dataset.type);
+
+    if (isMatch) {
+        matchedPairs++;
+        firstCard.dataset.matched = 'true';
+        secondCard.dataset.matched = 'true';
+        firstCard.classList.remove('selected');
+        firstCard.classList.add('matched');
+        secondCard.classList.add('matched');
+        
+        const wordId = firstCard.dataset.pairId;
+        sendMatchResult(wordId, true);
+        
+        showXPPopup('✅ +5 XP', 'success');
+        
+        selectedCard = null;
+        isProcessing = false;
+        updateStats();
+        
+        if (matchedPairs === gameWords.length) {
+            setTimeout(() => {
+                showResult(true);
+            }, 500);
+        }
+    } else {
+        firstCard.classList.add('wrong');
+        secondCard.classList.add('wrong');
+        
+        const wordId = firstCard.dataset.pairId;
+        sendMatchResult(wordId, false);
+        
+        setTimeout(() => {
+            firstCard.classList.remove('selected', 'wrong');
+            secondCard.classList.remove('wrong');
+            selectedCard = null;
+            isProcessing = false;
+        }, 600);
+    }
+}
+
+function sendMatchResult(wordId, isCorrect) {
+    fetch('{% url "language_academy:vocabulary_matching_result" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            word_id: wordId,
+            is_correct: isCorrect
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success && data.xp_earned > 0) {
+            showXPPopup(`✨ +${data.xp_earned} XP`, 'info');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function updateStats() {
+    document.getElementById('matchCount').textContent = matchedPairs;
+    document.getElementById('attemptCount').textContent = attempts;
+    
+    const accuracy = attempts > 0 ? Math.round((matchedPairs / attempts) * 100) : 0;
+    document.getElementById('accuracyDisplay').textContent = accuracy + '%';
+}
+
+function showResult(win) {
+    const modal = new bootstrap.Modal(document.getElementById('resultModal'));
+    const icon = document.getElementById('resultIcon');
+    const title = document.getElementById('resultTitle');
+    const message = document.getElementById('resultMessage');
+    
+    if (win) {
+        icon.textContent = '🎉';
+        title.textContent = 'Perfect! All Matched!';
+        const accuracy = attempts > 0 ? Math.round((matchedPairs / attempts) * 100) : 0;
+        message.textContent = `You matched all ${matchedPairs} words with ${accuracy}% accuracy!`;
+    } else {
+        icon.textContent = '💪';
+        title.textContent = 'Keep Practicing!';
+        message.textContent = `You matched ${matchedPairs} out of ${gameWords.length} words. Try again!`;
+    }
+    
+    modal.show();
+}
+
+function closeModalAndReset() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById('resultModal'));
+    if (modal) modal.hide();
+    resetGame();
+}
+
+function resetGame() {
+    if (gameWords.length === 0) {
+        location.reload();
+        return;
+    }
+    
+    const wordItems = gameWords.map(w => ({
+        id: w.id,
+        type: 'word',
+        text: w.word,
+        pairId: w.id,
+        display: w.word
+    }));
+
+    const meaningItems = gameWords.map(w => ({
+        id: w.id,
+        type: 'meaning',
+        text: w.meaning,
+        pairId: w.id,
+        display: w.meaning.length > 30 ? w.meaning.substring(0, 30) + '...' : w.meaning
+    }));
+
+    gameData = [...wordItems, ...meaningItems];
+    shuffleArray(gameData);
+
+    matchedPairs = 0;
+    attempts = 0;
+    selectedCard = null;
+    isProcessing = false;
+
+    updateStats();
+    renderBoard();
+}
+
+function showXPPopup(message, type = 'info') {
+    const popup = document.createElement('div');
+    popup.className = 'xp-popup';
+    popup.innerHTML = message;
+    
+    if (type === 'success') {
+        popup.style.background = 'linear-gradient(135deg, #2ECC71, #27AE60)';
+    } else if (type === 'error') {
+        popup.style.background = 'linear-gradient(135deg, #E74C3C, #C0392B)';
+    } else {
+        popup.style.background = 'linear-gradient(135deg, var(--primary), var(--accent))';
+    }
+    
+    document.body.appendChild(popup);
+    setTimeout(() => {
+        if (popup.parentNode) popup.remove();
+    }, 1500);
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'r' || e.key === 'R') {
+        if (!e.ctrlKey && !e.metaKey) {
+            resetGame();
+        }
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const wordsData = {{ words|safe|default:'[]' }};
+    initGame(wordsData);
+    
+    console.log('🧩 Matching Game Loaded!');
+    console.log(`📚 ${wordsData.length} words loaded`);
+    console.log('💡 Press R to reset game');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}{{ dialogue.title }} | Dialogue{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="text-center mb-4">
+                <h1 class="h2">💬 {{ dialogue.title }}</h1>
+                <p class="text-muted">{{ dialogue.description }}</p>
+            </div>
+
+            <div class="academy-card">
+                <div class="card-body p-4">
+                    <div class="scene-container">
+                        <div class="character-avatar text-center mb-3">
+                            {% if scene.character_avatar %}
+                                <img src="{{ scene.character_avatar.url }}" class="avatar-img" alt="{{ scene.character }}">
+                            {% else %}
+                                <div class="avatar-placeholder">
+                                    {% if scene.character == 'Officer' %}👮
+                                    {% elif scene.character == 'Traveler' %}🧳
+                                    {% elif scene.character == 'Agent' %}👩‍💼
+                                    {% elif scene.character == 'Clerk' %}🧑‍💼
+                                    {% else %}💬{% endif %}
+                                </div>
+                            {% endif %}
+                            <div class="character-name mt-2">{{ scene.character }}</div>
+                        </div>
+
+                        <div class="message-bubble">
+                            <p class="mb-0">{{ scene.message }}</p>
+                            {% if scene.audio %}
+                                <button class="audio-btn" onclick="playAudio('{{ scene.audio.url }}')">
+                                    <i class="fas fa-volume-up"></i> Listen
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if scene.is_user_turn %}
+                        <div class="choices-section mt-4">
+                            <h5 class="mb-3">How would you respond?</h5>
+                            <form method="post" id="dialogueForm">
+                                {% csrf_token %}
+                                <input type="hidden" name="scene_id" value="{{ scene.id }}">
+                                
+                                {% for choice in scene.choices.all %}
+                                <button type="submit" name="choice_id" value="{{ choice.id }}" class="choice-btn">
+                                    <i class="fas fa-comment-dots me-2"></i>
+                                    {{ choice.choice_text }}
+                                </button>
+                                {% endfor %}
+                            </form>
+                        </div>
+                    {% else %}
+                        <div class="text-center mt-4">
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="scene_id" value="{{ scene.id }}">
+                                <input type="hidden" name="choice_id" value="{{ scene.choices.first.id }}">
+                                <button type="submit" class="btn-academy">
+                                    Continue <i class="fas fa-arrow-right ms-2"></i>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <div class="progress" style="height: 4px; max-width: 300px; margin: 0 auto;">
+                    <div class="progress-bar" style="width: {{ progress_percentage }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function playAudio(audioUrl) {
+    const audio = new Audio(audioUrl);
+    audio.play();
+}
+
+document.querySelectorAll('.choice-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+        btn.style.transform = 'translateX(10px)';
+    });
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translateX(0)';
+    });
+});
+</script>
+
+<style>
+.scene-container {
+    background: var(--duo-gray-50);
+    border-radius: var(--duo-radius);
+    padding: 30px;
+}
+
+.avatar-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #58CC71, #1CB0F6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto;
+    color: white;
+}
+
+.character-name {
+    font-weight: bold;
+    color: var(--duo-gray-700);
+}
+
+.message-bubble {
+    background: var(--duo-white);
+    border-radius: 20px;
+    padding: 20px;
+    margin-top: 20px;
+    position: relative;
+    box-shadow: var(--duo-shadow);
+    font-size: 1.1rem;
+    line-height: 1.5;
+}
+
+.message-bubble::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--duo-white);
+}
+
+.audio-btn {
+    background: none;
+    border: none;
+    color: var(--duo-blue);
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+
+.choice-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: var(--duo-white);
+    border: 2px solid var(--duo-gray-200);
+    border-radius: var(--duo-radius);
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    transition: var(--duo-transition);
+    font-weight: 500;
+}
+
+.choice-btn:hover {
+    border-color: var(--duo-green);
+    background: rgba(88, 204, 113, 0.05);
+    transform: translateX(10px);
+}
+</style>
+{% endblock %}

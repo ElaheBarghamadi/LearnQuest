@@ -1,0 +1,229 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}{{ chapter.name }} | LearnQuest Academy{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'language_academy:world_map' %}" class="text-decoration-none">🌍 Worlds</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'language_academy:world_detail' chapter.world.id %}" class="text-decoration-none">{{ chapter.world.name }}</a></li>
+            <li class="breadcrumb-item active">{{ chapter.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="academy-card mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start flex-wrap">
+                <div>
+                    <h1 class="h2 mb-2"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h1>
+                    <p class="lead mb-3"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description }}</p>
+                    <div class="d-flex gap-3 flex-wrap">
+                        <span class="badge bg-success"><i class="fas fa-star"></i> +{{ chapter.xp_reward }} XP</span>
+                        <span class="badge bg-info"><i class="fas fa-coins"></i> +{{ chapter.coin_reward }}</span>
+                        <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> {{ chapter.estimated_time_minutes }} min</span>
+                    </div>
+                </div>
+                <div class="text-center mt-3 mt-sm-0">
+                    <div class="display-4 fw-bold text-primary">{{ chapter_progress.lessons_completed|default:0 }}/{{ chapter_progress.total_lessons|default:0 }}</div>
+                    <div class="small text-muted">Lessons Completed</div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <div class="d-flex justify-content-between small mb-1">
+                    <span>Chapter Progress</span>
+                    <span>
+                        {% if chapter_progress.total_lessons %}
+                            {{ chapter_progress.lessons_completed|default:0 }}/{{ chapter_progress.total_lessons }} Lessons
+                        {% else %}
+                            0/0 Lessons
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="academy-progress">
+                    <div class="academy-progress-bar" style="width:
+                        {% if chapter_progress.total_lessons %}
+                            {% widthratio chapter_progress.lessons_completed chapter_progress.total_lessons 100 %}
+                        {% else %}0{% endif %}%">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h2 class="h3 mb-4"><i class="fas fa-book-open me-2"></i> Lessons</h2>
+
+            <div class="lessons-timeline"{% if visual_edit %} data-vae-list="lessons"{% endif %}>
+                {% for lesson in lessons %}
+                <div class="lesson-card mb-3 {% if lesson.status == 'completed' %}completed{% endif %}"{% if visual_edit %} data-vae-id="{{ lesson.id }}"{% endif %}>
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="lesson-icon {% if lesson.status == 'completed' %}completed{% endif %}">
+                            {% if lesson.lesson_type == 'vocabulary' %}📚
+                            {% elif lesson.lesson_type == 'grammar' %}📝
+                            {% elif lesson.lesson_type == 'dialogue' %}💬
+                            {% elif lesson.lesson_type == 'reading' %}📖
+                            {% elif lesson.lesson_type == 'listening' %}🎧
+                            {% elif lesson.lesson_type == 'writing' %}✍️
+                            {% elif lesson.lesson_type == 'speaking' %}🗣️
+                            {% else %}⭐{% endif %}
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div>
+                                    <h3 class="h6 mb-1"{% if visual_edit %} data-vae="lesson.{{ lesson.id }}.name"{% endif %}>{{ lesson.name }}</h3>
+                                    <div class="small text-muted">
+                                        <i class="fas fa-clock"></i> {{ lesson.estimated_time_minutes }} min
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-star text-warning"></i> +{{ lesson.xp_reward }} XP
+                                    </div>
+                                </div>
+                                {% if lesson.quiz_passed %}
+                                    <span class="badge bg-success"><i class="fas fa-check"></i> Quiz Passed</span>
+                                {% endif %}
+                            </div>
+
+                            {% if lesson.progress_percentage > 0 %}
+                            <div class="mt-2">
+                                <div class="academy-progress" style="height: 4px;">
+                                    <div class="academy-progress-bar" style="width: {{ lesson.progress_percentage }}%"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        {% if lesson.status == 'completed' %}
+                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-redo"></i> Review
+                            </a>
+                        {% elif lesson.status == 'in_progress' %}
+                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn-academy btn-sm">
+                                Continue <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn-academy btn-sm">
+                                Start <i class="fas fa-play ms-1"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="academy-card text-center py-4">
+                    <p class="text-muted mb-0">No lessons available in this chapter yet.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            {% if chapter_exam %}
+            <div class="academy-card sticky-top" style="top: 20px;">
+                <div class="card-header bg-gradient-green text-white">
+                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Chapter Exam</h5>
+                </div>
+                <div class="card-body">
+                    <p>Test your knowledge and earn rewards!</p>
+                    <ul class="list-unstyled small mb-3">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Passing Score: {{ chapter_exam.passing_score }}%</li>
+                        <li class="mb-2"><i class="fas fa-hourglass-half me-2"></i> Time Limit: {{ chapter_exam.time_limit_minutes }} minutes</li>
+                        <li class="mb-2"><i class="fas fa-star me-2"></i> Reward: +{{ chapter_exam.xp_reward }} XP</li>
+                    </ul>
+
+                    {% if exam_attempt %}
+                        <div class="alert alert-success mb-3">
+                            <i class="fas fa-trophy me-2"></i> You passed this exam!
+                        </div>
+                        <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn btn-outline-success w-100">
+                            Review Exam
+                        </a>
+                    {% else %}
+                        {% if chapter_progress.lessons_completed >= chapter_progress.total_lessons and chapter_progress.total_lessons > 0 %}
+                            <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn-academy w-100">
+                                Take Exam <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        {% else %}
+                            <button class="btn btn-secondary w-100" disabled>
+                                <i class="fas fa-lock me-2"></i> Complete all lessons first
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="academy-card mt-3">
+                <div class="card-body">
+                    <h5 class="fw-bold mb-3"><i class="fas fa-chart-simple me-2"></i> Quick Stats</h5>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Total Lessons</span>
+                        <span class="fw-bold">{{ chapter_progress.total_lessons|default:0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Completed</span>
+                        <span class="fw-bold text-success">{{ chapter_progress.lessons_completed|default:0 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>XP Earned</span>
+                        <span class="fw-bold text-warning">{{ chapter_progress.xp_earned|default:0 }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.lesson-card {
+    background: var(--duo-white);
+    border-radius: var(--duo-radius);
+    padding: 16px 20px;
+    transition: var(--duo-transition);
+    border: 1px solid var(--duo-gray-200);
+}
+
+.lesson-card:hover {
+    transform: translateX(5px);
+    border-color: var(--duo-green);
+}
+
+.lesson-card.completed {
+    background: rgba(88, 204, 113, 0.05);
+    border-color: var(--duo-green);
+}
+
+.lesson-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--duo-gray-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.lesson-icon.completed {
+    background: var(--duo-green);
+    color: white;
+}
+
+.card-header.bg-gradient-green {
+    background: linear-gradient(135deg, #58CC71, #3C9B4A);
+    color: white;
+}
+
+.sticky-top {
+    position: sticky;
+    top: 20px;
+    z-index: 1;
+}
+</style>
+{% if visual_edit %}
+<div class="container"><button type="button" class="vae-add" data-vae-add="new_lesson.0" data-parent="chapter:{{ chapter.id }}" data-vae-name="New Lesson">＋ Add Lesson</button></div>
+{% endif %}
+{% include "language_academy/ve_structure.html" %}
+{% endblock %}

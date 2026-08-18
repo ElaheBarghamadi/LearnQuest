@@ -1,0 +1,123 @@
+{% extends 'language_academy/base_academy.html' %}
+{% block title %}{% if review %}Smart Review{% else %}Idiom Flashcards{% endif %} | LearnQuest{% endblock %}
+
+{% block content %}
+{{ deck|json_script:'deckData' }}
+<style>
+.fc-wrap { max-width: 620px; margin: 0 auto; text-align: center; }
+.fc-card { width: 100%; min-height: 320px; border-radius: 26px; cursor: pointer; position: relative; transition: transform 0.35s; transform-style: preserve-3d; }
+.fc-card.flipped { transform: rotateY(180deg); }
+.fc-face { position: absolute; inset: 0; border-radius: 26px; padding: 30px 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.fc-front { background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: #fff; box-shadow: 0 18px 42px rgba(99, 102, 241, 0.35); }
+.fc-back { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(14px); color: var(--text, #1e293b); transform: rotateY(180deg); box-shadow: 0 18px 42px rgba(30, 45, 90, 0.16); border: 1px solid rgba(255, 255, 255, 0.85); }
+.fc-ex { font-size: 1.5rem; font-weight: 800; line-height: 1.5; }
+.fc-hint { font-size: 0.78rem; opacity: 0.8; margin-top: 14px; }
+.fc-fa { font-size: 1.15rem; font-weight: 800; color: #4f46e5; margin-bottom: 8px; }
+.fc-def { font-size: 0.9rem; color: var(--text-secondary, #64748b); margin-bottom: 10px; }
+.fc-sen { font-size: 0.85rem; font-style: italic; color: var(--text-secondary, #64748b); }
+.fc-progress { font-weight: 800; color: #4f46e5; font-variant-numeric: tabular-nums; margin-bottom: 14px; }
+.fc-controls { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
+.fc-btn { border: none; border-radius: 999px; padding: 12px 26px; font-weight: 800; font-size: 0.9rem; cursor: pointer; transition: 0.15s; }
+.fc-skip { background: rgba(148, 163, 184, 0.2); color: var(--text, #1e293b); }
+.fc-know { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 10px 24px rgba(16, 185, 129, 0.4); }
+.fc-btn:hover { transform: translateY(-2px); }
+.fc-empty { padding: 60px 20px; border-radius: 26px; }
+.fc-flip-mini { font-size: 0.75rem; opacity: 0.75; position: absolute; bottom: 16px; }
+</style>
+
+<div class="container py-4 fc-wrap" id="fcApp" data-review="{{ review|yesno:'1,0' }}">
+    <h1 class="h3 mb-1">{% if review %}🔁 Smart Review{% else %}🃏 Idiom Flashcards{% endif %}</h1>
+    <p class="text-muted mb-4">{% if review %}Only the idioms that are due right now{% else %}Tap the card to flip it{% endif %} · level {{ level }}</p>
+
+    <div id="fcEmpty" class="academy-card glass-card fc-empty" hidden>
+        <div style="font-size: 2.4rem;">🏝️</div>
+        <h5 class="mt-3">{% if review %}Nothing due — you are all caught up! ✨{% else %}No idioms in this deck yet.{% endif %}</h5>
+        <a href="{% url 'language_academy:idioms_hub' %}" class="btn btn-sm btn-outline-primary mt-2" style="border-radius: 999px;">Back to hub</a>
+    </div>
+
+    <div id="fcStage" hidden>
+        <div class="fc-progress" id="fcProgress">1 / 1</div>
+        <div class="fc-card" id="fcCard">
+            <div class="fc-face fc-front">
+                <div class="fc-ex" id="fcFrontText"></div>
+                <div class="fc-flip-mini">tap to flip 👆</div>
+            </div>
+            <div class="fc-face fc-back">
+                <div class="fc-fa" id="fcBackFa"></div>
+                <div class="fc-def" id="fcBackDef"></div>
+                <div class="fc-sen" id="fcBackSen"></div>
+            </div>
+        </div>
+        <div class="fc-controls">
+            <button class="fc-btn fc-skip" id="fcLearning">😕 Still learning</button>
+            <button class="fc-btn fc-know" id="fcKnow">✔ I know this</button>
+        </div>
+    </div>
+
+    <div id="fcDone" class="academy-card glass-card fc-empty" hidden>
+        <div style="font-size: 2.4rem;">🎉</div>
+        <h5 class="mt-3">Deck finished! <span class="text-success" id="fcXpSum"></span></h5>
+        <div class="mt-3">
+            <a href="{% url 'language_academy:idiom_flashcards' %}" class="btn btn-sm btn-primary" style="border-radius: 999px;">🔄 Again</a>
+            <a href="{% url 'language_academy:idioms_hub' %}" class="btn btn-sm btn-outline-secondary" style="border-radius: 999px;">Hub</a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const DECK = JSON.parse(document.getElementById('deckData').textContent);
+    const el = (id) => document.getElementById(id);
+    const stage = el('fcStage'), empty = el('fcEmpty'), done = el('fcDone');
+    function csrf() {
+        const m = document.cookie.match(/(^|;\s*)csrftoken\s*=\s*([^;]+)/);
+        return m ? decodeURIComponent(m[2]) : '';
+    }
+    if (!DECK.length) { empty.hidden = false; return; }
+    let i = 0, flipped = false, xpSum = 0;
+    stage.hidden = false;
+    const card = el('fcCard');
+    function show() {
+        flipped = false;
+        card.classList.remove('flipped');
+        const c = DECK[i];
+        el('fcProgress').textContent = (i + 1) + ' / ' + DECK.length;
+        el('fcFrontText').textContent = c.ex;
+        el('fcBackFa').textContent = c.fa;
+        el('fcBackDef').textContent = c.def;
+        el('fcBackSen').textContent = '“' + c.sen + '”';
+        el('fcKnow').disabled = el('fcLearning').disabled = false;
+    }
+    card.addEventListener('click', () => { flipped = !flipped; card.classList.toggle('flipped', flipped); });
+    function mark(action, btn) {
+        const c = DECK[i];
+        el('fcKnow').disabled = el('fcLearning').disabled = true;
+        fetch("{% url 'language_academy:idiom_mark_learned' %}", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf() },
+            body: JSON.stringify({ idiom_id: c.id, action: action })
+        }).then((r) => r.json()).then((j) => {
+            if (j.ok && j.xp) { xpSum += j.xp; }
+        }).catch(() => {}).finally(() => {
+            i += 1;
+            if (i >= DECK.length) {
+                stage.hidden = true;
+                el('fcXpSum').textContent = xpSum ? ('+' + xpSum + ' XP earned ✨') : '';
+                done.hidden = false;
+            } else {
+                show();
+            }
+        });
+    }
+    el('fcKnow').addEventListener('click', () => mark('known'));
+    el('fcLearning').addEventListener('click', () => mark('learning'));
+    document.addEventListener('keydown', (ev) => {
+        if (ev.key === ' ') { ev.preventDefault(); card.click(); }
+        if (ev.key === 'ArrowRight') el('fcKnow').click();
+        if (ev.key === 'ArrowLeft') el('fcLearning').click();
+    });
+    show();
+})();
+</script>
+{% include 'language_academy/_ai_tutor.html' with chat_context='idiom' %}
+{% endblock %}

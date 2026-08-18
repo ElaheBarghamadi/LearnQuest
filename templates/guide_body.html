@@ -1,0 +1,208 @@
+<style>
+.gd-root { max-width: 1000px; margin: 0 auto; padding: 24px 16px 60px; }
+.gd-hero {
+    position: static; display: block; height: auto; width: auto; z-index: auto;
+    justify-content: initial; align-items: initial; gap: initial;
+    background: none; border: none; box-shadow: none;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    text-align: center; color: #fff; padding: 30px 16px 24px;
+}
+.gd-hero h1 { font-size: clamp(1.7rem, 4.5vw, 2.5rem); font-weight: 900; margin-bottom: 8px; }
+.gd-hero p { opacity: .9; font-size: 1rem; }
+.gd-toc {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;
+    margin: 18px auto 30px;
+}
+.gd-toc a {
+    text-decoration: none; color: #fff; font-size: .82rem; font-weight: 700;
+    background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+    padding: 8px 16px; border-radius: 999px; backdrop-filter: blur(6px);
+    transition: background .2s, transform .2s;
+}
+.gd-toc a:hover { background: rgba(255,255,255,.3); transform: translateY(-2px); }
+.gd-card {
+    background: rgba(255,255,255,.95); border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(23, 32, 51,.12);
+    padding: 26px clamp(18px, 4vw, 34px); margin-bottom: 20px;
+    scroll-margin-top: 90px;
+}
+.gd-card h2 {
+    display: flex; align-items: center; gap: 12px;
+    color: #2D3047; font-size: 1.25rem; margin: 0 0 14px;
+}
+.gd-card h2 .gd-ico {
+    width: 42px; height: 42px; flex: 0 0 auto; border-radius: 14px;
+    display: grid; place-items: center; font-size: 1.25rem;
+    background: linear-gradient(135deg, #3B82F622, #36D1DC22);
+}
+.gd-card p, .gd-card li { color: #4a4e6e; line-height: 2.1; font-size: .94rem; }
+.gd-card ul { margin: 0; padding: 0 18px 0 0; }
+.gd-kv {
+    display: grid; gap: 10px; margin: 14px 0 4px;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+}
+.gd-kv div {
+    background: #f6f5ff; border: 1px solid #e9e7fb; border-radius: 14px;
+    padding: 12px 16px; font-size: .88rem; color: #4a4e6e;
+}
+.gd-kv b { color: #2D3047; display: block; margin-bottom: 2px; font-size: .95rem; }
+.gd-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .86rem; }
+.gd-table th, .gd-table td { padding: 10px 12px; text-align: right; }
+.gd-table thead th { background: #3B82F6; color: #fff; font-weight: 700; }
+.gd-table thead th:first-child { border-radius: 0 10px 10px 0; }
+.gd-table thead th:last-child { border-radius: 10px 0 0 10px; }
+.gd-table tbody tr:nth-child(odd) { background: #f6f5ff; }
+.gd-table tbody td { color: #4a4e6e; border-bottom: 1px dashed #e9e7fb; }
+.gd-note {
+    margin-top: 14px; background: #fff8e6; border: 1px solid #ffe4a8;
+    border-radius: 12px; padding: 12px 16px; font-size: .86rem; color: #7a6215;
+}
+.gd-cta { text-align: center; margin-top: 26px; }
+.gd-cta a {
+    display: inline-block; text-decoration: none; font-weight: 800;
+    color: #fff; background: linear-gradient(135deg, #3B82F6, #9d97ff);
+    padding: 14px 40px; border-radius: 999px; box-shadow: 0 10px 24px rgba(59, 130, 246,.4);
+    transition: transform .2s;
+}
+.gd-cta a:hover { transform: translateY(-3px); }
+@media (max-width: 640px) { .gd-card { padding: 20px 16px; } .gd-table { font-size: .78rem; } }
+</style>
+
+<div class="gd-root">
+    <header class="gd-hero">
+        <h1>🧭 راهنمای کامل لرن‌کوئست</h1>
+        <p>هر چیزی که باید دربارهٔ بازی‌ها، امتیازها، سکه‌ها و امکانات سایت بدونی — در یک صفحه.</p>
+        <nav class="gd-toc">
+            <a href="#start">شروع سریع</a>
+            <a href="#xp">امتیاز و سطح</a>
+            <a href="#games">بازی‌ها</a>
+            <a href="#coins">سکه و الماس</a>
+            <a href="#shop">فروشگاه</a>
+            <a href="#academy">آکادمی</a>
+            <a href="#pet-season">پت و فصل</a>
+            <a href="#messenger">پیامرسان</a>
+            <a href="#notifs">اعلان‌ها و تاریخ</a>
+            <a href="#blog">وبلاگ</a>
+            <a href="#rank">رتبه‌بندی</a>
+        </nav>
+    </header>
+
+    <section class="gd-card" id="start">
+        <h2><span class="gd-ico">🚀</span> شروع سریع در ۴ قدم</h2>
+        <div class="gd-kv">
+            <div><b>۱) حساب بساز</b>ثبت‌نام کن و وارد شو — همه‌چیز رایگانه.</div>
+            <div><b>۲) بازی و درس</b>با بازی‌ها امتیاز (XP) و با درس‌های آکادمی مسیر یادگیری رو برو.</div>
+            <div><b>۳) جایزه بردار</b>هر روز فقط با ورود به سایت سکه جایزه می‌گیری (روزهای متوالی بیشتر!).</div>
+            <div><b>۴) خرج کن فروشگاه</b>قاب، افکت، رنگ نام، پت و بوستر بخر و پروفایلت رو شخصی کن.</div>
+        </div>
+    </section>
+
+    <section class="gd-card" id="xp">
+        <h2><span class="gd-ico">⭐</span> امتیاز (XP) و سطح</h2>
+        <p>هر فعالیت روی سایت — بازی، درس، کوئیز و مرور — بهت <b>امتیاز تجربه (XP)</b> می‌ده. با جمع شدن XP، <b>سطحت</b> بالا می‌ره و لِوِل‌آپ در تایم‌لاین فعالیت‌هات ثبت می‌شه.</p>
+        <ul>
+            <li>🎮 <b>بازی‌ها:</b> هر بازی تا سقف مشخصی XP می‌ده (جدول پایین) — سقف روزانهٔ مجموعاً <b>۱۰۰ XP</b> از بازی‌هاست.</li>
+            <li>📚 <b>آکادمی:</b> تکمیل درس ۵۰، قبولی کوئیز ۵۰، قبولی امتحان ۱۰۰ XP.</li>
+            <li>🔁 <b>مرور واژگان:</b> هر جلسهٔ مرور هم امتیاز داره.</li>
+        </ul>
+        <div class="gd-note">💡 سقف روزانه برای جلوگیری از فارمینه — اگه دیدی دیگه XP نمی‌گیری، یعنی سقف امروز پر شده؛ فردا دوباره باز می‌شه!</div>
+    </section>
+
+    <section class="gd-card" id="games">
+        <h2><span class="gd-ico">🎮</span> بازی‌ها و امتیازشون</h2>
+        <p>۱۳ بازی فعال روی سایت — همه‌شون به امتیازت اضافه می‌کنن:</p>
+        <table class="gd-table">
+            <thead><tr><th>بازی</th><th>چطور امتیاز حساب می‌شه</th><th>بازهٔ تقریبی XP</th></tr></thead>
+            <tbody>
+                <tr><td>🧠 کارت‌های حافظه</td><td>۳۰ پایه + بنووس کمتر بودن حرکت‌ها و زمان</td><td>۳۰ تا ~۵۵</td></tr>
+                <tr><td>🧩 پازل عددی</td><td>۴۰ پایه + بنووس حرکت و زمان</td><td>۴۰ تا ~۶۵</td></tr>
+                <tr><td>🔢 سودوکو</td><td>۳۵ پایه + بنووس سختی − جریمهٔ راهنما</td><td>۱۰ تا ~۶۰</td></tr>
+                <tr><td>🐍 مار</td><td>۲۰ پایه + بنووس امتیاز</td><td>۲۰ تا ۶۰</td></tr>
+                <tr><td>🎯 ۲۰۴۸</td><td>۲۵ پایه + بنووس امتیاز</td><td>۲۵ تا ۸۵</td></tr>
+                <tr><td>⚡ تست واکنش</td><td>۱۵ پایه + بنووس سرعت</td><td>۱۵ تا ۴۰</td></tr>
+                <tr><td>🌈 حافظهٔ رنگی (سایمون)</td><td>۲۰ پایه + بنووس مرحله</td><td>۲۰ تا ۷۰</td></tr>
+                <tr><td>🔨 ضربه به موش</td><td>۱۵ پایه + بنووس تعداد ضربه</td><td>۱۵ تا ۵۵</td></tr>
+                <tr><td>⭕ دوز باهوش</td><td>۱۰ پایه + بنووس برد پیاپی</td><td>۱۰ تا ۴۰</td></tr>
+                <tr><td>🔗 وصل کن (کلمات)</td><td>۱۰ به‌ازای هر اتصال + ۲۰ بنووس کامل − جریمهٔ خطا</td><td>تا ۷۰</td></tr>
+                <tr><td>💡 حدس کلمه</td><td>۳ به‌ازای هر امتیاز + بنووس کامل و سرعت</td><td>تا ۷۰</td></tr>
+                <tr><td>🔤 جورچین کلمات</td><td>۵ × سطح سختی به‌ازای هر کلمه + ۴۰ بنووس</td><td>تا ~۱۰۰</td></tr>
+                <tr><td>🧪 تست هوش</td><td>پایه + بنووس درستی پاسخ‌ها</td><td>تا ~۷۰</td></tr>
+            </tbody>
+        </table>
+        <div class="gd-note">🏅 دستاوردها: برای هر ۱۰ بازی کامل‌شده از یک نوع (حافظه/پازل/سودوکو/تست هوش)، نشان ویژه می‌گیری!</div>
+    </section>
+
+    <section class="gd-card" id="coins">
+        <h2><span class="gd-ico">🪙</span> سکه و الماس</h2>
+        <p>دو ارز اصلی سایت: <b>🪙 سکه</b> برای خرید اکثر آیتم‌ها و <b>💎 الماس</b> برای آیتم‌های ویژه.</p>
+        <div class="gd-kv">
+            <div><b>📅 ورود روزانه</b>هر روز وارد شی: روز۱ تا روز۷ → ۱۰ تا ۵۰ سکه + الماس روزهای ویژه. پیاپی بمونی چرخه بیشتر می‌ده.</div>
+            <div><b>🌸 پله‌های فصل</b>با سیزن‌پس به ازای هر پله سکه/الماس/آیتم جایزه می‌گیری.</div>
+            <div><b>📚 آکادمی</b>درس‌ها و آزمون‌ها علاوه بر XP، گاهی جایزه‌های سکه‌ای هم دارن.</div>
+            <div><b>👛 کیف پول</b>موجودی و تاریخچهٔ کامل تراکنش‌هات همیشه توی «کیف پول» قابل دیدنه.</div>
+        </div>
+    </section>
+
+    <section class="gd-card" id="shop">
+        <h2><span class="gd-ico">🛒</span> فروشگاه</h2>
+        <ul>
+            <li>🖼 <b>آرایشی‌های پروفایل:</b> قاب آواتار، رنگ نام، عنوان، نشان و افکت — بعد از خرید از بخش «موجودی» فعالشون کن تا روی پروفایلت دیده بشن.</li>
+            <li>⚡ <b>بوسترها:</b> ضریب امتیاز/سکه برای مدت مشخص — برای روزهای سری یادگیری.</li>
+            <li>🐾 <b>پت‌ها و اکسسوری:</b> حیوون خانگی بخر، غذاش بده و باهاش حال کن!</li>
+            <li>🎁 <b>جعبهٔ مرموز و گردونه:</b> شانس گرفتن آیتم‌های خاص.</li>
+            <li>❤ <b>علاقه‌مندی‌ها:</b> آیتم‌ها رو قلب کن تا بعداً سریع پیداشون کنی.</li>
+        </ul>
+    </section>
+
+    <section class="gd-card" id="academy">
+        <h2><span class="gd-ico">🎓</span> آکادمی</h2>
+        <p>مسیر یادگیری مرحله‌به‌مرحله (دنیا ← فصل ← درس) — <b>کاملاً رایگان</b>! هر درس تمرین و کوئیز داره؛ تکمیل هر کدوم XP و پیشرفت می‌ده. نقشهٔ مسیرت رو دنبال کن و جایزه‌هاشو بردار.</p>
+        <div class="gd-note">👑 <b>درس‌های ویژه:</b> یه سری درس حرفه‌ای اختصاصی هم هست که با خرید «بلیط درس» از فروشگاه برای همیشه برات باز می‌شه — از صفحهٔ آکادمی سکشن «درس‌های ویژه» رو ببین؛ روش که بزنی مستقیم می‌ری صفحهٔ خرید همون بلیط.</div>
+    </section>
+
+    <section class="gd-card" id="pet-season">
+        <h2><span class="gd-ico">🐾</span> پت و 🌸 فصل</h2>
+        <ul>
+            <li><b>پت:</b> از فروشگاه پت بگیر، هر روز سر بزن و غذاش بده — این‌طوری شاد می‌مونه و کنارت روی پروفایل دیده می‌شه.</li>
+            <li><b>فصل (سیزن‌پس):</b> با فعالیت روزانه XP فصل می‌گیری و پله‌به‌پله جایزه (سکه، الماس، آیتم رایگان/ویژه) می‌بری. فصل‌ها زمان‌دارن — ته فصل قبلش جایزه‌هاتو بردار!</li>
+        </ul>
+    </section>
+
+    <section class="gd-card" id="messenger">
+        <h2><span class="gd-ico">💬</span> پیامرسان</h2>
+        <ul>
+            <li>پیام‌رسان کامل و خصوصی داخل سایت (پیام‌ها <b>رمزنگاری</b> ذخیره می‌شن).</li>
+            <li>👥 <b>گروه بساز</b> و دوستاتو عضو کن؛ هر گروه <b>لینک دعوت</b> یکتا داره که بفرستی ملحق بشن.</li>
+            <li>✉ چت دونفره، وضعیت آنلاین، تیک خوانده‌شده، اعلان تایپینگ.</li>
+            <li>⛔ اگه کسی اذیت کرد، از پروفایلش <b>بلاکش کن</b> — نه می‌تونه پیام بده نه چت باز کنه.</li>
+        </ul>
+    </section>
+
+    <section class="gd-card" id="notifs">
+        <h2><span class="gd-ico">🔔</span> اعلان‌ها، پروفایل سریع و تاریخ شمسی</h2>
+        <ul>
+            <li>🔔 <b>اعلان لحظه‌ای:</b> هرجای سایت که باشی، وقتی پیام جدید برسه یه اعلان شیک بالای صفحه میاد — روش بزن تا <b>پروفایل فرستنده</b> باز شه.</li>
+            <li>👤 <b>پروفایل سریع در مودال:</b> روی اسم هر کاربر (رتبه‌بندی، کامنت‌ها، پیامرسان…) بزن تا پروفایلش تو یه <b>مودال جذاب</b> همون‌جا باز شه — دیگه صفحه عوض نمی‌شه. توش می‌تونی پیام بدی یا بلاک کنی.</li>
+            <li>📅 <b>تاریخ شمسی:</b> همهٔ تاریخ‌های سایت (مقاله‌ها، کامنت‌ها، تراکنش‌ها، گواهی‌نامه‌ها و…) به <b>تقویم شمسی</b> و ساعت ایران نمایش داده می‌شن.</li>
+            <li>🎉 پیام‌های سیستمی (مثل جایزهٔ ورود روزانه) هم به‌شکل اعلان‌های تمیز و رنگی نمایش داده می‌شن.</li>
+        </ul>
+    </section>
+
+    <section class="gd-card" id="blog">
+        <h2><span class="gd-ico">📝</span> وبلاگ (گالری دانش)</h2>
+        <p>مقاله‌های آموزشی، ترفندهای یادگیری و اخبار سایت. زیر هر مقاله می‌تونی <b>نظر بدی</b>، به بقیه <b>پاسخ</b> بدی و نظرات رو <b>لایک</b> کنی. مقاله‌ها رو هم می‌تونی لایک و لینکشون رو برای دوستات بفرستی.</p>
+    </section>
+
+    <section class="gd-card" id="rank">
+        <h2><span class="gd-ico">🏆</span> رتبه‌بندی و دستاوردها</h2>
+        <ul>
+            <li>تالار قهرمانان: رتبه‌بندی کاربرا بر اساس فعالیت — می‌تونی روی اسم هرکس بزنی و پروفایل عمومی‌شو ببینی.</li>
+            <li>دستاوردها: نشان‌های ویژه برای اهداف مهم (مثل ۱۰ بازی کامل از یک نوع).</li>
+            <li>استریک روزانه: ورود پیاپی‌ات نگه داشته می‌شه و روی جایزهٔ روزانه اثر داره.</li>
+        </ul>
+    </section>
+
+    <div class="gd-cta">
+        <a href="{% url 'games' %}">بریم برای بازی و امتیازگرفتن 🎮</a>
+    </div>
+</div>

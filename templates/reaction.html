@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}تست سرعت واکنش | لرن کویست{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/games-shared.css' %}?v=20260808">
+<script src="{% static 'js/games-shared.js' %}?v=20260808"></script>
+<div class="gp-topbar">
+    <a class="gp-back" href="/home/games/">🎮 همهٔ بازی‌ها</a>
+    <span class="gp-hint">بازی کن → امتیاز و XP بگیر ⭐</span>
+</div>
+
+<style>
+    .react-wrap { max-width: 560px; margin: 0 auto; padding: 16px; text-align: center; }
+    .react-card { background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,.12); padding: 18px; }
+    .react-header {
+        display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap;
+        background: linear-gradient(135deg, #36D1DC, #3B82F6); color: white;
+        border-radius: 16px; padding: 10px 16px; margin-bottom: 14px;
+    }
+    .react-header .stat { background: rgba(255,255,255,.2); border-radius: 30px; padding: 4px 14px; font-weight: bold; }
+    #reactArea {
+        width: 100%; min-height: 320px; border-radius: 16px; border: none;
+        display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;
+        font-size: clamp(1.2rem, 5vw, 1.8rem); font-weight: 900; color: white;
+        cursor: pointer; transition: background .2s; user-select: none; touch-action: manipulation;
+        background: #ef5350;
+    }
+    #reactArea .hint { font-size: clamp(.85rem, 3.5vw, 1rem); font-weight: 400; opacity: .9; }
+    #reactArea.ready { background: #ef5350; }
+    #reactArea.go { background: #4CAF50; }
+    #reactArea.result { background: linear-gradient(135deg, #3B82F6, #36D1DC); }
+    #reactArea.too-soon { background: #FF9800; }
+    .react-results { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+    .round-chip {
+        background: #eef0ff; color: #3B82F6; border-radius: 30px; padding: 6px 16px; font-weight: bold;
+    }
+</style>
+
+<div class="react-wrap">
+    <div class="react-card">
+        <div class="react-header">
+            <span class="stat">⚡ بهترین: <span id="best">—</span></span>
+            <span class="stat">📊 میانگین: <span id="avg">—</span></span>
+            <span class="stat">🎲 دور: <span id="round">0</span>/3</span>
+        </div>
+        <button id="reactArea" class="ready">
+            <div>⏱ روی شروع بزن</div>
+            <div class="hint">وقتی سبز شد فوراً بزن! زود بزنی می‌شکنی!</div>
+        </button>
+        <div class="react-results" id="chips"></div>
+        <div class="gp-xpline" id="reactXpLine"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    const area = document.getElementById('reactArea');
+    const bestEl = document.getElementById('best');
+    const avgEl = document.getElementById('avg');
+    const roundEl = document.getElementById('round');
+    const chipsEl = document.getElementById('chips');
+
+    let state = 'idle', timer = null, startTime = 0, results = [], savedOnce = false;
+    const ROUNDS = 3;
+
+    function updateStats() {
+        if (!results.length) return;
+        const best = Math.min(...results);
+        const avg = Math.round(results.reduce((a, b) => a + b) / results.length);
+        bestEl.textContent = best + ' ms';
+        avgEl.textContent = avg + ' ms';
+    }
+
+    function setArea(text, hint, cls) {
+        area.innerHTML = `<div>${text}</div>` + (hint ? `<div class="hint">${hint}</div>` : '');
+        area.className = cls;
+    }
+
+    area.addEventListener('click', () => {
+        if (state === 'idle') {
+            results = []; savedOnce = false;
+            chipsEl.innerHTML = '';
+            roundEl.textContent = '0/3';
+            nextRound();
+        } else if (state === 'waiting') {
+            clearTimeout(timer);
+            state = 'idle-early';
+            setArea('😜 خیلی زود زدی!', 'دوباره روی صفحه بزن برای این دور', 'too-soon');
+            state = 'retry';
+        } else if (state === 'retry') {
+            nextRound();
+        } else if (state === 'go') {
+            const ms = Math.round(performance.now() - startTime);
+            results.push(ms);
+            roundEl.textContent = `${results.length}/3`;
+            const chip = document.createElement('span');
+            chip.className = 'round-chip';
+            chip.textContent = `⌛ ${ms} ms`;
+            chipsEl.appendChild(chip);
+            updateStats();
+
+            if (results.length >= ROUNDS) {
+                const best = Math.min(...results);
+                setArea(`🏁 تمام! بهترین: ${best} ms`, 'برای بازی دوباره بزن', 'result');
+                state = 'done';
+                if (!savedOnce) {
+                    savedOnce = true;
+                    GP.saveScore('/games/save-reaction-score/', {best_ms: best, completed: true}, 'reactXpLine')
+                        .then(d => { if (d.best_score) bestEl.textContent = d.best_score + ' ms'; });
+                }
+            } else {
+                setArea(`✅ ${ms} ms!`, 'برای دور بعدی بزن', 'result');
+                state = 'retry';
+            }
+        } else if (state === 'done') {
+            state = 'idle';
+            setArea('⏱ دوباره بازی کن!', 'وقتی سبز شد فوراً بزن!', 'ready');
+        }
+    });
+
+    function nextRound() {
+        state = 'waiting';
+        setArea('🤫 صبر کن...', 'هنوز نزن! منتظر سبز باش', 'ready');
+        timer = setTimeout(() => {
+            state = 'go';
+            startTime = performance.now();
+            setArea('⚡ بزن!', '', 'go');
+        }, 1200 + Math.random() * 2800);
+    }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static jalali %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/shop.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lq-wrap">
+    <div class="lq-hero gold">
+        <h1>👛 کیف پول من</h1>
+        <p>هر سکه و الماس این‌جاست را با درس خواندن و بازی کردن به‌دست آورده‌ای!</p>
+    </div>
+
+    
+    <div class="lq-balances" style="margin-bottom:20px">
+        <div class="lq-balance coins">
+            <span class="emoji">🪙</span>
+            <div class="label">سکه</div>
+            <div class="num">{{ wallet.coins }}</div>
+            <div class="sub">برای خرید از فروشگاه و غذای پت</div>
+        </div>
+        <div class="lq-balance gems">
+            <span class="emoji">💎</span>
+            <div class="label">الماس</div>
+            <div class="num">{{ wallet.gems }}</div>
+            <div class="sub">ارز ویژه — جوایز کمیاب و سیزن‌پس</div>
+        </div>
+        <div class="lq-balance xp">
+            <span class="emoji">⚡</span>
+            <div class="label">امتیاز تجربه</div>
+            <div class="num">{{ user.xp }}</div>
+            <div class="sub">سطح {{ user.level }} · {{ user.get_level_progress }}٪ تا سطح بعد</div>
+        </div>
+    </div>
+
+    
+    {% if boosts %}
+    <div class="lq-panel">
+        <h3>🚀 بوسترهای فعال</h3>
+        <div class="lq-filterrow">
+            {% for b in boosts %}
+                <span class="lq-chip active" style="cursor:default">
+                    {% if b.boost_type == 'xp' %}⭐ بوستر XP{% else %}🪙 بوستر سکه{% endif %}
+                    ×{{ b.multiplier|floatformat:'1' }} تا {{ b.expires_at|jdatetime }}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    
+    <div class="lq-filterrow" style="margin-bottom:20px">
+        <a class="lq-chip" href="{% url 'shop:home' %}">🛒 فروشگاه</a>
+        <a class="lq-chip" href="{% url 'shop:inventory' %}">🎒 موجودی</a>
+        <a class="lq-chip" href="{% url 'shop:history' %}">🧾 تاریخچه خرید</a>
+        <a class="lq-chip" href="{% url 'economy:season' %}">🌸 فصل</a>
+        <a class="lq-chip" href="{% url 'economy:pet' %}">🐾 پت من</a>
+        <a class="lq-chip" href="{% url 'economy:leaderboard' %}">🏆 رتبه‌بندی</a>
+    </div>
+
+    
+    <div class="lq-section" style="margin-top:0">
+        <h2>📜 تراکنش‌های اخیر</h2>
+    </div>
+    {% if page.object_list %}
+    <div class="lq-tablewrap">
+        <table class="lq-table">
+            <thead>
+                <tr><th>نوع</th><th>مقدار</th><th>ارز</th><th>موجودی بعد</th><th>منبع</th><th>تاریخ</th></tr>
+            </thead>
+            <tbody>
+                {% for t in page %}
+                <tr>
+                    <td>
+                        {% if t.type == 'earn' %}💰 کسب
+                        {% elif t.type == 'spend' %}🛒 خرج
+                        {% elif t.type == 'reward' %}🎁 پاداش
+                        {% elif t.type == 'refund' %}↩️ بازگشت
+                        {% elif t.type == 'admin_adjust' %}🛠 ادمین
+                        {% elif t.type == 'consume' %}⚡ مصرف
+                        {% else %}{{ t.type }}{% endif %}
+                    </td>
+                    <td class="{% if t.amount < 0 %}neg{% else %}pos{% endif %}">
+                        {% if t.amount > 0 %}+{% endif %}{{ t.amount }}
+                    </td>
+                    <td>{% if t.currency == 'coin' %}🪙{% elif t.currency == 'gem' %}💎{% else %}⭐{% endif %}</td>
+                    <td style="font-weight:700">{{ t.balance_after }}</td>
+                    <td style="font-size:.7rem;color:var(--lq-muted)">{{ t.source }}</td>
+                    <td style="font-size:.7rem;color:var(--lq-muted)">{{ t.created_at|jdatetime }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page.paginator.num_pages > 1 %}
+    <div class="lq-pager">
+        {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">‹ قبلی</a>{% endif %}
+        <span class="cur">{{ page.number }}</span>
+        {% if page.has_next %}<a href="?page={{ page.next_page_number }}">بعدی ›</a>{% endif %}
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="lq-empty">
+        <div class="big">📭</div>
+        <p>هنوز تراکنشی نداری — درس بخوان و بازی کن تا اولین جایزه را بگیری!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
