@@ -4,7 +4,7 @@ from .services import get_wallet
 
 
 def economy_context(request):
-    ctx = {'lq_wallet': None, 'lq_cosmetics': {}, 'lq_daily_reward_toast': None}
+    ctx = {'lq_wallet': None, 'lq_cosmetics': {}, 'lq_daily_reward_toast': None, 'lq_pet': None}
     user = getattr(request, 'user', None)
     if not (user and user.is_authenticated):
         return ctx
@@ -22,6 +22,21 @@ def economy_context(request):
     except Exception:
         pass
 
+    # پت فعال کاربر — برای ویجت شناور در همهٔ صفحات
+    try:
+        from economy.models import UserPet
+        pet = UserPet.objects.filter(user=user, is_active=True).select_related('species').first()
+        if pet:
+            ctx['lq_pet'] = {
+                'id': pet.pk,
+                'emoji': pet.species.emoji,
+                'name': pet.name,
+                'level': pet.level,
+                'hunger': pet.hunger(),
+                'can_free_feed': pet.can_free_feed(),
+            }
+    except Exception:
+        pass
 
     toast = request.session.pop('lq_daily_reward_toast', None)
     if toast:

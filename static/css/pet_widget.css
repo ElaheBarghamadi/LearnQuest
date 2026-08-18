@@ -1,0 +1,132 @@
+/* ============================================================
+   LearnQuest — Floating Pet Widget (random appearances)
+   ============================================================ */
+
+#lqPetWrap {
+    position: fixed;
+    left: 18px;
+    bottom: 18px;
+    z-index: 9400;
+    pointer-events: none;
+    display: none;
+}
+#lqPetWrap.show { display: block; }
+
+/* bubble */
+#lqPetBubble {
+    pointer-events: auto;
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 0;
+    max-width: 230px;
+    background: #fff;
+    border: 1.5px solid #e2e6fa;
+    border-radius: 16px 16px 16px 4px;
+    box-shadow: 0 12px 32px rgba(30, 35, 80, .18);
+    padding: 10px 14px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #333b6e;
+    line-height: 1.8;
+    opacity: 0;
+    transform: translateY(8px) scale(.95);
+    transition: all .25s cubic-bezier(.34,1.56,.64,1);
+}
+#lqPetBubble.open { opacity: 1; transform: none; }
+
+#lqPetFeedBtn {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 8px;
+    border: none; cursor: pointer;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff; font-family: inherit; font-weight: 800; font-size: .74rem;
+    padding: 7px 14px; border-radius: 10px;
+    box-shadow: 0 5px 12px rgba(217, 119, 6, .35);
+    transition: transform .18s ease;
+}
+#lqPetFeedBtn:hover { transform: translateY(-2px); }
+#lqPetFeedBtn:disabled { opacity: .6; cursor: wait; transform: none; }
+
+/* the pet itself */
+#lqPetBody {
+    pointer-events: auto;
+    width: 86px; height: 86px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.2rem;
+    cursor: pointer;
+    user-select: none;
+    filter: drop-shadow(0 10px 18px rgba(30, 35, 80, .30));
+    animation: lqPetEnter .5s cubic-bezier(.34,1.56,.64,1);
+}
+#lqPetBody.idle { animation: lqPetIdle 2.4s ease-in-out infinite; }
+#lqPetBody.jump { animation: lqPetJump .7s cubic-bezier(.34,1.56,.64,1); }
+#lqPetBody.walk { animation: lqPetWalk 3.2s ease-in-out; }
+#lqPetBody.eat { animation: lqPetEat .9s ease-in-out; }
+#lqPetBody.happy { animation: lqPetHappy .8s ease-in-out; }
+#lqPetBody.leave { animation: lqPetLeave .5s ease-in forwards; }
+#lqPetBody.sleep { animation: lqPetSleep 3s ease-in-out infinite; }
+
+@keyframes lqPetEnter {
+    from { transform: translateY(120px) scale(.4); opacity: 0; }
+    to { transform: none; opacity: 1; }
+}
+@keyframes lqPetIdle {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-6px) rotate(-3deg); }
+    50% { transform: translateY(2px) rotate(2deg); }
+    75% { transform: translateY(-4px) rotate(0); }
+}
+@keyframes lqPetJump {
+    0% { transform: translateY(0) scale(1); }
+    35% { transform: translateY(-42px) scale(1.06) rotate(-6deg); }
+    60% { transform: translateY(-14px) scale(.96) rotate(4deg); }
+    80% { transform: translateY(-28px) scale(1.03); }
+    100% { transform: translateY(0) scale(1); }
+}
+@keyframes lqPetWalk {
+    0% { transform: translateX(0) scaleX(1); }
+    12% { transform: translateX(26px) scaleX(-1) rotate(-4deg); }
+    25% { transform: translateX(52px) scaleX(-1) rotate(3deg); }
+    37% { transform: translateX(78px) scaleX(-1) rotate(-4deg); }
+    50% { transform: translateX(104px) scaleX(1) rotate(3deg); }
+    62% { transform: translateX(78px) scaleX(1) rotate(-4deg); }
+    75% { transform: translateX(52px) scaleX(-1) rotate(3deg); }
+    87% { transform: translateX(26px) scaleX(-1) rotate(-4deg); }
+    100% { transform: translateX(0) scaleX(1); }
+}
+@keyframes lqPetEat {
+    0% { transform: rotate(0) translateY(0); }
+    25% { transform: rotate(-8deg) translateY(-8px); }
+    50% { transform: rotate(8deg) translateY(0); }
+    75% { transform: rotate(-8deg) translateY(-8px); }
+    100% { transform: rotate(0); }
+}
+@keyframes lqPetHappy {
+    0% { transform: rotate(0) scale(1); }
+    30% { transform: rotate(-10deg) scale(1.15); }
+    60% { transform: rotate(10deg) scale(1.15); }
+    100% { transform: rotate(0) scale(1); }
+}
+@keyframes lqPetSleep {
+    0%, 100% { transform: scaleX(1); }
+    50% { transform: scaleX(-1); }
+}
+@keyframes lqPetLeave {
+    to { transform: translateY(140px) scale(.5); opacity: 0; }
+}
+
+/* small sparkles while eating/playing */
+#lqPetWrap .lq-pet-spark {
+    position: absolute; font-size: 1rem; pointer-events: none;
+    animation: lqSpark 1s ease-out forwards;
+}
+@keyframes lqSpark {
+    0% { transform: translateY(0) scale(.6); opacity: 1; }
+    100% { transform: translateY(-34px) scale(1.3); opacity: 0; }
+}
+
+@media (max-width: 640px) {
+    #lqPetWrap { left: 10px; bottom: 10px; }
+    #lqPetBody { width: 68px; height: 68px; font-size: 2.6rem; }
+    #lqPetBubble { max-width: 190px; font-size: .72rem; }
+}

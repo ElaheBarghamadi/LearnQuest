@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+import time
 import uuid
 
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.core.cache import cache
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
@@ -18,6 +20,21 @@ from .services import (purchase_product, PurchaseError, equip_item, unequip_item
                        bound_note)
 from .effects import EQUIP_SLOTS, is_equippable, is_directly_consumable, slot_of
 from .tiles import annotate_tiles
+
+# حداکثر خرید مجاز در هر دقیقه (ضد اسپم/اتومات)
+BUY_RATE_LIMIT = 12
+BUY_RATE_WINDOW = 60
+
+
+def _buy_rate_limited(user) -> bool:
+    """بیش از BUY_RATE_LIMIT خرید در یک دقیقه → رد می‌شود."""
+    minute = int(time.time() // BUY_RATE_WINDOW)
+    key = f'buy_rate:{user.pk}:{minute}'
+    n = cache.get(key, 0)
+    if n >= BUY_RATE_LIMIT:
+        return True
+    cache.set(key, n + 1, BUY_RATE_WINDOW + 5)
+    return False
 
 
 @login_required
@@ -107,19 +124,29 @@ def product_detail(request, slug):
 @require_http_methods(['POST'])
 def buy_product(request, product_id):
 
+    if _buy_rate_limited(request.user):
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            return JsonResponse({'ok': False,
+                                 'error': 'زیادی سریع خریدی! یک دقیقه صبر کن و دوباره تلاش کن.'},
+                                status=429)
+        messages.error(request, 'زیادی سریع خریدی! یک دقیقه صبر کن و دوباره تلاش کن.')
+        return redirect('shop:home')
+
     idem = request.POST.get('idem') or (json.loads(request.body or '{}').get('idem') if request.content_type == 'application/json' else None)
+    if isinstance(idem, str):
+        idem = idem.strip()[:80] or None
     try:
         result = purchase_product(request.user, product_id, idempotency_key=idem)
     except InsufficientFunds as e:
         cur_fa = {'coin': 'سکه', 'gem': 'الماس'}[e.currency]
         msg = f'{cur_fa} کافی نداری! ({e.have} از {e.need})'
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'ok': False, 'error': msg}, status=402)
+            return JsonResponse({'ok': False, 'error': msg, 'code': 'insufficient'}, status=402)
         messages.error(request, msg)
         return redirect('shop:product', slug=Product.objects.get(pk=product_id).slug)
     except PurchaseError as e:
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({'ok': False, 'error': e.fa}, status=400)
+            return JsonResponse({'ok': False, 'error': e.fa, 'code': 'purchase'}, status=400)
         messages.error(request, e.fa)
         return redirect('shop:home')
 

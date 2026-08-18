@@ -1103,6 +1103,7 @@
         }
     </style>
     <link rel="stylesheet" href="{% static 'css/responsive-global.css' %}?v=202608056">
+    <link rel="stylesheet" href="{% static 'css/pet_widget.css' %}?v=202608181">
     {% block extra_css %}{% endblock %}
 </head>
 <body class="{% if lq_cosmetics.theme and lq_cosmetics.theme.0.css_class %}{{ lq_cosmetics.theme.0.css_class }}{% endif %}">
@@ -1410,6 +1411,180 @@
 <script>window.LQ_USER = { authed: false };</script>
 {% endif %}
 <script src="{% static 'js/lq-core.js' %}?v=202608054"></script>
+
+{% if user.is_authenticated and lq_pet %}
+{{ lq_pet|json_script:"lqPetData" }}
+<div id="lqPetWrap">
+    <div id="lqPetBubble"></div>
+    <div id="lqPetBody" title="پت من"></div>
+</div>
+<script>
+/* ---------- floating pet widget ---------- */
+(function () {
+    'use strict';
+    let pet = null;
+    try { pet = JSON.parse(document.getElementById('lqPetData').textContent || '{}'); } catch (e) {}
+    if (!pet || !pet.id) return;
+
+    // در داشبورد و صفحهٔ پت، خودِ صفحه پت را نشان می‌دهد — ویجت فعال نباشد
+    const path = window.location.pathname;
+    if (path === '/home/' || path === '/economy/pet/' || path === '/home/profile/') return;
+
+    const wrap = document.getElementById('lqPetWrap');
+    const body = document.getElementById('lqPetBody');
+    const bubble = document.getElementById('lqPetBubble');
+    body.textContent = pet.emoji || '🐾';
+
+    const HUNGRY_MSGS = [
+        'گُرمبه! من گرسنه‌ام 🍗',
+        'یه کم غذا بدی؟ 🥺',
+        'شکمم داره قار‌وقور می‌کنه…',
+        'تا حالا چند ساعت غذا نخوردم!',
+        'بیا یه لقمه بهم برسون! 🍖',
+    ];
+    const HAPPY_MSGS = [
+        'داری عالی پیش می‌ری! 🌟',
+        'با هم بازی کنیم؟ 🎾',
+        'من بهترین پت دنیام چون مال توام! 🥰',
+        'بریم یه درس جدید بخونیم؟ 📚',
+        'تو امروز هم درخشیدی! ✨',
+        'بیا یه دور بپریم! 🐾',
+    ];
+    const FED_MSGS = [
+        'ممنون! تو بهترینی 🥰',
+        'آجیییی! چقدر خوشمزه بود 😋',
+        'حالا انرژیم برگشت، می‌پرم! 🐾',
+        'ددد! ممنون که به فکرمی! 💛',
+    ];
+
+    function csrfTok() {
+        const h = document.getElementById('lqCsrf');
+        if (h && h.value) return h.value;
+        const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return c ? c.pop() : '';
+    }
+    function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function rnd(a, b) { return a + Math.random() * (b - a); }
+
+    function spark() {
+        const s = document.createElement('span');
+        s.className = 'lq-pet-spark';
+        s.textContent = pick(['✨', '💫', '💛', '⭐', '❤️']);
+        s.style.left = rnd(10, 70) + 'px';
+        s.style.bottom = '30px';
+        wrap.appendChild(s);
+        setTimeout(() => s.remove(), 1100);
+    }
+
+    function say(html, keepMs) {
+        bubble.innerHTML = html;
+        bubble.classList.add('open');
+        clearTimeout(say._t);
+        say._t = setTimeout(() => bubble.classList.remove('open'), keepMs || 5200);
+    }
+    function feedBtn(html) {
+        bubble.innerHTML = html + '<br><button id="lqPetFeedBtn" type="button">🍗 غذا بده</button>';
+        bubble.classList.add('open');
+        clearTimeout(say._t);
+        say._t = setTimeout(() => bubble.classList.remove('open'), 16000);
+        const btn = document.getElementById('lqPetFeedBtn');
+        if (btn) {
+            btn.onclick = function () {
+                btn.disabled = true;
+                btn.textContent = '⏳ …';
+                fetch('/economy/pet/' + pet.id + '/feed/', {
+                    method: 'POST',
+                    headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}
+                })
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d.ok) {
+                            pet.hunger = d.hunger;
+                            body.classList.remove('idle');
+                            body.classList.add('eat');
+                            setTimeout(() => { body.classList.remove('eat'); body.classList.add('idle'); }, 950);
+                            spark(); spark();
+                            say(pick(FED_MSGS), 4200);
+                        } else {
+                            btn.disabled = false;
+                            btn.textContent = '🍗 غذا بده';
+                            say('💸 سکه کافی ندارم برای غذا… اشکالی نداره!', 4200);
+                        }
+                    })
+                    .catch(() => {
+                        btn.disabled = false;
+                        btn.textContent = '🍗 غذا بده';
+                    });
+            };
+        }
+    }
+
+    let visible = false, hideTimer = null;
+
+    function hide() {
+        body.classList.remove('idle', 'jump', 'walk', 'eat', 'happy');
+        body.classList.add('leave');
+        bubble.classList.remove('open');
+        setTimeout(() => {
+            wrap.classList.remove('show');
+            body.classList.remove('leave');
+            visible = false;
+            schedule();
+        }, 520);
+    }
+
+    function performRandomActs() {
+        const acts = ['idle', 'jump', 'walk', 'happy'];
+        const act = pick(acts);
+        body.classList.remove('idle', 'jump', 'walk', 'eat', 'happy');
+        body.classList.add(act);
+        if (act === 'walk') setTimeout(() => body.classList.add('idle'), 3400);
+        else setTimeout(() => body.classList.add('idle'), 1500);
+    }
+
+    function show() {
+        wrap.classList.add('show');
+        body.classList.remove('leave');
+        body.classList.add('idle');
+        visible = true;
+
+        // بسته به گرسنگی رفتار کن
+        if (pet.hunger < 40) {
+            say(pick(HUNGRY_MSGS), 9000);
+            setTimeout(() => { if (visible && pet.hunger < 40) feedBtn(pick(HUNGRY_MSGS)); }, 2800);
+        } else {
+            setTimeout(() => { if (visible) say(pick(HAPPY_MSGS), 4600); }, 1200);
+        }
+
+        performRandomActs();
+        const moreActs = setInterval(() => {
+            if (visible) performRandomActs();
+            else clearInterval(moreActs);
+        }, 3800);
+
+        const stay = rnd(9000, 17000);
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => { clearInterval(moreActs); if (visible) hide(); }, stay);
+    }
+
+    function schedule() {
+        const wait = rnd(25000, 75000);
+        setTimeout(() => { if (!visible) show(); }, wait);
+    }
+
+    body.addEventListener('click', () => {
+        body.classList.remove('idle');
+        body.classList.add('happy');
+        setTimeout(() => body.classList.add('idle'), 900);
+        spark();
+        say(pick(HAPPY_MSGS), 4000);
+    });
+
+    schedule(); // اولین ظاهر تصادفی
+})();
+</script>
+{% endif %}
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>

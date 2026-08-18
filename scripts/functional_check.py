@@ -69,15 +69,19 @@ def main():
     ok(r.status_code == 200 and r.json().get('liked') is False, 'blog unlike article', r.text[:100])
 
     print('=== Shop ===')
-    # find a cheap product id
+    st_adm = new_session()
+    login(st_adm, 'admin', 'Admin@12345')
+    post_json(st_adm, '/panel/users/2/grant/', {'target': 'coins', 'amount': 10000, 'note': 'تاپ آپ'})
     r = s.get(BASE + '/shop/', timeout=30)
     ok(r.status_code == 200, 'shop list')
+    # buy once + idempotent replay (rate limit is 12/min — keep under it)
     r = post_json(s, '/shop/buy/1/', {})
     ok(r.status_code == 200 and r.json().get('ok'), 'buy product #1', r.text[:200])
-    # buy same again -> should be ok (consumable) or limited; check no crash
-    r = post_json(s, '/shop/buy/1/', {})
-    ok(r.status_code in (200, 400), 'buy again handled gracefully', r.text[:200])
-    # insufficient funds path
+    r = post_json(s, '/shop/buy/1/', {'idem': 'same-idem-test-1'})
+    ok(r.status_code == 200 and r.json().get('ok'), 'buy with fixed idem', r.text[:200])
+    r = post_json(s, '/shop/buy/1/', {'idem': 'same-idem-test-1'})
+    ok(r.status_code == 200 and r.json().get('duplicate'), 'same idem replay -> duplicate (no double charge)', r.text[:200])
+    # invalid product (not a real purchase, but hits rate limit counter)
     r = post_json(s, '/shop/buy/999999/', {})
     ok(r.status_code in (400, 402, 404), 'buy invalid product handled', r.text[:200])
     r = s.get(BASE + '/shop/inventory/', timeout=30)

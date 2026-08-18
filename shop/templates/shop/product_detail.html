@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_extras %}
 {% block title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
@@ -7,76 +7,75 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608078">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608181">
 {% endblock %}
 
 {% block content %}
-<div class="sh-shell">
+<div class="sq-shell">
 
-    <div class="sh-detail">
+    <div class="sq-detail">
 
-        <div class="sh-gal sh-tint-{{ product.tint }}">
+        <div class="sq-gal sq-tint-{{ product.tint }}">
             {% if product.tile_mode == 'img' %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}">
             {% elif product.tile_mode == 'frame' %}
-                <span class="sh-ava lq-framed {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                <span class="sq-ava lq-framed {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
             {% elif product.tile_mode == 'ucolor' %}
-                <span class="sh-tile-uc {{ product.preview_css }}">✦ {{ request.user.username }}</span>
+                <span class="sq-uc {{ product.preview_css }}">✦ {{ request.user.username }}</span>
             {% elif product.tile_mode == 'effect' %}
-                <span class="sh-ava {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                <span class="sq-ava {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
             {% elif product.tile_mode == 'theme' %}
-                <span class="sh-theme-prev" data-t="{{ product.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                <span class="sq-theme-prev" data-t="{{ product.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
             {% elif product.tile_mode == 'pbg' %}
-                <span class="sh-pbg-prev {{ product.preview_css }}">{% firstof product.preview_emoji '🌌' %}</span>
+                <span class="sq-pbg-prev {{ product.preview_css }}">{% firstof product.preview_emoji '🌌' %}</span>
             {% else %}
-                <span class="sh-emo">{% firstof product.preview_emoji product.category.emoji '🎁' %}</span>
+                <span class="sq-emo">{% firstof product.preview_emoji product.category.emoji '🎁' %}</span>
             {% endif %}
-            {% if disc %}<span class="sh-r sh-r-off">٪{{ disc }} تخفیف</span>{% endif %}
-            {% if product.is_featured %}<span class="sh-r sh-r-feat">⭐ ویژهٔ بازار</span>{% endif %}
-            {% if owned_item %}<span class="sh-r sh-r-own">✓ مال توست</span>{% endif %}
+            {% if disc %}<span class="sq-r sq-r-off">٪{{ disc }} تخفیف</span>{% endif %}
+            {% if product.is_featured %}<span class="sq-r sq-r-feat">⭐ ویژهٔ بازار</span>{% endif %}
+            {% if owned_item %}<span class="sq-r sq-r-own">✓ مال توست</span>{% endif %}
         </div>
 
-        <div class="sh-dinfo">
-            <div class="sh-crumb">
+        <div class="sq-dinfo">
+            <div class="sq-crumb">
                 <a href="{% url 'shop:home' %}">فروشگاه</a> ‹
                 {% if product.category %}<a href="{% url 'shop:home' %}?cat={{ product.category.slug }}">{{ product.category.emoji }} {{ product.category.name }}</a> ‹{% endif %}
-                <span>{{ product.get_product_type_display }}</span> ‹
-                <span style="direction:ltr;font-family:monospace">{{ product.slug }}</span>
+                <span>{{ product.get_product_type_display }}</span>
             </div>
 
-            <h1 class="sh-dtitle">{% firstof product.preview_emoji '' %} {{ product.name }}</h1>
+            <h1 class="sq-dtitle">{% firstof product.preview_emoji '' %} {{ product.name }}</h1>
 
-            <p class="sh-ddesc">{{ product.description|default:'—'|linebreaksbr }}</p>
+            <p class="sq-ddesc">{{ product.description|default:'—'|linebreaksbr }}</p>
 
-            <div class="sh-ticks">
+            <div class="sq-ticks">
                 {% if equippable %}
-                    <span class="sh-tick">🧩 قابل نصب روی پروفایل — جایگاه: «{{ slot_name }}»</span>
+                    <span class="sq-tick">🧩 قابل نصب روی پروفایل — جایگاه: «{{ slot_name }}»</span>
                 {% endif %}
                 {% if consumable_direct %}
-                    <span class="sh-tick">⚡ مصرفی فوری — از داخل «موجودی» فعالش کن</span>
+                    <span class="sq-tick">⚡ مصرفی فوری — از داخل «موجودی» فعالش کن</span>
                 {% endif %}
                 {% if bound_note %}
-                    <span class="sh-tick">📌 {{ bound_note }}</span>
+                    <span class="sq-tick">📌 {{ bound_note }}</span>
                 {% endif %}
                 {% if product.product_type == 'unlock' %}
-                    <span class="sh-tick">🔓 باز شدن دائمی محتوای قفل‌شده</span>
+                    <span class="sq-tick">🔓 باز شدن دائمی محتوای قفل‌شده</span>
                 {% endif %}
                 {% if product.product_type == 'booster' %}
-                    <span class="sh-tick">🚀 بوستر زمانی — از لحظهٔ فعال‌سازی شروع می‌شود</span>
+                    <span class="sq-tick">🚀 بوستر زمانی — از لحظهٔ فعال‌سازی شروع می‌شود</span>
                 {% endif %}
                 {% if product.per_user_limit %}
-                    <span class="sh-tick">👤 سقف خرید هر کاربر: {{ product.per_user_limit }} عدد</span>
+                    <span class="sq-tick">👤 سقف خرید هر کاربر: {{ product.per_user_limit }} عدد</span>
                 {% endif %}
                 {% if product.sold_count %}
-                    <span class="sh-tick">🤝 {{ product.sold_count }} خرید موفق</span>
+                    <span class="sq-tick">🤝 {{ product.sold_count }} خرید موفق</span>
                 {% endif %}
                 {% if product.views_count %}
-                    <span class="sh-tick">👁 {{ product.views_count }} بازدید</span>
+                    <span class="sq-tick">👁 {{ product.views_count }} بازدید</span>
                 {% endif %}
             </div>
 
             {% if bundle_items %}
-            <div class="sh-bundle">
+            <div class="sq-bundle">
                 <b>📦 داخل این باندل:</b>
                 {% for bi in bundle_items %}
                     <div class="bi"><span>{% firstof bi.preview_emoji bi.category.emoji '🎁' %}</span> {{ bi.name }} <small>({{ bi.get_product_type_display }})</small></div>
@@ -84,43 +83,43 @@
             </div>
             {% endif %}
 
-            <div class="sh-buybox">
+            <div class="sq-buybox">
                 {% if owned_item %}
-                    <div class="sh-ownnote">✅ این مورد را داری (×{{ owned_item.quantity }}){% if owned_item.equipped %} — الان روی پروفایلت فعال است ✨{% endif %}</div>
+                    <div class="sq-ownnote">✅ این مورد را داری (×{{ owned_item.quantity }}){% if owned_item.equipped %} — الان روی پروفایلت فعال است ✨{% endif %}</div>
                 {% endif %}
 
-                <div class="sh-buyrow">
-                    <div class="sh-bigprice">
+                <div class="sq-buyrow">
+                    <div class="sq-bigprice">
                         {% if price_c %}
-                            <span class="val coin">🪙 {{ price_c }}</span>
+                            <span class="val coin">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>{{ price_c }}
+                            </span>
                             {% if disc %}<span class="old">{{ product.price_coins }}</span><span class="sv">٪{{ disc }} سود تو</span>{% endif %}
                         {% elif price_g %}
-                            <span class="val gem">💎 {{ price_g }}</span>
+                            <span class="val gem">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>{{ price_g }}
+                            </span>
                             {% if disc %}<span class="old">{{ product.price_gems }}</span><span class="sv">٪{{ disc }} سود تو</span>{% endif %}
                         {% else %}
                             <span class="val free">رایگان 🎉</span>
                         {% endif %}
                     </div>
-                    <div class="sh-meta">
+                    <div class="sq-meta">
                         <span>👛 موجودی تو: 🪙{{ lq_wallet.coins|default:0 }} 💎{{ lq_wallet.gems|default:0 }}</span>
                         {% if remaining is not None %}<span>📦 {{ remaining }} عدد مانده</span>{% endif %}
                     </div>
                 </div>
 
-                {% if remaining is not None and product.stock_limit %}
-                    <div class="sh-stock">
-                        <div class="bar"><i style="width:{% widthratio remaining product.stock_limit 100 %}%"></i></div>
-                    </div>
-                {% endif %}
-
-                <div class="sh-buybtns">
-                    <button id="buyBtn" class="sh-btn lg" {% if owned_item and not consumable_direct and product.product_type != 'unlock' %}disabled{% endif %}>
-                        {% if price_c or price_g %}🛒 خرید فوری{% else %}🎁 دریافت رایگان{% endif %}
+                <div class="sq-buybtns">
+                    <button id="buyBtn" class="sq-buybig" {% if owned_item and not consumable_direct and product.product_type != 'unlock' %}disabled{% endif %}>
+                        {% if price_c or price_g %}🛒 خرید با {% if price_c %}🪙 {{ price_c }}{% endif %}{% if price_c and price_g %} + {% endif %}{% if price_g %}💎 {{ price_g }}{% endif %}{% else %}🎁 دریافت رایگان{% endif %}
                     </button>
-                    <button id="wishBtn" class="sh-btn ghost lg sh-heart" title="علاقه‌مندی">{% if in_wishlist %}💔{% else %}❤️{% endif %}</button>
+                    <button id="wishBtn" class="sq-heart" style="width:52px;height:52px;border-radius:14px" title="علاقه‌مندی">
+                        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px" class="{% if in_wishlist %}on{% endif %}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </button>
                 </div>
-                <div id="buyMsg" class="sh-buymsg"></div>
-                <div class="sh-trust">
+                <div id="buyMsg" class="sq-buymsg"></div>
+                <div class="sq-trust">
                     <span>⚡ تحویل آنی</span>
                     <span>🔒 پرداخت امن</span>
                     <span>↩ ضمانت بازگشت</span>
@@ -131,104 +130,180 @@
     </div>
 
     {% if similar_products %}
-    <h2 class="sh-sec-t">🛍️ شاید این‌ها را هم بپسندی</h2>
-    <div class="sh-grid">
-        {% for p in similar_products %}
-        <div class="sh-card">
-            <a class="sh-tile sh-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
-                {% if p.tile_mode == 'img' %}
-                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
-                {% elif p.tile_mode == 'frame' %}
-                    <span class="sh-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                {% elif p.tile_mode == 'ucolor' %}
-                    <span class="sh-tile-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
-                {% elif p.tile_mode == 'effect' %}
-                    <span class="sh-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                {% elif p.tile_mode == 'theme' %}
-                    <span class="sh-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
-                {% elif p.tile_mode == 'pbg' %}
-                    <span class="sh-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
-                {% else %}
-                    <span class="sh-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
-                {% endif %}
-                {% if p.disc %}<span class="sh-r sh-r-off">٪{{ p.disc }}−</span>{% endif %}
-                {% if p.is_featured %}<span class="sh-r sh-r-feat">⭐ ویژه</span>{% endif %}
-            </a>
-            <div class="sh-cbody">
-                <div class="sh-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
-                <h3 class="sh-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                <div class="sh-price">
-                    {% if p.price_c %}
-                        <span class="val coin">🪙 {{ p.price_c }}</span>
-                        {% if p.disc %}<span class="old">{{ p.price_coins }}</span>{% endif %}
-                    {% elif p.price_g %}
-                        <span class="val gem">💎 {{ p.price_g }}</span>
-                        {% if p.disc %}<span class="old">{{ p.price_gems }}</span>{% endif %}
+    <div class="sq-similar">
+        <h2 class="sq-sec">🛍️ شاید این‌ها را هم بپسندی</h2>
+        <div class="sq-grid">
+            {% for p in similar_products %}
+            <div class="sq-card">
+                <a class="sq-tile sq-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+                    {% if p.tile_mode == 'img' %}
+                        <span class="sq-fic">{{ p.effect_type|effect_icon }}</span>
+                        <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+                    {% elif p.tile_mode == 'frame' %}
+                        <span class="sq-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    {% elif p.tile_mode == 'ucolor' %}
+                        <span class="sq-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
+                    {% elif p.tile_mode == 'effect' %}
+                        <span class="sq-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    {% elif p.tile_mode == 'theme' %}
+                        <span class="sq-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                    {% elif p.tile_mode == 'pbg' %}
+                        <span class="sq-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
                     {% else %}
-                        <span class="val free">رایگان 🎉</span>
+                        <span class="sq-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
                     {% endif %}
+                    {% if p.disc %}<span class="sq-ribs"><span class="sq-rib off">٪{{ p.disc }}−</span></span>{% endif %}
+                    {% if p.is_featured %}<span class="sq-ribs"><span class="sq-rib feat">⭐ ویژه</span></span>{% endif %}
+                </a>
+                <div class="sq-cbody">
+                    <div class="sq-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
+                    <h3 class="sq-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                    <div class="sq-cfoot">
+                        <div class="sq-price">
+                            {% if p.price_c %}
+                                <span class="sq-val coin">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>{{ p.price_c }}
+                                </span>
+                                {% if p.disc %}<span class="sq-old">{{ p.price_coins }}</span>{% endif %}
+                            {% elif p.price_g %}
+                                <span class="sq-val gem">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>{{ p.price_g }}
+                                </span>
+                                {% if p.disc %}<span class="sq-old">{{ p.price_gems }}</span>{% endif %}
+                            {% else %}
+                                <span class="sq-val free">رایگان 🎉</span>
+                            {% endif %}
+                        </div>
+                        <a href="{% url 'shop:product' p.slug %}" class="sq-buy-mini">مشاهده</a>
+                    </div>
                 </div>
-                <div class="sh-actions"><a href="{% url 'shop:product' p.slug %}" class="sh-btn sm">مشاهده و خرید</a></div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
     {% endif %}
 </div>
+
+<!-- Confirm purchase modal -->
+<div class="sq-modal-overlay" id="sqModal">
+    <div class="sq-modal">
+        <div class="sq-modal-head">
+            <button class="sq-modal-x" id="sqModalX" type="button" aria-label="بستن">✕</button>
+            <h3>🛒 تأیید خرید</h3>
+            <p>بررسی نهایی سفارش</p>
+        </div>
+        <div class="sq-modal-body">
+            <div class="sq-conf-row"><span class="k">کالا</span><span class="v">{{ product.preview_emoji }} {{ product.name }}</span></div>
+            <div class="sq-conf-row"><span class="k">قیمت</span><span class="v">{% if price_c %}🪙 {{ price_c }}{% endif %}{% if price_c and price_g %} + {% endif %}{% if price_g %}💎 {{ price_g }}{% endif %}{% if not price_c and not price_g %}رایگان 🎉{% endif %}</span></div>
+            <div class="sq-conf-row"><span class="k">موجودی تو</span><span class="v">🪙 {{ lq_wallet.coins|default:0 }} · 💎 {{ lq_wallet.gems|default:0 }}</span></div>
+            <div class="sq-conf-row"><span class="k">بعد از خرید</span><span class="v" id="sqMAfter">—</span></div>
+            <div class="sq-conf-remain" id="sqMRemain"></div>
+        </div>
+        <div class="sq-modal-actions">
+            <button class="sq-btn ghost" id="sqCancel" type="button">انصراف</button>
+            <button class="sq-btn" id="sqConfirm" type="button">✅ تأیید نهایی خرید</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="sq-toast-wrap" id="sqToastWrap"></div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-const buyBtn = document.getElementById('buyBtn');
-const buyMsg = document.getElementById('buyMsg');
-const idem = crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random();
-function csrfTok() {
-    const h = document.getElementById('lqCsrf');
-    if (h && h.value) return h.value;
-    const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
-    return c ? c.pop() : '';
-}
+(function () {
+    'use strict';
+    function csrfTok() {
+        const h = document.getElementById('lqCsrf');
+        if (h && h.value) return h.value;
+        const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return c ? c.pop() : '';
+    }
+    function toast(text, type) {
+        const wrap = document.getElementById('sqToastWrap');
+        const el = document.createElement('div');
+        el.className = 'sq-toast ' + (type || '');
+        el.textContent = text;
+        wrap.appendChild(el);
+        setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 260); }, 3600);
+    }
 
-if (buyBtn) {
-    buyBtn.onclick = () => {
-        if (buyBtn.disabled) return;
-        buyBtn.disabled = true;
-        buyMsg.style.color = '#7c8199';
-        buyMsg.textContent = '⏳ در حال پردازش امن پرداخت…';
+    /* ---- buy via confirm modal ---- */
+    const overlay = document.getElementById('sqModal');
+    const buyBtn = document.getElementById('buyBtn');
+    const confirmBtn = document.getElementById('sqConfirm');
+    const mAfter = document.getElementById('sqMAfter');
+    const mRemain = document.getElementById('sqMRemain');
+    const priceC = {{ price_c|default:0 }};
+    const priceG = {{ price_g|default:0 }};
+    const coins = {{ lq_wallet.coins|default:0 }};
+    const gems = {{ lq_wallet.gems|default:0 }};
+    let busy = false;
+
+    function openModal() {
+        const afterC = coins - priceC, afterG = gems - priceG;
+        mAfter.textContent = '🪙 ' + Math.max(0, afterC).toLocaleString('fa-IR') + ' · 💎 ' + Math.max(0, afterG).toLocaleString('fa-IR');
+        mAfter.className = 'v ' + ((afterC < 0 || afterG < 0) ? 'neg' : 'pos');
+        if (afterC < 0 || afterG < 0) {
+            mRemain.textContent = '⚠️ موجودی‌ات کافی نیست — از بازی‌ها و درس‌ها سکه جمع کن!';
+            mRemain.className = 'sq-conf-remain short';
+            confirmBtn.disabled = true;
+        } else {
+            mRemain.textContent = '✅ موجودی کافی است — با تأیید، خرید انجام می‌شود.';
+            mRemain.className = 'sq-conf-remain enough';
+            confirmBtn.disabled = false;
+        }
+        overlay.classList.add('open');
+    }
+    function closeModal() { overlay.classList.remove('open'); }
+
+    if (buyBtn && !buyBtn.disabled) buyBtn.onclick = openModal;
+    document.getElementById('sqModalX').onclick = closeModal;
+    document.getElementById('sqCancel').onclick = closeModal;
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+    confirmBtn.onclick = () => {
+        if (busy || confirmBtn.disabled) return;
+        busy = true;
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = '⏳ در حال پردازش امن…';
+        const idem = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
         fetch('{% url "shop:buy" product.id %}', {
             method: 'POST',
             headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json'},
             body: JSON.stringify({idem})
         })
-        .then(r => r.json().then(d => ({status: r.status, d})))
-        .then(({status, d}) => {
-            if (d.ok) {
-                buyMsg.style.color = '#11998e';
-                buyMsg.textContent = d.duplicate
-                    ? 'ℹ️ این خرید قبلاً ثبت شده بود.'
-                    : '🎉 موفق! در حال انتقال به موجودی…';
-                setTimeout(() => { window.location = '{% url "shop:inventory" %}'; }, 1100);
-            } else {
-                buyMsg.style.color = '#dd2476';
-                buyMsg.textContent = '❌ ' + (d.error || 'خطا در خرید');
-                buyBtn.disabled = false;
-            }
-        })
-        .catch(() => {
-            buyMsg.style.color = '#dd2476';
-            buyMsg.textContent = '❌ خطای اتصال — دوباره تلاش کن.';
-            buyBtn.disabled = false;
-        });
+            .then(r => r.json().then(d => ({status: r.status, d})))
+            .then(({status, d}) => {
+                if (d.ok) {
+                    closeModal();
+                    toast(d.duplicate ? 'ℹ️ این خرید قبلاً ثبت شده بود.' : '🎉 خرید با موفقیت انجام شد!', 'ok');
+                    setTimeout(() => { window.location = '{% url "shop:inventory" %}'; }, 1300);
+                } else {
+                    toast('❌ ' + (d.error || 'خطا در خرید'), 'err');
+                    busy = false;
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = '✅ تأیید نهایی خرید';
+                }
+            })
+            .catch(() => {
+                toast('❌ خطای اتصال — دوباره تلاش کن.', 'err');
+                busy = false;
+                confirmBtn.disabled = false;
+                confirmBtn.textContent = '✅ تأیید نهایی خرید';
+            });
     };
-}
 
-const wishBtn = document.getElementById('wishBtn');
-if (wishBtn) {
-    wishBtn.onclick = () => {
-        fetch('{% url "shop:wishlist_toggle" product.id %}', {method: 'POST', headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}})
-            .then(r => r.json())
-            .then(d => { wishBtn.textContent = d.in_wishlist ? '💔' : '❤️'; });
-    };
-}
+    /* ---- wishlist ---- */
+    const wishBtn = document.getElementById('wishBtn');
+    if (wishBtn) {
+        wishBtn.onclick = () => {
+            fetch('{% url "shop:wishlist_toggle" product.id %}', {method: 'POST', headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}})
+                .then(r => r.json())
+                .then(d => { wishBtn.querySelector('svg').classList.toggle('on', !!d.in_wishlist); });
+        };
+    }
+})();
 </script>
 {% endblock %}

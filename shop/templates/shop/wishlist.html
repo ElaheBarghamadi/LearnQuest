@@ -1,58 +1,66 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_extras %}
 {% block title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608058">
+<link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608181">
 {% endblock %}
 
 {% block content %}
-<div class="sh-shell">
-    <div class="sh-hero hero-pink">
-        <div>
+<div class="sq-shell">
+    <div class="sq-hero" style="background:linear-gradient(125deg,#ec4899,#db2777 55%,#f472b6)">
+        <div class="sq-hero-txt">
             <h1>❤️ علاقه‌مندی‌ها</h1>
             <p>چیزهایی که قراره بعداً بگیری — با اولین سکه‌هات این‌جا برگرد!</p>
+            <div class="sq-hero-links">
+                <a href="{% url 'shop:home' %}">🛍️ برگشت به بازار</a>
+            </div>
         </div>
-        <a class="sh-btn ghost" href="{% url 'shop:home' %}">🛍️ برگشت به بازار</a>
     </div>
 
     {% if rows %}
-    <h2 class="sh-sec-t" style="margin-top:0">💝 لیست آرزوی تو <small class="sh-pill" style="font-size:.68rem;padding:4px 12px">{{ rows|length }} کالا</small></h2>
-    <div class="sh-grid">
+    <h2 class="sq-sec">💝 لیست آرزوی تو <span class="sq-count">{{ rows|length }} کالا</span></h2>
+    <div class="sq-grid">
         {% for w in rows %}
         {% with p=w.product %}
-        <div class="sh-card">
-            <a class="sh-tile sh-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+        <div class="sq-card">
+            <a class="sq-tile sq-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
                 {% if p.tile_mode == 'img' %}
-                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                    <span class="sq-fic">{{ p.effect_type|effect_icon }}</span>
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
                 {% elif p.tile_mode == 'frame' %}
-                    <span class="sh-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    <span class="sq-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
                 {% elif p.tile_mode == 'ucolor' %}
-                    <span class="sh-tile-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
+                    <span class="sq-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
                 {% elif p.tile_mode == 'effect' %}
-                    <span class="sh-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    <span class="sq-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
                 {% elif p.tile_mode == 'theme' %}
-                    <span class="sh-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                    <span class="sq-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
                 {% elif p.tile_mode == 'pbg' %}
-                    <span class="sh-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
+                    <span class="sq-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
                 {% else %}
-                    <span class="sh-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                    <span class="sq-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
                 {% endif %}
             </a>
-            <div class="sh-cbody">
-                <div class="sh-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
-                <h3 class="sh-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                <div class="sh-price">
-                    {% if p.final_price_coins %}<span class="val coin">🪙 {{ p.final_price_coins }}</span>
-                    {% elif p.final_price_gems %}<span class="val gem">💎 {{ p.final_price_gems }}</span>
-                    {% else %}<span class="val free">رایگان 🎉</span>{% endif %}
-                </div>
-                <div class="sh-actions">
-                    <a href="{% url 'shop:product' p.slug %}" class="sh-btn sm">مشاهده و خرید</a>
-                    <button class="sh-btn sm ghost sh-heart rm-btn" data-id="{{ p.id }}" title="حذف از علاقه‌مندی">💔</button>
+            <div class="sq-cbody">
+                <div class="sq-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
+                <h3 class="sq-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="sq-cfoot">
+                    <div class="sq-price">
+                        {% if p.price_c %}<span class="sq-val coin">🪙 {{ p.price_c }}</span>
+                        {% elif p.price_g %}<span class="sq-val gem">💎 {{ p.price_g }}</span>
+                        {% else %}<span class="sq-val free">رایگان 🎉</span>{% endif %}
+                    </div>
+                    <div style="display:flex;gap:7px;align-items:center">
+                        <a href="{% url 'shop:product' p.slug %}" class="sq-buy-mini">مشاهده</a>
+                        <button class="sq-heart on rm-btn" data-id="{{ p.id }}" title="حذف از علاقه‌مندی">
+                            <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -60,10 +68,10 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="sh-empty">
+    <div class="sq-empty">
         <span class="big">💔</span>
         <p><b>لیست علاقه‌مندی‌ات خالی است.</b></p>
-        <a href="{% url 'shop:home' %}" class="sh-btn">🛒 بگردیم تو بازار؟</a>
+        <a href="{% url 'shop:home' %}" class="sq-btn">🛒 بگردیم تو بازار؟</a>
     </div>
     {% endif %}
 </div>

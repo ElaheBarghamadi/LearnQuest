@@ -6,63 +6,63 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608058">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608181">
 {% endblock %}
 
 {% block content %}
-<div class="sh-shell">
-    <div class="sh-hero">
-        <div>
+<div class="sq-shell">
+    <div class="sq-hero" style="background:linear-gradient(125deg,#475569,#334155 55%,#64748b)">
+        <div class="sq-hero-txt">
             <h1>🧾 تاریخچه خریدها</h1>
             <p>همهٔ خریدهای تو در دفتر تغییرناپذیر سیستم ثبت شده 📚</p>
+            <div class="sq-hero-links">
+                <a href="{% url 'shop:home' %}">🛍️ برگشت به بازار</a>
+                <a href="{% url 'shop:inventory' %}">🎒 موجودی</a>
+            </div>
         </div>
-        <a class="sh-btn ghost" href="{% url 'shop:home' %}">🛍️ برگشت به بازار</a>
     </div>
 
     {% if page.object_list %}
-    <div class="sh-tablewrap">
-        <table class="sh-table">
-            <thead>
-                <tr><th>#</th><th>محصول</th><th>پرداخت</th><th>وضعیت</th><th>تاریخ</th></tr>
-            </thead>
-            <tbody>
-                {% for p in page %}
-                <tr>
-                    <td style="color:var(--sh-soft)">{{ p.id }}</td>
-                    <td>
-                        <a href="{% url 'shop:product' p.product.slug %}">
-                            {% firstof p.product.preview_emoji p.product.category.emoji '🎁' %} {{ p.product.name }}
-                        </a>
-                    </td>
-                    <td style="font-weight:900">
-                        {% if p.coins_paid %}<span style="color:var(--sh-amber)">🪙 {{ p.coins_paid }}</span>{% endif %}
-                        {% if p.gems_paid %}<span style="color:var(--sh-gem)">💎 {{ p.gems_paid }}</span>{% endif %}
-                        {% if not p.coins_paid and not p.gems_paid %}<span style="color:#0b6b5a">رایگان</span>{% endif %}
-                    </td>
-                    <td>
-                        {% if p.status == 'completed' %}<span class="sh-r sh-r-on" style="position:static">✅ تکمیل</span>
-                        {% elif p.status == 'refunded' %}<span class="sh-r sh-r-off" style="position:static">↩ بازگشت</span>
-                        {% else %}<span class="sh-r sh-r-ltd" style="position:static">❌ ناموفق</span>{% endif %}
-                    </td>
-                    <td style="font-size:.74rem;color:var(--sh-soft)">{{ p.created_at|jdatetime }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <h2 class="sq-sec">📚 دفترچهٔ خریدها <span class="sq-count">{{ page.paginator.count }} خرید</span></h2>
+    <div class="sq-history">
+        {% for p in page %}
+        <div class="sq-hrow">
+            <span class="sq-hico">{% firstof p.product.preview_emoji p.product.category.emoji '🎁' %}</span>
+            <div class="sq-hmain">
+                <div class="sq-hname"><a href="{% url 'shop:product' p.product.slug %}" style="color:inherit;text-decoration:none">{{ p.product.name }}</a></div>
+                <div class="sq-hsub">شناسهٔ خرید #{{ p.id }}</div>
+            </div>
+            <div class="sq-hside">
+                <div class="sq-hprice">
+                    {% if p.coins_paid %}<span style="color:#b45309">🪙 {{ p.coins_paid }}</span>{% endif %}
+                    {% if p.gems_paid %}<span style="color:#0369a1">💎 {{ p.gems_paid }}</span>{% endif %}
+                    {% if not p.coins_paid and not p.gems_paid %}<span style="color:#16a34a">رایگان</span>{% endif %}
+                </div>
+                <div class="sq-hdate">
+                    {{ p.created_at|jdatetime }}
+                    {% if p.status == 'completed' %}<span class="sq-status completed">✅ تکمیل</span>
+                    {% elif p.status == 'refunded' %}<span class="sq-status refunded">↩ بازگشت</span>
+                    {% else %}<span class="sq-status failed">❌ ناموفق</span>{% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 
     {% if page.paginator.num_pages > 1 %}
-    <div class="sh-pager">
+    <div class="sq-pager">
         {% if page.has_previous %}<a href="?page={{ page.previous_page_number }}">‹</a>{% endif %}
-        <span class="cur">{{ page.number }}</span>
+        {% for n in page.paginator.page_range %}
+            {% if n == page.number %}<span class="cur">{{ n }}</span>{% else %}<a href="?page={{ n }}">{{ n }}</a>{% endif %}
+        {% endfor %}
         {% if page.has_next %}<a href="?page={{ page.next_page_number }}">›</a>{% endif %}
     </div>
     {% endif %}
     {% else %}
-    <div class="sh-empty">
+    <div class="sq-empty">
         <span class="big">🧾</span>
-        <p>هنوز خریدی نداشتی!</p>
-        <a href="{% url 'shop:home' %}" class="sh-btn">🛒 رفتن به فروشگاه</a>
+        <p><b>هنوز خریدی نداشتی!</b></p>
+        <a href="{% url 'shop:home' %}" class="sq-btn">🛒 رفتن به فروشگاه</a>
     </div>
     {% endif %}
 </div>

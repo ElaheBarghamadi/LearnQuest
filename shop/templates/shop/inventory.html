@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static shop_extras %}
 {% block title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608058">
+<link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
+<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608181">
 {% endblock %}
 
 {% block content %}
-<div class="sh-shell">
-    <div class="sh-hero hero-teal">
-        <div>
+<div class="sq-shell">
+    <div class="sq-hero" style="background:linear-gradient(125deg,#0ea5a4,#0d9488 55%,#14b8a6)">
+        <div class="sq-hero-txt">
             <h1>🎒 موجودی من</h1>
             <p>همهٔ چیزهایی که صاحب شدی اینجاست — «استفاده» را بزن تا روی پروفایلت نمایش داده شود ✨</p>
+            <div class="sq-hero-links">
+                <a href="{% url 'shop:home' %}">🛍️ ادامهٔ خرید</a>
+                <a href="{% url 'shop:history' %}">🧾 تاریخچه</a>
+            </div>
         </div>
-        <a class="sh-btn ghost" href="{% url 'shop:home' %}">🛍️ ادامهٔ خرید</a>
     </div>
 
     {% if cosmetics %}
-    <div class="sh-panel">
+    <div class="sq-panel">
         <h3>✨ الان روی پروفایلت فعال است</h3>
-        <div class="sh-activecosm">
+        <div class="sq-activecosm">
             {% for slot, items in cosmetics.items %}
                 {% for it in items %}
                     <span>{{ it.emoji }} {{ it.name }}</span>
@@ -33,62 +37,63 @@
     {% endif %}
 
     {% if rows %}
-    <h2 class="sh-sec-t" style="margin-top:0">🧺 آیتم‌های موجودی تو <small class="sh-pill" style="font-size:.68rem;padding:4px 12px">{{ rows|length }} آیتم</small></h2>
-    <div class="sh-grid">
+    <h2 class="sq-sec">🧺 آیتم‌های موجودی تو <span class="sq-count">{{ rows|length }} آیتم</span></h2>
+    <div class="sq-grid">
         {% for row in rows %}
         {% with p=row.item.product %}
-        <div class="sh-card" data-item="{{ row.item.id }}">
-            <div class="sh-tile sh-tint-{{ p.tint }}">
+        <div class="sq-card" data-item="{{ row.item.id }}">
+            <div class="sq-tile sq-tint-{{ p.tint }}">
                 {% if p.tile_mode == 'img' %}
-                    <img src="{{ p.image.url }}" alt="{{ p.name }}">
+                    <span class="sq-fic">{{ p.effect_type|effect_icon }}</span>
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
                 {% elif p.tile_mode == 'frame' %}
-                    <span class="sh-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    <span class="sq-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
                 {% elif p.tile_mode == 'ucolor' %}
-                    <span class="sh-tile-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
+                    <span class="sq-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
                 {% elif p.tile_mode == 'effect' %}
-                    <span class="sh-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
+                    <span class="sq-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
                 {% elif p.tile_mode == 'theme' %}
-                    <span class="sh-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
+                    <span class="sq-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
                 {% elif p.tile_mode == 'pbg' %}
-                    <span class="sh-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
+                    <span class="sq-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
                 {% else %}
-                    <span class="sh-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                    <span class="sq-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
                 {% endif %}
-                {% if row.item.equipped %}<span class="sh-r sh-r-on">✨ فعال</span>{% endif %}
+                {% if row.item.equipped %}<span class="sq-ribs"><span class="sq-rib own">✨ فعال</span></span>{% endif %}
             </div>
-            <div class="sh-cbody">
-                <div class="sh-ccat">{{ p.category.emoji }} {{ p.category.name }} <span>·</span> {{ p.get_product_type_display }}</div>
-                <h3 class="sh-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                <div class="sh-meta">
+            <div class="sq-cbody">
+                <div class="sq-ccat">{{ p.category.emoji }} {{ p.category.name }} <b>·</b> {{ p.get_product_type_display }}</div>
+                <h3 class="sq-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="sq-ccat">
                     <span>×{{ row.item.quantity }}</span>
                     {% if row.slot %}<span>🧩 {{ row.slot }}</span>{% endif %}
                     {% if row.item.source != 'shop' %}<span>🎁 هدیه</span>{% endif %}
                 </div>
-                {% if row.bound %}<div class="sh-meta" style="color:var(--sh-amber)">📌 {{ row.bound }}</div>{% endif %}
-                <div class="sh-actions">
+                {% if row.bound %}<div class="sq-ccat" style="color:#b45309">📌 {{ row.bound }}</div>{% endif %}
+                <div class="sq-cfoot" style="padding-top:4px">
                     {% if row.equippable %}
                         {% if row.item.equipped %}
-                            <button class="sh-btn sm ghost eq-btn" data-act="unequip" data-id="{{ row.item.id }}">❌ خاموش</button>
+                            <button class="sq-btn sm ghost eq-btn" data-act="unequip" data-id="{{ row.item.id }}">❌ خاموش</button>
                         {% else %}
-                            <button class="sh-btn sm eq-btn" data-act="equip" data-id="{{ row.item.id }}">✨ استفاده</button>
+                            <button class="sq-btn sm eq-btn" data-act="equip" data-id="{{ row.item.id }}">✨ استفاده</button>
                         {% endif %}
                     {% elif row.consumable %}
-                        <button class="sh-btn sm teal use-btn" data-id="{{ row.item.id }}">⚡ مصرف کن</button>
+                        <button class="sq-btn sm green use-btn" data-id="{{ row.item.id }}">⚡ مصرف کن</button>
                     {% else %}
-                        <span class="sh-meta" style="color:#0b6b5a;padding:8px 4px">✅ پسیو — همیشه فعال</span>
+                        <span class="sq-ccat" style="color:#0b6b5a">✅ پسیو — همیشه فعال</span>
                     {% endif %}
                 </div>
-                <div class="msg sh-msg"></div>
+                <div class="msg sq-buymsg"></div>
             </div>
         </div>
         {% endwith %}
         {% endfor %}
     </div>
     {% else %}
-    <div class="sh-empty">
+    <div class="sq-empty">
         <span class="big">🫙</span>
         <p><b>هنوز چیزی نداری!</b> برو بازار یک چیز باحال پیدا کن 😄</p>
-        <a href="{% url 'shop:home' %}" class="sh-btn">🛒 رفتن به فروشگاه</a>
+        <a href="{% url 'shop:home' %}" class="sq-btn">🛒 رفتن به فروشگاه</a>
     </div>
     {% endif %}
 </div>
@@ -112,7 +117,7 @@ document.querySelectorAll('.eq-btn').forEach(btn => {
 });
 document.querySelectorAll('.use-btn').forEach(btn => {
     btn.onclick = () => {
-        const card = btn.closest('.sh-card');
+        const card = btn.closest('.sq-card');
         const msg = card.querySelector('.msg');
         msg.textContent = '⏳ ...';
         btn.disabled = true;
@@ -120,11 +125,11 @@ document.querySelectorAll('.use-btn').forEach(btn => {
             .then(r => r.json())
             .then(d => {
                 if (d.ok) {
-                    msg.style.color = '#11998e';
+                    msg.style.color = '#16a34a';
                     msg.textContent = d.message || '✅ مصرف شد!';
                     setTimeout(() => location.reload(), 1400);
                 } else {
-                    msg.style.color = '#dd2476';
+                    msg.style.color = '#e11d48';
                     msg.textContent = '❌ ' + (d.error || 'خطا');
                     btn.disabled = false;
                 }
