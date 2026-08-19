@@ -1059,10 +1059,20 @@
             .footer-grid { grid-template-columns: 1fr 1fr; gap: 26px 22px; }
             .footer-brand-col { grid-column: 1 / -1; }
         }
-        @media (max-width: 520px) {
-            .footer { padding: 34px 5% 18px; }
-            .footer-grid { grid-template-columns: 1fr; gap: 22px; }
-            .footer-bottom { flex-direction: column; text-align: center; }
+        @media (max-width: 620px) {
+            .footer { padding: 30px 5% 16px; margin-top: 40px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 20px 14px; }
+            .footer-brand-col { grid-column: 1 / -1; }
+            .footer-about { display: none; }
+            .footer-brand { font-size: 1.1rem; }
+            .footer-logo-badge { width: 38px; height: 38px; font-size: 1.05rem; border-radius: 12px; }
+            .footer-socials { margin-top: 2px; }
+            .footer-col-title { font-size: .8rem; margin-bottom: 9px; }
+            .footer-link { font-size: .76rem; padding: 4px 0; }
+            .footer-bottom { margin-top: 22px; padding-top: 12px; font-size: .68rem; flex-direction: column; text-align: center; gap: 5px; }
+        }
+        @media (max-width: 380px) {
+            .footer-grid { grid-template-columns: 1fr; gap: 16px; }
         }
 
         .footer-copy {

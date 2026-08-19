@@ -501,40 +501,108 @@
 .sq-status.refunded { background: #fff1f2; color: var(--sq-red); }
 .sq-status.failed { background: #f1f5f9; color: #64748b; }
 
-/* featured strip */
+/* featured strip — compact & controlled */
 .sq-feat { margin-bottom: 24px; }
-.sq-feat-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.sq-feat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: 10px;
+}
 .sq-fcard {
     position: relative; overflow: hidden;
-    display: flex; flex-direction: column; gap: 6px;
-    padding: 18px 16px; border-radius: 18px;
+    display: flex; flex-direction: column; gap: 4px;
+    padding: 12px 12px 10px; border-radius: 15px;
     color: #fff; text-decoration: none;
     transition: var(--sq-tr);
+    min-height: 118px;
 }
-.sq-fcard:hover { transform: translateY(-4px) scale(1.01); color: #fff; }
+.sq-fcard:hover { transform: translateY(-3px); color: #fff; }
 .sq-fcard::before {
     content: ''; position: absolute; inset: 0;
-    background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.25), transparent 45%);
+    background: radial-gradient(circle at 85% 15%, rgba(255,255,255,.22), transparent 45%);
     pointer-events: none;
 }
-.sq-fcard b { font-size: .9rem; font-weight: 900; position: relative; }
-.sq-fcard .sq-fprice { font-size: .84rem; font-weight: 900; display: flex; align-items: center; gap: 6px; position: relative; }
-.sq-fcard .sq-fprice svg { width: 15px; height: 15px; }
-.sq-fcard .sq-fprice em { font-style: normal; font-size: .66rem; background: rgba(255,255,255,.25); padding: 2px 8px; border-radius: 999px; }
-.sq-fcard .sq-fic { position: static; font-size: 2rem; }
+.sq-fcard b { font-size: .78rem; font-weight: 900; position: relative; line-height: 1.6; }
+.sq-fcard .sq-fprice { font-size: .78rem; font-weight: 900; display: flex; align-items: center; gap: 5px; position: relative; margin-top: auto; }
+.sq-fcard .sq-fprice svg { width: 13px; height: 13px; }
+.sq-fcard .sq-fprice em { font-style: normal; font-size: .6rem; background: rgba(255,255,255,.25); padding: 1px 7px; border-radius: 999px; }
+.sq-fcard .sq-fic { position: static; font-size: 1.5rem; margin-bottom: 2px; }
 
 /* responsive */
+@media (max-width: 900px) {
+    .sq-feat-row { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .sq-fcard { padding: 10px 10px 9px; min-height: 104px; }
+    .sq-fcard .sq-fic { font-size: 1.3rem; }
+}
+
 @media (max-width: 640px) {
-    .sq-hero { padding: 26px 18px 24px; }
-    .sq-hero-txt h1 { font-size: 1.3rem; }
-    .sq-wallet { width: 100%; justify-content: center; }
-    .sq-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .sq-tile { height: 88px; }
-    .sq-cbody { padding: 10px 11px 12px; }
-    .sq-cname { font-size: .82rem; }
-    .sq-buy-mini { padding: 7px 10px; font-size: .68rem; }
-    .sq-feat-row { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .sq-hero { padding: 22px 16px 20px; margin-bottom: 16px; border-radius: 20px; }
+    .sq-hero-txt h1 { font-size: 1.22rem; }
+    .sq-hero-txt p { font-size: .84rem; line-height: 1.8; margin-bottom: 12px; }
+    .sq-hero-links { gap: 7px; }
+    .sq-hero-links a { padding: 7px 13px; font-size: .75rem; }
+    .sq-wallet { width: 100%; justify-content: center; padding: 10px 12px; border-radius: 16px; gap: 6px; }
+    .sq-w { padding: 5px 9px; gap: 6px; }
+    .sq-w svg { width: 17px; height: 17px; }
+    .sq-w b { font-size: .95rem; }
+
+    .sq-toolbar { padding: 10px 10px 12px; margin-bottom: 14px; border-radius: 15px; }
+    .sq-cats { padding-bottom: 8px; margin-bottom: 8px; gap: 6px; }
+    .sq-chip { padding: 6px 12px; font-size: .74rem; }
+    .sq-tools { flex-direction: column; align-items: stretch; gap: 8px; }
+    .sq-search { flex: 1 1 auto; min-width: 0; }
+    .sq-select { width: 100%; }
+    .sq-btn { width: 100%; }
+
+    .sq-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+    .sq-tile { height: 76px; }
+    .sq-cbody { padding: 8px 9px 10px; gap: 5px; }
+    .sq-ccat { font-size: .6rem; }
+    .sq-cname { font-size: .78rem; line-height: 1.5; }
+    .sq-val { font-size: .82rem; }
+    .sq-val svg { width: 14px; height: 14px; }
+    .sq-old { font-size: .62rem; }
+    .sq-cfoot { gap: 5px; }
+    .sq-buy-mini { padding: 6px 9px; font-size: .66rem; border-radius: 8px; gap: 3px; }
+    .sq-heart { width: 29px; height: 29px; border-radius: 8px; }
+    .sq-heart svg { width: 13px; height: 13px; }
+    .sq-rib { font-size: .55rem; padding: 2px 7px; }
+    .sq-ribs { top: 5px; right: 5px; gap: 3px; }
+    .sq-fic { font-size: 2rem; }
+    .sq-ava .in { width: 40px; height: 40px; font-size: 1.05rem; }
+    .sq-feat-row { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .sq-fcard { min-height: 96px; padding: 9px 9px 8px; }
+    .sq-fcard b { font-size: .7rem; }
+    .sq-fcard .sq-fprice { font-size: .7rem; }
+    .sq-fcard .sq-fic { font-size: 1.15rem; }
     .sq-meta { align-items: flex-start; }
+    .sq-pager { gap: 5px; }
+    .sq-pager a, .sq-pager span { min-width: 31px; height: 31px; font-size: .75rem; }
+
+    .sq-sec { font-size: .95rem; margin-bottom: 12px; }
+    .sq-sec .sq-count { font-size: .65rem; }
+
+    /* detail page mobile */
+    .sq-gal { min-height: 200px; border-radius: 16px; }
+    .sq-gal .sq-fic { font-size: 3.2rem; }
+    .sq-dtitle { font-size: 1.2rem; }
+    .sq-ddesc { font-size: .84rem; }
+    .sq-buybox { padding: 14px; }
+    .sq-bigprice .val { font-size: 1.2rem; }
+    .sq-buybig { padding: 12px 14px; font-size: .88rem; }
+
+    /* modal → bottom sheet */
+    .sq-modal-overlay { align-items: flex-end; padding: 0; }
+    .sq-modal { max-width: 100%; border-radius: 22px 22px 0 0; max-height: 88vh; overflow-y: auto; }
+    .sq-modal-head { padding: 18px 20px 12px; }
+    .sq-modal-body { padding: 14px 20px; }
+    .sq-modal-actions { padding: 2px 20px 18px; }
+
+    /* inventory / history */
+    .sq-panel { padding: 11px 13px; gap: 7px; }
+    .sq-hrow { padding: 10px 12px; gap: 10px; }
+    .sq-hrow .sq-hico { width: 36px; height: 36px; font-size: 1.05rem; }
+    .sq-history { gap: 7px; }
 }
 
 /* legacy sh-* aliases kept for any leftover usage (inventory pages use sq-* now) */

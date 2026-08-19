@@ -944,10 +944,22 @@
             .academy-footer-grid { grid-template-columns: 1fr 1fr; gap: 24px 20px; }
             .af-brand-col { grid-column: 1 / -1; }
         }
-        @media (max-width: 575.98px) {
-            .academy-footer-grid { grid-template-columns: 1fr; gap: 20px; padding: 0 16px; }
-            .academy-footer-bottom { flex-direction: column; text-align: center; padding: 12px 16px 14px; }
-            .af-about { max-width: 100%; }
+        @media (max-width: 620px) {
+            .academy-footer { padding-top: 30px; margin-top: 44px; }
+            .academy-footer-grid { grid-template-columns: 1fr 1fr; gap: 18px 14px; padding: 0 16px; }
+            .af-brand-col { grid-column: 1 / -1; }
+            .af-about { display: none; }
+            .af-logo-badge { width: 36px; height: 36px; font-size: 1rem; border-radius: 11px; }
+            .af-brand { font-size: 1.05rem; }
+            .af-tag { font-size: .68rem; }
+            .af-socials { margin-top: 2px; }
+            .af-title { font-size: .78rem; margin-bottom: 8px; }
+            .af-link { font-size: .75rem; padding: 4px 0; }
+            .af-link i { font-size: .7rem; }
+            .academy-footer-bottom { margin-top: 22px; padding: 11px 16px 14px; font-size: .7rem; flex-direction: column; text-align: center; gap: 5px; }
+        }
+        @media (max-width: 380px) {
+            .academy-footer-grid { grid-template-columns: 1fr; gap: 14px; }
         }
 
         
