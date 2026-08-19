@@ -102,9 +102,14 @@
                                 <span class="badge bg-secondary">Draft</span>
                             {% endif %}
                         </div>
-                        <div>
-                            <a href="{% url 'admin_cms:lesson_create' chapter.id %}" class="text-success me-2" title="Add Lesson to this chapter"><i class="fas fa-plus-square"></i></a>
-                            <a href="{% url 'admin_cms:chapter_edit' chapter.id %}" class="text-primary me-2"><i class="fas fa-edit"></i></a>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-sm {% if chapter.is_published %}btn-outline-success{% else %}btn-outline-secondary{% endif %}"
+                                    onclick="togglePublish('{% url 'admin_cms:chapter_toggle_publish' chapter.id %}', this)"
+                                    title="{% if chapter.is_published %}Hide from site{% else %}Show on site{% endif %}">
+                                <i class="fas fa-eye{% if not chapter.is_published %}-slash{% endif %}"></i>
+                            </button>
+                            <a href="{% url 'admin_cms:lesson_create' chapter.id %}" class="text-success me-1" title="Add Lesson to this chapter"><i class="fas fa-plus-square"></i></a>
+                            <a href="{% url 'admin_cms:chapter_edit' chapter.id %}" class="text-primary me-1"><i class="fas fa-edit"></i></a>
                             <a href="{% url 'admin_cms:chapter_delete' chapter.id %}" class="text-danger" onclick="return confirm('Delete this chapter?')"><i class="fas fa-trash"></i></a>
                         </div>
                     </div>
@@ -116,4 +121,29 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePublish(url, btn) {
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            const item = btn.closest('.list-group-item');
+            const badge = item.querySelector('.badge');
+            badge.className = 'badge ' + (d.is_published ? 'bg-success' : 'bg-secondary');
+            badge.textContent = d.is_published ? 'Published' : 'Draft';
+            btn.className = 'btn btn-sm ' + (d.is_published ? 'btn-outline-success' : 'btn-outline-secondary');
+            btn.innerHTML = '<i class="fas fa-eye' + (d.is_published ? '' : '-slash') + '"></i>';
+        }
+    });
+}
+</script>
 {% endblock %}

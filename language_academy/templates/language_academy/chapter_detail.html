@@ -218,8 +218,26 @@
 
 .sticky-top {
     position: sticky;
-    top: 20px;
+    top: 84px;  /* زیر نواربالای ثابت آکادمی */
     z-index: 1;
+}
+
+/* ===== Responsive hardening ===== */
+@media (max-width: 991.98px) {
+    .sticky-top { position: static !important; top: auto; }
+}
+
+@media (max-width: 575.98px) {
+    .lesson-card { padding: 14px 12px; }
+    .lesson-card .d-flex.align-items-center {
+        flex-wrap: wrap;
+        gap: 10px !important;
+    }
+    .lesson-card .flex-grow-1 { min-width: 0; flex: 1 1 100%; }
+    .lesson-card .btn { width: 100%; }
+    h1.h2 { font-size: 1.35rem; line-height: 1.6; }
+    .lead { font-size: 0.95rem; }
+    .card-body.p-4 { padding: 18px !important; }
 }
 </style>
 {% if visual_edit %}

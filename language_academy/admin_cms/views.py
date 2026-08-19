@@ -209,6 +209,48 @@ def chapter_delete(request, chapter_id):
     return redirect('admin_cms:world_edit', world_id=world_id)
 
 
+@staff_member_required
+@require_POST
+def chapter_toggle_publish(request, chapter_id):
+    """نمایش/عدم نمایش فصل در سایت (یک‌کلیک، بدون ریلود)."""
+    chapter = get_object_or_404(Chapter, id=chapter_id)
+    chapter.is_published = not chapter.is_published
+    chapter.save(update_fields=['is_published'])
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'is_published': chapter.is_published})
+    messages.success(request,
+                     f'Chapter "{chapter.name}" now {"visible" if chapter.is_published else "hidden"}')
+    return redirect('admin_cms:world_edit', world_id=chapter.world.id)
+
+
+@staff_member_required
+@require_POST
+def lesson_toggle_publish(request, lesson_id):
+    """نمایش/عدم نمایش درس در سایت (یک‌کلیک، بدون ریلود)."""
+    lesson = get_object_or_404(Lesson, id=lesson_id)
+    lesson.is_published = not lesson.is_published
+    lesson.save(update_fields=['is_published'])
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'is_published': lesson.is_published})
+    messages.success(request,
+                     f'Lesson "{lesson.name}" now {"visible" if lesson.is_published else "hidden"}')
+    return redirect('admin_cms:chapter_edit', chapter_id=lesson.chapter.id)
+
+
+@staff_member_required
+@require_POST
+def vocabulary_toggle_active(request, vocab_id):
+    """فعال/غیرفعال کردن واژه (نمایش در سایت)."""
+    vocab = get_object_or_404(Vocabulary, id=vocab_id)
+    vocab.is_active = not vocab.is_active
+    vocab.save(update_fields=['is_active'])
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return JsonResponse({'ok': True, 'is_active': vocab.is_active})
+    messages.success(request,
+                     f'Vocabulary "{vocab.word}" now {"active" if vocab.is_active else "inactive"}')
+    return redirect('admin_cms:vocabulary_list')
+
+
 def _save_lesson_content(content_form, lesson):
     c = content_form.save(commit=False)
     c.lesson = lesson

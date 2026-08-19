@@ -122,9 +122,14 @@
                     {% endif %}
                     {% if lesson.is_exclusive %}<span class="badge bg-warning text-dark">👑 Exclusive</span>{% endif %}
                 </div>
-                <div>
-                    <a href="/academy/lesson/{{ lesson.id }}/?edit=1" class="text-success me-2" title="Live edit"><i class="fas fa-magic"></i></a>
-                    <a href="{% url 'admin_cms:lesson_edit' lesson.id %}" class="text-primary me-2"><i class="fas fa-edit"></i></a>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-sm {% if lesson.is_published %}btn-outline-success{% else %}btn-outline-secondary{% endif %}"
+                            onclick="togglePublish('{% url 'admin_cms:lesson_toggle_publish' lesson.id %}', this)"
+                            title="{% if lesson.is_published %}Hide from site{% else %}Show on site{% endif %}">
+                        <i class="fas fa-eye{% if not lesson.is_published %}-slash{% endif %}"></i>
+                    </button>
+                    <a href="/academy/lesson/{{ lesson.id }}/?edit=1" class="text-success me-1" title="Live edit"><i class="fas fa-magic"></i></a>
+                    <a href="{% url 'admin_cms:lesson_edit' lesson.id %}" class="text-primary me-1"><i class="fas fa-edit"></i></a>
                     <a href="{% url 'admin_cms:lesson_delete' lesson.id %}" class="text-danger" onclick="return confirm('Delete this lesson?')"><i class="fas fa-trash"></i></a>
                 </div>
             </div>
@@ -135,4 +140,29 @@
     </div>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function togglePublish(url, btn) {
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.ok) {
+            const item = btn.closest('.list-group-item');
+            const badge = item.querySelector('.badge.bg-success, .badge.bg-secondary');
+            badge.className = 'badge ' + (d.is_published ? 'bg-success' : 'bg-secondary');
+            badge.textContent = d.is_published ? 'Published' : 'Draft';
+            btn.className = 'btn btn-sm ' + (d.is_published ? 'btn-outline-success' : 'btn-outline-secondary');
+            btn.innerHTML = '<i class="fas fa-eye' + (d.is_published ? '' : '-slash') + '"></i>';
+        }
+    });
+}
+</script>
 {% endblock %}

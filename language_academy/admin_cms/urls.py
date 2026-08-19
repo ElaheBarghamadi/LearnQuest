@@ -19,11 +19,15 @@ urlpatterns = [
     path('chapters/create/<int:world_id>/', views.chapter_create, name='chapter_create'),
     path('chapters/<int:chapter_id>/edit/', views.chapter_edit, name='chapter_edit'),
     path('chapters/<int:chapter_id>/delete/', views.chapter_delete, name='chapter_delete'),
+    path('chapters/<int:chapter_id>/toggle-publish/', views.chapter_toggle_publish,
+         name='chapter_toggle_publish'),
 
 
     path('lessons/create/<int:chapter_id>/', views.lesson_create, name='lesson_create'),
     path('lessons/<int:lesson_id>/edit/', views.lesson_edit, name='lesson_edit'),
     path('lessons/<int:lesson_id>/delete/', views.lesson_delete, name='lesson_delete'),
+    path('lessons/<int:lesson_id>/toggle-publish/', views.lesson_toggle_publish,
+         name='lesson_toggle_publish'),
     path('lessons/<int:lesson_id>/visual-save/', views.lesson_visual_save, name='lesson_visual_save'),
     path('visual-save/', views.academy_visual_save, name='academy_visual_save'),
     path('lessons/<int:lesson_id>/visual-upload/', views.lesson_visual_upload, name='lesson_visual_upload'),
@@ -32,6 +36,9 @@ urlpatterns = [
     path('vocabulary/', views.vocabulary_list, name='vocabulary_list'),
     path('vocabulary/create/', views.vocabulary_create, name='vocabulary_create'),
     path('vocabulary/<int:vocab_id>/edit/', views.vocabulary_edit, name='vocabulary_edit'),
+    path('vocabulary/<int:vocab_id>/toggle-active/', views.vocabulary_toggle_active,
+         name='vocabulary_toggle_active'),
+    path('vocabulary/<int:vocab_id>/delete/', views.vocabulary_delete, name='vocabulary_delete'),
     path('vocabulary/categories/', views.vocabulary_categories, name='vocabulary_categories'),
     path('exams/<int:exam_id>/delete/', views.exam_delete, name='exam_delete'),
 
