@@ -108,6 +108,13 @@ class LessonContentForm(forms.ModelForm):
         for fname in ('introduction', 'summary', 'learning_objectives', 'grammar_examples',
                       'example_sentences', 'key_takeaways'):
             self.fields[fname].required = False
+        # فیلدهای لیستی (JSON) — در فرم به‌صورت «هر خط یک آیتم» ویرایش می‌شوند
+        for fname in ('learning_objectives', 'grammar_examples', 'example_sentences', 'key_takeaways'):
+            w = self.fields[fname].widget
+            w.attrs.setdefault('data-json-list', '1')
+            w.attrs['rows'] = 4
+            w.attrs['dir'] = 'auto'
+            w.attrs['placeholder'] = 'هر آیتم در یک خط جداگانه بنویسید'
 
     def clean(self):
         cleaned = super().clean()

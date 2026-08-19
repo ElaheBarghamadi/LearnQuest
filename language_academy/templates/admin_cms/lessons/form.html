@@ -3,175 +3,381 @@
 {% block title %}{{ title }} | CMS{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .lf-wrap { max-width: 1240px; }
+    .lf-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px 0; }
+    .lf-tabs .nav-link {
+        border: none; border-radius: 12px 12px 0 0;
+        padding: 10px 18px; font-weight: 800; font-size: 0.85rem;
+        color: #64748b; background: transparent; transition: .18s;
+    }
+    .lf-tabs .nav-link:hover { background: rgba(59,130,246,.07); color: #2563eb; }
+    .lf-tabs .nav-link.active {
+        color: #fff;
+        background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+        box-shadow: 0 4px 12px rgba(59,130,246,.35);
+    }
+    .lf-pane { padding: 20px 18px 8px; }
+    .lf-section-title {
+        display: flex; align-items: center; gap: 8px;
+        font-size: 0.9rem; font-weight: 900; color: #1e293b;
+        margin: 6px 0 14px; padding-bottom: 8px;
+        border-bottom: 1.5px dashed #e2e8f0;
+    }
+    .lf-section-title .ico {
+        width: 28px; height: 28px; border-radius: 9px;
+        background: rgba(59,130,246,.12); color: #2563eb;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.85rem; flex: 0 0 auto;
+    }
+    .lf-label { font-weight: 700; font-size: 0.82rem; color: #334155; margin-bottom: 6px; }
+    .lf-label small { color: #94a3b8; font-weight: 600; }
+    .lf-field textarea.form-control, .lf-field input.form-control, .lf-field select.form-select {
+        border-radius: 12px; border: 1.5px solid #e2e8f0; padding: 10px 13px;
+        font-size: 0.88rem; transition: .18s;
+    }
+    .lf-field textarea.form-control:focus, .lf-field input.form-control:focus, .lf-field select.form-select:focus {
+        border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+    }
+    .lf-hint { font-size: 0.72rem; color: #94a3b8; margin-top: 5px; line-height: 1.8; }
+    .lf-switch { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 14px; margin-bottom: 10px; transition: .18s; background: #f8fafc; }
+    .lf-switch:hover { border-color: #c7d2fe; background: #f5f7ff; }
+    .lf-switch .form-check-input { width: 42px; height: 22px; margin: 0; cursor: pointer; }
+    .lf-switch .form-check-input:checked { background-color: #16a34a; border-color: #16a34a; }
+    .lf-switch .form-check-label { font-weight: 700; font-size: 0.86rem; color: #1e293b; cursor: pointer; }
+    .lf-switch small { display: block; color: #94a3b8; font-weight: 600; font-size: 0.74rem; }
+    .lf-side-card { border: 1.5px solid #e2e8f0; border-radius: 16px; overflow: hidden; margin-bottom: 18px; background: #fff; }
+    .lf-side-head { padding: 12px 16px; font-weight: 900; font-size: 0.85rem; color: #1e293b; background: linear-gradient(135deg,#f1f5f9,#eef2ff); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+    .lf-side-body { padding: 14px 16px; }
+    .lf-stat { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; font-size: 0.82rem; border-bottom: 1px dashed #eef2f7; }
+    .lf-stat:last-child { border-bottom: none; }
+    .lf-stat .k { color: #64748b; font-weight: 600; }
+    .lf-stat .v { font-weight: 800; color: #1e293b; }
+    .lf-badge { padding: 4px 11px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; }
+    .lf-btn { border-radius: 11px; font-weight: 800; font-size: 0.85rem; padding: 9px 16px; }
+    .lf-img-prev { border: 1.5px dashed #e2e8f0; border-radius: 12px; padding: 8px; text-align: center; background: #f8fafc; margin-top: 8px; }
+    .lf-img-prev img { max-height: 130px; border-radius: 8px; max-width: 100%; }
+    .lf-actionbar {
+        position: sticky; bottom: 14px; z-index: 40;
+        display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;
+        background: rgba(255,255,255,.9); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border: 1.5px solid #e2e8f0; border-radius: 16px;
+        padding: 12px 18px; box-shadow: 0 16px 40px rgba(15,23,42,.18);
+        margin-top: 22px;
+    }
+    .lf-actionbar .note { font-size: 0.78rem; color: #64748b; font-weight: 600; }
+    .ck-editor__editable { min-height: 180px; }
+</style>
+{% endblock %}
+
 {% block content %}
-{% if form.errors %}
-<div class="alert alert-danger">
-    <strong>لطفاً خطاهای زیر را برطرف کنید:</strong>
-    <ul class="mb-0">
-        {% for field in form %}
-            {% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}
-        {% endfor %}
-        {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-    </ul>
-</div>
-{% endif %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">Lesson Details</h5>
+<div class="lf-wrap">
+    {% if form.errors or content_form.errors %}
+    <div class="alert alert-danger">
+        <strong>لطفاً خطاهای زیر را برطرف کنید:</strong>
+        <ul class="mb-0">
+            {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% for field in content_form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="lessonForm">
+        {% csrf_token %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header p-0 border-0 bg-white">
+                        <ul class="nav nav-tabs lf-tabs" role="tablist">
+                            <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-basic" type="button" role="tab"><i class="fas fa-info-circle me-1"></i> Basic</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-content" type="button" role="tab"><i class="fas fa-file-alt me-1"></i> Content</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-media" type="button" role="tab"><i class="fas fa-image me-1"></i> Media</button></li>
+                            <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab"><i class="fas fa-cog me-1"></i> Settings</button></li>
+                        </ul>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="tab-content">
+                            <!-- ===================== BASIC ===================== -->
+                            <div class="tab-pane fade show active lf-pane" id="tab-basic" role="tabpanel">
+                                <div class="lf-section-title"><span class="ico"><i class="fas fa-pen"></i></span> نام و مشخصات اصلی</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">نام درس <small>(English) *</small></label>
+                                        {{ form.name }}
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">نام فارسی <small>(optional)</small></label>
+                                        {{ form.name_fa }}
+                                    </div>
+                                </div>
+                                <div class="row g-3 mt-1">
+                                    <div class="col-md-3 lf-field">
+                                        <label class="lf-label">نوع درس</label>
+                                        {{ form.lesson_type }}
+                                    </div>
+                                    <div class="col-md-3 lf-field">
+                                        <label class="lf-label">ترتیب</label>
+                                        {{ form.order }}
+                                    </div>
+                                    <div class="col-md-3 lf-field">
+                                        <label class="lf-label">جایزه XP</label>
+                                        {{ form.xp_reward }}
+                                    </div>
+                                    <div class="col-md-3 lf-field">
+                                        <label class="lf-label">جایزه سکه</label>
+                                        {{ form.coin_reward }}
+                                    </div>
+                                    <div class="col-md-4 lf-field">
+                                        <label class="lf-label">زمان تخمینی (دقیقه)</label>
+                                        {{ form.estimated_time_minutes }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================== CONTENT ===================== -->
+                            <div class="tab-pane fade lf-pane" id="tab-content" role="tabpanel">
+                                <div class="lf-section-title"><span class="ico"><i class="fas fa-file-alt"></i></span> متن و محتوای درس</div>
+                                <div class="lf-field mb-3">
+                                    <label class="lf-label">مقدمه (Introduction)</label>
+                                    {{ content_form.introduction }}
+                                    <div class="lf-hint">جملهٔ جذاب برای شروع درس — دانش‌آموز با این متن وارد درس می‌شود.</div>
+                                </div>
+                                <div class="lf-field mb-3">
+                                    <label class="lf-label">یادداشت‌های گرامر (Grammar Notes)</label>
+                                    {{ content_form.grammar_notes }}
+                                    <div class="lf-hint">از ویرایشگر ریک‌تکست استفاده کنید (HTML پشتیبانی می‌شود).</div>
+                                </div>
+                                <div class="lf-field mb-3">
+                                    <label class="lf-label">خلاصه (Summary)</label>
+                                    {{ content_form.summary }}
+                                    <div class="lf-hint">در پایان درس به دانش‌آموز نمایش داده می‌شود.</div>
+                                </div>
+
+                                <div class="lf-section-title" style="margin-top:18px"><span class="ico"><i class="fas fa-list-ul"></i></span> فهرست‌ها <small style="font-weight:600;color:#94a3b8">(هر خط = یک آیتم)</small></div>
+                                <div class="row g-3">
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">اهداف یادگیری</label>
+                                        {{ content_form.learning_objectives }}
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">مثال‌های گرامر</label>
+                                        {{ content_form.grammar_examples }}
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">جمله‌های نمونه</label>
+                                        {{ content_form.example_sentences }}
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">نکات کلیدی</label>
+                                        {{ content_form.key_takeaways }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================== MEDIA ===================== -->
+                            <div class="tab-pane fade lf-pane" id="tab-media" role="tabpanel">
+                                <div class="lf-section-title"><span class="ico"><i class="fas fa-image"></i></span> تصویر و ویدیو</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">تصویر شاخص</label>
+                                        {{ content_form.featured_image }}
+                                        <div class="lf-img-prev" id="imgPrevWrap" {% if not content_form.instance.featured_image %}style="display:none"{% endif %}>
+                                            {% if content_form.instance.featured_image %}
+                                                <img src="{{ content_form.instance.featured_image.url }}" id="imgPrev" alt="preview">
+                                            {% else %}
+                                                <img src="" id="imgPrev" alt="preview" style="display:none">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="row g-3">
+                                            <div class="col-6 lf-field">
+                                                <label class="lf-label">عرض تصویر (٪)</label>
+                                                {{ content_form.image_width }}{{ content_form.image_width.errors }}
+                                            </div>
+                                            <div class="col-6 lf-field">
+                                                <label class="lf-label">محل قرارگیری</label>
+                                                {{ content_form.image_align }}{{ content_form.image_align.errors }}
+                                            </div>
+                                            <div class="col-12 lf-field">
+                                                <label class="lf-label">صوت مقدمه</label>
+                                                {{ content_form.introduction_audio }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">ویدیو (فایل)</label>
+                                        {{ content_form.featured_video }}
+                                    </div>
+                                    <div class="col-md-6 lf-field">
+                                        <label class="lf-label">لینک ویدیو (YouTube/Vimeo)</label>
+                                        {{ content_form.featured_video_url }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ===================== SETTINGS ===================== -->
+                            <div class="tab-pane fade lf-pane" id="tab-settings" role="tabpanel">
+                                <div class="lf-section-title"><span class="ico"><i class="fas fa-cog"></i></span> وضعیت و دسترسی</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="lf-switch">
+                                            {{ form.is_published }}
+                                            <div><label class="form-check-label" for="{{ form.is_published.id_for_label }}">منتشر شده</label><small>برای همهٔ کاربران نمایش داده شود</small></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="lf-switch">
+                                            {{ form.is_free_preview }}
+                                            <div><label class="form-check-label" for="{{ form.is_free_preview.id_for_label }}">پیش‌نمایش رایگان</label><small>بدون ورود هم دیده شود</small></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="lf-switch">
+                                            {{ form.is_exclusive }}
+                                            <div>
+                                                <label class="form-check-label" for="{{ form.is_exclusive.id_for_label }}">👑 درس ویژه (نیازمند بلیط فروشگاه)</label>
+                                                <small>فقط کاربرانی که بلیط این درس را از فروشگاه خریده‌اند می‌توانند آن را ببینند</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="alert alert-info d-flex align-items-start gap-2" style="border-radius:14px;font-size:.82rem">
+                                    <i class="fas fa-store mt-1"></i>
+                                    <div>
+                                        <b>ساخت بلیط درس ویژه:</b> از بخش <code>Shop → Products</code> محصولی با
+                                        <code dir="ltr">effect_type = exclusive_lesson</code> و پیلود
+                                        {% if lesson %}<code dir="ltr">{"lesson_id": {{ lesson.id }}}</code>{% else %}<code dir="ltr">{"lesson_id": ID}</code> (بعد از ذخیرهٔ درس، ID را از همین صفحه کپی کنید){% endif %}
+                                        بسازید تا درگاه خرید خودکار فعال شود.
+                                    </div>
+                                </div>
+
+                                <div class="lf-section-title" style="margin-top:18px"><span class="ico"><i class="fas fa-sliders-h"></i></span> رفتار درس</div>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="lf-switch">
+                                            {{ content_form.is_interactive }}
+                                            <div><label class="form-check-label" for="{{ content_form.is_interactive.id_for_label }}">درس تعاملی</label><small>بخش‌های تعاملی نمایش داده شود</small></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="lf-switch">
+                                            {{ content_form.allow_skip }}
+                                            <div><label class="form-check-label" for="{{ content_form.allow_skip.id_for_label }}">اجازهٔ رد کردن</label><small>دانش‌آموز بتواند از این درس بگذرد</small></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Name *</label>
-                            {{ form.name }}
+
+            <!-- ===================== SIDEBAR ===================== -->
+            <div class="col-lg-4">
+                <div class="lf-side-card">
+                    <div class="lf-side-head"><i class="fas fa-chart-simple"></i> وضعیت درس</div>
+                    <div class="lf-side-body">
+                        <div class="lf-stat"><span class="k">وضعیت انتشار</span>
+                            {% if form.instance.pk %}
+                                <span class="v"><span class="lf-badge {% if form.instance.is_published %}bg-success{% else %}bg-secondary{% endif %}">{% if form.instance.is_published %}● منتشر شده{% else %}○ پیش‌نویس{% endif %}</span></span>
+                            {% else %}
+                                <span class="v"><span class="lf-badge bg-secondary">جدید</span></span>
+                            {% endif %}
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Name (Persian)</label>
-                            {{ form.name_fa }}
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Lesson Type</label>
-                            {{ form.lesson_type }}
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Order</label>
-                            {{ form.order }}
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">XP Reward</label>
-                            {{ form.xp_reward }}
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Coin Reward</label>
-                            {{ form.coin_reward }}
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Estimated Time (minutes)</label>
-                            {{ form.estimated_time_minutes }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="form-check mt-4">
-                                {{ form.is_published }}
-                                <label class="form-check-label">Published</label>
-                            </div>
-                            <div class="form-check">
-                                {{ form.is_free_preview }}
-                                <label class="form-check-label">Free Preview (visible without login)</label>
-                            </div>
-                            <div class="form-check">
-                                {{ form.is_exclusive }}
-                                <label class="form-check-label">👑 Exclusive (needs shop ticket)</label>
-                            </div>
-                            <small class="text-muted d-block mt-1">برای درس اختصاصی، بلیطش را از بخش Shop بسازید: <code dir="ltr">effect_type = exclusive_lesson</code> و پیلود {% if lesson %}<code dir="ltr">{"lesson_id": {{ lesson.id }}}</code>{% else %}<code dir="ltr">{"lesson_id": LESSON_ID}</code> (پس از ذخیره، ID را از همین صفحه ببینید){% endif %}</small>
-                        </div>
-                    </div>
-                    
-                    <hr>
-                    <h5 class="mt-3">Lesson Content</h5>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Introduction</label>
-                        {{ content_form.introduction }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Introduction Audio</label>
-                        {{ content_form.introduction_audio }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Learning Objectives (one per line)</label>
-                        {{ content_form.learning_objectives }}
-                        <small class="text-muted">Enter each objective on a new line</small>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Grammar Notes</label>
-                        {{ content_form.grammar_notes }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Grammar Examples (one per line)</label>
-                        {{ content_form.grammar_examples }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Example Sentences (one per line)</label>
-                        {{ content_form.example_sentences }}
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Featured Image</label>
-                            {{ content_form.featured_image }}
-                            <div class="mt-2">
-                                <label class="form-label">{{ content_form.image_width.label }} <small class="text-muted">(۲۰ تا ۱۰۰)</small></label>
-                                {{ content_form.image_width }}{{ content_form.image_width.errors }}
-                            </div>
-                            <div class="mt-2">
-                                <label class="form-label">{{ content_form.image_align.label }}</label>
-                                {{ content_form.image_align }}{{ content_form.image_align.errors }}
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Featured Video</label>
-                            {{ content_form.featured_video }}
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Featured Video URL (YouTube/Vimeo)</label>
-                        {{ content_form.featured_video_url }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Summary</label>
-                        {{ content_form.summary }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label class="form-label">Key Takeaways (one per line)</label>
-                        {{ content_form.key_takeaways }}
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                {{ content_form.is_interactive }}
-                                <label class="form-check-label">Interactive Lesson</label>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-check">
-                                {{ content_form.allow_skip }}
-                                <label class="form-check-label">Allow Skipping</label>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <hr>
-                    <div class="d-flex justify-content-between">
-                        {% if lesson %}
-                            <a href="{% url 'admin_cms:chapter_edit' lesson.chapter.id %}" class="btn btn-secondary">Cancel</a>
-                        {% else %}
-                            <a href="{% url 'admin_cms:chapter_edit' chapter.id %}" class="btn btn-secondary">Cancel</a>
+                        <div class="lf-stat"><span class="k">فصل</span><span class="v">{{ chapter.name }}</span></div>
+                        <div class="lf-stat"><span class="k">جهان</span><span class="v">{{ chapter.world.name }}</span></div>
+                        {% if form.instance.pk %}
+                        <div class="lf-stat"><span class="k">شناسه (ID)</span><span class="v" dir="ltr">#{{ form.instance.pk }}</span></div>
+                        <div class="lf-stat"><span class="k">کوئیز</span><span class="v">{{ form.instance.quiz.title|default:'—' }}</span></div>
                         {% endif %}
-                        <button type="submit" class="btn btn-primary">Save Lesson</button>
                     </div>
-                </form>
+                </div>
+
+                {% if lesson %}
+                <div class="lf-side-card">
+                    <div class="lf-side-head"><i class="fas fa-bolt"></i> اقدامات سریع</div>
+                    <div class="lf-side-body d-flex flex-column gap-2">
+                        <a href="{% url 'language_academy:lesson_detail' lesson.id %}" target="_blank" class="btn btn-outline-primary lf-btn w-100"><i class="fas fa-eye me-1"></i> مشاهدهٔ درس</a>
+                        <a href="{% url 'language_academy:lesson_detail' lesson.id %}?edit=1" target="_blank" class="btn btn-outline-success lf-btn w-100"><i class="fas fa-magic me-1"></i> ویرایش زنده (Live Edit)</a>
+                        <a href="{% url 'admin_cms:lesson_delete' lesson.id %}" class="btn btn-outline-danger lf-btn w-100" onclick="return confirm('درس حذف شود؟')"><i class="fas fa-trash me-1"></i> حذف درس</a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="lf-side-card">
+                    <div class="lf-side-head"><i class="fas fa-lightbulb"></i> راهنما</div>
+                    <div class="lf-side-body" style="font-size:.8rem;color:#475569;line-height:2">
+                        <div>• فیلدهای فهرست را <b>هر خط یک آیتم</b> بنویسید — خودکار ذخیره می‌شود.</div>
+                        <div>• برای گرامر از دکمه‌های ویرایشگر استفاده کنید.</div>
+                        <div>• بعد از ذخیره، دکمهٔ «ویرایش زنده» را بزنید تا محتوا را همان‌جایی که کاربر می‌بیند ویرایش کنید.</div>
+                        <div>• عکس‌ها حداکثر <b>۵ مگابایت</b> (png/jpg/webp/gif).</div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="lf-actionbar">
+            <div class="note">
+                {% if lesson %}
+                    <i class="fas fa-pen text-primary me-1"></i> در حال ویرایش «{{ lesson.name }}»
+                {% else %}
+                    <i class="fas fa-plus-circle text-success me-1"></i> ساخت درس جدید در «{{ chapter.name }}»
+                {% endif %}
+            </div>
+            <div class="d-flex gap-2">
+                <a href="{% if lesson %}{% url 'admin_cms:chapter_edit' lesson.chapter.id %}{% else %}{% url 'admin_cms:chapter_edit' chapter.id %}{% endif %}" class="btn btn-light lf-btn">انصراف</a>
+                <button type="submit" class="btn btn-primary lf-btn px-4"><i class="fas fa-save me-1"></i> ذخیرهٔ درس</button>
+            </div>
+        </div>
+    </form>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+    var form = document.getElementById('lessonForm');
+
+    /* 1) تبدیل JSON به «هر خط یک آیتم» هنگام نمایش */
+    document.querySelectorAll('[data-json-list]').forEach(function (ta) {
+        try {
+            var arr = JSON.parse(ta.value || '[]');
+            if (Array.isArray(arr)) ta.value = arr.join('\n');
+        } catch (e) { /* متن آزاد — دست نزن */ }
+    });
+
+    /* 2) تبدیل خط‌ها به JSON هنگام ارسال */
+    form.addEventListener('submit', function () {
+        document.querySelectorAll('[data-json-list]').forEach(function (ta) {
+            var lines = ta.value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+            ta.value = JSON.stringify(lines);
+        });
+    });
+
+    /* 3) پیش‌نمایش زندهٔ تصویر شاخص */
+    var fileInput = document.getElementById('{{ content_form.featured_image.id_for_label }}');
+    var prevWrap = document.getElementById('imgPrevWrap');
+    var prevImg = document.getElementById('imgPrev');
+    if (fileInput && prevWrap && prevImg) {
+        fileInput.addEventListener('change', function () {
+            var f = fileInput.files && fileInput.files[0];
+            if (f) {
+                var reader = new FileReader();
+                reader.onload = function (e) { prevImg.src = e.target.result; prevImg.style.display = 'block'; prevWrap.style.display = 'block'; };
+                reader.readAsDataURL(f);
+            }
+        });
+    }
+
+    /* 4) باز شدن تب از روی هش (مثلاً #tab-media) */
+    if (location.hash) {
+        var tabBtn = document.querySelector('[data-bs-target="' + location.hash + '"]');
+        if (tabBtn) { new bootstrap.Tab(tabBtn).show(); }
+    }
+})();
+</script>
 {% endblock %}
