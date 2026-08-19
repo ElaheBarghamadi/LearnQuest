@@ -115,6 +115,15 @@ class LessonContentForm(forms.ModelForm):
             w.attrs['rows'] = 4
             w.attrs['dir'] = 'auto'
             w.attrs['placeholder'] = 'هر آیتم در یک خط جداگانه بنویسید'
+        # فیلدهای ریک‌تکست — با ویرایشگر بلوکی بصری (بدون نیاز به HTML)
+        for fname in ('introduction', 'grammar_notes', 'summary'):
+            w = self.fields[fname].widget
+            w.attrs['data-block-editor'] = '1'
+            w.attrs['data-editor-name'] = {
+                'introduction': 'مقدمه',
+                'grammar_notes': 'یادداشت‌های گرامر',
+                'summary': 'خلاصه',
+            }[fname]
 
     def clean(self):
         cleaned = super().clean()

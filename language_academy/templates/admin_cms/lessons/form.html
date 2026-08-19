@@ -4,6 +4,7 @@
 {% block page_title %}{{ title }}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="/static/css/block-editor.css?v=202608201">
 <style>
     .lf-wrap { max-width: 1240px; }
     .lf-tabs { display: flex; gap: 4px; flex-wrap: wrap; padding: 10px 12px 0; }
@@ -139,6 +140,10 @@
                             <!-- ===================== CONTENT ===================== -->
                             <div class="tab-pane fade lf-pane" id="tab-content" role="tabpanel">
                                 <div class="lf-section-title"><span class="ico"><i class="fas fa-file-alt"></i></span> متن و محتوای درس</div>
+                                <div class="alert alert-primary d-flex align-items-start gap-2 mb-3" style="border-radius:14px;font-size:.8rem;background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af">
+                                    <i class="fas fa-arrows-alt mt-1"></i>
+                                    <div>متن‌ها را با <b>بلوک‌ها</b> بسازید — نیازی به نوشتن HTML نیست. بلوک اضافه کنید، با ⠿ <b>درگ‌اندروپ</b> جابه‌جا کنید و عکس آپلود کنید.</div>
+                                </div>
                                 <div class="lf-field mb-3">
                                     <label class="lf-label">مقدمه (Introduction)</label>
                                     {{ content_form.introduction }}
@@ -147,7 +152,7 @@
                                 <div class="lf-field mb-3">
                                     <label class="lf-label">یادداشت‌های گرامر (Grammar Notes)</label>
                                     {{ content_form.grammar_notes }}
-                                    <div class="lf-hint">از ویرایشگر ریک‌تکست استفاده کنید (HTML پشتیبانی می‌شود).</div>
+                                    <div class="lf-hint">با بلوک‌ها بسازید: متن، تیتر، لیست، نقل‌قول یا عکس.</div>
                                 </div>
                                 <div class="lf-field mb-3">
                                     <label class="lf-label">خلاصه (Summary)</label>
@@ -337,6 +342,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    window.LBE_UPLOAD_URL = "{% if lesson %}{% url 'admin_cms:lesson_visual_upload' lesson.id %}{% endif %}";
+</script>
+<script src="/static/js/block-editor.js?v=202608201"></script>
 <script>
 (function () {
     'use strict';

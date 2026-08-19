@@ -1258,6 +1258,13 @@ def lesson_visual_upload(request, lesson_id):
             })
             content.featured_image.save(fname, file, save=True)
             return JsonResponse({'ok': True, 'url': content.featured_image.url})
+        if target == '__lesson_block__':
+            # عکس داخل ویرایشگر بلوکی — در مسیر رسانهٔ درس ذخیره می‌شود
+            from django.core.files.storage import default_storage
+            from django.conf import settings as dj_settings
+            rel = f'lesson_blocks/{fname}'
+            saved = default_storage.save(rel, file)
+            return JsonResponse({'ok': True, 'url': dj_settings.MEDIA_URL + saved})
         if target.startswith('vocab_') and target[6:].isdigit():
             vocab = get_object_or_404(Vocabulary, id=int(target[6:]), is_active=True)
             vocab.image.save(fname, file, save=True)
