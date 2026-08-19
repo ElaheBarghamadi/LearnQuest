@@ -68,6 +68,7 @@ urlpatterns = [
          name='vocabulary_add_to_practice'),
     path('vocabulary/add-to-review/<int:word_id>/', views.vocabulary_add_to_review, name='vocabulary_add_to_review'),
 
+    path('grammar/', views.grammar_hub, name='grammar_hub'),
     path('idioms/', views.idioms_hub, name='idioms_hub'),
     path('idioms/placement/', views.idioms_placement, name='idioms_placement'),
     path('idioms/placement/quiz/<int:attempt_id>/', views.idioms_placement_quiz, name='idioms_placement_quiz'),

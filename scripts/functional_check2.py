@@ -92,7 +92,7 @@ def main():
         print('    (no consumable item to test)')
 
     print('=== Quiz full flow ===')
-    r = s.get(BASE + '/academy/quiz/1/', timeout=30)
+    r = s.get(BASE + '/academy/quiz/29/', timeout=30)
     m = re.search(r'name="session_key" value="([^"]+)"', r.text)
     ok(r.status_code == 200, 'quiz page loads')
     skey = m.group(1) if m else None
@@ -100,9 +100,9 @@ def main():
     if skey:
         r = post_json(s, '/academy/quiz/save-time/', {'session_key': skey, 'seconds': 12})
         ok(r.status_code == 200, 'quiz save time', r.text[:150])
-        r = s.post(BASE + '/academy/quiz/submit/1/', data={
+        r = s.post(BASE + '/academy/quiz/submit/29/', data={
             'csrfmiddlewaretoken': s.cookies.get('csrftoken', ''), 'session_key': skey},
-            headers={'Referer': BASE + '/academy/quiz/1/'}, allow_redirects=False, timeout=30)
+            headers={'Referer': BASE + '/academy/quiz/29/'}, allow_redirects=False, timeout=30)
         ok(r.status_code == 302 and '/result/' in r.headers.get('Location', ''),
            'quiz submit (form)', f'-> {r.status_code} {r.headers.get("Location")}')
 
@@ -137,7 +137,7 @@ def main():
         ok(r3.status_code in (301, 302), 'placement submit', f'-> {r3.status_code}')
 
     print('=== Exam page + save answer ===')
-    r = s.get(BASE + '/academy/exam/1/', timeout=30)
+    r = s.get(BASE + '/academy/exam/10/', timeout=30)
     ok(r.status_code == 200, 'exam page')
 
     print('=== Program app module ===')

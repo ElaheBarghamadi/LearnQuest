@@ -168,6 +168,36 @@ class LessonContent(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
+class GrammarPoint(models.Model):
+    """یک نکتهٔ گرامری (الهام‌گرفته از Grammar in Use) مرتبط با یک درس."""
+    LEVELS = [
+        ('A1', 'A1 - مبتدی'),
+        ('A2', 'A2 - مقدماتی'),
+        ('B1', 'B1 - متوسط'),
+    ]
+    lesson = models.ForeignKey('Lesson', on_delete=models.CASCADE, related_name='grammar_points',
+                               verbose_name='درس')
+    title = models.CharField(max_length=200, verbose_name='عنوان گرامر')
+    title_fa = models.CharField(max_length=200, blank=True, verbose_name='عنوان فارسی')
+    level = models.CharField(max_length=2, choices=LEVELS, default='A1', verbose_name='سطح')
+    structure = models.CharField(max_length=300, blank=True, verbose_name='فرمول/ساختار',
+                                 help_text='مثلاً: Subject + am/is/are + ...')
+    explanation = RichTextField(verbose_name='توضیح کامل')
+    examples = models.JSONField(default=list, verbose_name='مثال‌ها',
+                                help_text='هر آیتم: {"en": "...", "fa": "..."}')
+    common_mistakes = models.TextField(blank=True, verbose_name='اشتباهات رایج')
+    usage_tips = models.TextField(blank=True, verbose_name='نکات کاربردی')
+    order = models.IntegerField(default=0, verbose_name='ترتیب')
+
+    class Meta:
+        ordering = ['lesson__chapter__world__order', 'lesson__chapter__order', 'lesson__order', 'order']
+        verbose_name = 'نکته گرامری'
+        verbose_name_plural = 'نکات گرامری'
+
+    def __str__(self):
+        return f'{self.title} ({self.lesson.name})'
+
+
 class VocabularyCategory(models.Model):
     name = models.CharField(max_length=100, verbose_name='نام')
     name_fa = models.CharField(max_length=100, blank=True, verbose_name='نام به فارسی')

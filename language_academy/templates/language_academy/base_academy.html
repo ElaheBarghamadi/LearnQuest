@@ -1239,6 +1239,9 @@
                         <li><a class="dropdown-item" href="{% url 'language_academy:vocabulary_review' %}">
                             <i class="fas fa-repeat me-2"></i> Review Words
                         </a></li>
+                        <li><a class="dropdown-item" href="{% url 'language_academy:grammar_hub' %}">
+                            <i class="fas fa-spell-check me-2"></i> Grammar 📘
+                        </a></li>
                         <li><a class="dropdown-item" href="{% url 'language_academy:idioms_hub' %}">
                             <i class="fas fa-comments me-2"></i> Idioms 💬
                         </a></li>
@@ -1318,6 +1321,9 @@
             <a class="menu-item" href="{% url 'language_academy:vocabulary_review' %}">
                 <i class="fas fa-repeat"></i> Review Words
             </a>
+            <a class="menu-item" href="{% url 'language_academy:grammar_hub' %}">
+                <i class="fas fa-spell-check"></i> Grammar 📘
+            </a>
             <a class="menu-item" href="{% url 'language_academy:idioms_hub' %}">
                 <i class="fas fa-comments"></i> Idioms 💬
             </a>
@@ -1380,6 +1386,7 @@
                 <div class="af-title">Learn</div>
                 <a href="{% url 'language_academy:world_map' %}" class="af-link"><i class="fas fa-globe"></i> Worlds</a>
                 <a href="{% url 'language_academy:vocabulary_list' %}" class="af-link"><i class="fas fa-book"></i> Vocabulary</a>
+                <a href="{% url 'language_academy:grammar_hub' %}" class="af-link"><i class="fas fa-spell-check"></i> Grammar</a>
                 <a href="{% url 'language_academy:idioms_hub' %}" class="af-link"><i class="fas fa-comments"></i> Idioms</a>
                 <a href="{% url 'language_academy:writing_practice' %}" class="af-link"><i class="fas fa-pen"></i> Writing</a>
             </div>

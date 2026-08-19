@@ -1,0 +1,154 @@
+{% extends 'language_academy/base_academy.html' %}
+{% load static %}
+
+{% block title %}Grammar Hub | LearnQuest{% endblock %}
+
+{% block content %}
+<style>
+    .gh-hero { text-align: center; padding: 26px 10px 8px; }
+    .gh-eyebrow {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 12.5px; font-weight: 800; color: #0f766e;
+        background: rgba(30,168,154,.1); border: 1px solid rgba(30,168,154,.22);
+        padding: 6px 16px; border-radius: 99px; margin-bottom: 14px;
+    }
+    .gh-hero h1 { font-size: clamp(24px, 3.6vw, 36px); font-weight: 900; color: #1e293b; margin-bottom: 10px; }
+    .gh-hero p { color: #64748b; font-size: 14.5px; max-width: 620px; margin: 0 auto 22px; line-height: 2; }
+    .gh-stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+    .gh-stat {
+        background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.9);
+        border-radius: 14px; padding: 10px 22px; text-align: center;
+        box-shadow: 0 6px 18px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.9);
+    }
+    .gh-stat b { display: block; font-size: 1.4rem; font-weight: 900; color: #0f766e; }
+    .gh-stat small { font-size: 11px; color: #64748b; font-weight: 700; }
+
+    .gh-levels { display: flex; justify-content: center; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+    .gh-level {
+        font-size: 12.5px; font-weight: 800; padding: 7px 18px; border-radius: 99px;
+        background: rgba(255,255,255,.65); border: 1.5px solid rgba(255,255,255,.9);
+        color: #64748b; text-decoration: none; transition: .2s;
+    }
+    .gh-level:hover { border-color: rgba(30,168,154,.45); color: #0f766e; }
+    .gh-level.on { background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff; border-color: transparent; }
+
+    .gh-world { margin-bottom: 30px; }
+    .gh-world-head {
+        display: flex; align-items: center; gap: 12px;
+        background: linear-gradient(135deg, rgba(30,168,154,.12), rgba(232,163,61,.1));
+        border: 1px solid rgba(30,168,154,.2);
+        border-radius: 16px; padding: 13px 18px; margin-bottom: 14px;
+    }
+    .gh-world-head .ico {
+        width: 42px; height: 42px; border-radius: 13px; flex: 0 0 auto;
+        background: linear-gradient(135deg, #1ea89a, #17897e); color: #fff;
+        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        box-shadow: 0 8px 18px rgba(30,168,154,.35);
+    }
+    .gh-world-head h2 { margin: 0; font-size: 1.05rem; font-weight: 900; color: #1e293b; }
+    .gh-world-head small { color: #64748b; font-size: 11.5px; }
+
+    .gh-chapter { margin-bottom: 20px; }
+    .gh-chapter-title {
+        font-size: .85rem; font-weight: 900; color: #334155;
+        margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+    }
+    .gh-chapter-title::before { content: ''; width: 3px; height: 14px; border-radius: 3px; background: linear-gradient(180deg,#1ea89a,#e8a33d); }
+
+    .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .gh-card {
+        background: rgba(255,255,255,.72); backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9); border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        padding: 15px 16px; transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s, border-color .25s;
+        display: flex; flex-direction: column; gap: 7px;
+    }
+    .gh-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(28,32,64,.14); border-color: rgba(30,168,154,.35); }
+    .gh-card .gh-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .gh-card .gh-lv {
+        font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 99px;
+        background: rgba(30,168,154,.12); color: #0f766e;
+    }
+    .gh-card h3 { margin: 0; font-size: .95rem; font-weight: 900; color: #1e293b; line-height: 1.6; }
+    .gh-card h3 small { display: block; font-size: .72rem; color: #94a3b8; font-weight: 700; margin-top: 2px; }
+    .gh-card .gh-struct {
+        font-family: 'Courier New', monospace; font-size: .72rem; direction: ltr; text-align: left;
+        background: #0f172a; color: #a5f3fc; border-radius: 9px; padding: 7px 10px;
+        overflow-x: auto; white-space: nowrap;
+    }
+    .gh-card .gh-ex { font-size: .78rem; color: #475569; line-height: 1.9; }
+    .gh-card .gh-ex b { color: #0f766e; }
+    .gh-card .gh-mistakes { font-size: .74rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
+    .gh-card .gh-tips { font-size: .74rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
+
+    @media (max-width: 575px) {
+        .gh-grid { grid-template-columns: 1fr; }
+        .gh-hero h1 { font-size: 21px; }
+        .gh-stat { padding: 8px 14px; }
+    }
+</style>
+
+<div class="container py-4">
+    <div class="gh-hero">
+        <div class="gh-eyebrow"><span>📘</span> Grammar Hub</div>
+        <h1>گرامر انگلیسی — درس به درس</h1>
+        <p>هر درس یک یا دو نکتهٔ گرامری دارد، با فرمول، مثال دوزبانه، اشتباهات رایج و نکات کاربردی. الهام‌گرفته از <b>English Grammar in Use</b>.</p>
+        <div class="gh-stats">
+            <div class="gh-stat"><b>{{ total }}</b><small>نکته گرامری</small></div>
+            <div class="gh-stat"><b>{{ worlds_data|length }}</b><small>جهان</small></div>
+            <div class="gh-stat"><b>3</b><small>سطح (A1-B1)</small></div>
+        </div>
+        <div class="gh-levels">
+            <a class="gh-level {% if not level_filter %}on{% endif %}" href="{% url 'language_academy:grammar_hub' %}">همه</a>
+            {% for lv in levels %}
+            <a class="gh-level {% if level_filter == lv %}on{% endif %}" href="?level={{ lv }}">{{ lv }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% for wd in worlds_data %}
+    <section class="gh-world">
+        <div class="gh-world-head">
+            <span class="ico">{{ wd.world.order|stringformat:"d"|slice:":1" }}</span>
+            <div>
+                <h2>{{ wd.world.name }}</h2>
+                <small>{{ wd.world.get_difficulty_level_display }} · {{ wd.world.grammar_summary|default:'' }}</small>
+            </div>
+        </div>
+        {% for cd in wd.chapters %}
+        <div class="gh-chapter">
+            <div class="gh-chapter-title">{{ cd.chapter.name }}</div>
+            <div class="gh-grid">
+                {% for ld in cd.lessons %}
+                    {% for gp in ld.grammar_points %}
+                    <div class="gh-card">
+                        <div class="gh-top">
+                            <span class="gh-lv">{{ gp.level }}</span>
+                            <small style="font-size:10px;color:#94a3b8">{{ ld.lesson.name }}</small>
+                        </div>
+                        <h3>{{ gp.title }}{% if gp.title_fa %}<small>{{ gp.title_fa }}</small>{% endif %}</h3>
+                        {% if gp.structure %}<div class="gh-struct">{{ gp.structure }}</div>{% endif %}
+                        {% if gp.examples %}
+                        <div class="gh-ex">
+                            {% for ex in gp.examples|slice:":2" %}
+                                <div><b>{{ ex.en }}</b> — {{ ex.fa }}</div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if gp.common_mistakes %}<div class="gh-mistakes">⚠️ {{ gp.common_mistakes }}</div>{% endif %}
+                        {% if gp.usage_tips %}<div class="gh-tips">💡 {{ gp.usage_tips }}</div>{% endif %}
+                    </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center text-muted py-4">هنوز گرامری برای این جهان ثبت نشده.</div>
+        {% endfor %}
+    </section>
+    {% empty %}
+    <div class="text-center py-5 text-muted">گرامری موجود نیست.</div>
+    {% endfor %}
+</div>
+{% endblock %}

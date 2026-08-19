@@ -12,7 +12,7 @@ import json
 import uuid
 
 from .models import (
-    World, Chapter, Lesson, LessonContent, Vocabulary,
+    World, Chapter, Lesson, LessonContent, Vocabulary, GrammarPoint,
     VocabularyCategory, Dialogue, DialogueScene, DialogueChoice,
     Question, Quiz, QuizAttempt,
     Exam, ExamQuestion, ExamAttempt, ExamSession,
@@ -20,6 +20,37 @@ from .models import (
     UserVocabularyProgress, Badge, UserBadge, Certificate,
     DailyGoal, CoinTransaction, WritingSubmission, SpeakingSubmission, QuizSession
 )
+
+
+def grammar_hub(request):
+    """فهرست گرامرها درس‌به‌درس (الهام‌گرفته از Grammar in Use) گروه‌بندی‌شده بر اساس جهان."""
+    level_filter = request.GET.get('level', '')
+    if level_filter not in ('A1', 'A2', 'B1'):
+        level_filter = ''
+
+    worlds = World.objects.filter(is_published=True).order_by('order')
+    data = []
+    for w in worlds:
+        chapters = []
+        for ch in w.chapters.filter(is_published=True).order_by('order'):
+            lessons = []
+            for l in ch.lessons.filter(is_published=True).order_by('order'):
+                gps = GrammarPoint.objects.filter(lesson=l).order_by('order')
+                if level_filter:
+                    gps = gps.filter(level=level_filter)
+                if gps.exists():
+                    lessons.append({'lesson': l, 'grammar_points': gps})
+            if lessons:
+                chapters.append({'chapter': ch, 'lessons': lessons})
+        data.append({'world': w, 'chapters': chapters})
+    levels = ['A1', 'A2', 'B1']
+    return render(request, 'language_academy/grammar_hub.html', {
+        'worlds_data': data,
+        'levels': levels,
+        'level_filter': level_filter,
+        'total': GrammarPoint.objects.count(),
+        'title': 'Grammar Hub — LearnQuest',
+    })
 
 
 def _grant_pass_rewards_once(user, rewardable, kind):
