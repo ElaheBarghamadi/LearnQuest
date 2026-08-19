@@ -32,7 +32,7 @@
         </div>
         <div class="il-chips">
             <a class="il-chip{% if not topic %} on{% endif %}" href="{% url 'language_academy:idiom_learn' %}">all</a>
-            {% for t in topics %}<a class="il-chip{% if t == topic %} on{% endif %}" href="?topic={{ t }}">{{ icons|default_if_none:'' }}{{ t }}</a>{% endfor %}
+            {% for t in topics %}<a class="il-chip{% if t.slug == topic %} on{% endif %}" href="?topic={{ t.slug }}">{{ t.icon }} {{ t.slug }}</a>{% endfor %}
         </div>
     </div>
 

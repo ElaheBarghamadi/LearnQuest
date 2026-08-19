@@ -1896,10 +1896,11 @@ def idiom_learn(request):
     for i in qs:
         p = prog.get(i.id)
         items.append({'obj': i, 'mastery': p.mastery_level if p else 0})
-    topics = sorted(set(Idiom.objects.filter(is_active=True, level=level).values_list('topic', flat=True)))
+    raw_topics = sorted(set(Idiom.objects.filter(is_active=True, level=level)
+                            .values_list('topic', flat=True)))
+    topics = [{'slug': t, 'icon': _TOPIC_ICONS.get(t, '💬')} for t in raw_topics]
     return render(request, 'language_academy/idiom_learn.html', {
         'items': items, 'level': level, 'topic': topic, 'topics': topics,
-        'icons': _TOPIC_ICONS,
     })
 
 
