@@ -4,213 +4,186 @@
 {% block title %}گالری دانش | لرن‌کوئست{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
-<link rel="stylesheet" href="{% static 'css/blog.css' %}?v=202608099">
+<link rel="stylesheet" href="{% static 'css/blog-mag.css' %}?v=202608211">
 <style>
-    .main-content { padding: 26px clamp(12px, 4vw, 40px) 24px; }
+    .main-content { padding: 14px clamp(10px, 3vw, 34px) 20px; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="blog-shell bc">
+<div class="mg-shell">
 
-    <div class="bc-hero">
-        <span class="bc-hero-deco d1"></span>
-        <span class="bc-hero-deco d2"></span>
-        <span class="bc-hero-deco d3"></span>
-        <div class="bc-hero-txt">
-            <h1>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg>
-                گالری دانش
-            </h1>
-            <p>مقاله‌های آموزشی و ترفندهای یادگیری — کوتاه، خواندنی، کاربردی</p>
+    <!-- Hero -->
+    <section class="mg-hero">
+        <div class="mg-eyebrow"><span class="dot"></span> مجلهٔ یادگیری لرن‌کوئست</div>
+        <h1>در دنیای <em>یادگیری زبان</em> و مهارت‌های نو غرق شوید</h1>
+        <p class="mg-hero-sub">مقاله‌های آموزشی، ترفندهای یادگیری و تحلیل‌های به‌روز — کوتاه، خواندنی، کاربردی؛ نوشته‌شده برای فارسی‌زبان‌ها.</p>
+
+        <div class="mg-search-wrap">
+            <form class="mg-search" method="get" action="{% url 'blog:blog_home' %}" role="search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                <input type="text" name="q" value="{{ q }}" placeholder="جستجو در مقاله‌ها، مثلاً «گرامر»…">
+                {% if active_category %}<input type="hidden" name="cat" value="{{ active_category.slug }}">{% endif %}
+                <button type="submit">جستجو</button>
+            </form>
         </div>
-        <form class="bc-search" method="get" action="{% url 'blog:blog_home' %}" role="search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
-            <input type="text" name="q" value="{{ q }}" placeholder="جستجو در مقاله‌ها…">
-            {% if active_category %}<input type="hidden" name="cat" value="{{ active_category.slug }}">{% endif %}
-            <button type="submit">جستجو</button>
-        </form>
-    </div>
 
-    <nav class="bc-cats" aria-label="دسته‌بندی‌ها">
-        <a class="bc-cat {% if not active_category %}on{% endif %}" href="{% url 'blog:blog_home' %}">همه</a>
-        {% for c in categories %}
-            {% if c.articles_count > 0 %}
-            <a class="bc-cat {% if active_category.slug == c.slug %}on{% endif %}"
-               href="?cat={{ c.slug }}">{{ c.name }}<small>{{ c.articles_count|fadigits }}</small></a>
-            {% endif %}
-        {% endfor %}
-    </nav>
+        <div class="mg-chips">
+            <a class="mg-chip {% if not active_category %}on{% endif %}" href="{% url 'blog:blog_home' %}">همه</a>
+            {% for c in categories %}
+                {% if c.articles_count > 0 %}
+                <a class="mg-chip {% if active_category.slug == c.slug %}on{% endif %}" href="?cat={{ c.slug }}">{{ c.name }}<small>{{ c.articles_count|fadigits }}</small></a>
+                {% endif %}
+            {% endfor %}
+        </div>
 
-    {% if q %}
-    <p class="bc-qnote">نتایج جستجو برای «<b>{{ q }}</b>» — {{ paginator.count|fadigits }} مقاله</p>
-    {% endif %}
+        {% if q %}
+        <div class="mg-qnote">نتایج جستجو برای «<b>{{ q }}</b>» — {{ paginator.count|fadigits }} مقاله</div>
+        {% endif %}
+    </section>
 
     {% if featured_articles and not q and not active_category %}
-    {% with hero=featured_articles.0 %}
-    <a class="bc-mag" href="{% url 'blog:article_detail' hero.id %}">
-        <span class="bc-cover bc-mag-cover" style="--h:{{ hero.id|hue }}">
-            <span class="bc-art">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg>
-            </span>
-            {% if hero.image %}<img src="{{ hero.image.url }}" alt="{{ hero.title }}" onerror="this.remove()">{% endif %}
-            <span class="bc-mag-tint"></span>
-        </span>
-        <span class="bc-mag-body">
-            <span class="bc-mag-chips">
-                <span class="bc-chip feat">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/></svg>
-                    مقالهٔ ویژه
-                </span>
-                <span class="bc-chip cat">{{ hero.category.name }}</span>
-            </span>
-            <b class="bc-mag-title">{{ hero.title }}</b>
-            <span class="bc-mag-ex">{{ hero.excerpt }}</span>
-            <span class="bc-meta">
-                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>{{ hero.published_at|jdate }}</span>
-                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>{{ hero.reading_time|fadigits }} دقیقه</span>
-                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>{{ hero.views|fadigits }}</span>
-            </span>
-            <span class="bc-mag-cta">مطالعهٔ مقاله <i>←</i></span>
-        </span>
-    </a>
+    <!-- Featured -->
+    {% with a=featured_articles.0 %}
+    <article class="mg-featured mg-reveal in">
+        <div class="mg-feat-img">
+            {% if a.image %}<img src="{{ a.image.url }}" onerror="this.remove()" alt="{{ a.title }}">{% endif %}
+            <span class="mg-feat-badge">✦ مقاله ویژه</span>
+        </div>
+        <div class="mg-feat-body">
+            <div class="mg-feat-meta">
+                <span>{{ a.category.name }}</span>
+                <span>·</span>
+                <span>{{ a.reading_time|fadigits }} دقیقه مطالعه</span>
+                <span>·</span>
+                <span>{{ a.published_at|jdate }}</span>
+            </div>
+            <h2><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h2>
+            <p>{{ a.excerpt }}</p>
+            <div class="mg-feat-foot">
+                <div class="mg-stats">
+                    <span>👁 {{ a.views|fadigits }}</span>
+                    <span>❤️ {{ a.likes|fadigits }}</span>
+                    <span>💬 {{ a.comments_count|default:0|fadigits }}</span>
+                </div>
+                <a class="mg-read" href="{{ a.get_absolute_url }}">ادامه مطلب ←</a>
+            </div>
+        </div>
+    </article>
     {% endwith %}
     {% endif %}
 
-    <div class="bc-layout">
-        <div class="bc-main">
+    <div class="mg-layout">
+        <div>
+            <h2 class="mg-sec"><span class="mg-bar"></span> تازه‌ترین مقاله‌ها <span class="sq-count" style="font-size:.7rem;font-weight:800;color:#94a3b8;background:#eef0fa;padding:4px 12px;border-radius:999px">{{ paginator.count|fadigits }} مقاله</span></h2>
 
-            {% if featured_articles and not q and not active_category %}
-            <section class="bc-sec">
-                <h2 class="bc-sec-t">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/><path d="M18.5 15.5l.9 2.6 2.6.9-2.6.9-.9 2.6-.9-2.6-2.6-.9 2.6-.9z"/></svg>
-                    منتخب سردبیر
-                </h2>
-                <div class="bc-minis">
-                    {% for a in featured_articles %}
-                    {% if not forloop.first %}
-                    <a class="bc-mini" href="{% url 'blog:article_detail' a.id %}">
-                        <span class="bc-cover bc-mini-cover" style="--h:{{ a.id|hue }}">
-                            <span class="bc-art sm">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg>
-                            </span>
-                            {% if a.image %}<img src="{{ a.image.url }}" alt="{{ a.title }}" loading="lazy" onerror="this.remove()">{% endif %}
-                        </span>
-                        <span class="bc-mini-body">
-                            <b>{{ a.title }}</b>
-                            <span class="bc-meta">
-                                <span>{{ a.category.name }}</span>
-                                <span>{{ a.published_at|jdate }}</span>
-                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>{{ a.views|fadigits }}</span>
-                            </span>
-                        </span>
+            {% if page_obj.object_list %}
+            <div class="mg-grid">
+                {% for a in page_obj %}
+                <article class="mg-card mg-reveal">
+                    <a class="mg-thumb" href="{{ a.get_absolute_url }}">
+                        {% if a.image %}<img src="{{ a.image.url }}" onerror="this.remove()" alt="{{ a.title }}" loading="lazy">{% endif %}
+                        <span class="mg-cat">{{ a.category.name }}</span>
+                        {% if a.is_featured %}<span class="mg-cat" style="right:auto;left:11px;background:rgba(232,163,61,.92);color:#fff">⭐ ویژه</span>{% endif %}
                     </a>
-                    {% endif %}
-                    {% endfor %}
-                </div>
-            </section>
-            {% endif %}
-
-            <section class="bc-sec">
-                <h2 class="bc-sec-t">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg>
-                    {% if active_category %}{{ active_category.name }}{% else %}آخرین مقالات{% endif %}
-                    <small class="bc-sec-n">{{ paginator.count|fadigits }} مقاله</small>
-                </h2>
-
-                {% if articles %}
-                <div class="bc-cards">
-                    {% for a in articles %}
-                    <article class="bc-card">
-                        <a class="bc-cover bc-card-cover" style="--h:{{ a.id|hue }}" href="{% url 'blog:article_detail' a.id %}">
-                            <span class="bc-art">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5h6.5A3.5 3.5 0 0 1 12 8v12.5a3 3 0 0 0-3-3H2z"/><path d="M22 4.5h-6.5A3.5 3.5 0 0 0 12 8v12.5a3 3 0 0 1 3-3h7z"/></svg>
-                            </span>
-                            {% if a.image %}<img src="{{ a.image.url }}" alt="{{ a.title }}" loading="lazy" onerror="this.remove()">{% endif %}
-                            <span class="bc-cat-chip">{{ a.category.name }}</span>
-                            {% if a.is_featured %}
-                            <span class="bc-feat-chip">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/></svg>
-                            </span>
-                            {% endif %}
-                        </a>
-                        <div class="bc-card-body">
-                            <h3 class="bc-title"><a href="{% url 'blog:article_detail' a.id %}">{{ a.title }}</a></h3>
-                            <p class="bc-ex">{{ a.excerpt }}</p>
-                            <div class="bc-card-foot">
-                                <div class="bc-meta">
-                                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="17" rx="3"/><path d="M8 2.5v4M16 2.5v4M3 10h18"/></svg>{{ a.published_at|jdate }}</span>
-                                    <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>{{ a.reading_time|fadigits }} دقیقه</span>
-                                </div>
-                                <div class="bc-stats">
-                                    <span title="بازدید"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>{{ a.views|fadigits }}</span>
-                                    <span title="پسند"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>{{ a.likes|fadigits }}</span>
-                                    <span title="نظر"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.2 0-2.4-.25-3.4-.7L3.5 20.5l1.2-5.6a8.5 8.5 0 1 1 16.3-3.4z"/></svg>{{ a.comments_count|fadigits }}</span>
-                                </div>
-                            </div>
+                    <div class="mg-cbody">
+                        <div class="mg-cmeta">
+                            <span>{{ a.published_at|jdate }}</span>
+                            <span>·</span>
+                            <span>{{ a.reading_time|fadigits }} دقیقه</span>
                         </div>
-                    </article>
-                    {% endfor %}
-                </div>
+                        <h3 class="mg-ctitle"><a href="{{ a.get_absolute_url }}">{{ a.title }}</a></h3>
+                        <p>{{ a.excerpt }}</p>
+                        <div class="mg-cfoot">
+                            <div class="mg-cstats">
+                                <span>👁 {{ a.views|fadigits }}</span>
+                                <span>❤ {{ a.likes|fadigits }}</span>
+                            </div>
+                            <a href="{{ a.get_absolute_url }}" style="font-size:11px;font-weight:800;color:#0f766e;text-decoration:none">ادامه ←</a>
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
 
-                {% if paginator.num_pages > 1 %}
-                <nav class="bc-pages" aria-label="صفحه‌بندی">
-                    {% if page_obj.has_previous %}
-                    <a class="arr" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if active_category %}&cat={{ active_category.slug }}{% endif %}">‹</a>
-                    {% endif %}
-                    {% for n in paginator.page_range %}
-                        {% if n == page_obj.number %}
-                            <span class="cur">{{ n|fadigits }}</span>
-                        {% elif n >= page_obj.number|add:-2 and n <= page_obj.number|add:2 %}
-                            <a href="?page={{ n }}{% if q %}&q={{ q }}{% endif %}{% if active_category %}&cat={{ active_category.slug }}{% endif %}">{{ n|fadigits }}</a>
-                        {% endif %}
-                    {% endfor %}
-                    {% if page_obj.has_next %}
-                    <a class="arr" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if active_category %}&cat={{ active_category.slug }}{% endif %}">›</a>
-                    {% endif %}
-                </nav>
-                {% endif %}
-
-                {% else %}
-                <div class="bc-empty">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/><path d="M8.5 11h5"/></svg>
-                    <h3>چیزی پیدا نشد</h3>
-                    <p>{% if q %}برای «{{ q }}» نتیجه‌ای نیست؛ یه کلمهٔ دیگه امتحان کن.{% else %}فعلاً مقاله‌ای در این بخش نیست.{% endif %}</p>
-                </div>
-                {% endif %}
-            </section>
+            {% if page_obj.paginator.num_pages > 1 %}
+            <div class="mg-pager">
+                {% if page_obj.has_previous %}<a href="?{% if active_category %}cat={{ active_category.slug }}&{% endif %}{% if q %}q={{ q }}&{% endif %}page={{ page_obj.previous_page_number }}">‹</a>{% endif %}
+                {% for n in page_obj.paginator.page_range %}
+                    {% if n == page_obj.number %}<span class="cur">{{ n|fadigits }}</span>{% else %}<a href="?{% if active_category %}cat={{ active_category.slug }}&{% endif %}{% if q %}q={{ q }}&{% endif %}page={{ n }}">{{ n|fadigits }}</a>{% endif %}
+                {% endfor %}
+                {% if page_obj.has_next %}<a href="?{% if active_category %}cat={{ active_category.slug }}&{% endif %}{% if q %}q={{ q }}&{% endif %}page={{ page_obj.next_page_number }}">›</a>{% endif %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="mg-empty">
+                <span class="big">🔍</span>
+                <p><b>چیزی پیدا نشد</b><br>{% if q %}برای «{{ q }}» نتیجه‌ای نیست؛ کلمهٔ دیگری امتحان کن.{% else %}فعلاً مقاله‌ای در این بخش نیست.{% endif %}</p>
+                <a href="{% url 'blog:blog_home' %}" style="display:inline-block;margin-top:14px;color:#0f766e;font-weight:800;font-size:13px;text-decoration:none">→ دیدن همهٔ مقاله‌ها</a>
+            </div>
+            {% endif %}
         </div>
 
-        {% if popular_articles and not q and not active_category %}
-        <aside class="bc-side">
-            <div class="bc-panel">
-                <h2 class="bc-sec-t">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4.4 0 7.5-2.9 7.5-7.2 0-3.1-1.8-5.3-3.6-7.4C14.4 5.6 13 4 13 2c-3 2-4.6 4.5-4.6 7.3 0 1.4.4 2.6 1 3.7-1.3-.3-2.4-1.2-2.9-2.5-1.2 1.5-2 3.3-2 4.8C3.5 19.1 7.6 22 12 22z"/></svg>
-                    پر‌بازدیدترین‌ها
-                </h2>
-                <div class="bc-pops">
-                    {% for a in popular_articles %}
-                    <a class="bc-pop" href="{% url 'blog:article_detail' a.id %}">
-                        <span class="bc-pop-n">{{ forloop.counter }}</span>
-                        <span class="bc-pop-body">
-                            <b>{{ a.title }}</b>
-                            <span class="bc-meta">
-                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>{{ a.views|fadigits }}</span>
-                                <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>{{ a.likes|fadigits }}</span>
-                            </span>
-                        </span>
-                    </a>
+        <!-- Sidebar -->
+        <aside class="mg-side">
+            {% if popular_articles %}
+            <div class="mg-panel">
+                <h3><span class="mg-bar"></span> پر‌بازدیدترین‌ها</h3>
+                {% for a in popular_articles %}
+                <a class="mg-trend" href="{{ a.get_absolute_url }}">
+                    <span class="mg-trend-num">{% if forloop.counter < 10 %}۰{% endif %}{{ forloop.counter|fadigits }}</span>
+                    <span>
+                        <b>{{ a.title }}</b>
+                        <small>👁 {{ a.views|fadigits }} · ❤ {{ a.likes|fadigits }}</small>
+                    </span>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="mg-panel">
+                <h3><span class="mg-bar"></span> برچسب‌های محبوب</h3>
+                <div class="mg-tags">
+                    {% for c in categories %}
+                        {% if c.articles_count > 0 %}
+                        <a class="mg-tag" href="?cat={{ c.slug }}">#{{ c.name }}</a>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
+
+            <a class="mg-cta" href="{% url 'language_academy:world_map' %}" style="background:linear-gradient(135deg,#1ea89a,#17897e)">
+                <span class="big">🌍</span>
+                <b>یادگیری را شروع کن</b>
+                <small>دنیاهای زبان، درس‌های تعاملی، کوئیز و جایزه — رایگان امتحان کن</small>
+            </a>
+            <a class="mg-cta" href="{% url 'shop:home' %}" style="background:linear-gradient(135deg,#6C63FF,#4F46E5)">
+                <span class="big">🛍️</span>
+                <b>فروشگاه لرن‌کوئست</b>
+                <small>قاب، تم، پت و بوستر برای شخصی‌سازی تجربهٔ یادگیری</small>
+            </a>
         </aside>
-        {% endif %}
     </div>
 
 </div>
 {% endblock %}
 
 {% block extra_js %}
-<script src="{% static 'js/blog.js' %}?v=202608099"></script>
+<script>
+(function () {
+    'use strict';
+    // reveal on scroll
+    var reveals = document.querySelectorAll('.mg-reveal');
+    if (!('IntersectionObserver' in window)) {
+        reveals.forEach(function (el) { el.classList.add('in'); });
+        return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+            if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+    }, { threshold: 0.06 });
+    reveals.forEach(function (el) { io.observe(el); });
+})();
+</script>
 {% endblock %}

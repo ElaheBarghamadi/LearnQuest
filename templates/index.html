@@ -493,6 +493,121 @@
         .db-shell { animation: none; }
         .db-pfill, .db-ring .fill, .db-art-cov img, .db-art-cov .huecover i { transition: none; }
     }
+
+    /* ============ dashboard polish — cleaner, softer, more modern ============ */
+    .db-shell {
+        --db-accent: #6C63FF;
+        --db-accent-2: #36D1DC;
+        --db-radius: 20px;
+    }
+    .db-hero {
+        background: linear-gradient(135deg, rgba(255,255,255,.88), rgba(255,255,255,.62));
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 18px 48px rgba(28,32,64,.12), inset 0 1px 0 rgba(255,255,255,.95);
+        border-radius: 26px;
+        margin-bottom: 20px;
+    }
+    .db-hello h1 { color: #1e293b; letter-spacing: -.4px; }
+    .db-hello p { color: #64748b; }
+    .db-when { color: #0f766e; font-weight: 800; }
+
+    .db-cta {
+        background: linear-gradient(135deg, #6C63FF, #4F46E5);
+        box-shadow: 0 8px 20px rgba(108,99,255,.35);
+        border: none; color: #fff;
+        border-radius: 14px;
+    }
+    .db-cta:hover { background: linear-gradient(135deg, #6C63FF, #4338CA); box-shadow: 0 12px 28px rgba(108,99,255,.45); }
+    .db-cta.ghost {
+        background: rgba(255,255,255,.7);
+        border: 1.5px solid rgba(108,99,255,.35);
+        color: #4F46E5;
+    }
+    .db-cta.ghost:hover { background: rgba(108,99,255,.08); border-color: rgba(108,99,255,.5); }
+
+    .db-hstat {
+        background: rgba(255,255,255,.72);
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 6px 18px rgba(28,32,64,.06), inset 0 1px 0 rgba(255,255,255,.9);
+        border-radius: 16px;
+    }
+    .db-hstat .ic {
+        background: linear-gradient(135deg, rgba(108,99,255,.14), rgba(54,209,220,.14));
+        border-radius: 12px;
+    }
+
+    .db-kpi {
+        background: rgba(255,255,255,.78);
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 8px 24px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        border-radius: 18px;
+        transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s;
+    }
+    .db-kpi:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 40px rgba(28,32,64,.15);
+        border-color: rgba(108,99,255,.3);
+    }
+    .db-kpi .ic {
+        width: 46px; height: 46px; border-radius: 14px;
+        background: linear-gradient(135deg, rgba(108,99,255,.12), rgba(54,209,220,.12));
+        font-size: 1.3rem;
+    }
+    .db-kpi .lbl { color: #1e293b; font-weight: 800; }
+    .db-kpi .sub { color: #94a3b8; }
+
+    .db-panel {
+        background: rgba(255,255,255,.78);
+        backdrop-filter: blur(14px) saturate(160%);
+        -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 8px 24px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        border-radius: 20px;
+    }
+    .db-pt { color: #1e293b; font-weight: 900; }
+    .db-pt .go { color: #0f766e; }
+
+    .db-pbar { background: #eef0fa; border-radius: 99px; overflow: hidden; }
+    .db-pfill {
+        background: linear-gradient(90deg, #6C63FF, #36D1DC);
+        border-radius: 99px;
+        box-shadow: 0 2px 10px rgba(108,99,255,.35);
+    }
+
+    .db-season-band {
+        background: linear-gradient(135deg, rgba(108,99,255,.08), rgba(54,209,220,.08));
+        border: 1px solid rgba(108,99,255,.18);
+        border-radius: 16px;
+    }
+
+    .db-quick a, .db-q {
+        background: rgba(255,255,255,.7);
+        border: 1px solid rgba(255,255,255,.9);
+        box-shadow: 0 5px 16px rgba(28,32,64,.05);
+        border-radius: 15px;
+        transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .db-quick a:hover, .db-q:hover {
+        transform: translateY(-3px);
+        border-color: rgba(108,99,255,.35);
+        box-shadow: 0 12px 28px rgba(28,32,64,.12);
+    }
+
+    .db-lv-badge {
+        background: linear-gradient(135deg, #6C63FF, #8b5cf6);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(108,99,255,.35);
+    }
+
+    @media (max-width: 660px) {
+        .db-hero { border-radius: 20px; padding: 20px 16px; }
+        .db-kpi { border-radius: 15px; }
+        .db-panel { border-radius: 17px; }
+    }
 </style>
 {% endblock %}
 

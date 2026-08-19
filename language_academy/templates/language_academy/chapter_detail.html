@@ -121,16 +121,16 @@
 
         <div class="col-lg-4">
             {% if chapter_exam %}
-            <div class="academy-card sticky-top" style="top: 20px;">
-                <div class="card-header bg-gradient-green text-white">
+            <div class="academy-card sticky-top" style="top: 84px;">
+                <div class="card-header bg-gradient-green text-white py-3">
                     <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Chapter Exam</h5>
                 </div>
-                <div class="card-body">
-                    <p>Test your knowledge and earn rewards!</p>
-                    <ul class="list-unstyled small mb-3">
-                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Passing Score: {{ chapter_exam.passing_score }}%</li>
-                        <li class="mb-2"><i class="fas fa-hourglass-half me-2"></i> Time Limit: {{ chapter_exam.time_limit_minutes }} minutes</li>
-                        <li class="mb-2"><i class="fas fa-star me-2"></i> Reward: +{{ chapter_exam.xp_reward }} XP</li>
+                <div class="card-body p-4">
+                    <p class="mb-3">Test your knowledge and earn rewards!</p>
+                    <ul class="list-unstyled small mb-4">
+                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-check-circle text-success"></i> Passing Score: <b>{{ chapter_exam.passing_score }}%</b></li>
+                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-hourglass-half"></i> Time Limit: <b>{{ chapter_exam.time_limit_minutes }} minutes</b></li>
+                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-star text-warning"></i> Reward: <b>+{{ chapter_exam.xp_reward }} XP</b></li>
                     </ul>
 
                     {% if exam_attempt %}
@@ -155,19 +155,21 @@
             </div>
             {% endif %}
 
-            <div class="academy-card mt-3">
-                <div class="card-body">
-                    <h5 class="fw-bold mb-3"><i class="fas fa-chart-simple me-2"></i> Quick Stats</h5>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Total Lessons</span>
+            <div class="academy-card mt-4">
+                <div class="card-header py-3">
+                    <h5 class="mb-0"><i class="fas fa-chart-simple me-2"></i> Quick Stats</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
+                        <span class="text-muted">Total Lessons</span>
                         <span class="fw-bold">{{ chapter_progress.total_lessons|default:0 }}</span>
                     </div>
-                    <div class="d-flex justify-content-between mb-2">
-                        <span>Completed</span>
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
+                        <span class="text-muted">Completed</span>
                         <span class="fw-bold text-success">{{ chapter_progress.lessons_completed|default:0 }}</span>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <span>XP Earned</span>
+                    <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted">XP Earned</span>
                         <span class="fw-bold text-warning">{{ chapter_progress.xp_earned|default:0 }}</span>
                     </div>
                 </div>
