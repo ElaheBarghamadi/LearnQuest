@@ -832,14 +832,122 @@
 
         
         .academy-footer {
-            background: var(--bg-secondary);
+            background: linear-gradient(180deg, var(--bg-secondary), rgba(255,255,255,0.55));
             backdrop-filter: blur(var(--blur-amount));
             -webkit-backdrop-filter: blur(var(--blur-amount));
-            padding: 32px 0;
-            margin-top: 60px;
             border-top: 1px solid var(--border-color);
+            box-shadow: 0 -8px 34px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255,255,255,0.75);
+            padding: 42px 0 0;
+            margin-top: 60px;
             color: var(--text-muted);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .academy-footer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(400px 150px at 10% -40px, rgba(59, 130, 246, 0.10), transparent 62%),
+                radial-gradient(380px 140px at 90% -30px, rgba(0, 210, 255, 0.09), transparent 60%);
+        }
+        .academy-footer-grid {
+            position: relative;
+            max-width: 1120px;
+            margin: 0 auto;
+            padding: 0 22px;
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr 1fr;
+            gap: 30px;
+            text-align: right;
+            direction: rtl;
+        }
+        .af-logo { display: flex; align-items: center; gap: 10px; }
+        .af-logo-badge {
+            width: 42px; height: 42px; border-radius: 13px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.15rem;
+            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+            flex: 0 0 auto;
+        }
+        .af-brand { font-size: 1.18rem; font-weight: 900; color: var(--text-primary); letter-spacing: -0.3px; }
+        .af-tag { font-size: 0.74rem; color: var(--text-muted); margin-top: 1px; }
+        .af-about {
+            font-size: 0.82rem; line-height: 2; color: var(--text-secondary);
+            margin: 14px 0 15px; max-width: 300px;
+        }
+        .af-socials { display: flex; gap: 8px; }
+        .af-social {
+            width: 36px; height: 36px; border-radius: 11px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .af-social:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: #fff;
+            box-shadow: 0 10px 22px rgba(59, 130, 246, 0.32);
+        }
+        .af-title {
+            font-size: 0.85rem; font-weight: 900; color: var(--text-primary);
+            margin-bottom: 12px; padding-bottom: 8px; position: relative;
+        }
+        .af-title::after {
+            content: '';
+            position: absolute; bottom: 0; right: 0;
+            width: 24px; height: 2.5px; border-radius: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+        }
+        .af-col { display: flex; flex-direction: column; gap: 3px; }
+        .af-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem; font-weight: 600;
+            padding: 5px 0; border-radius: 8px;
+            display: inline-flex; align-items: center; gap: 7px;
+            transition: color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+        }
+        .af-link i { width: 16px; text-align: center; opacity: 0.75; font-size: 0.78rem; }
+        .af-link:hover {
+            color: var(--accent-primary, var(--primary));
+            transform: translateX(-4px);
+            background: var(--bg-glass);
+            padding-inline: 8px;
+            margin-inline: -8px;
+        }
+        .academy-footer-bottom {
+            position: relative;
+            max-width: 1120px;
+            margin: 32px auto 0;
+            padding: 14px 22px 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+        }
+        .af-made { font-weight: 600; }
+
+        @media (max-width: 992px) {
+            .academy-footer-grid { grid-template-columns: 1fr 1fr; gap: 24px 20px; }
+            .af-brand-col { grid-column: 1 / -1; }
+        }
+        @media (max-width: 575.98px) {
+            .academy-footer-grid { grid-template-columns: 1fr; gap: 20px; padding: 0 16px; }
+            .academy-footer-bottom { flex-direction: column; text-align: center; padding: 12px 16px 14px; }
+            .af-about { max-width: 100%; }
         }
 
         
@@ -1236,9 +1344,50 @@
     </main>
 
     <footer class="academy-footer">
-        <div class="container text-center">
-            <p class="mb-1">© 2024 LearnQuest Language Academy</p>
-            <small>Making language learning feel like a game 🎮</small>
+        <div class="academy-footer-grid">
+            <div class="af-col af-brand-col">
+                <div class="af-logo">
+                    <span class="af-logo-badge"><i class="fas fa-graduation-cap"></i></span>
+                    <div>
+                        <div class="af-brand">LearnQuest Academy</div>
+                        <div class="af-tag">Making language learning feel like a game 🎮</div>
+                    </div>
+                </div>
+                <p class="af-about">Learn English through gamified worlds, lessons, quizzes, exams and daily XP challenges — from A1 to B1 and beyond.</p>
+                <div class="af-socials">
+                    <a href="#" class="af-social" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" class="af-social" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="af-social" title="GitHub"><i class="fab fa-github"></i></a>
+                </div>
+            </div>
+
+            <div class="af-col">
+                <div class="af-title">Learn</div>
+                <a href="{% url 'language_academy:world_map' %}" class="af-link"><i class="fas fa-globe"></i> Worlds</a>
+                <a href="{% url 'language_academy:vocabulary_list' %}" class="af-link"><i class="fas fa-book"></i> Vocabulary</a>
+                <a href="{% url 'language_academy:idioms_hub' %}" class="af-link"><i class="fas fa-comments"></i> Idioms</a>
+                <a href="{% url 'language_academy:writing_practice' %}" class="af-link"><i class="fas fa-pen"></i> Writing</a>
+            </div>
+
+            <div class="af-col">
+                <div class="af-title">Progress</div>
+                <a href="{% url 'language_academy:learner_dashboard' %}" class="af-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                <a href="{% url 'language_academy:vocabulary_review' %}" class="af-link"><i class="fas fa-repeat"></i> Review</a>
+                <a href="{% url 'language_academy:my_certificates' %}" class="af-link"><i class="fas fa-certificate"></i> Certificates</a>
+                <a href="{% url 'economy:leaderboard' %}" class="af-link"><i class="fas fa-trophy"></i> Leaderboard</a>
+            </div>
+
+            <div class="af-col">
+                <div class="af-title">More</div>
+                <a href="{% url 'shop:home' %}" class="af-link"><i class="fas fa-store"></i> Shop</a>
+                <a href="{% url 'blog:blog_home' %}" class="af-link"><i class="fas fa-newspaper"></i> Blog</a>
+                <a href="{% url 'home' %}" class="af-link"><i class="fas fa-home"></i> Main Site</a>
+                <a href="{% url 'contact' %}" class="af-link"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+        </div>
+        <div class="academy-footer-bottom">
+            <span>© 2026 LearnQuest Language Academy</span>
+            <span class="af-made">Built with 💜 for Persian speakers</span>
         </div>
     </footer>
 
