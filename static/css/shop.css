@@ -25,7 +25,7 @@
     --sq-tr: 0.22s cubic-bezier(.4,0,.2,1);
 }
 
-.sq-shell { max-width: 1180px; margin: 0 auto; padding: 10px 14px 46px; }
+.sq-shell { max-width: none; margin: 0 auto; padding: 10px clamp(12px, 2.2vw, 34px) 46px; }
 
 /* ---------------- hero ---------------- */
 .sq-hero {

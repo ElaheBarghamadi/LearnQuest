@@ -3,7 +3,7 @@
    Adapts the reference magazine layout to the site's light theme
    ============================================================ */
 
-.mg-shell { max-width: 1180px; margin: 0 auto; padding: 6px 14px 50px; }
+.mg-shell { max-width: none; margin: 0 auto; padding: 6px clamp(12px, 2.2vw, 34px) 50px; }
 
 /* ---------- hero ---------- */
 .mg-hero { position: relative; text-align: center; padding: 34px 16px 8px; }
@@ -120,7 +120,7 @@
 .mg-sec::after { content: ''; flex: 1; height: 1.5px; background: linear-gradient(90deg, rgba(30,168,154,.3), transparent); }
 
 /* ---------- cards grid ---------- */
-.mg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(236px, 1fr)); gap: 18px; }
+.mg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
 .mg-card {
     background: rgba(255,255,255,.68);
     backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
@@ -210,7 +210,7 @@
 /* ============================================================
    Article (single) page
    ============================================================ */
-.mg-article { max-width: 880px; margin: 0 auto; }
+.mg-article { max-width: 960px; margin: 0 auto; }
 .mg-crumb {
     display: flex; gap: 6px; align-items: center;
     font-size: 11.5px; color: #b6bdd6; margin-bottom: 18px; flex-wrap: wrap;
