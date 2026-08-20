@@ -4,6 +4,135 @@
 {% block title %}{{ world.name }} | LearnQuest Academy{% endblock %}
 
 {% block content %}
+<style>
+    /* ===== World detail — redesigned ===== */
+    .wd-hero {
+        position: relative; border-radius: 24px; overflow: hidden;
+        margin-bottom: 26px; min-height: 190px;
+        display: flex; align-items: flex-end;
+        box-shadow: 0 18px 48px rgba(28,32,64,.16);
+    }
+    .wd-hero .bg { position: absolute; inset: 0; object-fit: cover; width: 100%; height: 100%; }
+    .wd-hero .bg::after {
+        content: ''; position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(15,23,42,.05) 20%, rgba(15,23,42,.78));
+    }
+    .wd-hero .ov {
+        position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(15,23,42,.1) 0%, rgba(15,23,42,.82) 100%);
+    }
+    .wd-hero .in {
+        position: relative; z-index: 2; padding: 60px 26px 22px;
+        color: #fff; width: 100%;
+        display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    }
+    .wd-hero .emoji { font-size: 2.6rem; filter: drop-shadow(0 8px 18px rgba(0,0,0,.35)); margin-bottom: 6px; }
+    .wd-hero h1 { font-size: clamp(20px, 3vw, 30px); font-weight: 900; margin: 0 0 6px; text-shadow: 0 3px 14px rgba(0,0,0,.4); }
+    .wd-hero .desc { font-size: .84rem; opacity: .92; max-width: 560px; line-height: 1.95; text-shadow: 0 2px 10px rgba(0,0,0,.4); }
+    .wd-hero .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wd-hero .meta span {
+        font-size: .72rem; font-weight: 800; color: #fff;
+        background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        padding: 5px 13px; border-radius: 99px;
+    }
+    .wd-progress-card {
+        background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border-radius: 16px; padding: 14px 18px; min-width: 200px; text-align: center;
+    }
+    .wd-progress-card .n { font-size: 1.5rem; font-weight: 900; line-height: 1.2; }
+    .wd-progress-card .l { font-size: .68rem; opacity: .85; }
+    .wd-progress-card .bar { height: 7px; border-radius: 99px; background: rgba(255,255,255,.25); overflow: hidden; margin-top: 8px; }
+    .wd-progress-card .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#34d399,#fbbf24); }
+
+    /* فصل‌ها */
+    .wd-sec-title { display: flex; align-items: center; gap: 10px; font-size: 1.05rem; font-weight: 900; color: #1e293b; margin: 0 0 16px; }
+    .wd-sec-title .bar { width: 4px; height: 18px; border-radius: 3px; background: linear-gradient(180deg,#1ea89a,#e8a33d); }
+    .wd-sec-title::after { content: ''; flex: 1; height: 1.5px; background: linear-gradient(90deg, rgba(30,168,154,.3), transparent); }
+
+    .wd-layout { display: grid; grid-template-columns: 1fr 320px; gap: 26px; align-items: start; }
+    @media (max-width: 991px) { .wd-layout { grid-template-columns: 1fr; } }
+
+    .wd-chapters { display: flex; flex-direction: column; gap: 12px; }
+    .wd-chapter {
+        display: flex; align-items: center; gap: 16px;
+        background: rgba(255,255,255,.75);
+        backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 18px; padding: 16px 18px;
+        box-shadow: 0 8px 26px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        transition: transform .22s, box-shadow .22s, border-color .22s;
+    }
+    .wd-chapter:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(28,32,64,.13); border-color: rgba(30,168,154,.35); }
+    .wd-chapter.locked { opacity: .7; border-style: dashed; }
+    .wd-chapter.completed { border-inline-start: 4px solid #16a34a; }
+
+    .wd-ch-num {
+        width: 46px; height: 46px; border-radius: 50%; flex: 0 0 auto;
+        display: flex; align-items: center; justify-content: center;
+        font-weight: 900; font-size: 1.1rem; color: #fff;
+        background: linear-gradient(135deg, #94a3b8, #64748b);
+        box-shadow: 0 8px 18px rgba(100,116,139,.35);
+    }
+    .wd-chapter.completed .wd-ch-num { background: linear-gradient(135deg,#16a34a,#15803d); box-shadow: 0 8px 18px rgba(22,163,74,.35); }
+    .wd-chapter.locked .wd-ch-num { background: linear-gradient(135deg,#cbd5e1,#94a3b8); }
+
+    .wd-ch-body { flex: 1; min-width: 0; }
+    .wd-ch-body h3 { margin: 0 0 3px; font-size: .95rem; font-weight: 900; color: #1e293b; }
+    .wd-ch-body p { margin: 0; font-size: .74rem; color: #94a3b8; line-height: 1.8; }
+    .wd-ch-progress { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+    .wd-ch-progress .bar { flex: 1; height: 6px; border-radius: 99px; background: #eef0fa; overflow: hidden; }
+    .wd-ch-progress .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#1ea89a,#34d399); }
+    .wd-ch-progress span { font-size: .68rem; font-weight: 800; color: #94a3b8; }
+
+    .wd-ch-side { text-align: left; flex: 0 0 auto; }
+    .wd-ch-side .x { font-size: .68rem; color: #94a3b8; font-weight: 700; margin-bottom: 6px; }
+    .wd-ch-btn {
+        display: inline-flex; align-items: center; gap: 6px;
+        text-decoration: none; border: none; cursor: pointer;
+        border-radius: 11px; padding: 9px 16px; font-family: inherit;
+        font-size: .78rem; font-weight: 900; transition: transform .2s, box-shadow .2s;
+    }
+    .wd-ch-btn.go { background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff; box-shadow: 0 7px 18px rgba(30,168,154,.35); }
+    .wd-ch-btn.go:hover { transform: translateY(-2px); color: #fff; }
+    .wd-ch-btn.review { background: rgba(22,163,74,.1); color: #15803d; border: 1.5px solid rgba(22,163,74,.3); }
+    .wd-ch-btn.locked { background: #eef0fa; color: #94a3b8; cursor: not-allowed; }
+
+    /* Tips */
+    .tips-card { overflow: hidden; }
+    .tips-card .card-body { display: flex; flex-direction: column; }
+    .tips-ico {
+        width: 34px; height: 34px; border-radius: 10px;
+        background: rgba(245, 158, 11, 0.14);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.95rem; flex: 0 0 auto;
+    }
+    .tips-list { margin-top: 16px; }
+    .tips-list li { padding: 8px 2px; font-size: 0.88rem; line-height: 1.75; color: var(--text-secondary, #4A4A6A); }
+    .tips-list li + li { border-top: 1px dashed rgba(148,163,184,.35); }
+    .tips-check { flex: 0 0 auto; margin-top: 5px; }
+    .tips-hr { margin: 14px 0 4px; opacity: .7; }
+    .tips-goal { padding-top: 12px; }
+    .tips-trophy {
+        width: 52px; height: 52px; margin: 0 auto 10px;
+        border-radius: 50%; background: rgba(245, 158, 11, 0.12);
+        border: 1.5px solid rgba(245, 158, 11, 0.25);
+        display: flex; align-items: center; justify-content: center; font-size: 1.35rem;
+    }
+    .tips-goal p { line-height: 1.9; max-width: 240px; margin-left: auto; margin-right: auto; }
+
+    @media (max-width: 640px) {
+        .wd-hero .in { padding: 70px 16px 16px; }
+        .wd-hero .emoji { font-size: 2rem; }
+        .wd-progress-card { min-width: 100%; }
+        .wd-chapter { flex-wrap: wrap; gap: 12px; }
+        .wd-ch-side { width: 100%; text-align: center; }
+        .wd-ch-btn { width: 100%; justify-content: center; }
+        .wd-chapter:hover { transform: none; }
+    }
+</style>
+
 <div class="container py-4">
     {% if is_guest %}
     <div class="alert guest-banner mb-4" role="alert">
@@ -27,102 +156,71 @@
         .guest-banner .btn-outline-light:hover { background: rgba(255,255,255,0.16); color: #fff; }
     </style>
     {% endif %}
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb" style="font-size:.78rem;background:rgba(255,255,255,.5);border-radius:99px;padding:6px 16px;width:fit-content">
             <li class="breadcrumb-item"><a href="{% url 'language_academy:world_map' %}" class="text-decoration-none">🌍 Worlds</a></li>
             <li class="breadcrumb-item active">{{ world.name }}</li>
         </ol>
     </nav>
 
-    <div class="academy-card mb-4 overflow-hidden">
-        <div class="row g-0">
-            <div class="col-md-8">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="icon-circle-sm bg-gradient-green">✈️</div>
-                        <div>
-                            <h1 class="h2 mb-0"{% if visual_edit %} data-vae="world.{{ world.id }}.name"{% endif %}>{{ world.name }}</h1>
-                            <p class="text-muted mb-0">{{ world.get_difficulty_level_display }}</p>
-                        </div>
-                    </div>
-                    <p class="lead"{% if visual_edit %} data-vae="world.{{ world.id }}.description"{% endif %}>{{ world.description }}</p>
-                    <div class="d-flex gap-3 mt-3">
-                        <div><i class="fas fa-star text-warning"></i> +{{ world.xp_reward }} XP</div>
-                        <div><i class="fas fa-coins text-info"></i> +{{ world.coin_reward }} Coins</div>
-                        <div><i class="fas fa-book"></i> {{ world.get_chapter_count }} Chapters</div>
-                    </div>
+    <!-- هیرو جهان -->
+    <div class="wd-hero">
+        {% if world.image %}<img class="bg" src="{{ world.image.url }}" onerror="this.remove()" alt="{{ world.name }}">{% endif %}
+        <div class="ov"></div>
+        <div class="in">
+            <div>
+                <div class="emoji">{% if world.order == 1 %}✈️{% elif world.order == 2 %}🍽️{% elif world.order == 3 %}🏙️{% else %}🌍{% endif %}</div>
+                <h1{% if visual_edit %} data-vae="world.{{ world.id }}.name"{% endif %}>{{ world.name }}</h1>
+                <p class="desc"{% if visual_edit %} data-vae="world.{{ world.id }}.description"{% endif %}>{{ world.description }}</p>
+                <div class="meta">
+                    <span>⭐ +{{ world.xp_reward }} XP</span>
+                    <span>🪙 +{{ world.coin_reward }}</span>
+                    <span>{% if world.difficulty_level == 'A1' %}Beginner A1{% elif world.difficulty_level == 'A2' %}Elementary A2{% else %}Intermediate B1{% endif %}</span>
                 </div>
             </div>
-            <div class="col-md-4 bg-gradient-green text-white">
-                <div class="card-body p-4 text-center">
-                    <h3 class="h5">Your Progress</h3>
-                    <div class="display-4 fw-bold">{{ world_progress.chapters_completed|default:0 }}/{{ world_progress.total_chapters|default:0 }}</div>
-                    <div class="academy-progress mt-2">
-                        <div class="academy-progress-bar bg-white" style="width: {{ world.get_completion_percentage|default:0 }}%"></div>
-                    </div>
-                    <p class="mt-2 mb-0 small">{{ world.get_completion_percentage|default:0|floatformat:0 }}% Complete</p>
-                </div>
+            <div class="wd-progress-card">
+                <div class="n">{{ world_progress.chapters_completed|default:0 }}/{{ world_progress.total_chapters|default:0 }}</div>
+                <div class="l">فصل کامل شده</div>
+                <div class="bar"><i style="width: {{ world.get_completion_percentage|default:0 }}%"></i></div>
+                <div class="l" style="margin-top:4px">{{ world.get_completion_percentage|default:0|floatformat:0 }}%</div>
             </div>
         </div>
     </div>
 
-    <h2 class="h3 mb-4"><i class="fas fa-list-ol me-2"></i> Chapters</h2>
-
-    <div class="row">
-        <div class="col-lg-8"{% if visual_edit %} data-vae-list="chapters"{% endif %}>
-            {% for chapter in chapters %}
-            <div class="chapter-card {% if chapter.is_completed %}completed{% elif chapter.is_locked %}locked{% endif %} mb-3"{% if visual_edit %} data-vae-id="{{ chapter.id }}"{% endif %}>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="chapter-number {% if chapter.is_completed %}completed{% endif %}">
-                        {{ chapter.order }}
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-start flex-wrap">
-                            <div>
-                                <h3 class="h5 mb-1"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h3>
-                                <p class="text-muted small mb-1"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description|truncatewords:20 }}</p>
-                            </div>
-                            <div class="text-end">
-                                <div class="small text-muted">
-                                    <i class="fas fa-clock"></i> {{ chapter.estimated_time_minutes }} min
-                                </div>
-                                <div class="small">
-                                    <i class="fas fa-star text-warning"></i> +{{ chapter.xp_reward }} XP
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="mt-2">
-                            <div class="d-flex justify-content-between small mb-1">
-                                <span>Progress</span>
-                                <span>{{ chapter.completion_percentage|default:0|floatformat:0 }}%</span>
-                            </div>
-                            <div class="academy-progress">
-                                <div class="academy-progress-bar" style="width: {{ chapter.completion_percentage|default:0 }}%"></div>
-                            </div>
+    <div class="wd-layout">
+        <div>
+            <h2 class="wd-sec-title"><span class="bar"></span> فصل‌های جهان</h2>
+            <div class="wd-chapters"{% if visual_edit %} data-vae-list="chapters"{% endif %}>
+                {% for chapter in chapters %}
+                <div class="wd-chapter {% if chapter.is_completed %}completed{% elif chapter.is_locked %}locked{% endif %}"{% if visual_edit %} data-vae-id="{{ chapter.id }}"{% endif %}>
+                    <div class="wd-ch-num">{% if chapter.is_completed %}✓{% else %}{{ chapter.order }}{% endif %}</div>
+                    <div class="wd-ch-body">
+                        <h3{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h3>
+                        <p{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description|truncatewords:16 }}</p>
+                        <div class="wd-ch-progress">
+                            <div class="bar"><i style="width: {{ chapter.completion_percentage|default:0 }}%"></i></div>
+                            <span>{{ chapter.completion_percentage|default:0|floatformat:0 }}%</span>
                         </div>
                     </div>
-
-                    {% if chapter.is_locked %}
-                        <button class="btn btn-secondary btn-sm" disabled title="فصل قبلی را کامل کن">
-                            <i class="fas fa-lock"></i> Locked
-                        </button>
-                    {% elif chapter.is_completed %}
-                        <a href="{% url 'language_academy:chapter_detail' chapter.id %}" class="btn btn-outline-success btn-sm">
-                            <i class="fas fa-redo"></i> Review
-                        </a>
-                    {% else %}
-                        <a href="{% url 'language_academy:chapter_detail' chapter.id %}" class="btn-academy btn-sm">
-                            Start <i class="fas fa-arrow-right ms-1"></i>
-                        </a>
-                    {% endif %}
+                    <div class="wd-ch-side">
+                        <div class="x">⏱ {{ chapter.estimated_time_minutes }} دقیقه</div>
+                        {% if chapter.is_locked %}
+                            <button class="wd-ch-btn locked" disabled>🔒 قفل</button>
+                        {% elif chapter.is_completed %}
+                            <a class="wd-ch-btn review" href="{% url 'language_academy:chapter_detail' chapter.id %}">↩ مرور</a>
+                        {% else %}
+                            <a class="wd-ch-btn go" href="{% url 'language_academy:chapter_detail' chapter.id %}">شروع ←</a>
+                        {% endif %}
+                    </div>
                 </div>
+                {% empty %}
+                <div class="text-center text-muted py-4">هنوز فصلی نیست.</div>
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
 
-        <div class="col-lg-4">
+        <aside>
             <div class="academy-card tips-card sticky-lg-top" style="top: 84px;">
                 <div class="card-body p-4">
                     <h5 class="fw-bold d-flex align-items-center gap-2 mb-0">
@@ -154,148 +252,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
 
-<style>
-.chapter-card {
-    background: var(--duo-white);
-    border-radius: var(--duo-radius);
-    padding: 20px;
-    transition: var(--duo-transition);
-    border-left: 4px solid var(--duo-gray-300);
-}
-
-.chapter-card.completed {
-    border-left-color: var(--duo-green);
-}
-
-.chapter-card.locked {
-    opacity: 0.7;
-    background: var(--duo-gray-100);
-}
-
-.chapter-number {
-    width: 45px;
-    height: 45px;
-    background: var(--duo-gray-200);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.25rem;
-}
-
-.chapter-number.completed {
-    background: var(--duo-green);
-    color: white;
-}
-
-.icon-circle-sm {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-/* ===== Tips card — clean spacing ===== */
-.tips-card {
-    overflow: hidden;
-}
-.tips-card .card-body {
-    display: flex;
-    flex-direction: column;
-}
-.tips-ico {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
-    background: rgba(245, 158, 11, 0.14);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.95rem;
-    flex: 0 0 auto;
-}
-.tips-list {
-    margin-top: 16px;
-}
-.tips-list li {
-    padding: 8px 2px;
-    font-size: 0.88rem;
-    line-height: 1.75;
-    color: var(--text-secondary, #4A4A6A);
-}
-.tips-list li + li {
-    border-top: 1px dashed var(--border-color, rgba(232,234,246,0.6));
-}
-.tips-check {
-    flex: 0 0 auto;
-    margin-top: 5px;
-}
-.tips-hr {
-    margin: 14px 0 4px;
-    opacity: 0.7;
-}
-.tips-goal {
-    padding-top: 12px;
-}
-.tips-trophy {
-    width: 52px;
-    height: 52px;
-    margin: 0 auto 10px;
-    border-radius: 50%;
-    background: rgba(245, 158, 11, 0.12);
-    border: 1.5px solid rgba(245, 158, 11, 0.25);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.35rem;
-}
-.tips-goal p {
-    line-height: 1.9;
-    max-width: 240px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* ===== Academy responsive hardening ===== */
-@media (max-width: 991.98px) {
-    .tips-card.sticky-lg-top { position: static !important; top: auto; }
-}
-
-@media (max-width: 575.98px) {
-    .chapter-card {
-        padding: 14px 12px;
-    }
-    .chapter-card .d-flex.align-items-center {
-        flex-wrap: wrap;
-        gap: 10px !important;
-    }
-    .chapter-card .flex-grow-1 {
-        min-width: 0;
-        flex: 1 1 100%;
-    }
-    .chapter-card .text-end {
-        text-align: right !important;
-    }
-    .world-progress-col {
-        margin-top: 14px;
-    }
-    .d-flex.gap-3.mt-3 {
-        flex-wrap: wrap;
-    }
-    h1.h2 { font-size: 1.35rem; line-height: 1.6; }
-    .lead { font-size: 0.95rem; }
-    .tips-list li { font-size: 0.84rem; }
-    .guest-banner { padding: 12px 14px !important; }
-}
-</style>
 {% if visual_edit %}
 <div class="container"><button type="button" class="vae-add" data-vae-add="new_chapter.0" data-parent="world:{{ world.id }}" data-vae-name="New Chapter">＋ Add Chapter</button></div>
 {% endif %}

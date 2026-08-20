@@ -448,6 +448,9 @@ def main():
                 'is_published': True,
             },
         )
+        # ترتیب قطعی بر اساس نام (جلوگیری از به‌هم‌ریختگی بعد از اجراهای قبلی)
+        fixed_order = {'Airport Adventures': 1, 'Restaurant & Food': 2, 'Everyday Life & City': 3}
+        world.order = fixed_order.get(wdata['name'], world.order)
         img_name = make_gradient_image(world.name, f"worlds/world_{world.id}.jpg",
                                        emoji={1: '✈️', 2: '🍽️', 3: '🏙️'}.get(world.order, '🌍'))
         world.image = img_name
@@ -481,6 +484,14 @@ def main():
             # امتحان فصل (برای تکمیل فصل و باز شدن فصل بعد)
             _build_chapter_exam(chapter)
             print(f'  🎓 امتحان فصل: {chapter.name}')
+
+        # مرتب‌سازی نهایی فصل‌ها و درس‌های این جهان بر اساس ترتیب ثبت
+        for i, ch in enumerate(world.chapters.order_by('id'), start=1):
+            if ch.order != i:
+                ch.order = i; ch.save(update_fields=['order'])
+            for j, l in enumerate(ch.lessons.order_by('id'), start=1):
+                if l.order != j:
+                    l.order = j; l.save(update_fields=['order'])
 
         # امتحان جهان
         if wdata['name'] in WORLD_EXAMS:
