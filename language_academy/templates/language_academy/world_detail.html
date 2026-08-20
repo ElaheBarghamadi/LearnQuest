@@ -105,8 +105,8 @@
                     </div>
 
                     {% if chapter.is_locked %}
-                        <button class="btn btn-secondary btn-sm" disabled>
-                            <i class="fas fa-lock"></i>
+                        <button class="btn btn-secondary btn-sm" disabled title="فصل قبلی را کامل کن">
+                            <i class="fas fa-lock"></i> Locked
                         </button>
                     {% elif chapter.is_completed %}
                         <a href="{% url 'language_academy:chapter_detail' chapter.id %}" class="btn btn-outline-success btn-sm">

@@ -59,7 +59,7 @@
 
             <div class="lessons-timeline"{% if visual_edit %} data-vae-list="lessons"{% endif %}>
                 {% for lesson in lessons %}
-                <div class="lesson-card mb-3 {% if lesson.status == 'completed' %}completed{% endif %}"{% if visual_edit %} data-vae-id="{{ lesson.id }}"{% endif %}>
+                <div class="lesson-card mb-3 {% if lesson.status == 'completed' %}completed{% endif %} {% if lesson.is_locked %}locked{% endif %}"{% if visual_edit %} data-vae-id="{{ lesson.id }}"{% endif %}>
                     <div class="d-flex align-items-center gap-3">
                         <div class="lesson-icon {% if lesson.status == 'completed' %}completed{% endif %}">
                             {% if lesson.lesson_type == 'vocabulary' %}📚
@@ -96,7 +96,11 @@
                             {% endif %}
                         </div>
 
-                        {% if lesson.status == 'completed' %}
+                        {% if lesson.is_locked %}
+                            <button class="btn btn-secondary btn-sm" disabled title="اول درس قبلی را کامل کن">
+                                <i class="fas fa-lock me-1"></i> Locked
+                            </button>
+                        {% elif lesson.status == 'completed' %}
                             <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn btn-outline-success btn-sm">
                                 <i class="fas fa-redo"></i> Review
                             </a>
@@ -195,6 +199,12 @@
 .lesson-card.completed {
     background: rgba(88, 204, 113, 0.05);
     border-color: var(--duo-green);
+}
+
+.lesson-card.locked {
+    opacity: 0.72;
+    background: rgba(148, 163, 184, 0.07);
+    border-style: dashed;
 }
 
 .lesson-icon {

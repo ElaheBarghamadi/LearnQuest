@@ -51,6 +51,26 @@ class World(models.Model):
                        ).exists())
         return (completed / chapters.count()) * 100
 
+    def is_unlocked_for_user(self, user):
+        """جهان بعدی فقط بعد از تکمیل کامل جهان قبلی باز می‌شود."""
+        if not user or not user.is_authenticated:
+            return True
+        prev = (World.objects
+                .filter(is_published=True, order__lt=self.order)
+                .order_by('-order').first())
+        if prev is None:
+            return True
+        return UserWorldProgress.objects.filter(
+            user=user, world=prev, is_completed=True
+        ).exists()
+
+    def is_completed_for_user(self, user):
+        if not user or not user.is_authenticated:
+            return False
+        return UserWorldProgress.objects.filter(
+            user=user, world=self, is_completed=True
+        ).exists()
+
 
 class Chapter(models.Model):
     world = models.ForeignKey(World, on_delete=models.CASCADE, related_name='chapters', verbose_name='جهان')
@@ -81,6 +101,8 @@ class Chapter(models.Model):
         return self.lessons.filter(is_published=True)
 
     def is_unlocked_for_user(self, user):
+        if not user or not user.is_authenticated:
+            return True
         if self.required_chapter:
             progress = UserChapterProgress.objects.filter(
                 user=user, chapter=self.required_chapter, is_completed=True
@@ -97,6 +119,13 @@ class Chapter(models.Model):
             if not prev_progress:
                 return False
         return True
+
+    def is_completed_for_user(self, user):
+        if not user or not user.is_authenticated:
+            return False
+        return UserChapterProgress.objects.filter(
+            user=user, chapter=self, is_completed=True
+        ).exists()
 
 
 class Lesson(models.Model):
@@ -136,6 +165,30 @@ class Lesson(models.Model):
 
     def get_content(self):
         return LessonContent.objects.filter(lesson=self).first()
+
+    def is_unlocked_for_user(self, user):
+        """درس بعدی فقط بعد از تکمیل درس قبلیِ همان فصل باز می‌شود."""
+        if not user or not user.is_authenticated:
+            return True
+        chapter = self.chapter
+        if chapter and not chapter.is_unlocked_for_user(user):
+            return False
+        prev = (Lesson.objects
+                .filter(chapter=chapter, is_published=True, order__lt=self.order)
+                .order_by('-order').first())
+        if prev is None:
+            return True
+        prog = UserLessonProgress.objects.filter(
+            user=user, lesson=prev, status='completed'
+        ).first()
+        return prog is not None
+
+    def is_completed_for_user(self, user):
+        if not user or not user.is_authenticated:
+            return False
+        return UserLessonProgress.objects.filter(
+            user=user, lesson=self, status='completed'
+        ).exists()
 
 
 class LessonContent(models.Model):
@@ -608,6 +661,18 @@ class UserWorldProgress(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.world.name}"
+
+    def update_progress(self):
+        total = self.world.chapters.filter(is_published=True).count()
+        self.total_chapters = total
+        self.chapters_completed = UserChapterProgress.objects.filter(
+            user=self.user, chapter__world=self.world, is_completed=True
+        ).count()
+        if self.exam_passed and self.chapters_completed >= total and total > 0:
+            self.is_completed = True
+            if not self.completed_at:
+                self.completed_at = timezone.now()
+        self.save(update_fields=['total_chapters', 'chapters_completed', 'is_completed', 'completed_at'])
 
 
 class UserVocabularyProgress(models.Model):

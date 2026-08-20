@@ -310,6 +310,44 @@ def _build_dialogue(lesson, dlg):
 
 
 # ---------------------------------------------------------------
+# امتحان فصل — از سوالات کوئیز درس‌های همان فصل
+# ---------------------------------------------------------------
+def _build_chapter_exam(chapter):
+    from language_academy.models import Question, QuestionChoice as QC
+    exam, _ = Exam.objects.update_or_create(
+        exam_type='chapter', chapter=chapter,
+        defaults={
+            'title': f'{chapter.name} — Chapter Exam',
+            'description': f'Pass this exam to complete «{chapter.name}» and unlock the next chapter!',
+            'passing_score': 70,
+            'time_limit_minutes': 12,
+            'max_attempts': 3,
+            'questions_count': 5,
+            'randomize_questions': True,
+            'xp_reward': 120,
+            'coin_reward': 30,
+            'is_published': True,
+        },
+    )
+    # جمع‌آوری سوالات از کوئیز درس‌های فصل (حداکثر ۵)
+    qs = list(Question.objects.filter(quiz__lesson__chapter=chapter).order_by('order'))
+    picked = qs[:5]
+    ExamQuestion.objects.filter(exam=exam).delete()
+    for i, q in enumerate(picked):
+        choices = list(q.choices.order_by('order'))
+        correct = next((ch for ch in choices if ch.is_correct), choices[0] if choices else None)
+        ExamQuestion.objects.create(
+            exam=exam, order=i,
+            question=q.question_text,
+            question_type='mcq',
+            correct_answer=correct.choice_text if correct else '',
+            options=[ch.choice_text for ch in choices],
+            points=10,
+        )
+    return exam
+
+
+# ---------------------------------------------------------------
 # امتحان جهان
 # ---------------------------------------------------------------
 def _build_world_exam(world, exam_data):
@@ -439,6 +477,10 @@ def main():
                 total_vocab += Vocabulary.objects.filter(categories__name=lesson.name[:50]).count()
                 total_quiz_q += Question.objects.filter(quiz__lesson=lesson).count()
                 print(f'  {"✅" if created else "↻"} درس: {lesson.name}')
+
+            # امتحان فصل (برای تکمیل فصل و باز شدن فصل بعد)
+            _build_chapter_exam(chapter)
+            print(f'  🎓 امتحان فصل: {chapter.name}')
 
         # امتحان جهان
         if wdata['name'] in WORLD_EXAMS:

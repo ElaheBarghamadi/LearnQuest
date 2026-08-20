@@ -81,7 +81,8 @@ def world_map(request):
         world.completion_percentage = world.get_completion_percentage(request.user) if authed else 0
         world.xp_earned = progress.xp_earned if progress else 0
 
-        world.is_locked = False
+        # قفل پیشروی: جهان بعدی فقط بعد از تکمیل جهان قبلی
+        world.is_locked = bool(authed and not world.is_unlocked_for_user(request.user))
 
     today_goal = None
     if authed:
@@ -123,6 +124,12 @@ def world_detail(request, world_id):
     world = get_object_or_404(World, id=world_id, is_published=True)
     authed = request.user.is_authenticated
 
+    # قفل جهان
+    if authed and not world.is_unlocked_for_user(request.user):
+        messages.warning(request,
+                         f'🔒 جهان «{world.name}» قفل است — ابتدا جهان قبلی را کامل کن تا باز شود!')
+        return redirect('language_academy:world_map')
+
     chapters = world.chapters.filter(is_published=True).order_by('order')
 
     for chapter in chapters:
@@ -130,7 +137,7 @@ def world_detail(request, world_id):
         chapter.is_completed = progress.is_completed if progress else False
         chapter.completion_percentage = ((progress.lessons_completed / progress.total_lessons * 100)
                                          if progress and progress.total_lessons > 0 else 0)
-        chapter.is_locked = False
+        chapter.is_locked = bool(authed and not chapter.is_unlocked_for_user(request.user))
 
     world_progress = UserWorldProgress.objects.filter(user=request.user, world=world).first() if authed else None
 
@@ -150,12 +157,20 @@ def world_detail(request, world_id):
 def chapter_detail(request, chapter_id):
     chapter = get_object_or_404(Chapter, id=chapter_id, is_published=True)
 
+    # قفل فصل: قبلی کامل نشده → دسترسی نداری
+    if not chapter.is_unlocked_for_user(request.user):
+        messages.warning(request,
+                         f'🔒 فصل «{chapter.name}» قفل است — ابتدا فصل قبلی را کامل کن تا باز شود!')
+        return redirect('language_academy:world_detail', world_id=chapter.world.id)
+
     lessons = chapter.lessons.filter(is_published=True).order_by('order')
 
     for lesson in lessons:
         progress = UserLessonProgress.objects.filter(user=request.user, lesson=lesson).first()
         lesson.status = progress.status if progress else 'not_started'
         lesson.progress_percentage = progress.progress_percentage if progress else 0
+        # قفل پیشروی: هر درس بعد از تکمیل درس قبلی باز می‌شود
+        lesson.is_locked = not lesson.is_unlocked_for_user(request.user)
 
     chapter_progress, _ = UserChapterProgress.objects.get_or_create(user=request.user, chapter=chapter)
     chapter_progress.update_progress()
@@ -181,6 +196,13 @@ def chapter_detail(request, chapter_id):
 def lesson_detail(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id, is_published=True)
     content = lesson.get_content()
+
+    # قفل پیشروی: درس قبلی کامل نشده → دسترسی نداری
+    if not lesson.is_unlocked_for_user(request.user):
+        messages.warning(
+            request,
+            f'🔒 درس «{lesson.name}» هنوز قفل است — اول درس قبلی را کامل کن تا باز شود!')
+        return redirect('language_academy:chapter_detail', chapter_id=lesson.chapter.id)
 
     if getattr(lesson, 'is_exclusive', False):
         from shop.services import has_unlock
@@ -264,6 +286,11 @@ def lesson_detail(request, lesson_id):
 @login_required
 def take_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id, is_published=True)
+
+    # قفل: درس یا فصل قبلی کامل نشده → اجازهٔ کوئیز نیست
+    if not quiz.lesson.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این کوئیز هنوز قفل است — اول درس قبلی را کامل کن!')
+        return redirect('language_academy:chapter_detail', chapter_id=quiz.lesson.chapter.id)
 
 
     attempts_count = QuizAttempt.objects.filter(user=request.user, quiz=quiz).count()
@@ -417,6 +444,9 @@ def submit_quiz_auto(request, session_key):
 @require_http_methods(['POST'])
 def submit_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
+    if not quiz.lesson.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این کوئیز هنوز قفل است!')
+        return redirect('language_academy:chapter_detail', chapter_id=quiz.lesson.chapter.id)
     session_key = request.POST.get('session_key')
 
     session = get_object_or_404(QuizSession, session_key=session_key, user=request.user, quiz=quiz)
@@ -521,6 +551,34 @@ def quiz_result(request, attempt_id):
 def take_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id, is_published=True)
 
+    # قفل: امتحان فصلِ قفل‌شده یا جهانِ قفل‌شده → اجازه نیست
+    if exam.chapter and not exam.chapter.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این امتحان هنوز قفل است — اول فصل قبلی را کامل کن!')
+        return redirect('language_academy:world_detail', world_id=exam.chapter.world.id)
+    if exam.world and not exam.world.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این امتحان هنوز قفل است — اول جهان قبلی را کامل کن!')
+        return redirect('language_academy:world_map')
+
+    # امتحان فصل: همهٔ درس‌های فصل باید کامل شده باشند
+    if exam.chapter:
+        total = exam.chapter.lessons.filter(is_published=True).count()
+        done = UserLessonProgress.objects.filter(
+            user=request.user, lesson__chapter=exam.chapter, status='completed'
+        ).count()
+        if total == 0 or done < total:
+            messages.warning(request, '🔒 برای امتحان فصل، اول همهٔ درس‌های آن را کامل کن!')
+            return redirect('language_academy:chapter_detail', chapter_id=exam.chapter.id)
+
+    # امتحان جهان: همهٔ فصل‌های جهان باید کامل شده باشند
+    if exam.world:
+        chapters = exam.world.chapters.filter(is_published=True)
+        if chapters.exists():
+            completed_chapters = UserChapterProgress.objects.filter(
+                user=request.user, chapter__in=chapters, is_completed=True
+            ).count()
+            if completed_chapters < chapters.count():
+                messages.warning(request, '🔒 برای امتحان نهایی، اول همهٔ فصل‌های جهان را کامل کن!')
+                return redirect('language_academy:world_detail', world_id=exam.world.id)
 
     attempt_count = ExamAttempt.objects.filter(user=request.user, exam=exam).count()
     if attempt_count >= exam.max_attempts:
@@ -739,6 +797,27 @@ def save_exam_time(request):
 @require_http_methods(['POST'])
 def submit_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
+    if exam.chapter and not exam.chapter.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این امتحان هنوز قفل است!')
+        return redirect('language_academy:world_detail', world_id=exam.chapter.world.id)
+    if exam.world and not exam.world.is_unlocked_for_user(request.user):
+        messages.warning(request, '🔒 این امتحان هنوز قفل است!')
+        return redirect('language_academy:world_map')
+    if exam.chapter:
+        total = exam.chapter.lessons.filter(is_published=True).count()
+        done = UserLessonProgress.objects.filter(
+            user=request.user, lesson__chapter=exam.chapter, status='completed').count()
+        if total == 0 or done < total:
+            messages.warning(request, '🔒 برای امتحان فصل، اول همهٔ درس‌های آن را کامل کن!')
+            return redirect('language_academy:chapter_detail', chapter_id=exam.chapter.id)
+    if exam.world:
+        chapters = exam.world.chapters.filter(is_published=True)
+        if chapters.exists():
+            cc = UserChapterProgress.objects.filter(
+                user=request.user, chapter__in=chapters, is_completed=True).count()
+            if cc < chapters.count():
+                messages.warning(request, '🔒 برای امتحان نهایی، اول همهٔ فصل‌های جهان را کامل کن!')
+                return redirect('language_academy:world_detail', world_id=exam.world.id)
     session_key = request.POST.get('session_key')
 
     session = get_object_or_404(ExamSession, session_key=session_key, user=request.user, exam=exam)
@@ -815,9 +894,28 @@ def submit_exam(request, exam_id):
             chapter_progress.completed_at = timezone.now()
             chapter_progress.save()
             messages.success(request, f'🎉 Chapter "{exam.chapter.name}" completed!')
+
+            # به‌روزرسانی پیشرفت جهان
+            wp, _ = UserWorldProgress.objects.get_or_create(
+                user=request.user, world=exam.chapter.world)
+            wp.update_progress()
+            if wp.is_completed:
+                messages.success(request, f'🎉 World "{exam.chapter.world.name}" completed!')
         else:
             chapter_progress.save()
             messages.warning(request, f'{final_score}% — you need {exam.passing_score}% to pass.')
+
+    elif exam.world and passed:
+        # امتحان نهایی جهان پاس شد → جهان کامل می‌شود
+        wp, _ = UserWorldProgress.objects.get_or_create(
+            user=request.user, world=exam.world)
+        wp.exam_score = final_score
+        wp.exam_passed = True
+        wp.xp_earned = max(wp.xp_earned, exam.xp_reward)
+        wp.save(update_fields=['exam_score', 'exam_passed', 'xp_earned'])
+        wp.update_progress()
+        if wp.is_completed:
+            messages.success(request, f'🎉 World "{exam.world.name}" completed! Congratulations!')
 
     return redirect('language_academy:exam_result', attempt_id=attempt.id)
 

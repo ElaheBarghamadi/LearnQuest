@@ -40,19 +40,19 @@ def main():
     ok(login(s, 'ali', 'Test@12345'), 'login ali')
 
     print('=== Exclusive lesson gate ===')
-    r = s.get(BASE + '/academy/lesson/35/', allow_redirects=False, timeout=30)
+    r = s.get(BASE + '/academy/lesson/57/', allow_redirects=False, timeout=30)
     if r.status_code == 200:
         ok(True, 'lesson gate: ticket already owned (from earlier run)')
     else:
         ok(r.status_code in (301, 302) and '/shop/' in r.headers.get('Location', ''),
            'lesson gate redirects to shop without ticket', f'-> {r.status_code} {r.headers.get("Location")}')
-        r = post_json(s, '/shop/buy/62/', {})
+        r = post_json(s, '/shop/buy/68/', {})
         ok(as_json(r) and as_json(r).get('ok'), 'buy exclusive ticket', r.text[:200])
-        r = s.get(BASE + '/academy/lesson/35/', timeout=30)
+        r = s.get(BASE + '/academy/lesson/57/', timeout=30)
         ok(r.status_code == 200, 'lesson accessible after ticket', f'-> {r.status_code}')
 
     print('=== Quiz full flow ===')
-    r = s.get(BASE + '/academy/quiz/29/', allow_redirects=False, timeout=30)
+    r = s.get(BASE + '/academy/quiz/51/', allow_redirects=False, timeout=30)
     if r.status_code in (301, 302):
         ok(True, 'quiz already taken (max attempts) — skip, redirect OK')
         skey = None
@@ -64,7 +64,7 @@ def main():
         r = post_json(s, '/academy/quiz/save-time/', {'session_key': skey, 'seconds': 15})
         ok(r.status_code == 200, 'quiz save-time', r.text[:150])
         # fetch questions for session
-        r = s.get(BASE + '/academy/quiz/29/', timeout=30)
+        r = s.get(BASE + '/academy/quiz/51/', timeout=30)
         qids = re.findall(r'data-question-id="(\d+)"', r.text)
         if not qids:
             qids = re.findall(r'question[_-]id[^0-9]*["\']?[:=]\s*["\']?(\d+)', r.text)
@@ -77,9 +77,9 @@ def main():
         r = post_json(s, '/academy/quiz/save-answer/', {
             'session_key': skey, 'question_id': qids[0], 'choice_id': answers.get(qids[0], '1')})
         ok(r.status_code == 200, 'quiz save-answer', r.text[:150])
-        r = s.post(BASE + '/academy/quiz/submit/29/', data={
+        r = s.post(BASE + '/academy/quiz/submit/51/', data={
             'csrfmiddlewaretoken': s.cookies.get('csrftoken', ''), 'session_key': skey},
-            headers={'Referer': BASE + '/academy/quiz/29/'}, allow_redirects=False, timeout=30)
+            headers={'Referer': BASE + '/academy/quiz/51/'}, allow_redirects=False, timeout=30)
         loc = r.headers.get('Location', '')
         ok(r.status_code == 302 and '/result/' in loc, 'quiz submit (form)',
            f'-> {r.status_code} {loc}')
@@ -113,7 +113,7 @@ def main():
 
     print('=== Misc pages ===')
     for u in ['/blog/?q=airport', '/blog/?cat=test', '/blog/?page=2',
-              '/academy/?edit=1', '/academy/world/5/', '/academy/vocabulary/?difficulty=A1',
+              '/academy/?edit=1', '/academy/world/8/', '/academy/vocabulary/?difficulty=A1',
               '/shop/?sort=cheap', '/shop/?sort=bogus', '/shop/?type=cosmetic',
               '/economy/leaderboard/?type=season', '/games/sudoku/']:
         rr = s.get(BASE + u, timeout=30)
