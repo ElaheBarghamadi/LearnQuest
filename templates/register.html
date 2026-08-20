@@ -4,384 +4,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ثبت‌نام | لرن کویست</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-
-    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
     body {
-        min-height: 100vh;
+        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
         background: linear-gradient(135deg, #9CC1F4 0%, #7FA9EE 34%, #B3A5EE 68%, #EBB3D9 100%);
         background-attachment: fixed;
-        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
         color: #262B47;
         overflow-x: hidden;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 18px;
     }
-    .au-wrap { min-height: 100vh; }
-    .au-body-pad { display: grid; place-items: center; padding: 20px 16px 40px; }
-    .au-home {
-        position: fixed; top: 14px; right: 16px; z-index: 30;
-        display: inline-flex; align-items: center; gap: 7px;
-        padding: 9px 18px; border-radius: 999px; text-decoration: none;
-        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
-        font-size: .8rem; font-weight: 800; color: #262B47;
-        background: rgba(255, 255, 255, .5);
-        border: 1px solid rgba(255, 255, 255, .8);
-        backdrop-filter: blur(16px) saturate(160%);
-        -webkit-backdrop-filter: blur(16px) saturate(160%);
-        box-shadow: 0 8px 22px rgba(15, 45, 110, .18), inset 0 1px 0 rgba(255,255,255,.85);
-        transition: transform .2s, box-shadow .25s;
+    .au-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .au-blob {
+        position: absolute; border-radius: 50%; filter: blur(80px);
+        opacity: .45; animation: auFloat 18s ease-in-out infinite alternate;
     }
-    .au-home:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15, 45, 110, .26), inset 0 1px 0 rgba(255,255,255,.9); }
-            .au-flash { width: min(460px, 100%); margin: 0 auto 12px; display: flex; flex-direction: column; gap: 8px; position: relative; z-index: 5; }
-    .au-flash-item {
-        display: flex; align-items: center; gap: 9px;
-        padding: 12px 16px; border-radius: 15px;
-        font-size: .84rem; font-weight: 800;
-        background: rgba(255, 255, 255, .72);
-        border: 1px solid rgba(255, 255, 255, .85);
-        backdrop-filter: blur(16px) saturate(160%);
-        -webkit-backdrop-filter: blur(16px) saturate(160%);
-        box-shadow: 0 10px 26px rgba(15, 45, 110, .16);
-        animation: au-pop .5s cubic-bezier(.2, 1.1, .3, 1.05) both;
-        border-right: 4px solid #3B82F6; color: #1e3a8a;
+    .au-blob.b1 { width: 420px; height: 420px; background: rgba(108,99,255,.5); top: -120px; right: -100px; }
+    .au-blob.b2 { width: 360px; height: 360px; background: rgba(54,209,220,.45); bottom: -110px; left: -90px; animation-delay: 3s; }
+    .au-blob.b3 { width: 260px; height: 260px; background: rgba(236,72,153,.35); top: 45%; left: 12%; animation-delay: 6s; }
+    @keyframes auFloat {
+        0% { transform: translate(0,0) scale(1); }
+        100% { transform: translate(40px,-50px) scale(1.15); }
     }
-    .au-flash-item.error { border-right-color: #ef4444; color: #b91c1c; }
-    .au-flash-item.success { border-right-color: #22c55e; color: #15803d; }
-    .au-flash-item.warning { border-right-color: #f59e0b; color: #b45309; }
-    @media (max-width: 560px) {
-        .au-home { top: 10px; right: 10px; font-size: .72rem; padding: 8px 14px; }
-        .au-body-pad { padding: 12px 12px 30px; align-items: start; }
-    }
-</style>
-<style>
-    .au-wrap {
-        min-height: calc(100vh - 230px);
-        display: grid;
-        place-items: center;
-        position: relative;
-        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
-        padding: 20px 0 34px;
+    .au-dots {
+        position: fixed; inset: 0; z-index: 0; pointer-events: none;
+        background-image: radial-gradient(rgba(255,255,255,.35) 1.2px, transparent 1.3px);
+        background-size: 30px 30px; opacity: .5;
     }
 
-    .au-mesh {
-        position: fixed;
-        inset: 0;
-        z-index: -2;
-        pointer-events: none;
-        background:
-            radial-gradient(58% 78% at 18% 18%, rgba(56, 189, 248, .38), transparent 62%),
-            radial-gradient(52% 62% at 82% 22%, rgba(56, 189, 248, .32), transparent 64%),
-            radial-gradient(62% 72% at 72% 82%, rgba(217, 70, 239, .28), transparent 62%),
-            radial-gradient(46% 56% at 28% 78%, rgba(251, 191, 36, .24), transparent 64%);
-        animation: au-meshmove 22s ease-in-out infinite alternate;
-    }
-    @keyframes au-meshmove { from { transform: scale(1) rotate(0deg); } to { transform: scale(1.12) rotate(2.5deg); } }
-
-    .au-orb {
-        position: fixed;
-        z-index: -1;
-        border-radius: 50%;
-        filter: blur(80px);
-        -webkit-filter: blur(80px);
-        pointer-events: none;
-    }
-    .au-orb.o1 { width: 360px; height: 360px; background: #38BDF8; opacity: .26; top: -110px; right: -90px; animation: au-float 16s ease-in-out infinite; }
-    .au-orb.o2 { width: 300px; height: 300px; background: #22d3ee; opacity: .22; bottom: -100px; left: -80px; animation: au-float 19s ease-in-out infinite reverse; }
-    .au-orb.o3 { width: 220px; height: 220px; background: #38BDF8; opacity: .2; top: 40%; left: 9%; animation: au-float 14s ease-in-out infinite 1.5s; }
-    @keyframes au-float { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, -38px) scale(1.1); } }
-
-    .au-card {
-        width: min(460px, 100%);
-        background:
-            linear-gradient(160deg, rgba(255, 255, 255, .74), rgba(255, 255, 255, .44)) padding-box,
-            linear-gradient(150deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .2) 38%, rgba(56, 189, 248, .38) 74%, rgba(56, 189, 248, .42)) border-box;
-        backdrop-filter: blur(28px) saturate(175%);
-        -webkit-backdrop-filter: blur(28px) saturate(175%);
-        border: 1.5px solid transparent;
-        box-shadow: 0 26px 64px rgba(15, 45, 110, .24), inset 0 1px 0 rgba(255, 255, 255, .9);
+    .au-shell {
+        position: relative; z-index: 1;
+        width: 100%; max-width: 1000px;
+        display: grid; grid-template-columns: 1fr 1.05fr;
+        background: rgba(255,255,255,.66);
+        backdrop-filter: blur(24px) saturate(170%);
+        -webkit-backdrop-filter: blur(24px) saturate(170%);
+        border: 1px solid rgba(255,255,255,.9);
         border-radius: 30px;
-        padding: 34px 36px 24px;
-        position: relative;
+        box-shadow: 0 30px 80px rgba(28,32,64,.22), inset 0 1px 0 rgba(255,255,255,.95);
         overflow: hidden;
-        animation: au-pop .65s cubic-bezier(.2, 1.1, .3, 1.05) both;
+        animation: auIn .6s cubic-bezier(.22,1,.36,1);
     }
-    .au-card::before {
-        content: '';
-        position: absolute;
-        top: 0; right: 10%; left: 10%;
-        height: 4px;
-        border-radius: 0 0 12px 12px;
-        background: linear-gradient(90deg, #3B82F6, #22D3EE, #38bdf8);
-        box-shadow: 0 4px 14px rgba(56, 189, 248, .45);
-    }
-    .au-card::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: radial-gradient(440px 170px at 50% -40px, rgba(255, 255, 255, .55), transparent 66%);
-    }
-    @keyframes au-pop { from { opacity: 0; transform: translateY(26px) scale(.95); } }
+    @keyframes auIn { from { opacity: 0; transform: translateY(26px) scale(.97); } }
 
-    .au-brand { text-align: center; margin-bottom: 22px; position: relative; z-index: 1; }
+    .au-showcase {
+        background: linear-gradient(160deg, #0ea5a4 0%, #0d9488 45%, #6C63FF 130%);
+        color: #fff; padding: 40px 32px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        position: relative; overflow: hidden;
+    }
+    .au-showcase::before {
+        content: ''; position: absolute; inset: 0;
+        background:
+            radial-gradient(circle at 80% 12%, rgba(255,255,255,.22), transparent 42%),
+            radial-gradient(circle at 15% 88%, rgba(255,255,255,.14), transparent 40%);
+        pointer-events: none;
+    }
+    .au-show-logo { display: flex; align-items: center; gap: 10px; font-weight: 900; font-size: 1.15rem; position: relative; }
+    .au-show-logo .mark {
+        width: 40px; height: 40px; border-radius: 13px;
+        background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
+        display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,.15);
+    }
+    .au-show-title { font-size: 1.5rem; font-weight: 900; line-height: 1.6; margin: 24px 0 12px; position: relative; }
+    .au-show-title em { font-style: normal; background: linear-gradient(90deg,#a7f3d0,#fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .au-show-sub { font-size: .85rem; opacity: .9; line-height: 2.1; margin-bottom: 24px; position: relative; }
+    .au-feats { display: flex; flex-direction: column; gap: 12px; position: relative; }
+    .au-feat {
+        display: flex; align-items: center; gap: 12px;
+        background: rgba(255,255,255,.12);
+        border: 1px solid rgba(255,255,255,.2);
+        border-radius: 14px; padding: 11px 15px;
+        font-size: .8rem; font-weight: 700;
+        backdrop-filter: blur(8px);
+    }
+    .au-feat .ic {
+        width: 34px; height: 34px; border-radius: 11px; flex: 0 0 auto;
+        background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center;
+        font-size: 1rem;
+    }
+    .au-show-stats { display: flex; gap: 10px; margin-top: 24px; position: relative; }
+    .au-show-stat {
+        flex: 1; text-align: center;
+        background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18);
+        border-radius: 13px; padding: 10px 6px;
+    }
+    .au-show-stat b { display: block; font-size: 1.1rem; font-weight: 900; }
+    .au-show-stat small { font-size: .62rem; opacity: .85; }
+
+    .au-formside { padding: 34px 36px; display: flex; flex-direction: column; justify-content: center; }
     .au-badge {
-        width: 60px; height: 60px;
-        border-radius: 19px;
-        background: linear-gradient(135deg, #3B82F6, #38BDF8);
-        display: grid;
-        place-items: center;
-        font-size: 1.8rem;
-        margin: 0 auto 13px;
-        box-shadow: 0 14px 30px rgba(59, 130, 246, .45), inset 0 1.5px 0 rgba(255, 255, 255, .5);
-        animation: au-bob 3.2s ease-in-out infinite;
+        width: 56px; height: 56px; border-radius: 18px;
+        background: linear-gradient(135deg, #0ea5a4, #6C63FF);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.55rem; margin-bottom: 16px;
+        box-shadow: 0 14px 30px rgba(14,165,164,.4), inset 0 1.5px 0 rgba(255,255,255,.5);
+        animation: auBob 3.2s ease-in-out infinite;
     }
-    @keyframes au-bob { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-8px) rotate(-4deg); } }
-    .au-brand h2 { margin: 0 0 6px; font-size: 1.45rem; font-weight: 900; color: #262B47; letter-spacing: -.3px; }
-    .au-gt {
-        background: linear-gradient(120deg, #3B82F6, #22D3EE, #38bdf8, #3B82F6);
-        background-size: 260% 100%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
-        animation: au-grad 5.5s linear infinite;
+    @keyframes auBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .au-h1 { font-size: 1.45rem; font-weight: 900; color: #1e293b; letter-spacing: -.3px; margin-bottom: 6px; }
+    .au-h1 .gt { background: linear-gradient(120deg,#0ea5a4,#6C63FF); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .au-sub { font-size: .82rem; color: #64748b; margin-bottom: 20px; }
+
+    .au-flash { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .au-flash-item {
+        font-size: .78rem; font-weight: 700;
+        padding: 10px 14px; border-radius: 12px;
+        background: rgba(255,255,255,.8); border: 1px solid rgba(148,163,184,.3);
+        border-inline-start: 4px solid #3B82F6;
     }
-    @keyframes au-grad { to { background-position: 260% 0; } }
-    .au-brand p { margin: 0; color: #6B7399; font-size: .82rem; font-weight: 600; }
+    .au-flash-item.error { border-inline-start-color: #ef4444; color: #b91c1c; }
+    .au-flash-item.success { border-inline-start-color: #22c55e; color: #15803d; }
 
-    .au-banner {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: rgba(255, 101, 132, .12);
-        border: 1px solid rgba(255, 101, 132, .35);
-        border-radius: 14px;
-        padding: 11px 14px;
-        margin-bottom: 13px;
-        color: #dc2626;
-        font-size: .78rem;
-        font-weight: 700;
-        position: relative;
-        z-index: 1;
-        animation: au-shake .35s ease;
-    }
-
-    .au-form { display: flex; flex-direction: column; gap: 14px; position: relative; z-index: 1; }
-
+    .au-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .au-field {
-        position: relative;
-        display: flex;
-        align-items: center;
-        gap: 9px;
-        background: linear-gradient(165deg, rgba(255, 255, 255, .58), rgba(255, 255, 255, .32));
-        backdrop-filter: blur(14px) saturate(160%);
-        -webkit-backdrop-filter: blur(14px) saturate(160%);
-        border: 1px solid rgba(255, 255, 255, .78);
-        box-shadow: inset 0 1.5px 0 rgba(255, 255, 255, .9), 0 6px 18px rgba(15, 45, 110, .08);
-        border-radius: 17px;
-        padding: 3px 15px;
-        transition: border-color .2s, box-shadow .25s, transform .2s;
+        position: relative; display: flex; align-items: center; gap: 9px;
+        background: rgba(255,255,255,.75);
+        border: 1.5px solid rgba(148,163,184,.35);
+        border-radius: 13px; padding: 2px 13px; margin-bottom: 13px;
+        transition: border-color .2s, box-shadow .2s, transform .2s;
     }
-    .au-field:hover { transform: translateY(-1px); }
     .au-field:focus-within {
-        border-color: rgba(59, 130, 246, .68);
-        box-shadow: 0 0 0 4px rgba(59, 130, 246, .14), inset 0 1.5px 0 rgba(255, 255, 255, .95), 0 10px 24px rgba(59, 130, 246, .14);
-        transform: translateY(-2px);
+        border-color: #6C63FF;
+        box-shadow: 0 0 0 4px rgba(108,99,255,.14);
+        transform: translateY(-1px);
     }
-    .au-ico { font-size: 1.06rem; flex-shrink: 0; transition: transform .2s; }
-    .au-field:focus-within .au-ico { transform: scale(1.14); }
+    .au-field .ico { font-size: .95rem; opacity: .6; flex-shrink: 0; }
     .au-field input {
-        flex: 1;
-        min-width: 0;
-        border: none;
-        outline: none;
-        background: transparent;
-        padding: 14px 0 12px;
-        font-family: inherit;
-        font-size: .93rem;
-        font-weight: 600;
-        color: #262B47;
+        flex: 1; min-width: 0; border: none; outline: none; background: none;
+        padding: 12px 0; font-family: inherit; font-size: .9rem; font-weight: 600; color: #1e293b;
     }
-    .au-lbl {
-        position: absolute;
-        right: 45px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9aa1c4;
-        font-size: .86rem;
-        font-weight: 600;
-        pointer-events: none;
-        transition: all .18s cubic-bezier(.3, .7, .3, 1);
-    }
-    .au-field:focus-within .au-lbl,
-    .au-field input:not(:placeholder-shown) ~ .au-lbl {
-        top: 0;
-        right: 38px;
-        transform: translateY(-62%) scale(.8);
-        color: #3B82F6;
-        font-weight: 800;
-        background: linear-gradient(180deg, #fdfcff, #f5f4fd);
-        padding: 1px 8px;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(59, 130, 246, .1);
-    }
-    .au-eye {
-        border: none;
-        background: none;
-        cursor: pointer;
-        font-size: 1.02rem;
-        padding: 7px;
-        border-radius: 10px;
-        opacity: .55;
-        transition: .15s;
-        flex-shrink: 0;
-    }
-    .au-eye:hover { opacity: 1; background: rgba(59, 130, 246, .1); }
-
-    .au-meter {
-        height: 6px;
-        background: rgba(255, 255, 255, .5);
-        border: 1px solid rgba(255, 255, 255, .7);
-        border-radius: 999px;
-        overflow: hidden;
-        margin: -6px 4px 0;
-        display: none;
-    }
+    .au-eye { border: none; background: none; font-size: .95rem; cursor: pointer; opacity: .6; padding: 3px; }
+    .au-err { font-size: .72rem; color: #dc2626; font-weight: 700; margin: -8px 0 10px 6px; }
+    .au-meter { height: 5px; border-radius: 99px; background: rgba(148,163,184,.25); overflow: hidden; margin: -7px 4px 12px; display: none; }
     .au-meter.show { display: block; }
-    .au-meter span {
-        display: block;
-        height: 100%;
-        width: 0;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #ef4444, #f59e0b, #22c55e);
-        background-size: 300% 100%;
-        transition: width .35s cubic-bezier(.2, .8, .3, 1);
-    }
-    .au-meter-txt { font-size: .68rem; font-weight: 700; margin: -7px 6px 0; color: #6B7399; display: none; }
+    .au-meter span { display: block; height: 100%; width: 0; border-radius: 99px; transition: width .3s, background .3s; }
+    .au-meter-txt { font-size: .66rem; font-weight: 700; margin: -8px 6px 10px; color: #6B7399; display: none; }
     .au-meter-txt.show { display: block; }
-
-    .au-match { font-size: .7rem; font-weight: 800; margin: -6px 6px 0; display: none; }
+    .au-match { font-size: .68rem; font-weight: 800; margin: -8px 6px 10px; display: none; }
     .au-match.show { display: block; }
     .au-match.ok { color: #16a34a; }
-    .au-match.bad { color: #dc2626; animation: au-shake .3s ease; }
-
-    .au-err {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        color: #dc2626;
-        font-size: .73rem;
-        font-weight: 700;
-        margin: -6px 4px 0;
-        animation: au-shake .35s ease;
-    }
-    @keyframes au-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(4px); } 75% { transform: translateX(-4px); } }
+    .au-match.bad { color: #dc2626; }
 
     .au-btn {
-        position: relative;
-        overflow: hidden;
-        border: none;
-        cursor: pointer;
-        border-radius: 17px;
-        padding: 15px;
-        margin-top: 3px;
-        background: linear-gradient(135deg, #3B82F6, #38BDF8 55%, #0EA5E9);
-        background-size: 175% 100%;
-        color: #fff;
-        font-family: inherit;
-        font-size: 1.02rem;
-        font-weight: 900;
-        transition: background-position .3s, transform .2s, box-shadow .25s;
-        box-shadow: 0 13px 28px rgba(59, 130, 246, .42), inset 0 1.5px 0 rgba(255, 255, 255, .32);
+        width: 100%; border: none; cursor: pointer;
+        background: linear-gradient(135deg, #0ea5a4, #6C63FF);
+        color: #fff; font-family: inherit; font-size: .96rem; font-weight: 900;
+        padding: 14px; border-radius: 14px; margin-top: 2px;
+        box-shadow: 0 10px 26px rgba(14,165,164,.35);
+        transition: transform .2s, box-shadow .2s;
     }
-    .au-btn:hover {
-        background-position: 100% 0;
-        transform: translateY(-2px);
-        box-shadow: 0 17px 36px rgba(59, 130, 246, .5), inset 0 1.5px 0 rgba(255, 255, 255, .32);
-    }
-    .au-btn:active { transform: scale(.965); }
-    .au-btn::after {
-        content: '';
-        position: absolute;
-        top: 0; bottom: 0;
-        width: 45%;
-        right: 0;
-        transform: translateX(-330%) skewX(18deg);
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .45), transparent);
-        transition: transform .6s cubic-bezier(.3, .6, .3, 1);
-        pointer-events: none;
-    }
-    .au-btn:hover::after { transform: translateX(350%) skewX(18deg); }
+    .au-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 34px rgba(14,165,164,.45); }
 
     .au-alt {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 9px;
-        margin-top: 17px;
-        font-size: .8rem;
-        font-weight: 700;
-        color: #6B7399;
-        position: relative;
-        z-index: 1;
+        display: flex; align-items: center; justify-content: space-between; gap: 8px;
+        margin-top: 16px; font-size: .78rem; font-weight: 700;
     }
-    .au-alt a { color: #3B82F6; text-decoration: none; transition: .15s; }
+    .au-alt a { color: #6C63FF; text-decoration: none; }
     .au-alt a:hover { text-decoration: underline; }
+    .au-sep { flex: 1; height: 1px; background: rgba(148,163,184,.3); }
 
-    .au-chips {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 19px;
-        padding-top: 17px;
-        border-top: 1px dashed rgba(120, 120, 160, .25);
-        position: relative;
-        z-index: 1;
+    @media (max-width: 860px) {
+        body { padding: 0; }
+        .au-shell { max-width: 480px; grid-template-columns: 1fr; border-radius: 0; min-height: 100vh; border: none; overflow-y: auto; }
+        .au-showcase { display: none; }
+        .au-formside { padding: 30px 22px; }
     }
-    .au-chips span {
-        font-size: .66rem;
-        font-weight: 800;
-        color: #5c6390;
-        background: rgba(255, 255, 255, .5);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, .85);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, .75);
-        padding: 6px 12px;
-        border-radius: 999px;
-        transition: transform .2s;
-    }
-    .au-chips span:hover { transform: translateY(-2px); }
-
-    @media (max-width: 560px) {
-        .au-wrap { padding: 8px 0 26px; align-items: start; }
-        .au-card { padding: 26px 20px 20px; border-radius: 26px; }
-        .au-brand { margin-bottom: 18px; }
-        .au-brand h2 { font-size: 1.28rem; }
-        .au-badge { width: 54px; height: 54px; font-size: 1.55rem; border-radius: 17px; }
-        .au-orb { filter: blur(56px); -webkit-filter: blur(56px); }
-        .au-orb.o1 { width: 220px; height: 220px; }
-        .au-orb.o2 { width: 190px; height: 190px; }
-        .au-orb.o3 { display: none; }
-        .au-chips span { font-size: .62rem; padding: 5px 10px; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .au-card, .au-badge, .au-orb, .au-mesh, .au-gt { animation: none; }
-        .au-btn::after { display: none; }
-    }
-
-    @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))) {
-        .au-card { background: rgba(255, 255, 255, .96); border-color: rgba(59, 130, 246, .2); }
-        .au-field { background: #f7f7fc; }
-        .au-orb, .au-mesh { opacity: .15; }
+    @media (max-width: 480px) {
+        .au-formside { padding: 24px 16px; }
+        .au-row { grid-template-columns: 1fr; gap: 0; }
+        .au-h1 { font-size: 1.25rem; }
     }
 </style>
 </head>
 <body>
-<div class="au-body-pad">
-    <a class="au-home" href="{% url 'home' %}">🏠 بازگشت به خانه</a>
-    <div class="au-wrap" style="min-height: 0; padding: 0; width: 100%;">
+
+<div class="au-bg">
+    <span class="au-blob b1"></span>
+    <span class="au-blob b2"></span>
+    <span class="au-blob b3"></span>
+</div>
+<div class="au-dots"></div>
+
+<div class="au-shell">
+
+    <div class="au-showcase">
+        <div class="au-show-logo"><span class="mark">🎓</span> لرن‌کوئست</div>
+        <div>
+            <div class="au-show-title">سفر یادگیری‌ات را <em>همین حالا</em> شروع کن 🚀</div>
+            <p class="au-show-sub">ثبت‌نام رایگان است؛ از همان روز اول سکه و XP جمع کن و وارد دنیای اول شو.</p>
+            <div class="au-feats">
+                <div class="au-feat"><span class="ic">🎁</span> جایزهٔ ورود روزانه و استریک</div>
+                <div class="au-feat"><span class="ic">📘</span> گرامر درسبه‌درس از Grammar in Use</div>
+                <div class="au-feat"><span class="ic">🐾</span> پت مجازی که با تو بزرگ می‌شه</div>
+                <div class="au-feat"><span class="ic">🎫</span> درس‌های ویژه با بلیط فروشگاه</div>
+            </div>
+        </div>
+        <div class="au-show-stats">
+            <div class="au-show-stat"><b>رایگان</b><small>ثبت‌نام</small></div>
+            <div class="au-show-stat"><b>۲۴/۷</b><small>دسترسی</small></div>
+            <div class="au-show-stat"><b>فارسی</b><small>رابط کاربری</small></div>
+        </div>
+    </div>
+
+    <div class="au-formside">
+        <div class="au-badge">🚀</div>
+        <h1 class="au-h1">ساخت <span class="gt">حساب جدید</span></h1>
+        <p class="au-sub">فقط چند ثانیه وقت می‌گیره ⚡</p>
+
         {% if messages %}
         <div class="au-flash">
             {% for message in messages %}
@@ -390,89 +228,55 @@
         </div>
         {% endif %}
 
-<div class="au-wrap">
-    <span class="au-mesh"></span>
-    <span class="au-orb o1"></span>
-    <span class="au-orb o2"></span>
-    <span class="au-orb o3"></span>
-
-    <div class="au-card">
-        <div class="au-brand">
-            <span class="au-badge">✨</span>
-            <h2>بشو <span class="au-gt">قهرمان</span> لرن کویست 🚀</h2>
-            <p>چند ثانیه‌ای وقت می‌گیره؛ بعدش یادگیری بازی می‌شه</p>
-        </div>
-
-        {% if form.errors %}
-        <div class="au-banner">⚠️ لطفاً خطاهای مشخص‌شده را اصلاح کنید</div>
-        {% endif %}
-
-        <form method="post" class="au-form" novalidate>
+        <form method="post" novalidate>
             {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
 
             <label class="au-field">
-                <span class="au-ico">👤</span>
-                <input type="text" name="username" placeholder=" "
-                       value="{{ form.username.value|default:'' }}" required autocomplete="username">
-                <span class="au-lbl">نام کاربری</span>
+                <span class="ico">👤</span>
+                <input type="text" name="username" placeholder="نام کاربری" value="{{ form.username.value|default:'' }}" required autocomplete="username">
             </label>
-            {% if form.username.errors %}
-                <div class="au-err">⚠️ {{ form.username.errors.0 }}</div>
-            {% endif %}
+            {% if form.username.errors %}<div class="au-err">⚠️ {{ form.username.errors.0 }}</div>{% endif %}
 
             <label class="au-field">
-                <span class="au-ico">✉️</span>
-                <input type="email" name="email" placeholder=" " dir="ltr"
-                       value="{{ form.email.value|default:'' }}" required autocomplete="email">
-                <span class="au-lbl">آدرس ایمیل</span>
+                <span class="ico">✉️</span>
+                <input type="email" name="email" placeholder="آدرس ایمیل" dir="ltr" value="{{ form.email.value|default:'' }}" required autocomplete="email">
             </label>
-            {% if form.email.errors %}
-                <div class="au-err">⚠️ {{ form.email.errors.0 }}</div>
-            {% endif %}
+            {% if form.email.errors %}<div class="au-err">⚠️ {{ form.email.errors.0 }}</div>{% endif %}
 
             <label class="au-field">
-                <span class="au-ico">📱</span>
-                <input type="text" name="phone" placeholder=" " dir="ltr"
-                       value="{{ form.phone.value|default:'' }}" autocomplete="tel">
-                <span class="au-lbl">شماره تلفن (اختیاری)</span>
+                <span class="ico">📱</span>
+                <input type="text" name="phone" placeholder="شماره تلفن (اختیاری)" dir="ltr" value="{{ form.phone.value|default:'' }}" autocomplete="tel">
             </label>
-            {% if form.phone.errors %}
-                <div class="au-err">⚠️ {{ form.phone.errors.0 }}</div>
-            {% endif %}
+            {% if form.phone.errors %}<div class="au-err">⚠️ {{ form.phone.errors.0 }}</div>{% endif %}
 
-            <label class="au-field">
-                <span class="au-ico">🔒</span>
-                <input type="password" name="password1" id="auPass1" placeholder=" " required autocomplete="new-password">
-                <span class="au-lbl">رمز عبور</span>
-                <button type="button" class="au-eye" data-for="auPass1" aria-label="نمایش یا پنهان کردن رمز">👁</button>
-            </label>
-            <div class="au-meter" id="auStrBar"><span></span></div>
-            <div class="au-meter-txt" id="auStrTxt"></div>
+            <div class="au-row">
+                <div>
+                    <label class="au-field">
+                        <span class="ico">🔒</span>
+                        <input type="password" name="password1" id="auPass1" placeholder="رمز عبور" required autocomplete="new-password">
+                        <button type="button" class="au-eye" data-for="auPass1" aria-label="نمایش رمز">👁</button>
+                    </label>
+                    <div class="au-meter" id="auStrBar"><span></span></div>
+                    <div class="au-meter-txt" id="auStrTxt"></div>
+                </div>
+                <div>
+                    <label class="au-field">
+                        <span class="ico">🔁</span>
+                        <input type="password" name="password2" id="auPass2" placeholder="تکرار رمز" required autocomplete="new-password">
+                        <button type="button" class="au-eye" data-for="auPass2" aria-label="نمایش رمز">👁</button>
+                    </label>
+                    <div class="au-match" id="auMatch"></div>
+                </div>
+            </div>
+            {% if form.password1.errors %}<div class="au-err">⚠️ {{ form.password1.errors.0 }}</div>{% endif %}
+            {% if form.password2.errors %}<div class="au-err">⚠️ {{ form.password2.errors.0 }}</div>{% endif %}
 
-            <label class="au-field">
-                <span class="au-ico">🔁</span>
-                <input type="password" name="password2" id="auPass2" placeholder=" " required autocomplete="new-password">
-                <span class="au-lbl">تکرار رمز عبور</span>
-                <button type="button" class="au-eye" data-for="auPass2" aria-label="نمایش یا پنهان کردن رمز">👁</button>
-            </label>
-            <div class="au-match" id="auMatch"></div>
-            {% if form.password2.errors %}
-                <div class="au-err">⚠️ {{ form.password2.errors.0 }}</div>
-            {% endif %}
-
-            <button type="submit" class="au-btn">ایجاد حساب کاربری 🎉</button>
+            <button type="submit" class="au-btn">ساخت حساب و شروع 🎮</button>
         </form>
 
         <div class="au-alt">
-            <span>قبلاً حساب داری؟</span>
-            <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">وارد شو 👋</a>
-        </div>
-
-        <div class="au-chips">
-            <span>🎁 جایزهٔ ورود روزانه</span>
-            <span>💬 پیامرسان و دوستان</span>
-            <span>🐾 پت و فروشگاه</span>
+            <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">از قبل حساب داری؟ ورود 👈</a>
         </div>
     </div>
 </div>
@@ -482,7 +286,6 @@
     document.querySelectorAll('.au-eye[data-for]').forEach(function (btn) {
         btn.addEventListener('click', function () {
             const inp = document.getElementById(btn.dataset.for);
-            if (!inp) return;
             const show = inp.type === 'password';
             inp.type = show ? 'text' : 'password';
             btn.textContent = show ? '🙈' : '👁';
@@ -492,54 +295,47 @@
     const p1 = document.getElementById('auPass1');
     const p2 = document.getElementById('auPass2');
     const bar = document.getElementById('auStrBar');
-    const barIn = bar ? bar.querySelector('span') : null;
     const txt = document.getElementById('auStrTxt');
     const match = document.getElementById('auMatch');
-
-    function strength(v) {
-        let s = 0;
-        if (v.length >= 8) s++;
-        if (v.length >= 12) s++;
-        if (/[0-9]/.test(v)) s++;
-        if (/[A-Za-z\u0600-\u06FF]/.test(v)) s++;
-        if (/[^0-9A-Za-z\u0600-\u06FF]/.test(v)) s++;
-        return Math.min(5, s);
-    }
-    const labels = ['', 'خیلی ضعیف 😕', 'ضعیف 🙁', 'متوسط 🙂', 'قوی 💪', 'عالی 🔥'];
-
-    if (p1 && bar && barIn && txt) {
+    if (p1 && bar && txt) {
+        function strength(v) {
+            let s = 0;
+            if (v.length >= 6) s++;
+            if (v.length >= 10) s++;
+            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
+            if (/\d/.test(v)) s++;
+            if (/[^a-zA-Z0-9]/.test(v)) s++;
+            return s;
+        }
         p1.addEventListener('input', function () {
-            if (!p1.value) { bar.classList.remove('show'); txt.classList.remove('show'); return; }
             const s = strength(p1.value);
             bar.classList.add('show');
             txt.classList.add('show');
-            barIn.style.width = (s * 20) + '%';
-            barIn.style.backgroundPosition = ((s - 1) * 50) + '% 0';
-            txt.textContent = 'قدرت رمز: ' + labels[s];
+            bar.querySelector('span').style.width = (s * 20) + '%';
+            if (s <= 1) { bar.querySelector('span').style.background = '#ef4444'; txt.textContent = 'خیلی ضعیفه!'; }
+            else if (s <= 2) { bar.querySelector('span').style.background = '#f59e0b'; txt.textContent = 'ضعیف'; }
+            else if (s <= 3) { bar.querySelector('span').style.background = '#eab308'; txt.textContent = 'متوسط'; }
+            else if (s <= 4) { bar.querySelector('span').style.background = '#22c55e'; txt.textContent = 'قوی 💪'; }
+            else { bar.querySelector('span').style.background = '#16a34a'; txt.textContent = 'خیلی قوی 🔥'; }
+            if (p2 && p2.value) check();
         });
     }
-
-    if (p1 && p2 && match) {
+    if (p2 && match) {
         function check() {
             if (!p2.value) { match.classList.remove('show'); return; }
             match.classList.add('show');
-            if (p1.value === p2.value) {
-                match.classList.remove('bad');
-                match.classList.add('ok');
-                match.textContent = '✔ رمزها یکی هستند';
+            if (p2.value === p1.value) {
+                match.classList.remove('bad'); match.classList.add('ok');
+                match.textContent = '✅ رمزها یکی‌ست';
             } else {
-                match.classList.remove('ok');
-                match.classList.add('bad');
-                match.textContent = '✘ رمزها یکی نیستند';
+                match.classList.remove('ok'); match.classList.add('bad');
+                match.textContent = '❌ رمزها یکی نیست';
             }
         }
-        p1.addEventListener('input', check);
         p2.addEventListener('input', check);
+        if (p1) p1.addEventListener('input', check);
     }
 })();
 </script>
-
-</div>
-</div>
 </body>
 </html>

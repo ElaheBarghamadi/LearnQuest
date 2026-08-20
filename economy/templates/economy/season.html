@@ -4,12 +4,64 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/shop.css' %}">
+<style>
+    /* دکمه راهنما */
+    .season-help-btn {
+        position: absolute; top: 16px; left: 18px; z-index: 5;
+        width: 42px; height: 42px; border-radius: 50%;
+        border: 2px solid rgba(255,255,255,.55);
+        background: rgba(255,255,255,.2);
+        color: #fff; font-size: 1.25rem; font-weight: 900; font-family: inherit;
+        cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 6px 18px rgba(185,29,115,.25), inset 0 1px 0 rgba(255,255,255,.4);
+        transition: transform .2s, background .2s, box-shadow .2s;
+    }
+    .season-help-btn:hover { transform: scale(1.1) rotate(8deg); background: rgba(255,255,255,.35); box-shadow: 0 10px 26px rgba(185,29,115,.35); }
+
+    /* مودال */
+    .season-modal-overlay {
+        position: fixed; inset: 0; z-index: 9500;
+        background: rgba(18,22,48,.55);
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        display: none; align-items: center; justify-content: center; padding: 18px;
+    }
+    .season-modal-overlay.open { display: flex; }
+    .season-modal {
+        position: relative; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto;
+        background: rgba(255,255,255,.95);
+        backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 24px; padding: 26px 26px 24px;
+        box-shadow: 0 30px 80px rgba(10,14,40,.35), inset 0 1px 0 rgba(255,255,255,.95);
+        animation: smPop .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes smPop { from { transform: scale(.92) translateY(14px); opacity: 0; } }
+    .season-modal-x {
+        position: absolute; top: 14px; left: 14px;
+        width: 32px; height: 32px; border-radius: 50%;
+        border: none; background: #f1f5f9; color: #64748b;
+        font-size: .95rem; cursor: pointer; transition: .15s;
+    }
+    .season-modal-x:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
+    .season-modal-head {
+        font-size: 1.15rem; font-weight: 900; color: #1e293b;
+        margin-bottom: 16px; padding-bottom: 12px;
+        border-bottom: 2px solid rgba(232,163,61,.3);
+    }
+    .sm-sec { margin-bottom: 15px; }
+    .sm-sec b { display: block; font-size: .86rem; color: #1e293b; margin-bottom: 4px; }
+    .sm-sec p { font-size: .79rem; color: #64748b; line-height: 2; margin: 0; }
+    .sm-sec .tag { font-size: .68rem; font-weight: 800; padding: 2px 9px; border-radius: 99px; }
+    .sm-sec .tag.free { background: rgba(30,168,154,.12); color: #0f766e; }
+    .sm-sec .tag.prem { background: rgba(232,163,61,.16); color: #92600a; }
+</style>
 {% endblock %}
 
 {% block content %}
 <div class="lq-wrap">
 {% if season %}
-    <div class="lq-hero sakura">
+    <div class="lq-hero sakura" style="position:relative">
+        <button type="button" class="season-help-btn" id="seasonHelpBtn" title="راهنمای فصل" aria-label="راهنمای فصل">؟</button>
         <h1>{{ season.emoji }} {{ season.name }}</h1>
         <p>{{ season.description }}</p>
         <div class="lq-hero-stats">
@@ -103,10 +155,51 @@
 </div>
 {% endif %}
 </div>
+
+{% if season %}
+<!-- مودال راهنمای فصل -->
+<div class="season-modal-overlay" id="seasonModal">
+    <div class="season-modal">
+        <button class="season-modal-x" id="seasonModalX" type="button" aria-label="بستن">✕</button>
+        <div class="season-modal-head">🌸 راهنمای فصل</div>
+        <div class="season-modal-body">
+            <div class="sm-sec">
+                <b>۱) XP فصل چطور جمع می‌شود؟</b>
+                <p>هر XP که از درس‌ها، کوئیزها، بازی‌ها و جایزهٔ روزانه می‌گیری، هم‌زمان به <b>XP فصل</b> هم اضافه می‌شود. با هر پله که بالا می‌روی، جایزه‌ات را بردار.</p>
+            </div>
+            <div class="sm-sec">
+                <b>۲) ردیف رایگان و ویژه چیست؟</b>
+                <p>هر پله دو جایزه دارد: <span class="tag free">🎁 رایگان</span> برای همه، و <span class="tag prem">👑 ویژه</span> فقط برای دارندگان <b>سیزن‌پس</b>. ردیف رایگان همیشه در دسترس است؛ ردیف ویژه با خرید پس باز می‌شود.</p>
+            </div>
+            <div class="sm-sec">
+                <b>۳) سیزن‌پس چطور تهیه کنم؟</b>
+                <p>از همین صفحه دکمهٔ «خرید سیزن‌پس» را بزن (با الماس 💎). با یک بار خرید، تمام ردیف‌های ویژهٔ فصل برای همیشه باز می‌شود.</p>
+            </div>
+            <div class="sm-sec">
+                <b>۴) اگر فصل تمام شود؟</b>
+                <p>XP فصلِ جدید از صفر شروع می‌شود و جوایز پله‌های نگرفته‌شده از بین می‌روند — پس قبل از پایان فصل، همهٔ پله‌های باز را کلایم کن! ⏰</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}
 <script>
+/* مودال راهنمای فصل */
+(function () {
+    var btn = document.getElementById('seasonHelpBtn');
+    var modal = document.getElementById('seasonModal');
+    var x = document.getElementById('seasonModalX');
+    if (btn && modal) {
+        btn.addEventListener('click', function () { modal.classList.add('open'); });
+        x.addEventListener('click', function () { modal.classList.remove('open'); });
+        modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('open'); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') modal.classList.remove('open'); });
+    }
+})();
+
 document.querySelectorAll('.claim-btn').forEach(btn => {
     btn.onclick = () => {
         btn.disabled = true;
