@@ -370,7 +370,24 @@ def _build_ticket_product(world, lesson, price=400):
 # ---------------------------------------------------------------
 # MAIN
 # ---------------------------------------------------------------
+def _check_migrations():
+    """اگر مهاجرت‌های pending وجود داشت، پیام واضح بده و خارج شو."""
+    from django.db import connections
+    from django.db.migrations.executor import MigrationExecutor
+    executor = MigrationExecutor(connections['default'])
+    plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
+    if plan:
+        print('⚠️  ابتدا مهاجرت‌ها را اعمال کنید:')
+        print('    uv run python manage.py migrate')
+        print('    (یا: python manage.py migrate)')
+        print('سپس دوباره این اسکریپت را اجرا کنید.')
+        for migration, _backwards in plan[:8]:
+            print(f'    - {migration.app_label}.{migration.name}')
+        raise SystemExit(1)
+
+
 def main():
+    _check_migrations()
     print('🚀 شروع پر کردن کامل آکادمی…')
     print('=' * 60)
 
