@@ -328,30 +328,31 @@
 
         .nav-dd .nav-dd-menu {
             position: absolute;
-            top: calc(100% + 10px);
+            top: calc(100% + 12px);
             right: 50%;
-            transform: translateX(50%) translateY(8px);
-            min-width: 200px;
-            background: rgba(255, 255, 255, 0.82);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            transform: translateX(50%) translateY(10px) scale(.97);
+            min-width: 225px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(24px) saturate(170%);
+            -webkit-backdrop-filter: blur(24px) saturate(170%);
             border: 1px solid rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 14px 34px rgba(23, 32, 51, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.95);
-            padding: 8px;
+            border-radius: 18px;
+            box-shadow: 0 20px 50px rgba(23, 32, 51, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+            padding: 9px;
             display: flex;
             flex-direction: column;
             opacity: 0;
             visibility: hidden;
-            transition: 0.18s ease;
+            transition: 0.22s cubic-bezier(.22,1,.36,1);
             z-index: 1200;
+            transform-origin: top center;
         }
 
         .nav-dd:hover .nav-dd-menu,
         .nav-dd:focus-within .nav-dd-menu {
             opacity: 1;
             visibility: visible;
-            transform: translateX(50%) translateY(0);
+            transform: translateX(50%) translateY(0) scale(1);
         }
 
         .nav-dd-menu .dd-cap {
@@ -362,12 +363,17 @@
         }
 
         .nav-dd-menu a {
-            padding: 8px 13px;
-            border-radius: 10px;
+            padding: 9px 13px;
+            border-radius: 11px;
             font-size: 0.8rem;
             font-weight: 600;
             color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            transition: background .15s, color .15s, transform .15s;
         }
+        .nav-dd-menu a:hover { transform: translateX(-3px); }
 
         .nav-dd-menu a:hover {
             background: linear-gradient(135deg, rgba(76, 155, 248, 0.12), rgba(29, 78, 216, 0.12));

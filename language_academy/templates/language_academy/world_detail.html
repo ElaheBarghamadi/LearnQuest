@@ -54,7 +54,14 @@
     .wd-layout { display: grid; grid-template-columns: 1fr 320px; gap: 26px; align-items: start; }
     @media (max-width: 991px) { .wd-layout { grid-template-columns: 1fr; } }
 
-    .wd-chapters { display: flex; flex-direction: column; gap: 12px; }
+    .wd-chapters { display: flex; flex-direction: column; gap: 0; position: relative; }
+    .wd-chapters::before {
+        content: ''; position: absolute; top: 30px; bottom: 30px; right: 38px;
+        width: 2px;
+        background: linear-gradient(180deg, rgba(30,168,154,.4), rgba(30,168,154,.08));
+        border-radius: 2px;
+    }
+    .wd-chapter { margin-bottom: 14px; position: relative; }
     .wd-chapter {
         display: flex; align-items: center; gap: 16px;
         background: rgba(255,255,255,.75);
@@ -123,6 +130,7 @@
     .tips-goal p { line-height: 1.9; max-width: 240px; margin-left: auto; margin-right: auto; }
 
     @media (max-width: 640px) {
+        .wd-chapters::before { display: none; }
         .wd-hero .in { padding: 70px 16px 16px; }
         .wd-hero .emoji { font-size: 2rem; }
         .wd-progress-card { min-width: 100%; }

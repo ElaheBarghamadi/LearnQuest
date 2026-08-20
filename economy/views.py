@@ -37,8 +37,15 @@ def leaderboard_view(request):
         period = 'global'
     rows = list(get_leaderboard(period, 50))
     my_xp = request.user.xp
+    # رتبهٔ کاربر در همین بازه
+    my_rank = None
+    for i, r in enumerate(rows, start=1):
+        if r.get('username') == request.user.username:
+            my_rank = i
+            break
     return render(request, 'economy/leaderboard.html', {
-        'title': 'جدول امتیازات 🏆', 'rows': rows, 'period': period, 'my_xp': my_xp,
+        'title': 'جدول امتیازات 🏆', 'rows': rows, 'period': period,
+        'my_xp': my_xp, 'my_rank': my_rank,
     })
 
 
