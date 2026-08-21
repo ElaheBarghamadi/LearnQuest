@@ -212,14 +212,14 @@
    ============================================================ */
 .mg-article { max-width: 960px; margin: 0 auto; }
 .mg-crumb {
-    display: flex; gap: 5px; align-items: center;
-    font-size: 10px; color: #c9d0e2; margin-bottom: 14px; flex-wrap: wrap;
-    opacity: .75; letter-spacing: .1px;
+    display: flex; gap: 4px; align-items: center;
+    font-size: 9px; color: #d4d9ea; margin-bottom: 12px; flex-wrap: wrap;
+    opacity: .55; letter-spacing: .1px;
 }
-.mg-crumb a { color: #a5aec8; font-weight: 500; text-decoration: none; transition: color .15s; }
+.mg-crumb a { color: #b7bfd6; font-weight: 400; text-decoration: none; transition: color .15s; }
 .mg-crumb a:hover { color: #0f766e; }
-.mg-crumb .sep { color: #d8ddee; font-size: 8px; }
-.mg-crumb span:last-child { color: #b6bdd6; font-weight: 400; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-crumb .sep { color: #dde1ef; font-size: 7px; }
+.mg-crumb span:last-child { color: #c6cdde; font-weight: 400; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mg-cat-badge { display: inline-block; font-size: 12.5px; font-weight: 800; color: #0f766e; background: rgba(30,168,154,.1); border: 1px solid rgba(30,168,154,.22); padding: 6px 15px; border-radius: 99px; margin-bottom: 16px; text-decoration: none; }
 .mg-art-title { font-size: clamp(24px, 3.6vw, 38px); font-weight: 900; line-height: 1.5; letter-spacing: -.4px; color: #1e293b; margin: 0 0 14px; }
 .mg-art-sub { font-size: 15px; color: #64748b; line-height: 2; margin-bottom: 24px; }
@@ -350,10 +350,11 @@
     .c-item { padding: 13px 2px; gap: 9px; }
     .c-avatar { width: 34px; height: 34px; font-size: 13px; }
     .c-text { font-size: 12.8px; }
-    .mg-crumb { font-size: 9px; margin-bottom: 10px; gap: 3px; opacity: .6; }
+    .mg-crumb { font-size: 8px; margin-bottom: 8px; gap: 2px; opacity: .3; }
     .mg-crumb span:last-child { display: none; }
-    .mg-crumb a:first-child::before { content: '‹ '; }
+    .mg-crumb a:first-child::before { content: '‹ '; font-size: 9px; }
     .mg-crumb a:not(:first-child) { display: none; }
+    .mg-crumb a { padding: 3px 7px; border-radius: 99px; background: rgba(148,163,184,.08); }
     .mg-hero { padding: 26px 4px 4px; }
     .mg-hero h1 { font-size: 24px; }
     .mg-hero-sub { font-size: 13.5px; margin-bottom: 18px; }
