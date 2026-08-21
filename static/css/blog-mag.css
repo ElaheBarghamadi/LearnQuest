@@ -210,7 +210,7 @@
 /* ============================================================
    Article (single) page
    ============================================================ */
-.mg-article { max-width: 960px; margin: 0 auto; }
+.mg-article { max-width: none; margin: 0 auto; }
 .mg-crumb {
     display: flex; gap: 4px; align-items: center;
     font-size: 9px; color: #d4d9ea; margin-bottom: 12px; flex-wrap: wrap;
@@ -221,24 +221,28 @@
 .mg-crumb .sep { color: #dde1ef; font-size: 7px; }
 .mg-crumb span:last-child { color: #c6cdde; font-weight: 400; max-width: 110px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mg-cat-badge { display: inline-block; font-size: 12.5px; font-weight: 800; color: #0f766e; background: rgba(30,168,154,.1); border: 1px solid rgba(30,168,154,.22); padding: 6px 15px; border-radius: 99px; margin-bottom: 16px; text-decoration: none; }
-.mg-art-title { font-size: clamp(24px, 3.6vw, 38px); font-weight: 900; line-height: 1.5; letter-spacing: -.4px; color: #1e293b; margin: 0 0 14px; }
+.mg-art-title { font-size: clamp(24px, 4.2vw, 44px); font-weight: 900; line-height: 1.45; letter-spacing: -.5px; color: #1e293b; margin: 0 0 14px; }
 .mg-art-sub { font-size: 15px; color: #64748b; line-height: 2; margin-bottom: 24px; }
 .mg-art-meta { display: flex; align-items: center; gap: 16px; font-size: 12.5px; color: #94a3b8; font-weight: 600; flex-wrap: wrap; padding-bottom: 20px; border-bottom: 1px dashed rgba(148,163,184,.4); margin-bottom: 26px; }
 .mg-art-meta span { display: inline-flex; align-items: center; gap: 5px; }
 .mg-art-meta svg { width: 15px; height: 15px; }
-.mg-art-cover { position: relative; border-radius: 22px; overflow: hidden; margin-bottom: 30px; box-shadow: 0 18px 48px rgba(28,32,64,.16); border: 1px solid rgba(255,255,255,.9); min-height: 200px; background: linear-gradient(135deg,#d9f0ea,#eef6f1 55%,#fdf6e8); }
-.mg-art-cover img { width: 100%; max-height: 440px; object-fit: cover; display: block; }
+.mg-art-cover { position: relative; border-radius: 24px; overflow: hidden; margin-bottom: 26px; box-shadow: 0 18px 48px rgba(28,32,64,.16); border: 1px solid rgba(255,255,255,.9); min-height: 240px; background: linear-gradient(135deg,#d9f0ea,#eef6f1 55%,#fdf6e8); }
+.mg-art-cover img { width: 100%; max-height: 480px; object-fit: cover; display: block; }
 .mg-art-cover::before { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle at 25% 25%, rgba(30,168,154,.2), transparent 45%), radial-gradient(circle at 78% 72%, rgba(232,163,61,.18), transparent 38%); pointer-events: none; }
 
 .mg-prose {
-    font-size: 15.5px; line-height: 2.15; color: #334155;
-    background: rgba(255,255,255,.92);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,.95);
-    border-radius: 22px;
-    padding: 30px 34px;
-    box-shadow: 0 10px 34px rgba(28,32,64,.08), inset 0 1px 0 rgba(255,255,255,.95);
+    font-size: 16.5px; line-height: 2.2; color: #2d3445;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    border: 1px solid #eef0f8;
+    border-radius: 24px;
+    padding: 38px clamp(20px, 5vw, 64px) 44px;
+    box-shadow: 0 14px 44px rgba(28,32,64,.10);
+    position: relative;
+}
+.mg-prose::before {
+    content: ''; position: absolute; top: 0; right: 0; left: 0; height: 4px;
+    background: linear-gradient(90deg, #1ea89a, #36D1DC, #e8a33d);
+    border-radius: 24px 24px 0 0;
 }
 .mg-prose p { margin-bottom: 18px; }
 .mg-prose h2 { margin-top: 8px; }
@@ -250,6 +254,16 @@
 .mg-prose blockquote { border-inline-start: 4px solid #1ea89a; background: rgba(30,168,154,.07); border-radius: 0 12px 12px 0; padding: 14px 18px; margin: 20px 0; color: #475569; }
 .mg-prose img { max-width: 100%; border-radius: 14px; }
 .mg-prose code { background: rgba(30,168,154,.1); color: #0f766e; padding: 2px 7px; border-radius: 6px; font-size: .88em; direction: ltr; display: inline-block; }
+.mg-prose table { width: 100%; border-collapse: collapse; margin: 20px 0; border-radius: 12px; overflow: hidden; }
+.mg-prose th { background: #eef2ff; color: #3730a3; font-weight: 800; padding: 10px 14px; text-align: right; font-size: .85em; }
+.mg-prose td { padding: 9px 14px; border-bottom: 1px solid #eef0f8; font-size: .92em; }
+.mg-prose tr:hover td { background: #fafbff; }
+.mg-prose .tip, .mg-prose .note, .mg-prose .warn, .mg-prose blockquote {
+    border-inline-start: 4px solid #1ea89a; background: rgba(30,168,154,.08);
+    border-radius: 0 14px 14px 0; padding: 14px 18px; margin: 22px 0; color: #3d4458;
+}
+.mg-prose .note { border-inline-start-color: #3b82f6; background: rgba(59,130,246,.07); }
+.mg-prose .warn { border-inline-start-color: #e8a33d; background: rgba(232,163,61,.09); }
 .mg-prose pre { background: #0f172a; color: #e2e8f0; border-radius: 14px; padding: 16px 18px; overflow-x: auto; direction: ltr; text-align: left; margin: 20px 0; }
 .mg-prose pre code { background: none; color: inherit; padding: 0; }
 
@@ -269,15 +283,23 @@
 .mg-act .cnt { font-weight: 900; }
 
 /* comments (keeps blog.js hooks) */
-.mg-comments { margin-top: 8px; }
+.mg-comments {
+    margin-top: 12px;
+    background: rgba(255,255,255,.88);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #eef0f8; border-radius: 24px;
+    padding: 24px clamp(16px, 4vw, 44px) 20px;
+    box-shadow: 0 10px 34px rgba(28,32,64,.07);
+}
 .mg-comments-title { display: flex; align-items: center; gap: 9px; font-size: 17px; font-weight: 900; color: #1e293b; margin-bottom: 20px; }
 .mg-comments-title .cc-badge { background: rgba(30,168,154,.12); color: #0f766e; font-size: 11.5px; padding: 3px 11px; border-radius: 99px; }
 .c-form {
-    background: rgba(255,255,255,.7); backdrop-filter: blur(14px);
-    border: 1px solid rgba(255,255,255,.9); border-radius: 18px;
-    padding: 16px; margin-bottom: 26px;
-    box-shadow: 0 8px 26px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.9);
+    background: rgba(255,255,255,.85); backdrop-filter: blur(14px);
+    border: 1px solid #eef0f8; border-radius: 18px;
+    padding: 16px 18px; margin-bottom: 22px;
+    box-shadow: 0 10px 30px rgba(28,32,64,.08);
 }
+.c-form:focus-within { border-color: rgba(30,168,154,.4); }
 .c-form-row { display: flex; gap: 11px; align-items: flex-start; }
 .c-form-ava { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, #1ea89a, #e8a33d); color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 14px; }
 .c-form textarea { flex: 1; min-height: 74px; border: none; outline: none; background: none; font-family: inherit; font-size: 14px; color: #334155; resize: vertical; line-height: 1.9; }
@@ -297,9 +319,19 @@
 .login-hint a { color: #0f766e; font-weight: 800; }
 
 /* comment item (single_comment.html classes) */
-.c-list { display: flex; flex-direction: column; gap: 4px; }
-.c-item { display: flex; gap: 12px; padding: 16px 4px; border-bottom: 1px dashed rgba(148,163,184,.35); }
+.c-list { display: flex; flex-direction: column; gap: 6px; }
+.c-item {
+    display: flex; gap: 12px; padding: 14px 16px;
+    background: rgba(255,255,255,.7);
+    border: 1px solid #eef0f8; border-radius: 15px;
+    box-shadow: 0 3px 12px rgba(28,32,64,.05);
+    transition: border-color .15s;
+}
+.c-item:hover { border-color: rgba(30,168,154,.3); }
 .c-item:last-child { border-bottom: none; }
+/* پاسخ‌ها — تودرتو با خط اتصال */
+.c-replies { margin-top: 8px; padding-inline-start: 14px; border-inline-start: 2px solid rgba(30,168,154,.18); }
+.c-replies .c-item { background: rgba(248,250,255,.7); border-radius: 12px; padding: 11px 13px; }
 .c-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1ea89a, #e8a33d); color: #fff; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; overflow: hidden; }
 .c-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .c-main { flex: 1; min-width: 0; }
@@ -335,7 +367,7 @@
 @media (max-width: 640px) {
     .mg-shell { padding: 2px 12px 40px; }
     .mg-related-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
-    .mg-prose { padding: 18px 15px; border-radius: 16px; font-size: 14.5px; }
+    .mg-prose { padding: 20px 15px 26px; border-radius: 16px; font-size: 15px; line-height: 2.1; }
     .mg-prose h2 { font-size: 19px; }
     .mg-art-cover { margin-bottom: 16px; border-radius: 14px; min-height: 120px; }
     .mg-art-title { font-size: 21px; line-height: 1.6; margin-bottom: 10px; }

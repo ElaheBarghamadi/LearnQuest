@@ -2,6 +2,38 @@
 {% block title %}{{ title }} | CMS{% endblock %}
 {% block page_title %}{{ title }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .be-toolbar {
+        display: flex; flex-wrap: wrap; gap: 5px;
+        background: #f6f7ff; border: 1px solid #e2e8f0; border-bottom: none;
+        border-radius: 14px 14px 0 0; padding: 8px 10px;
+    }
+    .be-toolbar .tb {
+        display: inline-flex; align-items: center; gap: 4px;
+        border: 1px solid #d5daf0; background: #fff; color: #41477a;
+        font-family: inherit; font-size: .76rem; font-weight: 700;
+        padding: 5px 10px; border-radius: 9px; cursor: pointer; transition: .14s;
+    }
+    .be-toolbar .tb:hover { border-color: #6C63FF; color: #6C63FF; transform: translateY(-1px); }
+    .be-toolbar .tb.h { background: #fff; }
+    .be-toolbar .sep { width: 1px; background: #e2e8f0; margin: 2px 3px; }
+    .be-area {
+        border: 1px solid #e2e8f0; border-radius: 0 0 14px 14px;
+        background: #fff;
+    }
+    .be-area textarea {
+        width: 100%; min-height: 320px; border: none; outline: none; resize: vertical;
+        font-family: inherit; font-size: .9rem; line-height: 1.9; padding: 14px 16px;
+        color: #2d3445; background: transparent;
+    }
+    .be-hint { font-size: .72rem; color: #94a3b8; margin-top: 6px; line-height: 1.8; }
+    .be-hint code { background: #eef0fa; color: #4F46E5; padding: 1px 6px; border-radius: 5px; font-size: .85em; }
+    .be-prev { border: 1.5px dashed #e2e8f0; border-radius: 12px; padding: 8px; text-align: center; background: #f8fafc; margin-top: 8px; }
+    .be-prev img { max-height: 130px; border-radius: 8px; max-width: 100%; }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="row">
     <div class="col-lg-8">
@@ -9,40 +41,70 @@
             <div class="card-header"><h5 class="mb-0">{{ title }}</h5></div>
             <div class="card-body">
                 {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
-                <form method="post" enctype="multipart/form-data">
+                <form method="post" enctype="multipart/form-data" id="blogForm">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label class="form-label">عنوان *</label>
                         {{ form.title }}{{ form.title.errors }}
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">اسلاگ (اتوماتیک اگر خالی بماند)</label>
-                        {{ form.slug }}{{ form.slug.errors }}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">دسته‌بندی *</label>
+                            {{ form.category }}{{ form.category.errors }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">تاریخ انتشار</label>
+                            {{ form.published_at }}
+                        </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-3 mt-3">
                         <label class="form-label">خلاصه *</label>
                         {{ form.excerpt }}{{ form.excerpt.errors }}
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">متن کامل مقاله *</label>
-                        {{ form.content }}{{ form.content.errors }}
-                        <small class="text-muted">پاراگراف‌ها با Enter جدا می‌شوند.</small>
+                        <label class="form-label">تصویر شاخص</label>
+                        {{ form.image }}{{ form.image.errors }}
+                        {% if article.image %}
+                        <div class="be-prev"><img src="{{ article.image.url }}" alt="preview"></div>
+                        {% endif %}
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">تصویر شاخص</label>
-                            {{ form.image }}{{ form.image.errors }}
-                            {% if article.image %}<div class="mt-2"><img src="{{ article.image.url }}" style="max-height:120px;border-radius:10px;"></div>{% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label">متن کامل مقاله * — <small class="text-muted">با دکمه‌ها تگ آماده بگذار</small></label>
+                        <div class="be-toolbar" id="beToolbar">
+                            <button type="button" class="tb h" data-tag="h2" title="تیتر"><b>H2</b> تیتر</button>
+                            <button type="button" class="tb h" data-tag="h3" title="زیرتیتر"><b>H3</b> زیرتیتر</button>
+                            <span class="sep"></span>
+                            <button type="button" class="tb" data-tag="b" title="متن ضخیم"><b>B</b> ضخیم</button>
+                            <button type="button" class="tb" data-tag="i" title="ایتالیک"><i>I</i> کج</button>
+                            <button type="button" class="tb" data-tag="u" title="زیرخط"><u>U</u> زیرخط</button>
+                            <button type="button" class="tb" data-tag="mark" title="هایلایت">🖍 هایلایت</button>
+                            <span class="sep"></span>
+                            <button type="button" class="tb" data-tag="ul" title="لیست">• لیست</button>
+                            <button type="button" class="tb" data-tag="ol" title="لیست شماره‌دار">1. لیست</button>
+                            <button type="button" class="tb" data-tag="li" title="آیتم لیست">– آیتم</button>
+                            <span class="sep"></span>
+                            <button type="button" class="tb" data-tag="blockquote" title="نقل‌قول">❝ نقل‌قول</button>
+                            <button type="button" class="tb" data-tag="tip" title="نکته">💡 نکته</button>
+                            <button type="button" class="tb" data-tag="note" title="یادداشت">📝 یادداشت</button>
+                            <button type="button" class="tb" data-tag="warn" title="هشدار">⚠️ هشدار</button>
+                            <span class="sep"></span>
+                            <button type="button" class="tb" data-tag="code" title="کد">⟨/⟩ کد</button>
+                            <button type="button" class="tb" data-tag="table" title="جدول">▦ جدول</button>
+                            <span class="sep"></span>
+                            <button type="button" class="tb" id="beImg" title="درج عکس (آپلود)">🖼 عکس</button>
+                            <input type="file" id="beImgInput" accept="image/*" style="display:none">
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">دسته‌بندی *</label>
-                            {{ form.category }}{{ form.category.errors }}
-                            <div class="mt-2">
-                                <label class="form-label">تاریخ انتشار</label>
-                                {{ form.published_at }}
-                            </div>
+                        <div class="be-area">{{ form.content }}</div>
+                        <div class="be-hint">
+                            دکمه‌ها تگ آماده می‌سازند. نمونه: <code>&lt;h2&gt;تیتر&lt;/h2&gt;</code> ·
+                            <code>&lt;b&gt;متن ضخیم&lt;/b&gt;</code> · <code>&lt;mark&gt;هایلایت&lt;/mark&gt;</code> ·
+                            <code>&lt;div class="tip"&gt;نکته&lt;/div&gt;</code> ·
+                            <code>&lt;table&gt;...&lt;/table&gt;</code> — عکس با دکمهٔ 🖼 مستقیم آپلود و درج می‌شود.
                         </div>
+                        {{ form.content.errors }}
                     </div>
+
                     <div class="form-check mb-3">
                         {{ form.is_featured }}
                         <label class="form-check-label">⭐ مقالهٔ ویژه (در بالای بلاگ و لندینگ نمایش داده می‌شود)</label>
@@ -69,10 +131,80 @@
             </div>
         </div>
         {% if article %}
-        <div class="card"><div class="card-body small text-muted">
+        <div class="card mb-3"><div class="card-body small text-muted">
             <b>آمار مقاله:</b><br>👁 {{ article.views }} بازدید · ❤ {{ article.likes }} لایک · 💬 {{ article.comments.count }} نظر
         </div></div>
+        <div class="card">
+            <div class="card-header"><h6 class="mb-0"><i class="fas fa-eye me-2"></i>پیش‌نمایش</h6></div>
+            <div class="card-body">
+                <a href="{{ article.get_absolute_url }}" target="_blank" class="btn btn-outline-success w-100">مشاهدهٔ مقاله در سایت ↗</a>
+            </div>
+        </div>
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+    var area = document.querySelector('.be-area textarea');
+    if (!area) return;
+
+    function wrap(before, after) {
+        var s = area.selectionStart, e = area.selectionEnd;
+        var sel = area.value.slice(s, e) || 'متن';
+        area.value = area.value.slice(0, s) + before + sel + after + area.value.slice(e);
+        area.focus();
+        area.selectionStart = s + before.length;
+        area.selectionEnd = s + before.length + sel.length;
+    }
+
+    document.querySelectorAll('#beToolbar .tb[data-tag]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var t = btn.dataset.tag;
+            var map = {
+                h2: ['<h2>', '</h2>'], h3: ['<h3>', '</h3>'],
+                b: ['<b>', '</b>'], i: ['<i>', '</i>'], u: ['<u>', '</u>'], mark: ['<mark>', '</mark>'],
+                blockquote: ['<blockquote>', '</blockquote>'],
+                code: ['<code>', '</code>'],
+                li: ['<li>', '</li>'],
+                tip: ['<div class="tip">💡 ', '</div>'],
+                note: ['<div class="note">📝 ', '</div>'],
+                warn: ['<div class="warn">⚠️ ', '</div>'],
+                ul: ['<ul>\n<li>', '</li>\n</ul>'],
+                ol: ['<ol>\n<li>', '</li>\n</ol>'],
+                table: ['<table>\n<tr><th>ستون ۱</th><th>ستون ۲</th></tr>\n<tr><td>مقدار</td><td>مقدار</td></tr>\n</table>', '']
+            };
+            var m = map[t];
+            if (m) wrap(m[0], m[1]);
+        });
+    });
+
+    // آپلود عکس داخل متن
+    var imgBtn = document.getElementById('beImg');
+    var imgInput = document.getElementById('beImgInput');
+    imgBtn.addEventListener('click', function () { imgInput.click(); });
+    imgInput.addEventListener('change', function () {
+        var f = imgInput.files && imgInput.files[0];
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) { alert('حداکثر ۵ مگابایت'); return; }
+        var fd = new FormData();
+        fd.append('file', f);
+        fetch('{% url "admin_cms:blog_image_upload" %}', {
+            method: 'POST', body: fd,
+            headers: {'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value}
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+            if (d.ok) {
+                wrap('<img src="' + d.url + '" alt="" style="max-width:100%;border-radius:12px">', '');
+                imgInput.value = '';
+            } else { alert(d.error || 'خطا در آپلود'); }
+        })
+        .catch(function () { alert('خطای اتصال'); });
+    });
+})();
+</script>
 {% endblock %}

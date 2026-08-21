@@ -1453,6 +1453,29 @@ def blog_article_create(request):
 
 
 @staff_member_required
+@require_POST
+def blog_image_upload(request):
+    """آپلود عکس داخل متن مقاله — با AJAX از ویرایشگر."""
+    file = request.FILES.get('file')
+    if not file:
+        return JsonResponse({'ok': False, 'error': 'no_file'}, status=400)
+    if file.size > 5 * 1024 * 1024:
+        return JsonResponse({'ok': False, 'error': 'too_large'}, status=400)
+    content_type = (getattr(file, 'content_type', '') or '').lower()
+    ext = os.path.splitext(file.name or '')[1].lower()
+    if not content_type.startswith('image/') or ext not in ('.png', '.jpg', '.jpeg', '.webp', '.gif'):
+        return JsonResponse({'ok': False, 'error': 'bad_type'}, status=400)
+
+    from django.core.files.storage import default_storage
+    from django.conf import settings as dj_settings
+    import uuid as _uuid
+    fname = f'blog_inline_{_uuid.uuid4().hex[:10]}{ext}'
+    rel = f'blog_images/{fname}'
+    default_storage.save(rel, file)
+    return JsonResponse({'ok': True, 'url': dj_settings.MEDIA_URL + rel})
+
+
+@staff_member_required
 def blog_article_edit(request, article_id):
     article = get_object_or_404(BlogArticle, id=article_id)
     if request.method == 'POST':
