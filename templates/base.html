@@ -646,20 +646,19 @@
             position: fixed;
             top: 0;
             right: -105%;
-            width: 315px;
-            max-width: 88vw;
+            width: 272px;
+            max-width: 82vw;
             height: 100vh;
             height: 100dvh;
-            background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(246,249,255,0.82) 100%);
-            backdrop-filter: blur(26px) saturate(170%);
-            -webkit-backdrop-filter: blur(26px) saturate(170%);
-            box-shadow: -18px 0 60px rgba(23, 32, 51, 0.18), inset 1px 0 0 rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(22px) saturate(170%);
+            -webkit-backdrop-filter: blur(22px) saturate(170%);
+            box-shadow: -14px 0 46px rgba(23, 32, 51, 0.16), inset 1px 0 0 rgba(255,255,255,0.9);
             z-index: 1003;
-            transition: right 0.32s cubic-bezier(0.3, 0.9, 0.3, 1);
+            transition: right 0.3s cubic-bezier(0.3, 0.9, 0.3, 1);
             display: flex;
             flex-direction: column;
-            box-shadow: -10px 0 40px rgba(15, 45, 110, 0.22);
-            border-radius: 26px 0 0 26px;
+            border-radius: 20px 0 0 20px;
             overflow: hidden;
         }
 
@@ -670,11 +669,11 @@
         .mobile-hero {
             position: relative;
             background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
-            padding: 16px 16px 18px;
+            padding: 12px 14px 14px;
             color: #fff;
             overflow: hidden;
-            border-radius: 0 0 0 22px;
-            box-shadow: 0 10px 26px rgba(29, 78, 216, 0.25);
+            border-radius: 0 0 0 18px;
+            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.2);
             z-index: 2;
         }
 
@@ -725,15 +724,15 @@
         }
 
         .mobile-avatar {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             background: rgba(255, 255, 255, 0.95);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--primary);
-            font-size: 1.35rem;
+            font-size: 1.05rem;
             font-weight: bold;
             overflow: hidden;
             flex: 0 0 auto;
@@ -762,21 +761,19 @@
             display: flex;
             flex-wrap: nowrap;
             gap: 4px;
-            font-size: 0.62rem;
+            font-size: 0.6rem;
         }
 
         .mobile-stats > div,
         .mobile-stats > a {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.28);
             color: #fff;
-            padding: 3px 7px;
+            padding: 2px 6px;
             border-radius: 999px;
             font-weight: 700;
             text-decoration: none;
             white-space: nowrap;
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
         }
 
         .mobile-links {
@@ -790,14 +787,14 @@
         }
 
         .mobile-group {
-            font-size: 0.62rem;
+            font-size: 0.6rem;
             font-weight: 800;
-            color: #8b90b8;
-            padding: 12px 20px 6px;
+            color: #9aa0c4;
+            padding: 9px 16px 4px;
             letter-spacing: 0.3px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .mobile-group::after {
@@ -809,42 +806,31 @@
         .mobile-links a {
             display: flex;
             align-items: center;
-            gap: 11px;
-            padding: 9px 14px;
-            min-height: 45px;
-            color: #3a3f63;
+            gap: 9px;
+            padding: 8px 14px;
+            min-height: 38px;
+            color: #454b6e;
             text-decoration: none;
-            font-weight: 700;
-            font-size: 0.86rem;
-            margin: 2px 12px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.85);
-            background: rgba(255, 255, 255, 0.55);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            transition: background 0.16s ease, transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+            font-weight: 600;
+            font-size: 0.82rem;
+            margin: 0 8px;
+            border-radius: 10px;
+            transition: background 0.14s ease, transform 0.14s ease, color 0.14s ease;
         }
 
         .mobile-links a > span {
-            width: 33px;
-            height: 33px;
-            border-radius: 11px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.14);
-            display: grid;
-            place-items: center;
-            font-size: 0.95rem;
+            width: 22px;
+            font-size: 0.85rem;
+            text-align: center;
             flex: 0 0 auto;
+            opacity: .85;
         }
 
         .mobile-links a:hover,
         .mobile-links a.active {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.22);
-            transform: translateX(-3px);
+            background: rgba(59, 130, 246, 0.08);
             color: var(--primary-dark);
-            box-shadow: inset -3.5px 0 0 var(--primary), 0 6px 16px rgba(59, 130, 246, 0.12);
+            transform: translateX(-2px);
         }
 
         .mobile-menu.open .mobile-links > * {
@@ -865,9 +851,9 @@
         }
 
         .mobile-footer {
-            padding: 12px 14px 16px;
-            border-top: 1px dashed rgba(255, 255, 255, 0.95);
-            background: rgba(255, 255, 255, 0.5);
+            padding: 8px 12px 10px;
+            border-top: 1px dashed rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.4);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
         }

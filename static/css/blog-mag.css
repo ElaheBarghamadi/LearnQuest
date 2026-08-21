@@ -212,14 +212,14 @@
    ============================================================ */
 .mg-article { max-width: 960px; margin: 0 auto; }
 .mg-crumb {
-    display: flex; gap: 6px; align-items: center;
-    font-size: 11.5px; color: #b6bdd6; margin-bottom: 18px; flex-wrap: wrap;
-    opacity: .92;
+    display: flex; gap: 5px; align-items: center;
+    font-size: 10px; color: #c9d0e2; margin-bottom: 14px; flex-wrap: wrap;
+    opacity: .75; letter-spacing: .1px;
 }
-.mg-crumb a { color: #8fa3b8; font-weight: 600; text-decoration: none; transition: color .15s; }
+.mg-crumb a { color: #a5aec8; font-weight: 500; text-decoration: none; transition: color .15s; }
 .mg-crumb a:hover { color: #0f766e; }
-.mg-crumb .sep { color: #d4dae8; font-size: 10px; }
-.mg-crumb span:last-child { color: #a8b3c7; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mg-crumb .sep { color: #d8ddee; font-size: 8px; }
+.mg-crumb span:last-child { color: #b6bdd6; font-weight: 400; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mg-cat-badge { display: inline-block; font-size: 12.5px; font-weight: 800; color: #0f766e; background: rgba(30,168,154,.1); border: 1px solid rgba(30,168,154,.22); padding: 6px 15px; border-radius: 99px; margin-bottom: 16px; text-decoration: none; }
 .mg-art-title { font-size: clamp(24px, 3.6vw, 38px); font-weight: 900; line-height: 1.5; letter-spacing: -.4px; color: #1e293b; margin: 0 0 14px; }
 .mg-art-sub { font-size: 15px; color: #64748b; line-height: 2; margin-bottom: 24px; }
@@ -337,9 +337,23 @@
     .mg-related-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
     .mg-prose { padding: 18px 15px; border-radius: 16px; font-size: 14.5px; }
     .mg-prose h2 { font-size: 19px; }
-    .mg-art-cover { margin-bottom: 18px; }
-    .mg-crumb { font-size: 10.5px; margin-bottom: 14px; gap: 4px; }
-    .mg-crumb span:last-child { max-width: 120px; }
+    .mg-art-cover { margin-bottom: 16px; border-radius: 14px; min-height: 120px; }
+    .mg-art-title { font-size: 21px; line-height: 1.6; margin-bottom: 10px; }
+    .mg-art-sub { font-size: 13.5px; line-height: 1.95; margin-bottom: 16px; }
+    .mg-art-meta { gap: 8px 12px; font-size: 10.5px; padding-bottom: 14px; margin-bottom: 16px; }
+    .mg-actions { gap: 7px; margin: 22px 0 26px; }
+    .mg-act { padding: 8px 12px; font-size: 11.5px; }
+    .mg-prose { padding: 16px 13px; font-size: 14px; line-height: 2; }
+    .mg-prose h2 { font-size: 18px; margin: 26px 0 12px; }
+    .mg-prose blockquote { padding: 11px 14px; margin: 16px 0; }
+    .mg-comments-title { font-size: 15px; }
+    .c-item { padding: 13px 2px; gap: 9px; }
+    .c-avatar { width: 34px; height: 34px; font-size: 13px; }
+    .c-text { font-size: 12.8px; }
+    .mg-crumb { font-size: 9px; margin-bottom: 10px; gap: 3px; opacity: .6; }
+    .mg-crumb span:last-child { display: none; }
+    .mg-crumb a:first-child::before { content: '‹ '; }
+    .mg-crumb a:not(:first-child) { display: none; }
     .mg-hero { padding: 26px 4px 4px; }
     .mg-hero h1 { font-size: 24px; }
     .mg-hero-sub { font-size: 13.5px; margin-bottom: 18px; }
