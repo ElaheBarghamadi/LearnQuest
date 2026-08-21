@@ -1,0 +1,17 @@
+{% load jalali %}<div class="wp-tx">
+    <span class="ic {% if t.type == 'earn' %}earn{% elif t.type == 'spend' %}spend{% elif t.type == 'reward' %}reward{% elif t.type == 'refund' %}refund{% elif t.type == 'consume' %}consume{% elif t.type == 'admin_adjust' %}admin_adjust{% endif %}">
+        {% if t.type == 'earn' %}💰{% elif t.type == 'spend' %}🛒{% elif t.type == 'reward' %}🎁{% elif t.type == 'refund' %}↩️{% elif t.type == 'admin_adjust' %}🛠{% elif t.type == 'consume' %}⚡{% else %}🔹{% endif %}
+    </span>
+    <div class="bd">
+        <div class="tt">
+            {% if t.type == 'earn' %}کسب{% elif t.type == 'spend' %}خرج{% elif t.type == 'reward' %}پاداش{% elif t.type == 'refund' %}بازگشت{% elif t.type == 'admin_adjust' %}ادمین{% elif t.type == 'consume' %}مصرف{% else %}{{ t.type }}{% endif %}
+            · {% if t.currency == 'coin' %}🪙{% elif t.currency == 'gem' %}💎{% else %}⭐{% endif %}
+        </div>
+        <div class="ts">{{ t.source }} · {{ t.created_at|jdatetime }}</div>
+    </div>
+    <span class="am {% if t.amount < 0 %}neg{% else %}pos{% endif %}">
+        {% if t.amount > 0 %}+{% endif %}{{ t.amount }}
+        {% if t.currency == 'coin' %}🪙{% elif t.currency == 'gem' %}💎{% else %}⭐{% endif %}
+    </span>
+    <span class="bal">{{ t.balance_after }}</span>
+</div>

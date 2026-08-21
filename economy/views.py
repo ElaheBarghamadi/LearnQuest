@@ -22,10 +22,38 @@ def wallet_view(request):
     txs = (Transaction.objects.filter(user=request.user)
            .values('currency', 'amount', 'balance_after', 'type', 'source', 'created_at')
            .order_by('-created_at'))
-    page = Paginator(txs, 20).get_page(request.GET.get('page', 1))
+    page = Paginator(txs, 15).get_page(request.GET.get('page', 1))
     boosts = ActiveBoost.objects.filter(user=request.user, expires_at__gt=timezone.now())
     return render(request, 'economy/wallet.html', {
         'title': 'کیف پول من', 'wallet': wallet, 'page': page, 'boosts': boosts,
+    })
+
+
+@login_required
+def wallet_transactions_api(request):
+    """API لیزیلود تراکنش‌ها (JSON) — برای اسکرول بی‌نهایت."""
+    txs = (Transaction.objects.filter(user=request.user)
+           .values('id', 'currency', 'amount', 'balance_after', 'type',
+                   'source', 'source_id', 'created_at')
+           .order_by('-created_at'))
+    page = Paginator(txs, 15).get_page(request.GET.get('page', 1))
+    items = []
+    for t in page.object_list:
+        items.append({
+            'id': t['id'],
+            'type': t['type'],
+            'currency': t['currency'],
+            'amount': t['amount'],
+            'balance_after': t['balance_after'],
+            'source': t['source'],
+            'created_at': t['created_at'].strftime('%Y-%m-%d %H:%M'),
+        })
+    return JsonResponse({
+        'ok': True,
+        'items': items,
+        'has_next': page.has_next(),
+        'next_page': page.next_page_number() if page.has_next() else None,
+        'total': page.paginator.count,
     })
 
 

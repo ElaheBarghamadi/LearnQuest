@@ -6,6 +6,7 @@ app_name = 'economy'
 
 urlpatterns = [
     path('wallet/', views.wallet_view, name='wallet'),
+    path('wallet/transactions/', views.wallet_transactions_api, name='wallet_transactions_api'),
     path('leaderboard/', views.leaderboard_view, name='leaderboard'),
     path('season/', views.season_view, name='season'),
     path('season/buy-pass/', views.season_pass_buy, name='season_pass_buy'),
