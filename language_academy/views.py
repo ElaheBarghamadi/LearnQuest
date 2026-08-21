@@ -44,11 +44,33 @@ def grammar_hub(request):
                 chapters.append({'chapter': ch, 'lessons': lessons})
         data.append({'world': w, 'chapters': chapters})
     levels = ['A1', 'A2', 'B1']
+
+    # دادهٔ JSON برای مودال جزئیات
+    import json as _json
+    grammar_json = []
+    for wd in data:
+        for cd in wd['chapters']:
+            for ld in cd['lessons']:
+                for gp in ld['grammar_points']:
+                    grammar_json.append({
+                        'id': gp.id,
+                        'title': gp.title,
+                        'fa': gp.title_fa or '',
+                        'lv': gp.level,
+                        'struct': gp.structure or '',
+                        'exp': gp.explanation,
+                        'examples': gp.examples,
+                        'mistakes': gp.common_mistakes or '',
+                        'tips': gp.usage_tips or '',
+                        'lesson': ld['lesson'].name,
+                    })
+
     return render(request, 'language_academy/grammar_hub.html', {
         'worlds_data': data,
         'levels': levels,
         'level_filter': level_filter,
         'total': GrammarPoint.objects.count(),
+        'grammar_json': _json.dumps(grammar_json, ensure_ascii=False),
         'title': 'Grammar Hub — LearnQuest',
     })
 
@@ -559,11 +581,12 @@ def take_exam(request, exam_id):
         messages.warning(request, '🔒 این امتحان هنوز قفل است — اول جهان قبلی را کامل کن!')
         return redirect('language_academy:world_map')
 
-    # امتحان فصل: همهٔ درس‌های فصل باید کامل شده باشند
+    # امتحان فصل: همهٔ درس‌های عادی فصل باید کامل شده باشند (درس‌های ویژهٔ پولی مستثنا هستند)
     if exam.chapter:
-        total = exam.chapter.lessons.filter(is_published=True).count()
+        total = exam.chapter.lessons.filter(is_published=True).exclude(is_exclusive=True).count()
         done = UserLessonProgress.objects.filter(
-            user=request.user, lesson__chapter=exam.chapter, status='completed'
+            user=request.user, lesson__chapter=exam.chapter,
+            lesson__is_exclusive=False, status='completed'
         ).count()
         if total == 0 or done < total:
             messages.warning(request, '🔒 برای امتحان فصل، اول همهٔ درس‌های آن را کامل کن!')
@@ -583,7 +606,7 @@ def take_exam(request, exam_id):
     attempt_count = ExamAttempt.objects.filter(user=request.user, exam=exam).count()
     if attempt_count >= exam.max_attempts:
         messages.error(request, 'You have reached the maximum number of allowed attempts.')
-        return redirect('language_academy:dashboard')
+        return redirect('language_academy:learner_dashboard')
 
     session = ExamSession.objects.filter(
         user=request.user,

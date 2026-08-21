@@ -4,254 +4,226 @@
 {% block title %}{{ chapter.name }} | LearnQuest Academy{% endblock %}
 
 {% block content %}
+<style>
+    /* ===== Chapter detail — unified with world pages ===== */
+    .cd-hero {
+        position: relative; border-radius: 24px; overflow: hidden;
+        margin-bottom: 26px; padding: 30px 28px 26px;
+        background: linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.7));
+        backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.95);
+        box-shadow: 0 16px 44px rgba(28,32,64,.12), inset 0 1px 0 rgba(255,255,255,.95);
+        display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+    }
+    .cd-hero::before {
+        content: ''; position: absolute; inset: 0;
+        background:
+            radial-gradient(circle at 85% 12%, rgba(30,168,154,.14), transparent 45%),
+            radial-gradient(circle at 8% 88%, rgba(232,163,61,.1), transparent 42%);
+        pointer-events: none;
+    }
+    .cd-hero h1 { font-size: clamp(20px, 2.8vw, 30px); font-weight: 900; color: #1e293b; margin: 0 0 6px; position: relative; }
+    .cd-hero .desc { color: #64748b; font-size: .88rem; line-height: 1.9; margin: 0 0 14px; max-width: 600px; position: relative; }
+    .cd-hero .meta { display: flex; gap: 8px; flex-wrap: wrap; position: relative; }
+    .cd-hero .meta span {
+        font-size: .74rem; font-weight: 800; color: #475569;
+        background: rgba(255,255,255,.8); border: 1px solid rgba(148,163,184,.3);
+        padding: 5px 14px; border-radius: 99px;
+    }
+    .cd-progress {
+        background: rgba(255,255,255,.85); border: 1px solid rgba(255,255,255,.95);
+        border-radius: 18px; padding: 16px 20px; min-width: 190px; text-align: center;
+        box-shadow: 0 8px 24px rgba(28,32,64,.08); position: relative;
+    }
+    .cd-progress .n { font-size: 1.7rem; font-weight: 900; color: #0f766e; line-height: 1.2; }
+    .cd-progress .l { font-size: .7rem; color: #94a3b8; font-weight: 700; }
+    .cd-progress .bar { height: 7px; border-radius: 99px; background: #eef0fa; overflow: hidden; margin-top: 8px; }
+    .cd-progress .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg,#1ea89a,#34d399); }
+
+    .cd-sec-title { display: flex; align-items: center; gap: 10px; font-size: 1.02rem; font-weight: 900; color: #1e293b; margin: 0 0 16px; }
+    .cd-sec-title .bar { width: 4px; height: 18px; border-radius: 3px; background: linear-gradient(180deg,#1ea89a,#e8a33d); }
+    .cd-sec-title::after { content: ''; flex: 1; height: 1.5px; background: linear-gradient(90deg, rgba(30,168,154,.3), transparent); }
+
+    .cd-layout { display: grid; grid-template-columns: 1fr 320px; gap: 26px; align-items: start; }
+    @media (max-width: 991px) { .cd-layout { grid-template-columns: 1fr; } }
+
+    /* درس‌ها — کارت‌های یکدست با world_detail */
+    .cd-lessons { display: flex; flex-direction: column; gap: 10px; }
+    .cd-lesson {
+        display: flex; align-items: center; gap: 15px;
+        background: rgba(255,255,255,.78);
+        backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9);
+        border-radius: 17px; padding: 14px 17px;
+        box-shadow: 0 8px 24px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        transition: transform .2s, box-shadow .2s, border-color .2s;
+    }
+    .cd-lesson:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(28,32,64,.13); border-color: rgba(30,168,154,.35); }
+    .cd-lesson.locked { opacity: .68; border-style: dashed; }
+    .cd-lesson.completed { border-inline-start: 4px solid #16a34a; }
+
+    .cd-lesson .ico {
+        width: 44px; height: 44px; border-radius: 13px; flex: 0 0 auto;
+        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        background: linear-gradient(135deg, rgba(30,168,154,.12), rgba(54,209,220,.1));
+    }
+    .cd-lesson.completed .ico { background: linear-gradient(135deg, rgba(22,163,74,.14), rgba(22,163,74,.08)); }
+    .cd-lesson.locked .ico { background: rgba(148,163,184,.12); filter: grayscale(.5); }
+
+    .cd-lesson .bd { flex: 1; min-width: 0; }
+    .cd-lesson .bd h3 { margin: 0 0 3px; font-size: .93rem; font-weight: 900; color: #1e293b; }
+    .cd-lesson .bd .sm { font-size: .72rem; color: #94a3b8; font-weight: 600; display: flex; gap: 10px; flex-wrap: wrap; }
+    .cd-lesson .bd .sm .qp { color: #15803d; font-weight: 800; }
+    .cd-lesson .pr { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+    .cd-lesson .pr .bar { flex: 1; max-width: 200px; height: 5px; border-radius: 99px; background: #eef0fa; overflow: hidden; }
+    .cd-lesson .pr .bar i { display: block; height: 100%; background: linear-gradient(90deg,#1ea89a,#34d399); border-radius: 99px; }
+
+    .cd-lesson .act {
+        display: inline-flex; align-items: center; gap: 6px;
+        text-decoration: none; border: none; cursor: pointer; font-family: inherit;
+        border-radius: 11px; padding: 9px 15px; font-size: .76rem; font-weight: 900;
+        transition: transform .2s, box-shadow .2s; white-space: nowrap;
+    }
+    .cd-lesson .act.go { background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff; box-shadow: 0 7px 18px rgba(30,168,154,.35); }
+    .cd-lesson .act.go:hover { transform: translateY(-2px); color: #fff; }
+    .cd-lesson .act.review { background: rgba(22,163,74,.1); color: #15803d; border: 1.5px solid rgba(22,163,74,.3); }
+    .cd-lesson .act.locked { background: #eef0fa; color: #94a3b8; cursor: not-allowed; }
+
+    /* سایدبار */
+    .cd-side { display: flex; flex-direction: column; gap: 16px; }
+    .cd-card {
+        background: rgba(255,255,255,.78);
+        backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.9); border-radius: 18px;
+        box-shadow: 0 8px 26px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
+        overflow: hidden;
+    }
+    .cd-card .hd {
+        padding: 13px 18px; font-weight: 900; font-size: .86rem; color: #1e293b;
+        background: linear-gradient(135deg, #f6f7ff, #eef0fb);
+        border-bottom: 1px solid #eef0f8;
+        display: flex; align-items: center; gap: 8px;
+    }
+    .cd-card .hd.green { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; }
+    .cd-card .bd { padding: 15px 18px; }
+    .cd-stat { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; font-size: .82rem; border-bottom: 1px dashed #eef0f8; }
+    .cd-stat:last-child { border-bottom: none; }
+    .cd-stat .k { color: #94a3b8; font-weight: 600; }
+    .cd-stat .v { font-weight: 800; color: #1e293b; }
+    .cd-stat .v.ok { color: #16a34a; }
+    .cd-stat .v.warn { color: #d97706; }
+
+    @media (max-width: 640px) {
+        .cd-hero { padding: 20px 16px; }
+        .cd-progress { min-width: 100%; }
+        .cd-lesson { flex-wrap: wrap; gap: 10px; }
+        .cd-lesson .act { width: 100%; justify-content: center; }
+        .cd-lesson:hover { transform: none; }
+    }
+</style>
+
 <div class="container py-4">
-    <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb" style="font-size:.76rem;background:rgba(255,255,255,.5);border-radius:99px;padding:6px 16px;width:fit-content">
             <li class="breadcrumb-item"><a href="{% url 'language_academy:world_map' %}" class="text-decoration-none">🌍 Worlds</a></li>
             <li class="breadcrumb-item"><a href="{% url 'language_academy:world_detail' chapter.world.id %}" class="text-decoration-none">{{ chapter.world.name }}</a></li>
             <li class="breadcrumb-item active">{{ chapter.name }}</li>
         </ol>
     </nav>
 
-    <div class="academy-card mb-4">
-        <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start flex-wrap">
-                <div>
-                    <h1 class="h2 mb-2"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h1>
-                    <p class="lead mb-3"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description }}</p>
-                    <div class="d-flex gap-3 flex-wrap">
-                        <span class="badge bg-success"><i class="fas fa-star"></i> +{{ chapter.xp_reward }} XP</span>
-                        <span class="badge bg-info"><i class="fas fa-coins"></i> +{{ chapter.coin_reward }}</span>
-                        <span class="badge bg-warning text-dark"><i class="fas fa-clock"></i> {{ chapter.estimated_time_minutes }} min</span>
-                    </div>
-                </div>
-                <div class="text-center mt-3 mt-sm-0">
-                    <div class="display-4 fw-bold text-primary">{{ chapter_progress.lessons_completed|default:0 }}/{{ chapter_progress.total_lessons|default:0 }}</div>
-                    <div class="small text-muted">Lessons Completed</div>
-                </div>
+    <!-- هیرو فصل -->
+    <div class="cd-hero">
+        <div>
+            <h1{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.name"{% endif %}>{{ chapter.name }}</h1>
+            <p class="desc"{% if visual_edit %} data-vae="chapter.{{ chapter.id }}.description"{% endif %}>{{ chapter.description }}</p>
+            <div class="meta">
+                <span>⭐ +{{ chapter.xp_reward }} XP</span>
+                <span>🪙 +{{ chapter.coin_reward }}</span>
+                <span>⏱ {{ chapter.estimated_time_minutes }} min</span>
             </div>
-
-            <div class="mt-4">
-                <div class="d-flex justify-content-between small mb-1">
-                    <span>Chapter Progress</span>
-                    <span>
-                        {% if chapter_progress.total_lessons %}
-                            {{ chapter_progress.lessons_completed|default:0 }}/{{ chapter_progress.total_lessons }} Lessons
-                        {% else %}
-                            0/0 Lessons
-                        {% endif %}
-                    </span>
-                </div>
-                <div class="academy-progress">
-                    <div class="academy-progress-bar" style="width:
-                        {% if chapter_progress.total_lessons %}
-                            {% widthratio chapter_progress.lessons_completed chapter_progress.total_lessons 100 %}
-                        {% else %}0{% endif %}%">
-                    </div>
-                </div>
-            </div>
+        </div>
+        <div class="cd-progress">
+            <div class="n">{{ chapter_progress.lessons_completed|default:0 }}/{{ chapter_progress.total_lessons|default:0 }}</div>
+            <div class="l">Lessons Completed</div>
+            <div class="bar"><i style="width: {% if chapter_progress.total_lessons %}{% widthratio chapter_progress.lessons_completed chapter_progress.total_lessons 100 %}{% else %}0{% endif %}%"></i></div>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <h2 class="h3 mb-4"><i class="fas fa-book-open me-2"></i> Lessons</h2>
-
-            <div class="lessons-timeline"{% if visual_edit %} data-vae-list="lessons"{% endif %}>
+    <div class="cd-layout">
+        <div>
+            <h2 class="cd-sec-title"><span class="bar"></span> Lessons</h2>
+            <div class="cd-lessons"{% if visual_edit %} data-vae-list="lessons"{% endif %}>
                 {% for lesson in lessons %}
-                <div class="lesson-card mb-3 {% if lesson.status == 'completed' %}completed{% endif %} {% if lesson.is_locked %}locked{% endif %}"{% if visual_edit %} data-vae-id="{{ lesson.id }}"{% endif %}>
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="lesson-icon {% if lesson.status == 'completed' %}completed{% endif %}">
-                            {% if lesson.lesson_type == 'vocabulary' %}📚
-                            {% elif lesson.lesson_type == 'grammar' %}📝
-                            {% elif lesson.lesson_type == 'dialogue' %}💬
-                            {% elif lesson.lesson_type == 'reading' %}📖
-                            {% elif lesson.lesson_type == 'listening' %}🎧
-                            {% elif lesson.lesson_type == 'writing' %}✍️
-                            {% elif lesson.lesson_type == 'speaking' %}🗣️
-                            {% else %}⭐{% endif %}
+                <div class="cd-lesson {% if lesson.status == 'completed' %}completed{% elif lesson.is_locked %}locked{% endif %}"{% if visual_edit %} data-vae-id="{{ lesson.id }}"{% endif %}>
+                    <span class="ico">
+                        {% if lesson.lesson_type == 'vocabulary' %}📚{% elif lesson.lesson_type == 'grammar' %}📝{% elif lesson.lesson_type == 'dialogue' %}💬{% elif lesson.lesson_type == 'reading' %}📖{% elif lesson.lesson_type == 'listening' %}🎧{% elif lesson.lesson_type == 'writing' %}✍️{% elif lesson.lesson_type == 'speaking' %}🗣️{% else %}⭐{% endif %}
+                    </span>
+                    <div class="bd">
+                        <h3{% if visual_edit %} data-vae="lesson.{{ lesson.id }}.name"{% endif %}>{{ lesson.name }}</h3>
+                        <div class="sm">
+                            <span>⏱ {{ lesson.estimated_time_minutes }} min</span>
+                            <span>⭐ +{{ lesson.xp_reward }} XP</span>
+                            {% if lesson.quiz_passed %}<span class="qp">✓ Quiz Passed</span>{% endif %}
                         </div>
-
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-center flex-wrap">
-                                <div>
-                                    <h3 class="h6 mb-1"{% if visual_edit %} data-vae="lesson.{{ lesson.id }}.name"{% endif %}>{{ lesson.name }}</h3>
-                                    <div class="small text-muted">
-                                        <i class="fas fa-clock"></i> {{ lesson.estimated_time_minutes }} min
-                                        <span class="mx-2">•</span>
-                                        <i class="fas fa-star text-warning"></i> +{{ lesson.xp_reward }} XP
-                                    </div>
-                                </div>
-                                {% if lesson.quiz_passed %}
-                                    <span class="badge bg-success"><i class="fas fa-check"></i> Quiz Passed</span>
-                                {% endif %}
-                            </div>
-
-                            {% if lesson.progress_percentage > 0 %}
-                            <div class="mt-2">
-                                <div class="academy-progress" style="height: 4px;">
-                                    <div class="academy-progress-bar" style="width: {{ lesson.progress_percentage }}%"></div>
-                                </div>
-                            </div>
-                            {% endif %}
+                        {% if lesson.progress_percentage > 0 %}
+                        <div class="pr">
+                            <div class="bar"><i style="width: {{ lesson.progress_percentage }}%"></i></div>
+                            <span style="font-size:.66rem;color:#94a3b8;font-weight:700">{{ lesson.progress_percentage|floatformat:0 }}%</span>
                         </div>
-
-                        {% if lesson.is_locked %}
-                            <button class="btn btn-secondary btn-sm" disabled title="اول درس قبلی را کامل کن">
-                                <i class="fas fa-lock me-1"></i> Locked
-                            </button>
-                        {% elif lesson.status == 'completed' %}
-                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn btn-outline-success btn-sm">
-                                <i class="fas fa-redo"></i> Review
-                            </a>
-                        {% elif lesson.status == 'in_progress' %}
-                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn-academy btn-sm">
-                                Continue <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
-                        {% else %}
-                            <a href="{% url 'language_academy:lesson_detail' lesson.id %}" class="btn-academy btn-sm">
-                                Start <i class="fas fa-play ms-1"></i>
-                            </a>
                         {% endif %}
                     </div>
+                    {% if lesson.is_locked %}
+                        <button class="act locked" disabled>🔒 Locked</button>
+                    {% elif lesson.status == 'completed' %}
+                        <a class="act review" href="{% url 'language_academy:lesson_detail' lesson.id %}">↩ Review</a>
+                    {% elif lesson.status == 'in_progress' %}
+                        <a class="act go" href="{% url 'language_academy:lesson_detail' lesson.id %}">Continue ←</a>
+                    {% else %}
+                        <a class="act go" href="{% url 'language_academy:lesson_detail' lesson.id %}">Start ←</a>
+                    {% endif %}
                 </div>
                 {% empty %}
-                <div class="academy-card text-center py-4">
-                    <p class="text-muted mb-0">No lessons available in this chapter yet.</p>
-                </div>
+                <div class="cd-card text-center py-4"><p class="text-muted mb-0">No lessons available in this chapter yet.</p></div>
                 {% endfor %}
             </div>
         </div>
 
-        <div class="col-lg-4">
+        <aside class="cd-side">
             {% if chapter_exam %}
-            <div class="academy-card sticky-top" style="top: 84px;">
-                <div class="card-header bg-gradient-green text-white py-3">
-                    <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i> Chapter Exam</h5>
-                </div>
-                <div class="card-body p-4">
-                    <p class="mb-3">Test your knowledge and earn rewards!</p>
-                    <ul class="list-unstyled small mb-4">
-                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-check-circle text-success"></i> Passing Score: <b>{{ chapter_exam.passing_score }}%</b></li>
-                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-hourglass-half"></i> Time Limit: <b>{{ chapter_exam.time_limit_minutes }} minutes</b></li>
-                        <li class="d-flex align-items-center gap-2 mb-3"><i class="fas fa-star text-warning"></i> Reward: <b>+{{ chapter_exam.xp_reward }} XP</b></li>
-                    </ul>
+            <div class="cd-card">
+                <div class="hd green"><i class="fas fa-file-alt me-1"></i> Chapter Exam</div>
+                <div class="bd">
+                    <p class="mb-3" style="font-size:.8rem;color:#64748b">Test your knowledge and earn rewards!</p>
+                    <div class="cd-stat"><span class="k">Passing Score</span><span class="v">{{ chapter_exam.passing_score }}%</span></div>
+                    <div class="cd-stat"><span class="k">Time Limit</span><span class="v">{{ chapter_exam.time_limit_minutes }} min</span></div>
+                    <div class="cd-stat"><span class="k">Reward</span><span class="v warn">+{{ chapter_exam.xp_reward }} XP</span></div>
 
                     {% if exam_attempt %}
-                        <div class="alert alert-success mb-3">
-                            <i class="fas fa-trophy me-2"></i> You passed this exam!
-                        </div>
-                        <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn btn-outline-success w-100">
-                            Review Exam
-                        </a>
+                        <div class="alert alert-success mb-3 mt-3">🏆 You passed this exam!</div>
+                        <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn btn-outline-success w-100">Review Exam</a>
                     {% else %}
                         {% if chapter_progress.lessons_completed >= chapter_progress.total_lessons and chapter_progress.total_lessons > 0 %}
-                            <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn-academy w-100">
-                                Take Exam <i class="fas fa-arrow-right ms-2"></i>
-                            </a>
+                            <a href="{% url 'language_academy:take_exam' chapter_exam.id %}" class="btn-academy w-100 mt-3">Take Exam <i class="fas fa-arrow-right ms-2"></i></a>
                         {% else %}
-                            <button class="btn btn-secondary w-100" disabled>
-                                <i class="fas fa-lock me-2"></i> Complete all lessons first
-                            </button>
+                            <button class="btn btn-secondary w-100 mt-3" disabled><i class="fas fa-lock me-2"></i> Complete all lessons first</button>
                         {% endif %}
                     {% endif %}
                 </div>
             </div>
             {% endif %}
 
-            <div class="academy-card mt-4">
-                <div class="card-header py-3">
-                    <h5 class="mb-0"><i class="fas fa-chart-simple me-2"></i> Quick Stats</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
-                        <span class="text-muted">Total Lessons</span>
-                        <span class="fw-bold">{{ chapter_progress.total_lessons|default:0 }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom" style="border-color: var(--border-color) !important;">
-                        <span class="text-muted">Completed</span>
-                        <span class="fw-bold text-success">{{ chapter_progress.lessons_completed|default:0 }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center py-2">
-                        <span class="text-muted">XP Earned</span>
-                        <span class="fw-bold text-warning">{{ chapter_progress.xp_earned|default:0 }}</span>
-                    </div>
+            <div class="cd-card">
+                <div class="hd"><i class="fas fa-chart-simple me-1"></i> Quick Stats</div>
+                <div class="bd">
+                    <div class="cd-stat"><span class="k">Total Lessons</span><span class="v">{{ chapter_progress.total_lessons|default:0 }}</span></div>
+                    <div class="cd-stat"><span class="k">Completed</span><span class="v ok">{{ chapter_progress.lessons_completed|default:0 }}</span></div>
+                    <div class="cd-stat"><span class="k">XP Earned</span><span class="v warn">{{ chapter_progress.xp_earned|default:0 }}</span></div>
                 </div>
             </div>
-        </div>
+        </aside>
     </div>
 </div>
 
-<style>
-.lesson-card {
-    background: var(--duo-white);
-    border-radius: var(--duo-radius);
-    padding: 16px 20px;
-    transition: var(--duo-transition);
-    border: 1px solid var(--duo-gray-200);
-}
-
-.lesson-card:hover {
-    transform: translateX(5px);
-    border-color: var(--duo-green);
-}
-
-.lesson-card.completed {
-    background: rgba(88, 204, 113, 0.05);
-    border-color: var(--duo-green);
-}
-
-.lesson-card.locked {
-    opacity: 0.72;
-    background: rgba(148, 163, 184, 0.07);
-    border-style: dashed;
-}
-
-.lesson-icon {
-    width: 48px;
-    height: 48px;
-    background: var(--duo-gray-100);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-.lesson-icon.completed {
-    background: var(--duo-green);
-    color: white;
-}
-
-.card-header.bg-gradient-green {
-    background: linear-gradient(135deg, #58CC71, #3C9B4A);
-    color: white;
-}
-
-.sticky-top {
-    position: sticky;
-    top: 84px;  /* زیر نواربالای ثابت آکادمی */
-    z-index: 1;
-}
-
-/* ===== Responsive hardening ===== */
-@media (max-width: 991.98px) {
-    .sticky-top { position: static !important; top: auto; }
-}
-
-@media (max-width: 575.98px) {
-    .lesson-card { padding: 14px 12px; }
-    .lesson-card .d-flex.align-items-center {
-        flex-wrap: wrap;
-        gap: 10px !important;
-    }
-    .lesson-card .flex-grow-1 { min-width: 0; flex: 1 1 100%; }
-    .lesson-card .btn { width: 100%; }
-    h1.h2 { font-size: 1.35rem; line-height: 1.6; }
-    .lead { font-size: 0.95rem; }
-    .card-body.p-4 { padding: 18px !important; }
-}
-</style>
 {% if visual_edit %}
 <div class="container"><button type="button" class="vae-add" data-vae-add="new_lesson.0" data-parent="chapter:{{ chapter.id }}" data-vae-name="New Lesson">＋ Add Lesson</button></div>
 {% endif %}

@@ -1,7 +1,60 @@
 {% extends 'language_academy/base_academy.html' %}
 {% load static %}
 
-{% block title %}Grammar Hub | LearnQuest{% endblock %}
+{% block title %}Grammar Hub | LearnQuest
+<!-- مودال جزئیات گرامر -->
+<div class="gh-modal-overlay" id="ghModal">
+    <div class="gh-modal">
+        <button class="gh-modal-x" id="ghModalX" type="button" aria-label="بستن">✕</button>
+        <div id="ghModalBody"></div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var raw = document.getElementById('ghData');
+    if (!raw) return;
+    var parsed = JSON.parse(raw.textContent);
+    var items = Array.isArray(parsed) ? parsed : (parsed.items || []);
+    var modal = document.getElementById('ghModal');
+    var body = document.getElementById('ghModalBody');
+    var closeBtn = document.getElementById('ghModalX');
+    var byId = {};
+    items.forEach(function (it) { byId[it.id] = it; });
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    function open(id) {
+        var g = byId[id];
+        if (!g) return;
+        var exHtml = (g.examples || []).map(function (e) {
+            return '<div class="ex"><b>' + esc(e.en) + '</b> — ' + esc(e.fa) +
+                   (e.en !== e.fa ? '<small>' + esc(e.en) + '</small>' : '') + '</div>';
+        }).join('');
+        body.innerHTML =
+            '<div class="gh-m-head"><span class="gh-m-lv">' + g.lv + '</span><span style="font-size:.72rem;color:#94a3b8">📖 ' + esc(g.lesson) + '</span></div>' +
+            '<h2 class="gh-m-title">' + esc(g.title) + '</h2>' +
+            (g.fa ? '<div class="gh-m-fa">' + esc(g.fa) + '</div>' : '') +
+            (g.struct ? '<div class="gh-m-struct">' + esc(g.struct) + '</div>' : '') +
+            '<div class="gh-m-sec"><h4>📘 Explanation</h4><div class="exp">' + g.exp + '</div></div>' +
+            (exHtml ? '<div class="gh-m-sec"><h4>✏️ Examples</h4><div class="gh-m-ex">' + exHtml + '</div></div>' : '') +
+            (g.mistakes ? '<div class="gh-m-sec"><h4>⚠️ Common Mistakes</h4><div class="gh-m-mistakes">' + esc(g.mistakes) + '</div></div>' : '') +
+            (g.tips ? '<div class="gh-m-sec"><h4>💡 Usage Tips</h4><div class="gh-m-tips">' + esc(g.tips) + '</div></div>' : '') +
+            '<div class="gh-m-lesson">📚 Lesson: <b>' + esc(g.lesson) + '</b></div>';
+        modal.classList.add('open');
+    }
+    function close() { modal.classList.remove('open'); }
+
+    document.querySelectorAll('.gh-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () { open(parseInt(btn.dataset.gp, 10)); });
+    });
+    closeBtn.addEventListener('click', close);
+    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+})();
+</script>
+
+{% endblock %}
 
 {% block content %}
 <style>
@@ -81,6 +134,63 @@
     .gh-card .gh-ex b { color: #0f766e; }
     .gh-card .gh-mistakes { font-size: .74rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
     .gh-card .gh-tips { font-size: .74rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
+    .gh-card .gh-btn {
+        border: none; cursor: pointer; font-family: inherit;
+        background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff;
+        font-size: .74rem; font-weight: 900; padding: 8px 14px; border-radius: 10px;
+        box-shadow: 0 6px 16px rgba(30,168,154,.3); transition: transform .15s, box-shadow .15s;
+        margin-top: 4px;
+    }
+    .gh-card .gh-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(30,168,154,.4); }
+
+    /* مودال جزئیات گرامر */
+    .gh-modal-overlay {
+        position: fixed; inset: 0; z-index: 9600;
+        background: rgba(18,22,48,.55);
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    .gh-modal-overlay.open { display: flex; }
+    .gh-modal {
+        position: relative; width: 100%; max-width: 620px; max-height: 88vh; overflow-y: auto;
+        background: rgba(255,255,255,.97);
+        backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
+        border: 1px solid rgba(255,255,255,.95);
+        border-radius: 24px; padding: 28px 28px 24px;
+        box-shadow: 0 30px 80px rgba(10,14,40,.4), inset 0 1px 0 rgba(255,255,255,.95);
+        animation: gmPop .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes gmPop { from { transform: scale(.92) translateY(14px); opacity: 0; } }
+    .gh-modal-x {
+        position: absolute; top: 14px; left: 14px;
+        width: 32px; height: 32px; border-radius: 50%;
+        border: none; background: #f1f5f9; color: #64748b;
+        font-size: .95rem; cursor: pointer; transition: .15s;
+    }
+    .gh-modal-x:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
+    .gh-m-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+    .gh-m-lv { font-size: 10.5px; font-weight: 900; padding: 3px 11px; border-radius: 99px; background: rgba(30,168,154,.12); color: #0f766e; }
+    .gh-m-title { font-size: 1.25rem; font-weight: 900; color: #1e293b; line-height: 1.5; margin: 0; }
+    .gh-m-fa { font-size: .8rem; color: #94a3b8; margin-bottom: 10px; }
+    .gh-m-struct {
+        font-family: 'Courier New', monospace; font-size: .78rem; direction: ltr; text-align: left;
+        background: #0f172a; color: #a5f3fc; border-radius: 10px; padding: 10px 13px;
+        overflow-x: auto; white-space: nowrap; margin: 12px 0 16px;
+    }
+    .gh-m-sec { margin-bottom: 16px; }
+    .gh-m-sec h4 { font-size: .86rem; font-weight: 900; color: #0f766e; margin: 0 0 7px; display: flex; align-items: center; gap: 7px; }
+    .gh-m-sec .exp { font-size: .85rem; color: #3d4458; line-height: 2.05; }
+    .gh-m-sec .exp b { color: #1e293b; }
+    .gh-m-ex { display: flex; flex-direction: column; gap: 7px; }
+    .gh-m-ex .ex {
+        background: #f8fafc; border: 1px solid #eef0f8; border-radius: 11px;
+        padding: 9px 13px; font-size: .82rem; line-height: 1.9;
+    }
+    .gh-m-ex .ex b { color: #0f766e; }
+    .gh-m-ex .ex small { display: block; color: #94a3b8; font-size: .74rem; }
+    .gh-m-mistakes { font-size: .8rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 11px; padding: 10px 13px; line-height: 1.95; }
+    .gh-m-tips { font-size: .8rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 11px; padding: 10px 13px; line-height: 1.95; }
+    .gh-m-lesson { font-size: .74rem; color: #94a3b8; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #eef0f8; }
 
     @media (max-width: 575px) {
         .gh-grid { grid-template-columns: 1fr; }
@@ -122,7 +232,7 @@
             <div class="gh-grid">
                 {% for ld in cd.lessons %}
                     {% for gp in ld.grammar_points %}
-                    <div class="gh-card">
+                    <div class="gh-card" data-gp-id="{{ gp.id }}">
                         <div class="gh-top">
                             <span class="gh-lv">{{ gp.level }}</span>
                             <small style="font-size:10px;color:#94a3b8">{{ ld.lesson.name }}</small>
@@ -136,8 +246,7 @@
                             {% endfor %}
                         </div>
                         {% endif %}
-                        {% if gp.common_mistakes %}<div class="gh-mistakes">⚠️ {{ gp.common_mistakes }}</div>{% endif %}
-                        {% if gp.usage_tips %}<div class="gh-tips">💡 {{ gp.usage_tips }}</div>{% endif %}
+                        <button type="button" class="gh-btn" data-gp="{{ gp.id }}">📘 جزئیات کامل</button>
                     </div>
                     {% endfor %}
                 {% endfor %}
@@ -151,4 +260,6 @@
     <div class="text-center py-5 text-muted">گرامری موجود نیست.</div>
     {% endfor %}
 </div>
+
+<script type="application/json" id="ghData">{{ grammar_json|safe }}</script>
 {% endblock %}
