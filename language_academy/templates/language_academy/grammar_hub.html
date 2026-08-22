@@ -202,15 +202,15 @@
 <div class="container py-4">
     <div class="gh-hero">
         <div class="gh-eyebrow"><span>📘</span> Grammar Hub</div>
-        <h1>گرامر انگلیسی — درس به درس</h1>
-        <p>هر درس یک یا دو نکتهٔ گرامری دارد، با فرمول، مثال دوزبانه، اشتباهات رایج و نکات کاربردی. الهام‌گرفته از <b>English Grammar in Use</b>.</p>
+        <h1>English Grammar — Lesson by Lesson</h1>
+        <p>Each lesson has 1-2 grammar points with structure, bilingual examples, common mistakes and usage tips. Inspired by <b>English Grammar in Use</b>.</p>
         <div class="gh-stats">
-            <div class="gh-stat"><b>{{ total }}</b><small>نکته گرامری</small></div>
-            <div class="gh-stat"><b>{{ worlds_data|length }}</b><small>جهان</small></div>
-            <div class="gh-stat"><b>3</b><small>سطح (A1-B1)</small></div>
+            <div class="gh-stat"><b>{{ total }}</b><small>Grammar points</small></div>
+            <div class="gh-stat"><b>{{ worlds_data|length }}</b><small>Worlds</small></div>
+            <div class="gh-stat"><b>3</b><small>Levels (A1-B1)</small></div>
         </div>
         <div class="gh-levels">
-            <a class="gh-level {% if not level_filter %}on{% endif %}" href="{% url 'language_academy:grammar_hub' %}">همه</a>
+            <a class="gh-level {% if not level_filter %}on{% endif %}" href="{% url 'language_academy:grammar_hub' %}">All</a>
             {% for lv in levels %}
             <a class="gh-level {% if level_filter == lv %}on{% endif %}" href="?level={{ lv }}">{{ lv }}</a>
             {% endfor %}
@@ -246,18 +246,18 @@
                             {% endfor %}
                         </div>
                         {% endif %}
-                        <button type="button" class="gh-btn" data-gp="{{ gp.id }}">📘 جزئیات کامل</button>
+                        <button type="button" class="gh-btn" data-gp="{{ gp.id }}">📘 Full Details</button>
                     </div>
                     {% endfor %}
                 {% endfor %}
             </div>
         </div>
         {% empty %}
-        <div class="text-center text-muted py-4">هنوز گرامری برای این جهان ثبت نشده.</div>
+        <div class="text-center text-muted py-4">No grammar points in this world yet.</div>
         {% endfor %}
     </section>
     {% empty %}
-    <div class="text-center py-5 text-muted">گرامری موجود نیست.</div>
+    <div class="text-center py-5 text-muted">No grammar points available.</div>
     {% endfor %}
 </div>
 

@@ -229,7 +229,7 @@ def _build_vocab(lesson, vocab_list):
             VocabularyExample.objects.create(
                 vocabulary=v,
                 sentence=f'Example sentence with "{word}".',
-                sentence_fa=f'جملهٔ نمونه با «{word}».',
+                sentence_fa=f'Example sentence with "{word}".',
             )
 
 

@@ -189,7 +189,7 @@
             </div>
             <div class="wd-progress-card">
                 <div class="n">{{ world_progress.chapters_completed|default:0 }}/{{ world_progress.total_chapters|default:0 }}</div>
-                <div class="l">فصل کامل شده</div>
+                <div class="l">Chapters completed</div>
                 <div class="bar"><i style="width: {{ world.get_completion_percentage|default:0 }}%"></i></div>
                 <div class="l" style="margin-top:4px">{{ world.get_completion_percentage|default:0|floatformat:0 }}%</div>
             </div>
@@ -198,7 +198,7 @@
 
     <div class="wd-layout">
         <div>
-            <h2 class="wd-sec-title"><span class="bar"></span> فصل‌های جهان</h2>
+            <h2 class="wd-sec-title"><span class="bar"></span> Chapters</h2>
             <div class="wd-chapters"{% if visual_edit %} data-vae-list="chapters"{% endif %}>
                 {% for chapter in chapters %}
                 <div class="wd-chapter {% if chapter.is_completed %}completed{% elif chapter.is_locked %}locked{% endif %}"{% if visual_edit %} data-vae-id="{{ chapter.id }}"{% endif %}>
@@ -212,18 +212,18 @@
                         </div>
                     </div>
                     <div class="wd-ch-side">
-                        <div class="x">⏱ {{ chapter.estimated_time_minutes }} دقیقه</div>
+                        <div class="x">⏱ {{ chapter.estimated_time_minutes }} min</div>
                         {% if chapter.is_locked %}
-                            <button class="wd-ch-btn locked" disabled>🔒 قفل</button>
+                            <button class="wd-ch-btn locked" disabled>🔒 Locked</button>
                         {% elif chapter.is_completed %}
-                            <a class="wd-ch-btn review" href="{% url 'language_academy:chapter_detail' chapter.id %}">↩ مرور</a>
+                            <a class="wd-ch-btn review" href="{% url 'language_academy:chapter_detail' chapter.id %}">↩ Review</a>
                         {% else %}
-                            <a class="wd-ch-btn go" href="{% url 'language_academy:chapter_detail' chapter.id %}">شروع ←</a>
+                            <a class="wd-ch-btn go" href="{% url 'language_academy:chapter_detail' chapter.id %}">Start ←</a>
                         {% endif %}
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center text-muted py-4">هنوز فصلی نیست.</div>
+                <div class="text-center text-muted py-4">No chapters yet.</div>
                 {% endfor %}
             </div>
         </div>

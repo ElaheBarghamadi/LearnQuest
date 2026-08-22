@@ -1019,7 +1019,7 @@
                             {% endif %}
                         </div>
                         {% empty %}
-                            {% if visual_edit %}<p class="lqb-empty-hint">هنوز بلاکی نیست — از ریل سمت چپ چیپ 💡/⚠️/🌟/🔘 را اینجا رها یا کلیک کن.</p>{% endif %}
+                            {% if visual_edit %}<p class="lqb-empty-hint">No blocks yet — drop or click a chip from the left rail 💡/⚠️/🌟/🔘</p>{% endif %}
                         {% endfor %}
                     </div>
                 </div>
@@ -1794,11 +1794,11 @@
                         {% endfor %}
                     </div>
                     {% else %}
-                    <div class="vqb-note">Type: {{ q.question_type }} — فعلاً ویرایش گزینه فقط برای MCQ.</div>
+                    <div class="vqb-note">Type: {{ q.question_type }} — choice editing is only for MCQ for now.</div>
                     {% endif %}
                 </div>
                 {% empty %}
-                <p class="vqb-none">هنوز سوالی نیست — با دکمهٔ پایین بساز 👇</p>
+                <p class="vqb-none">No questions yet — create one with the button below 👇</p>
                 {% endfor %}
             </div>
             <button type="button" class="vqb-add" id="vqbAdd">＋ Add Question (MCQ)</button>
@@ -1948,7 +1948,7 @@
         d.innerHTML = '<div class="vocab-word" data-vf="word">new word</div>'
             + '<div class="vocab-pronounce" data-vf="pronunciation">/…/</div>'
             + '<div class="vocab-meaning" data-vf="meaning">Meaning</div>'
-            + '<div class="vocab-meaning" data-vf="meaning_fa" style="color: var(--text-secondary); font-size: 0.8rem;">معنی</div>'
+            + '<div class="vocab-meaning" data-vf="meaning_fa" style="color: var(--text-secondary); font-size: 0.8rem;">Meaning</div>'
             + '<div class="vocab-example" data-vf="example">"Example sentence"</div>';
         d.querySelectorAll('[data-vf]').forEach((f) => {
             f.contentEditable = 'true';
@@ -2232,9 +2232,9 @@
             + '<span class="ve-imgbar-w">' + w + '%</span>'
             + '<button type="button" data-act="plus" title="بزرگ‌تر">+</button>'
             + '<span class="ve-imgbar-sep"></span>'
-            + '<button type="button" data-act="right" title="راست">راست</button>'
-            + '<button type="button" data-act="center" title="وسط">وسط</button>'
-            + '<button type="button" data-act="left" title="چپ">چپ</button>';
+            + '<button type="button" data-act="right" title="Right">Right</button>'
+            + '<button type="button" data-act="center" title="Center">Center</button>'
+            + '<button type="button" data-act="left" title="Left">Left</button>';
         bar.addEventListener('click', (ev) => {
             const btn = ev.target.closest('button[data-act]');
             if (!btn) return;

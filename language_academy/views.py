@@ -311,7 +311,7 @@ def take_quiz(request, quiz_id):
 
     # قفل: درس یا فصل قبلی کامل نشده → اجازهٔ کوئیز نیست
     if not quiz.lesson.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این کوئیز هنوز قفل است — اول درس قبلی را کامل کن!')
+        messages.warning(request, '🔒 Complete the previous lesson first to unlock this quiz!')
         return redirect('language_academy:chapter_detail', chapter_id=quiz.lesson.chapter.id)
 
 
@@ -467,7 +467,7 @@ def submit_quiz_auto(request, session_key):
 def submit_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     if not quiz.lesson.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این کوئیز هنوز قفل است!')
+        messages.warning(request, '🔒 This quiz is still locked!')
         return redirect('language_academy:chapter_detail', chapter_id=quiz.lesson.chapter.id)
     session_key = request.POST.get('session_key')
 
@@ -575,10 +575,10 @@ def take_exam(request, exam_id):
 
     # قفل: امتحان فصلِ قفل‌شده یا جهانِ قفل‌شده → اجازه نیست
     if exam.chapter and not exam.chapter.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این امتحان هنوز قفل است — اول فصل قبلی را کامل کن!')
+        messages.warning(request, '🔒 Complete the previous chapter first!')
         return redirect('language_academy:world_detail', world_id=exam.chapter.world.id)
     if exam.world and not exam.world.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این امتحان هنوز قفل است — اول جهان قبلی را کامل کن!')
+        messages.warning(request, '🔒 Complete the previous world first!')
         return redirect('language_academy:world_map')
 
     # امتحان فصل: همهٔ درس‌های عادی فصل باید کامل شده باشند (درس‌های ویژهٔ پولی مستثنا هستند)
@@ -589,7 +589,7 @@ def take_exam(request, exam_id):
             lesson__is_exclusive=False, status='completed'
         ).count()
         if total == 0 or done < total:
-            messages.warning(request, '🔒 برای امتحان فصل، اول همهٔ درس‌های آن را کامل کن!')
+            messages.warning(request, '🔒 Complete all lessons in this chapter before the exam!')
             return redirect('language_academy:chapter_detail', chapter_id=exam.chapter.id)
 
     # امتحان جهان: همهٔ فصل‌های جهان باید کامل شده باشند
@@ -600,7 +600,7 @@ def take_exam(request, exam_id):
                 user=request.user, chapter__in=chapters, is_completed=True
             ).count()
             if completed_chapters < chapters.count():
-                messages.warning(request, '🔒 برای امتحان نهایی، اول همهٔ فصل‌های جهان را کامل کن!')
+                messages.warning(request, '🔒 Complete all chapters before the world exam!')
                 return redirect('language_academy:world_detail', world_id=exam.world.id)
 
     attempt_count = ExamAttempt.objects.filter(user=request.user, exam=exam).count()
@@ -821,17 +821,17 @@ def save_exam_time(request):
 def submit_exam(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
     if exam.chapter and not exam.chapter.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این امتحان هنوز قفل است!')
+        messages.warning(request, '🔒 This exam is still locked!')
         return redirect('language_academy:world_detail', world_id=exam.chapter.world.id)
     if exam.world and not exam.world.is_unlocked_for_user(request.user):
-        messages.warning(request, '🔒 این امتحان هنوز قفل است!')
+        messages.warning(request, '🔒 This exam is still locked!')
         return redirect('language_academy:world_map')
     if exam.chapter:
         total = exam.chapter.lessons.filter(is_published=True).count()
         done = UserLessonProgress.objects.filter(
             user=request.user, lesson__chapter=exam.chapter, status='completed').count()
         if total == 0 or done < total:
-            messages.warning(request, '🔒 برای امتحان فصل، اول همهٔ درس‌های آن را کامل کن!')
+            messages.warning(request, '🔒 Complete all lessons in this chapter before the exam!')
             return redirect('language_academy:chapter_detail', chapter_id=exam.chapter.id)
     if exam.world:
         chapters = exam.world.chapters.filter(is_published=True)
@@ -839,7 +839,7 @@ def submit_exam(request, exam_id):
             cc = UserChapterProgress.objects.filter(
                 user=request.user, chapter__in=chapters, is_completed=True).count()
             if cc < chapters.count():
-                messages.warning(request, '🔒 برای امتحان نهایی، اول همهٔ فصل‌های جهان را کامل کن!')
+                messages.warning(request, '🔒 Complete all chapters before the world exam!')
                 return redirect('language_academy:world_detail', world_id=exam.world.id)
     session_key = request.POST.get('session_key')
 
