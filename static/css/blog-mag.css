@@ -363,37 +363,19 @@
 .mg-reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s cubic-bezier(.22,1,.36,1), transform .6s cubic-bezier(.22,1,.36,1); }
 .mg-reveal.in { opacity: 1; transform: none; }
 
-/* mobile */
+/* ============================================================
+   Mobile (≤ 640px) — consolidated, deduplicated
+   ============================================================ */
 @media (max-width: 640px) {
+    /* shell / hero / grid --------------------------------------- */
     .mg-shell { padding: 2px 12px 40px; }
-    .mg-related-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
-    .mg-prose { padding: 20px 15px 26px; border-radius: 16px; font-size: 15px; line-height: 2.1; }
-    .mg-prose h2 { font-size: 19px; }
-    .mg-art-cover { margin-bottom: 16px; border-radius: 14px; min-height: 120px; }
-    .mg-art-title { font-size: 21px; line-height: 1.6; margin-bottom: 10px; }
-    .mg-art-sub { font-size: 13.5px; line-height: 1.95; margin-bottom: 16px; }
-    .mg-art-meta { gap: 8px 12px; font-size: 10.5px; padding-bottom: 14px; margin-bottom: 16px; }
-    .mg-actions { gap: 7px; margin: 22px 0 26px; }
-    .mg-act { padding: 8px 12px; font-size: 11.5px; }
-    .mg-prose { padding: 16px 13px; font-size: 14px; line-height: 2; }
-    .mg-prose h2 { font-size: 18px; margin: 26px 0 12px; }
-    .mg-prose blockquote { padding: 11px 14px; margin: 16px 0; }
-    .mg-comments-title { font-size: 15px; }
-    .c-item { padding: 13px 2px; gap: 9px; }
-    .c-avatar { width: 34px; height: 34px; font-size: 13px; }
-    .c-text { font-size: 12.8px; }
-    .mg-crumb { font-size: 8px; margin-bottom: 8px; gap: 2px; opacity: .3; }
-    .mg-crumb span:last-child { display: none; }
-    .mg-crumb a:first-child::before { content: '‹ '; font-size: 9px; }
-    .mg-crumb a:not(:first-child) { display: none; }
-    .mg-crumb a { padding: 3px 7px; border-radius: 99px; background: rgba(148,163,184,.08); }
-    .mg-hero { padding: 26px 4px 4px; }
+    .mg-hero  { padding: 22px 4px 4px; }
     .mg-hero h1 { font-size: 24px; }
     .mg-hero-sub { font-size: 13.5px; margin-bottom: 18px; }
     .mg-search button { padding: 9px 15px; font-size: 12px; }
     .mg-chips { gap: 6px; margin-bottom: 22px; }
-    .mg-chip { font-size: 11.5px; padding: 6px 12px; }
-    .mg-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .mg-chip  { font-size: 11.5px; padding: 6px 12px; }
+    .mg-grid  { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .mg-thumb { height: 96px; }
     .mg-cbody { padding: 10px 10px 11px; gap: 6px; }
     .mg-cmeta { font-size: 10px; gap: 5px; flex-wrap: wrap; }
@@ -406,11 +388,84 @@
     .mg-feat-body > p { font-size: 12.5px; }
     .mg-stats { gap: 9px; font-size: 11px; }
     .mg-panel { padding: 14px; border-radius: 15px; }
-    .mg-art-title { font-size: 22px; }
-    .mg-art-meta { gap: 10px; font-size: 11.5px; }
-    .mg-art-cover { border-radius: 16px; min-height: 140px; }
-    .mg-prose { font-size: 14.5px; }
-    .mg-actions { gap: 8px; }
-    .mg-act { padding: 9px 13px; font-size: 12px; }
-    .c-form { padding: 12px; }
+
+    /* article page ---------------------------------------------- */
+    .mg-article, .mg-article > * { min-width: 0; }
+    .mg-crumb { font-size: 9px; margin-bottom: 10px; gap: 3px; opacity: .5; }
+    .mg-crumb span:last-child { display: none; }
+    .mg-crumb a { padding: 3px 8px; border-radius: 99px; background: rgba(148,163,184,.1); color: #64748b; }
+    .mg-crumb a:first-child::before { content: '‹ '; font-size: 10px; }
+    .mg-crumb a:not(:first-child) { display: none; }
+    .mg-crumb .sep { display: none; }
+
+    .mg-cat-badge { font-size: 11px; padding: 5px 12px; margin-bottom: 12px; }
+    .mg-art-title { font-size: 22px; line-height: 1.5; letter-spacing: -.2px; margin-bottom: 10px; }
+    .mg-art-sub   { font-size: 13.5px; line-height: 1.95; margin-bottom: 14px; }
+    .mg-art-meta  { gap: 8px 12px; font-size: 10.5px; padding-bottom: 12px; margin-bottom: 14px; border-bottom-style: dashed; }
+    .mg-art-meta svg { width: 13px; height: 13px; }
+    .mg-art-cover { margin-bottom: 16px; border-radius: 14px; min-height: 140px; }
+    .mg-art-cover img { max-height: 260px; }
+
+    .mg-prose {
+        padding: 18px 14px 24px;
+        border-radius: 16px;
+        font-size: 14.5px; line-height: 2.05;
+        word-wrap: break-word;
+        overflow-wrap: anywhere;
+    }
+    .mg-prose h2 { font-size: 18px; margin: 26px 0 12px; }
+    .mg-prose h3 { font-size: 16px; margin: 22px 0 10px; }
+    .mg-prose blockquote, .mg-prose .tip, .mg-prose .note, .mg-prose .warn {
+        padding: 11px 14px; margin: 16px 0; border-radius: 0 10px 10px 0;
+    }
+    .mg-prose pre { font-size: 12px; padding: 12px 14px; border-radius: 10px; }
+    .mg-prose img { border-radius: 10px; }
+    .mg-prose table { display: block; overflow-x: auto; }
+
+    .mg-actions { gap: 7px; margin: 22px 0 26px; }
+    .mg-act     { padding: 8px 13px; font-size: 12px; border-radius: 10px; }
+
+    /* comments -------------------------------------------------- */
+    .mg-comments {
+        padding: 18px 14px 16px; border-radius: 18px;
+        min-width: 0; overflow: hidden;
+    }
+    .mg-comments-title { font-size: 14.5px; margin-bottom: 14px; }
+    .mg-comments-title .cc-badge { font-size: 10.5px; padding: 2px 9px; }
+
+    .c-form { padding: 12px; border-radius: 14px; min-width: 0; }
+    .c-form-row { gap: 9px; }
+    .c-form-ava { width: 34px; height: 34px; font-size: 13px; }
+    .c-form textarea { font-size: 13.5px; min-height: 62px; width: 100%; }
+    .c-form-foot { gap: 8px; flex-wrap: wrap; }
+    .c-counter { font-size: 11px; }
+    .btn-send  { padding: 8px 18px; font-size: 12.5px; border-radius: 10px; }
+
+    .login-hint { padding: 12px 14px; font-size: 12.5px; border-radius: 12px; }
+
+    .c-list { gap: 8px; }
+    .c-item { padding: 12px 12px; gap: 10px; border-radius: 13px; }
+    .c-avatar { width: 34px; height: 34px; font-size: 13px; }
+    .c-main { min-width: 0; }
+    .c-head { gap: 7px; margin-bottom: 4px; }
+    .c-user { font-size: 12.5px; }
+    .c-date { font-size: 10.5px; }
+    .c-text {
+        font-size: 12.8px; line-height: 1.85;
+        overflow-wrap: anywhere; word-wrap: break-word;
+    }
+    .c-foot { gap: 10px; }
+    .c-like, .c-reply-btn { font-size: 11px; padding: 3px 7px; }
+    .c-replies { padding-inline-start: 10px; }
+    .c-replies .c-item { padding: 10px 10px; }
+
+    .mg-related-grid { grid-template-columns: repeat(2, 1fr); gap: 9px; }
+}
+
+@media (max-width: 360px) {
+    .mg-shell { padding: 2px 10px 40px; }
+    .mg-art-title { font-size: 20px; }
+    .mg-prose { padding: 15px 12px 22px; font-size: 14px; }
+    .c-form { padding: 10px; }
+    .c-item { padding: 11px 10px; gap: 8px; }
 }

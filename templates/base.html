@@ -779,67 +779,108 @@
 
         .mobile-links {
             flex: 1;
-            padding: 12px 0 14px;
+            padding: 14px 12px 18px;
             overflow-y: auto;
             overscroll-behavior: contain;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
             scrollbar-color: rgba(59, 130, 246, 0.25) transparent;
+            display: flex; flex-direction: column; gap: 10px;
         }
 
-        .mobile-group {
-            font-size: 0.55rem;
-            font-weight: 700;
-            color: #b3b9d4;
-            padding: 7px 14px 3px;
-            letter-spacing: .3px;
-            display: flex;
-            align-items: center;
+        /* --- Quick action grid (2x2) --- */
+        .mobile-quick {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
             gap: 6px;
+            margin-bottom: 6px;
         }
+        .mq-item {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 4px;
+            padding: 12px 6px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(76,155,248,0.12), rgba(108,99,255,0.10));
+            border: 1px solid rgba(76,155,248,0.16);
+            color: #1e2749;
+            font-weight: 700; font-size: 0.72rem;
+            text-decoration: none;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+        .mq-item .mq-ic { font-size: 1.35rem; }
+        .mq-item:active { transform: scale(0.96); background: linear-gradient(135deg,#4C9BF8,#6C63FF); color: #fff; }
+        .mq-item:hover { color: var(--primary-dark, #1e2749); }
 
-        .mobile-group::after {
-            content: '';
-            flex: 1;
-            border-top: 1px dashed rgba(59, 130, 246, 0.22);
+        /* --- Accordion groups --- */
+        .mobile-acc {
+            background: rgba(255,255,255,0.6);
+            border: 1px solid rgba(148,163,184,0.18);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .mobile-acc > summary {
+            list-style: none;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 12px 14px;
+            cursor: pointer;
+            font-weight: 800; font-size: 0.85rem;
+            color: #1e2749;
+            user-select: none;
+        }
+        .mobile-acc > summary::-webkit-details-marker { display: none; }
+        .mobile-acc .acc-title { display: inline-flex; align-items: center; gap: 6px; }
+        .mobile-acc .acc-chev {
+            font-size: 1.3rem; line-height: 1;
+            color: #94a3b8; font-weight: 400;
+            transform: rotate(-90deg);  /* points ‹ (points left in RTL when collapsed) */
+            transition: transform 0.2s ease;
+        }
+        .mobile-acc[open] .acc-chev { transform: rotate(90deg); }
+        .mobile-acc[open] > summary { border-bottom: 1px dashed rgba(148,163,184,0.28); }
+        .mobile-acc:hover { border-color: rgba(76,155,248,0.32); }
+
+        .mobile-acc .acc-body {
+            display: flex; flex-direction: column; gap: 2px;
+            padding: 6px;
+            animation: accSlide 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes accSlide {
+            from { opacity: 0; transform: translateY(-4px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .mobile-links a {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 13px;
-            min-height: 34px;
-            color: #454b6e;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #3d4458;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.8rem;
-            margin: 0 6px;
-            border-radius: 9px;
+            font-size: 0.85rem;
+            border-radius: 10px;
             transition: background 0.13s ease, color 0.13s ease;
         }
 
         .mobile-links a > span {
-            width: 18px;
-            font-size: 0.78rem;
+            width: 22px;
+            font-size: 1rem;
             text-align: center;
             flex: 0 0 auto;
-            opacity: .7;
         }
 
         .mobile-links a:hover,
         .mobile-links a.active {
-            background: rgba(59, 130, 246, 0.07);
-            color: var(--primary-dark);
+            background: rgba(76, 155, 248, 0.10);
+            color: #1D4ED8;
         }
 
         .mobile-menu.open .mobile-links > * {
             animation: mmlIn 0.34s cubic-bezier(0.2, 0.8, 0.3, 1) both;
         }
-
-        .mobile-menu.open .mobile-links > *:nth-child(n+6) { animation-delay: 0.04s; }
-        .mobile-menu.open .mobile-links > *:nth-child(n+11) { animation-delay: 0.08s; }
-        .mobile-menu.open .mobile-links > *:nth-child(n+16) { animation-delay: 0.12s; }
+        .mobile-menu.open .mobile-links > *:nth-child(n+3) { animation-delay: 0.04s; }
+        .mobile-menu.open .mobile-links > *:nth-child(n+5) { animation-delay: 0.08s; }
 
         @keyframes mmlIn {
             from { opacity: 0; transform: translateX(16px); }
@@ -1450,36 +1491,77 @@
     </div>
     <div class="mobile-links">
         {% if user.is_authenticated %}
-            <div class="mobile-group">🏠 اصلی</div>
-            <a href="{% url 'index' %}"><span>📊</span> داشبورد</a>
-            <a href="{% url 'profile' %}"><span>👤</span> پروفایل من</a>
-            <a href="{% url 'guide' %}"><span>🧭</span> راهنمای سایت</a>
-            <div class="mobile-group">🎓 یادگیری</div>
-            <a href="{% url 'language_academy:world_map' %}"><span>🎓</span> اکادمی</a>
-            <a href="{% url 'language:home' %}"><span>🌐</span> بازی زبان</a>
-            <a href="{% url 'games' %}"><span>🎮</span> بازی‌ها</a>
-            <a href="{% url 'math-products' %}"><span>🛠️</span> ابزارها</a>
-            <div class="mobile-group">🛒 فروشگاه و اقتصاد</div>
-            <a href="{% url 'shop:home' %}"><span>🛒</span> فروشگاه</a>
-            <a href="{% url 'shop:inventory' %}"><span>🎒</span> موجودی</a>
-            <a href="{% url 'economy:wallet' %}"><span>👛</span> کیف پول</a>
-            <a href="{% url 'economy:pet' %}"><span>🐾</span> پت من</a>
-            <a href="{% url 'economy:season' %}"><span>🌸</span> فصل و سیزن‌پس</a>
-            <div class="mobile-group">🤝 اجتماعی</div>
-            <a href="{% url 'messenger:chat' %}"><span>💬</span> پیامرسان</a>
-            <a href="{% url 'economy:leaderboard' %}"><span>🏆</span> رتبه‌بندی</a>
-            <a href="{% url 'blog:blog_home' %}"><span>📝</span> وبلاگ</a>
-            <div class="mobile-group">بیشتر</div>
-            <a href="{% url 'contact' %}"><span>📞</span> تماس با ما</a>
-            {% if user.is_staff %}
-            <a href="{% url 'panel:dashboard' %}"><span>🛡️</span> پنل مدیریت</a>
-            {% endif %}
+
+            {# —— Quick actions grid: 4 primary shortcuts, always visible —— #}
+            <div class="mobile-quick">
+                <a href="{% url 'index' %}" class="mq-item"><span class="mq-ic">🏠</span><span>خانه</span></a>
+                <a href="{% url 'language_academy:world_map' %}" class="mq-item"><span class="mq-ic">🎓</span><span>آکادمی</span></a>
+                <a href="{% url 'shop:home' %}" class="mq-item"><span class="mq-ic">🛒</span><span>فروشگاه</span></a>
+                <a href="{% url 'messenger:chat' %}" class="mq-item"><span class="mq-ic">💬</span><span>پیام</span></a>
+            </div>
+
+            {# —— Accordion groups —— #}
+            <details class="mobile-acc" open>
+                <summary>
+                    <span class="acc-title">🎓 یادگیری</span>
+                    <span class="acc-chev">›</span>
+                </summary>
+                <div class="acc-body">
+                    <a href="{% url 'language_academy:world_map' %}"><span>🌍</span> آکادمی زبان</a>
+                    <a href="{% url 'language:home' %}"><span>🌐</span> بازی زبان</a>
+                    <a href="{% url 'games' %}"><span>🎮</span> بازی‌ها</a>
+                    <a href="{% url 'math-products' %}"><span>🛠️</span> ابزارها</a>
+                </div>
+            </details>
+
+            <details class="mobile-acc">
+                <summary>
+                    <span class="acc-title">🛍️ فروشگاه و اقتصاد</span>
+                    <span class="acc-chev">›</span>
+                </summary>
+                <div class="acc-body">
+                    <a href="{% url 'shop:home' %}"><span>🛒</span> فروشگاه</a>
+                    <a href="{% url 'shop:inventory' %}"><span>🎒</span> موجودی</a>
+                    <a href="{% url 'economy:wallet' %}"><span>👛</span> کیف پول</a>
+                    <a href="{% url 'economy:pet' %}"><span>🐾</span> پت من</a>
+                    <a href="{% url 'economy:season' %}"><span>🌸</span> فصل و سیزن‌پس</a>
+                </div>
+            </details>
+
+            <details class="mobile-acc">
+                <summary>
+                    <span class="acc-title">🤝 اجتماعی</span>
+                    <span class="acc-chev">›</span>
+                </summary>
+                <div class="acc-body">
+                    <a href="{% url 'messenger:chat' %}"><span>💬</span> پیام‌رسان</a>
+                    <a href="{% url 'economy:leaderboard' %}"><span>🏆</span> رتبه‌بندی</a>
+                    <a href="{% url 'blog:blog_home' %}"><span>📝</span> وبلاگ</a>
+                </div>
+            </details>
+
+            <details class="mobile-acc">
+                <summary>
+                    <span class="acc-title">⚙️ حساب و بیشتر</span>
+                    <span class="acc-chev">›</span>
+                </summary>
+                <div class="acc-body">
+                    <a href="{% url 'profile' %}"><span>👤</span> پروفایل من</a>
+                    <a href="{% url 'guide' %}"><span>🧭</span> راهنما</a>
+                    <a href="{% url 'contact' %}"><span>📞</span> تماس با ما</a>
+                    {% if user.is_staff %}
+                    <a href="{% url 'panel:dashboard' %}"><span>🛡️</span> پنل مدیریت</a>
+                    {% endif %}
+                </div>
+            </details>
+
         {% else %}
-            <div class="mobile-group">👋 خوش آمدی</div>
-            <a href="{% url 'login' %}"><span>🔑</span> ورود</a>
-            <a href="{% url 'register' %}"><span>✏️</span> ثبت‌نام</a>
-            <a href="{% url 'contact' %}"><span>📞</span> تماس با ما</a>
-            <a href="{% url 'guide' %}"><span>🧭</span> راهنمای سایت</a>
+            <div class="mobile-quick">
+                <a href="{% url 'login' %}" class="mq-item"><span class="mq-ic">🔑</span><span>ورود</span></a>
+                <a href="{% url 'register' %}" class="mq-item"><span class="mq-ic">✏️</span><span>ثبت‌نام</span></a>
+                <a href="{% url 'guide' %}" class="mq-item"><span class="mq-ic">🧭</span><span>راهنما</span></a>
+                <a href="{% url 'contact' %}" class="mq-item"><span class="mq-ic">📞</span><span>تماس</span></a>
+            </div>
         {% endif %}
     </div>
     {% if user.is_authenticated %}
