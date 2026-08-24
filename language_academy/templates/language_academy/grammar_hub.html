@@ -79,6 +79,8 @@
     /* ---------- Cards ---------- */
     .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
     .gh-card {
+        min-width: 0;               /* let grid track shrink us instead of us pushing it wider */
+        overflow: hidden;           /* clip long unbreakable inner boxes */
         background: rgba(255,255,255,.75); backdrop-filter: blur(14px) saturate(160%);
         -webkit-backdrop-filter: blur(14px) saturate(160%);
         border: 1px solid rgba(255,255,255,.9); border-radius: 16px;
@@ -86,6 +88,7 @@
         padding: 14px 16px; transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s, border-color .25s;
         display: flex; flex-direction: column; gap: 8px; cursor: pointer;
     }
+    .gh-card > * { min-width: 0; }  /* same rule for children so they also participate in shrink */
     .gh-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(28,32,64,.14); border-color: rgba(30,168,154,.35); }
     .gh-card .gh-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .gh-card .gh-lv  {
@@ -172,12 +175,129 @@
     .gh-m-tips     { font-size: .84rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 11px; padding: 10px 13px; line-height: 1.85; white-space: pre-wrap; }
     .gh-m-lesson   { font-size: .78rem; color: #94a3b8; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #eef0f8; }
 
-    @media (max-width: 575px) {
-        .gh-grid { grid-template-columns: 1fr; }
-        .gh-hero h1 { font-size: 21px; }
-        .gh-stat { padding: 8px 14px; min-width: 95px; }
-        .gh-modal { padding: 22px 18px 18px; border-radius: 18px; }
-        .gh-m-title { font-size: 1.1rem; }
+    /* =========================================================
+       Responsive
+       ========================================================= */
+
+    /* tablet — cards a bit tighter */
+    @media (max-width: 900px) {
+        .gh-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+        .gh-hero { padding: 22px 14px 4px; }
+        .gh-stats { gap: 8px; margin-bottom: 20px; }
+        .gh-stat { padding: 9px 18px; min-width: 100px; }
+    }
+
+    /* mobile — single column, tighter typography, wrapped structure */
+    @media (max-width: 600px) {
+        .container.py-4 { padding-inline: 12px !important; }
+        .gh-hero { padding: 18px 6px 4px; }
+        .gh-eyebrow { font-size: 11.5px; padding: 5px 13px; margin-bottom: 12px; }
+        .gh-hero h1 { font-size: 20px; letter-spacing: -.2px; margin-bottom: 8px; }
+        .gh-hero p  { font-size: 13px; line-height: 1.85; max-width: 100%; margin-bottom: 16px; padding: 0 4px; }
+
+        .gh-stats { gap: 6px; margin-bottom: 16px; }
+        .gh-stat { padding: 8px 14px; min-width: 82px; flex: 1; max-width: 33%; }
+        .gh-stat b { font-size: 1.15rem; }
+        .gh-stat small { font-size: 10.5px; }
+
+        .gh-levels { gap: 6px; margin-bottom: 18px; }
+        .gh-level { font-size: 11.5px; padding: 6px 14px; }
+
+        .gh-search-wrap { max-width: 100%; margin: 0 auto 22px; }
+        .gh-search { padding: 11px 40px 11px 14px; font-size: 13px; }
+
+        .gh-world { margin-bottom: 24px; }
+        .gh-world-head { padding: 11px 14px; gap: 10px; border-radius: 14px; margin-bottom: 12px; }
+        .gh-world-head .ico { width: 36px; height: 36px; font-size: 1rem; border-radius: 11px; }
+        .gh-world-head h2 { font-size: 15px; }
+        .gh-world-head small { font-size: 10.5px; }
+        .gh-world-count { font-size: 10px; padding: 3px 10px; }
+
+        .gh-chapter { margin-bottom: 16px; }
+        .gh-chapter-title { font-size: 13px; margin-bottom: 8px; }
+
+        /* one column, but cards get room to breathe */
+        .gh-grid { grid-template-columns: 1fr; gap: 12px; }
+        .gh-card {
+            padding: 14px 14px 15px;
+            border-radius: 14px;
+            gap: 9px;
+        }
+        .gh-card .gh-top { justify-content: space-between; }
+        .gh-card .gh-lv { font-size: 9.5px; padding: 3px 9px; }
+        .gh-card .gh-lesson-tag { font-size: 9.5px; max-width: 62%; }
+        .gh-card h3 { font-size: 15px; line-height: 1.55; }
+        .gh-card h3 small { font-size: 11px; margin-top: 2px; }
+
+        /* the LTR code block: horizontal scroll on mobile, no clip */
+        .gh-card .gh-struct {
+            font-size: 11px; padding: 8px 10px;
+            white-space: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            line-height: 1.6;
+        }
+        .gh-card .gh-struct::-webkit-scrollbar { height: 3px; }
+        .gh-card .gh-struct::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 4px; }
+
+        /* examples — force full width, block layout, no LTR/RTL bleed */
+        .gh-card .gh-ex {
+            font-size: 12px; line-height: 1.7;
+            direction: ltr; text-align: left; width: 100%;
+        }
+        .gh-card .gh-ex .row { padding: 4px 0; }
+        .gh-card .gh-ex .row b {
+            display: block; direction: ltr; text-align: left;
+            overflow-wrap: anywhere; word-break: break-word;
+        }
+        .gh-card .gh-ex .row .fa {
+            display: block;
+            direction: rtl; text-align: right;
+            font-size: 11px; margin-top: 2px;
+            overflow-wrap: anywhere;
+        }
+        .gh-card .gh-btn {
+            width: 100%; text-align: center; justify-content: center;
+            font-size: 12.5px; padding: 10px 14px; border-radius: 11px;
+            margin-top: 2px;
+        }
+
+        /* modal */
+        .gh-modal-overlay { padding: 10px; align-items: flex-start; padding-top: 20px; }
+        .gh-modal { padding: 22px 18px 20px; border-radius: 18px; max-height: 92vh; max-height: 92dvh; }
+        .gh-modal-x { top: 12px; left: 12px; width: 30px; height: 30px; font-size: .85rem; }
+        .gh-m-head { gap: 8px; }
+        .gh-m-lv   { font-size: 9.5px; padding: 3px 10px; }
+        .gh-m-lesson-tag { font-size: 10.5px; }
+        .gh-m-title { font-size: 1.05rem; line-height: 1.4; }
+        .gh-m-fa    { font-size: .78rem; }
+        .gh-m-struct {
+            font-size: 12px; padding: 9px 11px;
+            white-space: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            line-height: 1.6;
+        }
+        .gh-m-struct::-webkit-scrollbar { height: 3px; }
+        .gh-m-struct::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); border-radius: 4px; }
+        .gh-m-ex .ex { direction: ltr; text-align: left; }
+        .gh-m-ex .ex .en { display: block; overflow-wrap: anywhere; }
+        .gh-m-ex .ex .fa { display: block; direction: rtl; text-align: right; overflow-wrap: anywhere; }
+        .gh-m-sec h4 { font-size: .82rem; }
+        .gh-m-sec .exp { font-size: .82rem; line-height: 1.9; }
+        .gh-m-ex .ex { padding: 8px 12px; font-size: .8rem; }
+        .gh-m-mistakes, .gh-m-tips { font-size: .78rem; padding: 9px 12px; }
+    }
+
+    /* very small phones */
+    @media (max-width: 360px) {
+        .container.py-4 { padding-inline: 10px !important; }
+        .gh-hero h1 { font-size: 18px; }
+        .gh-hero p  { font-size: 12px; }
+        .gh-stat   { padding: 7px 10px; min-width: 72px; }
+        .gh-stat b { font-size: 1rem; }
+        .gh-card h3 { font-size: 14px; }
+        .gh-card .gh-struct { font-size: 10.5px; }
     }
 </style>
 {% endblock %}
