@@ -1,149 +1,126 @@
 {% extends 'language_academy/base_academy.html' %}
 {% load static %}
 
-{% block title %}Grammar Hub | LearnQuest
-<!-- مودال جزئیات گرامر -->
-<div class="gh-modal-overlay" id="ghModal">
-    <div class="gh-modal">
-        <button class="gh-modal-x" id="ghModalX" type="button" aria-label="بستن">✕</button>
-        <div id="ghModalBody"></div>
-    </div>
-</div>
+{% block title %}Grammar Hub | LearnQuest{% endblock %}
 
-<script>
-(function () {
-    'use strict';
-    var raw = document.getElementById('ghData');
-    if (!raw) return;
-    var parsed = JSON.parse(raw.textContent);
-    var items = Array.isArray(parsed) ? parsed : (parsed.items || []);
-    var modal = document.getElementById('ghModal');
-    var body = document.getElementById('ghModalBody');
-    var closeBtn = document.getElementById('ghModalX');
-    var byId = {};
-    items.forEach(function (it) { byId[it.id] = it; });
-
-    function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-    function open(id) {
-        var g = byId[id];
-        if (!g) return;
-        var exHtml = (g.examples || []).map(function (e) {
-            return '<div class="ex"><b>' + esc(e.en) + '</b> — ' + esc(e.fa) +
-                   (e.en !== e.fa ? '<small>' + esc(e.en) + '</small>' : '') + '</div>';
-        }).join('');
-        body.innerHTML =
-            '<div class="gh-m-head"><span class="gh-m-lv">' + g.lv + '</span><span style="font-size:.72rem;color:#94a3b8">📖 ' + esc(g.lesson) + '</span></div>' +
-            '<h2 class="gh-m-title">' + esc(g.title) + '</h2>' +
-            (g.fa ? '<div class="gh-m-fa">' + esc(g.fa) + '</div>' : '') +
-            (g.struct ? '<div class="gh-m-struct">' + esc(g.struct) + '</div>' : '') +
-            '<div class="gh-m-sec"><h4>📘 Explanation</h4><div class="exp">' + g.exp + '</div></div>' +
-            (exHtml ? '<div class="gh-m-sec"><h4>✏️ Examples</h4><div class="gh-m-ex">' + exHtml + '</div></div>' : '') +
-            (g.mistakes ? '<div class="gh-m-sec"><h4>⚠️ Common Mistakes</h4><div class="gh-m-mistakes">' + esc(g.mistakes) + '</div></div>' : '') +
-            (g.tips ? '<div class="gh-m-sec"><h4>💡 Usage Tips</h4><div class="gh-m-tips">' + esc(g.tips) + '</div></div>' : '') +
-            '<div class="gh-m-lesson">📚 Lesson: <b>' + esc(g.lesson) + '</b></div>';
-        modal.classList.add('open');
-    }
-    function close() { modal.classList.remove('open'); }
-
-    document.querySelectorAll('.gh-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () { open(parseInt(btn.dataset.gp, 10)); });
-    });
-    closeBtn.addEventListener('click', close);
-    modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-})();
-</script>
-
-{% endblock %}
-
-{% block content %}
+{% block extra_css %}
 <style>
+    /* ---------- Hero ---------- */
     .gh-hero { text-align: center; padding: 26px 10px 8px; }
     .gh-eyebrow {
         display: inline-flex; align-items: center; gap: 8px;
         font-size: 12.5px; font-weight: 800; color: #0f766e;
-        background: rgba(30,168,154,.1); border: 1px solid rgba(30,168,154,.22);
+        background: rgba(30,168,154,.10); border: 1px solid rgba(30,168,154,.22);
         padding: 6px 16px; border-radius: 99px; margin-bottom: 14px;
     }
     .gh-hero h1 { font-size: clamp(24px, 3.6vw, 36px); font-weight: 900; color: #1e293b; margin-bottom: 10px; }
-    .gh-hero p { color: #64748b; font-size: 14.5px; max-width: 620px; margin: 0 auto 22px; line-height: 2; }
-    .gh-stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 26px; }
+    .gh-hero p  { color: #64748b; font-size: 14.5px; max-width: 640px; margin: 0 auto 22px; line-height: 1.9; }
+
+    .gh-stats { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 22px; }
     .gh-stat {
         background: rgba(255,255,255,.7); border: 1px solid rgba(255,255,255,.9);
         border-radius: 14px; padding: 10px 22px; text-align: center;
         box-shadow: 0 6px 18px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.9);
+        min-width: 110px;
     }
-    .gh-stat b { display: block; font-size: 1.4rem; font-weight: 900; color: #0f766e; }
+    .gh-stat b     { display: block; font-size: 1.4rem; font-weight: 900; color: #0f766e; line-height: 1.2; }
     .gh-stat small { font-size: 11px; color: #64748b; font-weight: 700; }
 
-    .gh-levels { display: flex; justify-content: center; gap: 8px; margin-bottom: 26px; flex-wrap: wrap; }
+    /* ---------- Level filter ---------- */
+    .gh-levels { display: flex; justify-content: center; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; }
     .gh-level {
         font-size: 12.5px; font-weight: 800; padding: 7px 18px; border-radius: 99px;
-        background: rgba(255,255,255,.65); border: 1.5px solid rgba(255,255,255,.9);
+        background: rgba(255,255,255,.7); border: 1.5px solid rgba(255,255,255,.9);
         color: #64748b; text-decoration: none; transition: .2s;
     }
     .gh-level:hover { border-color: rgba(30,168,154,.45); color: #0f766e; }
-    .gh-level.on { background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff; border-color: transparent; }
+    .gh-level.on    { background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff; border-color: transparent; }
 
+    /* ---------- Search ---------- */
+    .gh-search-wrap { max-width: 480px; margin: 0 auto 26px; position: relative; }
+    .gh-search {
+        width: 100%; padding: 12px 44px 12px 18px; border-radius: 14px;
+        border: 1.5px solid rgba(255,255,255,.9); background: rgba(255,255,255,.75);
+        font: 500 14px inherit; color: #1e293b; outline: none; transition: .2s;
+        box-shadow: 0 4px 14px rgba(28,32,64,.06);
+    }
+    .gh-search:focus { border-color: rgba(30,168,154,.45); background: #fff; }
+    .gh-search-icon { position: absolute; top: 50%; left: 16px; transform: translateY(-50%); color: #94a3b8; pointer-events: none; }
+
+    /* ---------- World / Chapter ---------- */
     .gh-world { margin-bottom: 30px; }
     .gh-world-head {
         display: flex; align-items: center; gap: 12px;
-        background: linear-gradient(135deg, rgba(30,168,154,.12), rgba(232,163,61,.1));
+        background: linear-gradient(135deg, rgba(30,168,154,.12), rgba(232,163,61,.10));
         border: 1px solid rgba(30,168,154,.2);
         border-radius: 16px; padding: 13px 18px; margin-bottom: 14px;
     }
     .gh-world-head .ico {
         width: 42px; height: 42px; border-radius: 13px; flex: 0 0 auto;
         background: linear-gradient(135deg, #1ea89a, #17897e); color: #fff;
-        display: flex; align-items: center; justify-content: center; font-size: 1.25rem;
+        display: flex; align-items: center; justify-content: center; font-size: 1.15rem; font-weight: 900;
         box-shadow: 0 8px 18px rgba(30,168,154,.35);
     }
-    .gh-world-head h2 { margin: 0; font-size: 1.05rem; font-weight: 900; color: #1e293b; }
+    .gh-world-head h2    { margin: 0; font-size: 1.05rem; font-weight: 900; color: #1e293b; }
     .gh-world-head small { color: #64748b; font-size: 11.5px; }
+    .gh-world-count      { margin-inline-start: auto; font-size: 11px; font-weight: 800; color: #0f766e;
+                           background: #fff; border-radius: 99px; padding: 4px 12px; }
 
     .gh-chapter { margin-bottom: 20px; }
     .gh-chapter-title {
-        font-size: .85rem; font-weight: 900; color: #334155;
+        font-size: .88rem; font-weight: 900; color: #334155;
         margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
     }
-    .gh-chapter-title::before { content: ''; width: 3px; height: 14px; border-radius: 3px; background: linear-gradient(180deg,#1ea89a,#e8a33d); }
+    .gh-chapter-title::before {
+        content: ''; width: 3px; height: 14px; border-radius: 3px;
+        background: linear-gradient(180deg,#1ea89a,#e8a33d);
+    }
 
-    .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    /* ---------- Cards ---------- */
+    .gh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
     .gh-card {
-        background: rgba(255,255,255,.72); backdrop-filter: blur(14px) saturate(160%);
+        background: rgba(255,255,255,.75); backdrop-filter: blur(14px) saturate(160%);
         -webkit-backdrop-filter: blur(14px) saturate(160%);
         border: 1px solid rgba(255,255,255,.9); border-radius: 16px;
         box-shadow: 0 8px 24px rgba(28,32,64,.07), inset 0 1px 0 rgba(255,255,255,.95);
-        padding: 15px 16px; transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s, border-color .25s;
-        display: flex; flex-direction: column; gap: 7px;
+        padding: 14px 16px; transition: transform .25s cubic-bezier(.22,1,.36,1), box-shadow .25s, border-color .25s;
+        display: flex; flex-direction: column; gap: 8px; cursor: pointer;
     }
     .gh-card:hover { transform: translateY(-4px); box-shadow: 0 18px 38px rgba(28,32,64,.14); border-color: rgba(30,168,154,.35); }
     .gh-card .gh-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .gh-card .gh-lv {
+    .gh-card .gh-lv  {
         font-size: 10px; font-weight: 900; padding: 3px 10px; border-radius: 99px;
-        background: rgba(30,168,154,.12); color: #0f766e;
+        background: rgba(30,168,154,.12); color: #0f766e; letter-spacing: .3px;
     }
-    .gh-card h3 { margin: 0; font-size: .95rem; font-weight: 900; color: #1e293b; line-height: 1.6; }
-    .gh-card h3 small { display: block; font-size: .72rem; color: #94a3b8; font-weight: 700; margin-top: 2px; }
+    .gh-card .gh-lesson-tag { font-size: 10px; color: #94a3b8; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60%; direction: ltr; text-align: right; }
+    .gh-card h3 { margin: 0; font-size: .95rem; font-weight: 900; color: #1e293b; line-height: 1.5; }
+    .gh-card h3 small { display: block; font-size: .72rem; color: #94a3b8; font-weight: 600; margin-top: 3px; }
     .gh-card .gh-struct {
         font-family: 'Courier New', monospace; font-size: .72rem; direction: ltr; text-align: left;
         background: #0f172a; color: #a5f3fc; border-radius: 9px; padding: 7px 10px;
         overflow-x: auto; white-space: nowrap;
     }
-    .gh-card .gh-ex { font-size: .78rem; color: #475569; line-height: 1.9; }
+    .gh-card .gh-ex { font-size: .78rem; color: #475569; line-height: 1.75; direction: ltr; text-align: left; }
+    .gh-card .gh-ex .row { padding: 3px 0; }
     .gh-card .gh-ex b { color: #0f766e; }
-    .gh-card .gh-mistakes { font-size: .74rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
-    .gh-card .gh-tips { font-size: .74rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 9px; padding: 7px 10px; line-height: 1.8; }
+    .gh-card .gh-ex .fa { display: block; color: #94a3b8; font-size: .72rem; direction: rtl; text-align: right; }
     .gh-card .gh-btn {
         border: none; cursor: pointer; font-family: inherit;
         background: linear-gradient(135deg,#1ea89a,#17897e); color: #fff;
         font-size: .74rem; font-weight: 900; padding: 8px 14px; border-radius: 10px;
         box-shadow: 0 6px 16px rgba(30,168,154,.3); transition: transform .15s, box-shadow .15s;
-        margin-top: 4px;
+        margin-top: 4px; align-self: flex-start;
     }
     .gh-card .gh-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px rgba(30,168,154,.4); }
 
-    /* مودال جزئیات گرامر */
+    /* ---------- Empty state ---------- */
+    .gh-empty {
+        text-align: center; padding: 40px 20px; color: #94a3b8;
+        background: rgba(255,255,255,.5); border-radius: 16px; border: 1px dashed #cbd5e1;
+    }
+    .gh-empty .icon { font-size: 2.5rem; margin-bottom: 10px; }
+
+    /* ---------- Modal ---------- */
     .gh-modal-overlay {
         position: fixed; inset: 0; z-index: 9600;
         background: rgba(18,22,48,.55);
@@ -152,8 +129,8 @@
     }
     .gh-modal-overlay.open { display: flex; }
     .gh-modal {
-        position: relative; width: 100%; max-width: 620px; max-height: 88vh; overflow-y: auto;
-        background: rgba(255,255,255,.97);
+        position: relative; width: 100%; max-width: 640px; max-height: 88vh; overflow-y: auto;
+        background: rgba(255,255,255,.98);
         backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
         border: 1px solid rgba(255,255,255,.95);
         border-radius: 24px; padding: 28px 28px 24px;
@@ -165,101 +142,258 @@
         position: absolute; top: 14px; left: 14px;
         width: 32px; height: 32px; border-radius: 50%;
         border: none; background: #f1f5f9; color: #64748b;
-        font-size: .95rem; cursor: pointer; transition: .15s;
+        font-size: .95rem; cursor: pointer; transition: .18s; display: flex; align-items: center; justify-content: center;
     }
     .gh-modal-x:hover { background: #fee2e2; color: #dc2626; transform: rotate(90deg); }
-    .gh-m-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+
+    .gh-m-head { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
     .gh-m-lv { font-size: 10.5px; font-weight: 900; padding: 3px 11px; border-radius: 99px; background: rgba(30,168,154,.12); color: #0f766e; }
-    .gh-m-title { font-size: 1.25rem; font-weight: 900; color: #1e293b; line-height: 1.5; margin: 0; }
-    .gh-m-fa { font-size: .8rem; color: #94a3b8; margin-bottom: 10px; }
+    .gh-m-lesson-tag { font-size: 11px; color: #94a3b8; }
+    .gh-m-title { font-size: 1.3rem; font-weight: 900; color: #1e293b; line-height: 1.45; margin: 0; }
+    .gh-m-fa    { font-size: .85rem; color: #94a3b8; margin-bottom: 10px; }
     .gh-m-struct {
-        font-family: 'Courier New', monospace; font-size: .78rem; direction: ltr; text-align: left;
+        font-family: 'Courier New', monospace; font-size: .82rem; direction: ltr; text-align: left;
         background: #0f172a; color: #a5f3fc; border-radius: 10px; padding: 10px 13px;
         overflow-x: auto; white-space: nowrap; margin: 12px 0 16px;
     }
     .gh-m-sec { margin-bottom: 16px; }
-    .gh-m-sec h4 { font-size: .86rem; font-weight: 900; color: #0f766e; margin: 0 0 7px; display: flex; align-items: center; gap: 7px; }
-    .gh-m-sec .exp { font-size: .85rem; color: #3d4458; line-height: 2.05; }
+    .gh-m-sec h4 { font-size: .88rem; font-weight: 900; color: #0f766e; margin: 0 0 8px; display: flex; align-items: center; gap: 7px; }
+    .gh-m-sec .exp { font-size: .88rem; color: #3d4458; line-height: 1.95; }
+    .gh-m-sec .exp p { margin: 0 0 8px; }
     .gh-m-sec .exp b { color: #1e293b; }
     .gh-m-ex { display: flex; flex-direction: column; gap: 7px; }
     .gh-m-ex .ex {
         background: #f8fafc; border: 1px solid #eef0f8; border-radius: 11px;
-        padding: 9px 13px; font-size: .82rem; line-height: 1.9;
+        padding: 9px 13px; font-size: .85rem; line-height: 1.7;
     }
-    .gh-m-ex .ex b { color: #0f766e; }
-    .gh-m-ex .ex small { display: block; color: #94a3b8; font-size: .74rem; }
-    .gh-m-mistakes { font-size: .8rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 11px; padding: 10px 13px; line-height: 1.95; }
-    .gh-m-tips { font-size: .8rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 11px; padding: 10px 13px; line-height: 1.95; }
-    .gh-m-lesson { font-size: .74rem; color: #94a3b8; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #eef0f8; }
+    .gh-m-ex .ex .en { display: block; direction: ltr; text-align: left; color: #0f766e; font-weight: 700; }
+    .gh-m-ex .ex .fa { display: block; color: #64748b; font-size: .78rem; margin-top: 3px; }
+    .gh-m-mistakes { font-size: .84rem; color: #b45309; background: rgba(245,158,11,.08); border-radius: 11px; padding: 10px 13px; line-height: 1.85; white-space: pre-wrap; }
+    .gh-m-tips     { font-size: .84rem; color: #475569; background: rgba(30,168,154,.07); border-radius: 11px; padding: 10px 13px; line-height: 1.85; white-space: pre-wrap; }
+    .gh-m-lesson   { font-size: .78rem; color: #94a3b8; margin-top: 14px; padding-top: 12px; border-top: 1px dashed #eef0f8; }
 
     @media (max-width: 575px) {
         .gh-grid { grid-template-columns: 1fr; }
         .gh-hero h1 { font-size: 21px; }
-        .gh-stat { padding: 8px 14px; }
+        .gh-stat { padding: 8px 14px; min-width: 95px; }
+        .gh-modal { padding: 22px 18px 18px; border-radius: 18px; }
+        .gh-m-title { font-size: 1.1rem; }
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="container py-4">
+
     <div class="gh-hero">
         <div class="gh-eyebrow"><span>📘</span> Grammar Hub</div>
         <h1>English Grammar — Lesson by Lesson</h1>
-        <p>Each lesson has 1-2 grammar points with structure, bilingual examples, common mistakes and usage tips. Inspired by <b>English Grammar in Use</b>.</p>
+        <p>Each lesson has 1–2 grammar points with structure, bilingual examples, common mistakes and usage tips. Inspired by <b>English Grammar in Use</b>.</p>
+
         <div class="gh-stats">
-            <div class="gh-stat"><b>{{ total }}</b><small>Grammar points</small></div>
+            <div class="gh-stat"><b>{{ total }}</b><small>Grammar Points</small></div>
             <div class="gh-stat"><b>{{ worlds_data|length }}</b><small>Worlds</small></div>
-            <div class="gh-stat"><b>3</b><small>Levels (A1-B1)</small></div>
+            <div class="gh-stat"><b>3</b><small>Levels (A1–B1)</small></div>
         </div>
+
         <div class="gh-levels">
             <a class="gh-level {% if not level_filter %}on{% endif %}" href="{% url 'language_academy:grammar_hub' %}">All</a>
             {% for lv in levels %}
-            <a class="gh-level {% if level_filter == lv %}on{% endif %}" href="?level={{ lv }}">{{ lv }}</a>
+                <a class="gh-level {% if level_filter == lv %}on{% endif %}" href="?level={{ lv }}">{{ lv }}</a>
             {% endfor %}
+        </div>
+
+        <div class="gh-search-wrap">
+            <span class="gh-search-icon">🔍</span>
+            <input type="search" id="ghSearch" class="gh-search" placeholder="Search grammar points…" autocomplete="off">
         </div>
     </div>
 
+    <div id="ghList">
     {% for wd in worlds_data %}
-    <section class="gh-world">
-        <div class="gh-world-head">
-            <span class="ico">{{ wd.world.order|stringformat:"d"|slice:":1" }}</span>
-            <div>
-                <h2>{{ wd.world.name }}</h2>
-                <small>{{ wd.world.get_difficulty_level_display }} · {{ wd.world.grammar_summary|default:'' }}</small>
+        <section class="gh-world" data-world>
+            <div class="gh-world-head">
+                <span class="ico">{{ wd.world.order }}</span>
+                <div>
+                    <h2>{{ wd.world.name }}{% if wd.world.name_fa %} <small style="font-weight:600;color:#64748b">— {{ wd.world.name_fa }}</small>{% endif %}</h2>
+                    <small>{{ wd.world.get_difficulty_level_display }}</small>
+                </div>
+                {% with cnt=wd.total_points %}
+                    {% if cnt %}<span class="gh-world-count">{{ cnt }} points</span>{% endif %}
+                {% endwith %}
             </div>
-        </div>
-        {% for cd in wd.chapters %}
-        <div class="gh-chapter">
-            <div class="gh-chapter-title">{{ cd.chapter.name }}</div>
-            <div class="gh-grid">
-                {% for ld in cd.lessons %}
-                    {% for gp in ld.grammar_points %}
-                    <div class="gh-card" data-gp-id="{{ gp.id }}">
-                        <div class="gh-top">
-                            <span class="gh-lv">{{ gp.level }}</span>
-                            <small style="font-size:10px;color:#94a3b8">{{ ld.lesson.name }}</small>
-                        </div>
-                        <h3>{{ gp.title }}{% if gp.title_fa %}<small>{{ gp.title_fa }}</small>{% endif %}</h3>
-                        {% if gp.structure %}<div class="gh-struct">{{ gp.structure }}</div>{% endif %}
-                        {% if gp.examples %}
-                        <div class="gh-ex">
-                            {% for ex in gp.examples|slice:":2" %}
-                                <div><b>{{ ex.en }}</b> — {{ ex.fa }}</div>
+
+            {% for cd in wd.chapters %}
+                <div class="gh-chapter" data-chapter>
+                    <div class="gh-chapter-title">{{ cd.chapter.name }}</div>
+                    <div class="gh-grid">
+                        {% for ld in cd.lessons %}
+                            {% for gp in ld.grammar_points %}
+                                <div class="gh-card"
+                                     data-gp="{{ gp.id }}"
+                                     data-search="{{ gp.title|lower }} {{ gp.title_fa|lower }} {{ gp.structure|lower }} {{ ld.lesson.name|lower }} {{ gp.level|lower }}">
+                                    <div class="gh-top">
+                                        <span class="gh-lv">{{ gp.level }}</span>
+                                        <span class="gh-lesson-tag">{{ ld.lesson.name }}</span>
+                                    </div>
+                                    <h3>
+                                        {{ gp.title }}
+                                        {% if gp.title_fa %}<small>{{ gp.title_fa }}</small>{% endif %}
+                                    </h3>
+                                    {% if gp.structure %}<div class="gh-struct">{{ gp.structure }}</div>{% endif %}
+                                    {% if gp.examples %}
+                                        <div class="gh-ex">
+                                            {% for ex in gp.examples|slice:":2" %}
+                                                <div class="row">
+                                                    <b>{{ ex.en }}</b>
+                                                    {% if ex.fa %}<span class="fa">{{ ex.fa }}</span>{% endif %}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    <button type="button" class="gh-btn gh-open">📘 Full Details</button>
+                                </div>
                             {% endfor %}
-                        </div>
-                        {% endif %}
-                        <button type="button" class="gh-btn" data-gp="{{ gp.id }}">📘 Full Details</button>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-        {% empty %}
-        <div class="text-center text-muted py-4">No grammar points in this world yet.</div>
-        {% endfor %}
-    </section>
+                </div>
+            {% empty %}
+                <div class="gh-empty"><div class="icon">📭</div>No grammar points in this world yet.</div>
+            {% endfor %}
+        </section>
     {% empty %}
-    <div class="text-center py-5 text-muted">No grammar points available.</div>
+        <div class="gh-empty"><div class="icon">📭</div>No grammar points available.</div>
     {% endfor %}
+    </div>
+
+    <div id="ghNoResults" class="gh-empty" style="display:none">
+        <div class="icon">🔍</div>No results match your search.
+    </div>
 </div>
 
-<script type="application/json" id="ghData">{{ grammar_json|safe }}</script>
+<!-- Modal -->
+<div class="gh-modal-overlay" id="ghModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="gh-modal">
+        <button class="gh-modal-x" id="ghModalX" type="button" aria-label="Close">✕</button>
+        <div id="ghModalBody"></div>
+    </div>
+</div>
+
+{{ grammar_json|json_script:"ghData" }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+    'use strict';
+
+    // ---------- Data ----------
+    var raw = document.getElementById('ghData');
+    var items = [];
+    try {
+        if (raw) {
+            var parsed = JSON.parse(raw.textContent);
+            items = Array.isArray(parsed) ? parsed : (parsed && parsed.items) || [];
+        }
+    } catch (e) { console.error('Grammar data parse error:', e); }
+
+    var byId = {};
+    items.forEach(function (it) { byId[String(it.id)] = it; });
+
+    // ---------- Modal ----------
+    var modal = document.getElementById('ghModal');
+    var body  = document.getElementById('ghModalBody');
+    var closeBtn = document.getElementById('ghModalX');
+    if (!modal || !body || !closeBtn) return;
+
+    function esc(s) {
+        return String(s == null ? '' : s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+    function openModal(id) {
+        var g = byId[String(id)];
+        if (!g) return;
+
+        var exHtml = (g.examples || []).map(function (e) {
+            var en = esc(e.en || '');
+            var fa = esc(e.fa || '');
+            return '<div class="ex">' +
+                        (en ? '<span class="en">' + en + '</span>' : '') +
+                        (fa ? '<span class="fa">' + fa + '</span>' : '') +
+                   '</div>';
+        }).join('');
+
+        // g.exp is RichText (already sanitized server-side) → render as HTML
+        body.innerHTML =
+            '<div class="gh-m-head">' +
+                '<span class="gh-m-lv">' + esc(g.lv) + '</span>' +
+                '<span class="gh-m-lesson-tag">📖 ' + esc(g.lesson) + '</span>' +
+            '</div>' +
+            '<h2 class="gh-m-title">' + esc(g.title) + '</h2>' +
+            (g.fa ? '<div class="gh-m-fa">' + esc(g.fa) + '</div>' : '') +
+            (g.struct ? '<div class="gh-m-struct">' + esc(g.struct) + '</div>' : '') +
+            '<div class="gh-m-sec"><h4>📘 Explanation</h4><div class="exp">' + (g.exp || '<p><em>No explanation provided.</em></p>') + '</div></div>' +
+            (exHtml    ? '<div class="gh-m-sec"><h4>✏️ Examples</h4><div class="gh-m-ex">' + exHtml + '</div></div>' : '') +
+            (g.mistakes ? '<div class="gh-m-sec"><h4>⚠️ Common Mistakes</h4><div class="gh-m-mistakes">' + esc(g.mistakes) + '</div></div>' : '') +
+            (g.tips     ? '<div class="gh-m-sec"><h4>💡 Usage Tips</h4><div class="gh-m-tips">' + esc(g.tips) + '</div></div>' : '') +
+            '<div class="gh-m-lesson">📚 Lesson: <b>' + esc(g.lesson) + '</b></div>';
+
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+    }
+
+    // Card click / button click → open
+    document.getElementById('ghList').addEventListener('click', function (e) {
+        var card = e.target.closest('.gh-card');
+        if (!card) return;
+        // clicking anywhere on card opens
+        openModal(card.dataset.gp);
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+    // ---------- Live search ----------
+    var searchInput = document.getElementById('ghSearch');
+    var noResults   = document.getElementById('ghNoResults');
+    if (searchInput) {
+        var debounce;
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounce);
+            debounce = setTimeout(function () {
+                var q = searchInput.value.trim().toLowerCase();
+                var visibleCards = 0;
+                document.querySelectorAll('.gh-card').forEach(function (c) {
+                    var hit = !q || (c.dataset.search || '').indexOf(q) !== -1;
+                    c.style.display = hit ? '' : 'none';
+                    if (hit) visibleCards++;
+                });
+                // hide empty chapters / worlds
+                document.querySelectorAll('[data-chapter]').forEach(function (ch) {
+                    var any = ch.querySelector('.gh-card:not([style*="display: none"])');
+                    ch.style.display = any ? '' : 'none';
+                });
+                document.querySelectorAll('[data-world]').forEach(function (wd) {
+                    var any = wd.querySelector('[data-chapter]:not([style*="display: none"])');
+                    wd.style.display = any ? '' : 'none';
+                });
+                noResults.style.display = visibleCards ? 'none' : '';
+            }, 120);
+        });
+    }
+})();
+</script>
 {% endblock %}

@@ -28,25 +28,57 @@ def grammar_hub(request):
     if level_filter not in ('A1', 'A2', 'B1'):
         level_filter = ''
 
-    worlds = World.objects.filter(is_published=True).order_by('order')
+    # واکشی یک‌جای همهٔ نکات گرامری منتشرشده — بدون N+1
+    gp_qs = (GrammarPoint.objects
+             .select_related('lesson', 'lesson__chapter', 'lesson__chapter__world')
+             .filter(lesson__is_published=True,
+                     lesson__chapter__is_published=True,
+                     lesson__chapter__world__is_published=True))
+    if level_filter:
+        gp_qs = gp_qs.filter(level=level_filter)
+    gp_qs = gp_qs.order_by(
+        'lesson__chapter__world__order',
+        'lesson__chapter__order',
+        'lesson__order',
+        'order',
+    )
+
+    # گروه‌بندی: world → chapter → lesson → [gp,...]
+    from collections import OrderedDict
+    worlds_map = OrderedDict()  # world_id → dict
+    for gp in gp_qs:
+        lesson = gp.lesson
+        chapter = lesson.chapter
+        world = chapter.world
+
+        wd = worlds_map.get(world.id)
+        if wd is None:
+            wd = {'world': world, 'chapters_map': OrderedDict(), 'total_points': 0}
+            worlds_map[world.id] = wd
+        wd['total_points'] += 1
+
+        cd = wd['chapters_map'].get(chapter.id)
+        if cd is None:
+            cd = {'chapter': chapter, 'lessons_map': OrderedDict()}
+            wd['chapters_map'][chapter.id] = cd
+
+        ld = cd['lessons_map'].get(lesson.id)
+        if ld is None:
+            ld = {'lesson': lesson, 'grammar_points': []}
+            cd['lessons_map'][lesson.id] = ld
+        ld['grammar_points'].append(gp)
+
+    # تبدیل به لیست‌های ساده برای قالب
     data = []
-    for w in worlds:
+    for wd in worlds_map.values():
         chapters = []
-        for ch in w.chapters.filter(is_published=True).order_by('order'):
-            lessons = []
-            for l in ch.lessons.filter(is_published=True).order_by('order'):
-                gps = GrammarPoint.objects.filter(lesson=l).order_by('order')
-                if level_filter:
-                    gps = gps.filter(level=level_filter)
-                if gps.exists():
-                    lessons.append({'lesson': l, 'grammar_points': gps})
-            if lessons:
-                chapters.append({'chapter': ch, 'lessons': lessons})
-        data.append({'world': w, 'chapters': chapters})
-    levels = ['A1', 'A2', 'B1']
+        for cd in wd['chapters_map'].values():
+            lessons = [{'lesson': ld['lesson'], 'grammar_points': ld['grammar_points']}
+                       for ld in cd['lessons_map'].values()]
+            chapters.append({'chapter': cd['chapter'], 'lessons': lessons})
+        data.append({'world': wd['world'], 'chapters': chapters, 'total_points': wd['total_points']})
 
     # دادهٔ JSON برای مودال جزئیات
-    import json as _json
     grammar_json = []
     for wd in data:
         for cd in wd['chapters']:
@@ -58,8 +90,8 @@ def grammar_hub(request):
                         'fa': gp.title_fa or '',
                         'lv': gp.level,
                         'struct': gp.structure or '',
-                        'exp': gp.explanation,
-                        'examples': gp.examples,
+                        'exp': gp.explanation or '',
+                        'examples': gp.examples or [],
                         'mistakes': gp.common_mistakes or '',
                         'tips': gp.usage_tips or '',
                         'lesson': ld['lesson'].name,
@@ -67,10 +99,10 @@ def grammar_hub(request):
 
     return render(request, 'language_academy/grammar_hub.html', {
         'worlds_data': data,
-        'levels': levels,
+        'levels': ['A1', 'A2', 'B1'],
         'level_filter': level_filter,
-        'total': GrammarPoint.objects.count(),
-        'grammar_json': _json.dumps(grammar_json, ensure_ascii=False),
+        'total': gp_qs.count() if level_filter else GrammarPoint.objects.count(),
+        'grammar_json': grammar_json,  # با json_script در قالب رندر می‌شود
         'title': 'Grammar Hub — LearnQuest',
     })
 
