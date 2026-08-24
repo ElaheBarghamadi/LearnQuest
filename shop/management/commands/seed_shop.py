@@ -104,9 +104,9 @@ PRODUCTS = [
       coins=200, emoji='⭐', desc='نشان برنزی برای پروفایل.'),
     P('badge-limited', 'نشان قهرمان محدود', 'badges-titles', 'cosmetic', 'badge', {'css_class': 'badge-limited', 'label': '🏆 قهرمان'},
       gems=8, emoji='🏆', desc='نشان ویژهٔ قهرمانان.'),
-    P('title-star-student', 'عنوان «دانشجوی ستاره»', 'badges-titles', 'cosmetic', 'title', {'label': 'دانشجوی ستاره 🌟'},
+    P('title-star-student', 'عنوان «دانشجوی ستاره»', 'badges-titles', 'cosmetic', 'title', {'css_class': 'title-star', 'label': 'دانشجوی ستاره 🌟'},
       coins=300, emoji='🌟', desc='زیر نامت این عنوان نمایش داده می‌شود.'),
-    P('title-language-master', 'عنوان «استاد زبان»', 'badges-titles', 'cosmetic', 'title', {'label': 'استاد زبان 🗣️'},
+    P('title-language-master', 'عنوان «استاد زبان»', 'badges-titles', 'cosmetic', 'title', {'css_class': 'title-master', 'label': 'استاد زبان 🗣️'},
       gems=8, emoji='🗣️', desc='عنوان اختصاصی زبان‌آموزان برتر.'),
 
 
@@ -164,9 +164,9 @@ PRODUCTS = [
 
     P('pet-skin-gold', 'پوستهٔ طلایی پت', 'pet-accessories', 'cosmetic', 'pet_skin', {'css_class': 'effect-sparkle'},
       gems=6, emoji='🌟', desc='پتت را بدرخشان!'),
-    P('pet-hat-party', 'کلاه مهمانی پت', 'pet-accessories', 'cosmetic', 'pet_accessory', {'emoji': '🎉'},
+    P('pet-hat-party', 'کلاه مهمانی پت', 'pet-accessories', 'cosmetic', 'pet_accessory', {'css_class': 'pet-acc-hat', 'emoji': '🎉'},
       coins=200, emoji='🎩', desc='کلاه بامزهٔ مهمانی.'),
-    P('pet-bow-kawaii', 'پاپیون کاوایی', 'pet-accessories', 'cosmetic', 'pet_accessory', {'emoji': '🎀'},
+    P('pet-bow-kawaii', 'پاپیون کاوایی', 'pet-accessories', 'cosmetic', 'pet_accessory', {'css_class': 'pet-acc-bow', 'emoji': '🎀'},
       coins=180, emoji='🎀', desc='پاپیون صورتی ناز.'),
 
 

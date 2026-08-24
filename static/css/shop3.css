@@ -279,28 +279,89 @@
 
 /* live preview slots on the tile */
 .sh3-tile .avatar-frame {
-    width: 120px; height: 120px; border-radius: 50%;
-    display: grid; place-items: center;
-    color: #fff; font-size: 2.4rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--sh3-brand), var(--sh3-brand-2));
+    width: 120px; height: 120px;
+    flex: 0 0 auto;
+    display: inline-flex; align-items: center; justify-content: center;
     box-shadow: 0 20px 40px rgba(15,22,38,.16);
+    border-radius: 50%;
+    box-sizing: border-box;
+}
+/* inner circle when this is a real frame preview */
+.sh3-tile .avatar-frame.lq-framed { padding: 6px; }
+.sh3-tile .avatar-frame.lq-framed .in {
+    width: 108px; height: 108px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sh3-brand), var(--sh3-brand-2));
+    color: #fff; font-size: 2.4rem; font-weight: 900;
+    line-height: 1;
+}
+/* fallback / non-framed avatars in the tile (rare) */
+.sh3-tile .avatar-frame:not(.lq-framed) {
+    background: linear-gradient(135deg, var(--sh3-brand), var(--sh3-brand-2));
+    color: #fff; font-size: 2.4rem; font-weight: 900;
+}
+
+/* --- shop-card sizes down on mobile --- */
+@media (max-width: 640px) {
+    .sh3-tile .avatar-frame { width: 84px; height: 84px; }
+    .sh3-tile .avatar-frame.lq-framed { padding: 5px; }
+    .sh3-tile .avatar-frame.lq-framed .in { width: 74px; height: 74px; font-size: 1.6rem; }
 }
 .sh3-tile .username-preview {
-    font-size: 2rem; font-weight: 900; letter-spacing: -.5px;
+    font-size: 1.9rem; font-weight: 900; letter-spacing: -.5px;
     padding: 14px 26px; border-radius: 14px; background: #fff;
     box-shadow: 0 20px 40px rgba(15,22,38,.14);
+    max-width: 88%;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .sh3-tile .theme-preview {
     width: 82%; aspect-ratio: 16/10; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 20px 40px rgba(15,22,38,.16);
-    background: var(--theme-bg, linear-gradient(135deg,#F7F5FB,#EDEBF7));
+    box-shadow: 0 20px 40px rgba(15,22,38,.18);
     display: flex; flex-direction: column; padding: 10px; gap: 6px;
+    background: linear-gradient(135deg,#F7F5FB,#EDEBF7);
+    color: #1E2749;
+    position: relative;
 }
-.sh3-tile .theme-preview .bar { height: 12px; border-radius: 4px; background: rgba(255,255,255,.35); }
+.sh3-tile .theme-preview .bar {
+    height: 12px; border-radius: 4px;
+    background: rgba(0,0,0,.15);
+}
 .sh3-tile .theme-preview .lines { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.sh3-tile .theme-preview .lines i { height: 5px; border-radius: 4px; background: rgba(255,255,255,.28); }
+.sh3-tile .theme-preview .lines i {
+    height: 5px; border-radius: 4px;
+    background: rgba(0,0,0,.14);
+}
 .sh3-tile .theme-preview .lines i:nth-child(2) { width: 80%; }
 .sh3-tile .theme-preview .lines i:nth-child(3) { width: 60%; }
+
+/* Per-theme preview overrides — mirror the real themes in cosmetics.css */
+.sh3-tile .theme-preview.theme-dark,
+.sh3-tile .theme-preview.theme-dark-nav {
+    background: #0f1626;
+}
+.sh3-tile .theme-preview.theme-dark .bar,
+.sh3-tile .theme-preview.theme-dark-nav .bar { background: linear-gradient(135deg,#1a2236,#2b3556); }
+.sh3-tile .theme-preview.theme-dark .lines i,
+.sh3-tile .theme-preview.theme-dark-nav .lines i { background: rgba(255,255,255,.18); }
+
+.sh3-tile .theme-preview.theme-ocean {
+    background: linear-gradient(160deg, #e0f7fa 0%, #90caf9 100%);
+}
+.sh3-tile .theme-preview.theme-ocean .bar { background: linear-gradient(135deg,#0077b6,#00b4d8); }
+.sh3-tile .theme-preview.theme-ocean .lines i { background: rgba(2,62,138,.35); }
+
+.sh3-tile .theme-preview.theme-forest {
+    background: linear-gradient(160deg, #e8f5e9 0%, #d0e8b8 100%);
+}
+.sh3-tile .theme-preview.theme-forest .bar { background: linear-gradient(135deg,#2d6a4f,#52b788); }
+.sh3-tile .theme-preview.theme-forest .lines i { background: rgba(27,67,50,.32); }
+
+.sh3-tile .theme-preview.theme-sunset {
+    background: linear-gradient(160deg, #fff1eb 0%, #ffd3b6 100%);
+}
+.sh3-tile .theme-preview.theme-sunset .bar { background: linear-gradient(135deg,#dd2476,#ff512f); }
+.sh3-tile .theme-preview.theme-sunset .lines i { background: rgba(157,23,77,.3); }
 
 /* ribbons (top-left, stacked) */
 .sh3-ribs {

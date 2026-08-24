@@ -1,42 +1,351 @@
+/* ============================================================================
+   LearnQuest — Cosmetics Stylesheet
+   ----------------------------------------------------------------------------
+   Every cosmetic effect from the shop lives here. Everything is scoped so
+   nothing leaks unless the class is actually attached to an element.
+
+   Slots covered
+     · .frame-*       → decorative ring around .lq-framed avatars
+     · .frame-*-anim  → animated variants
+     · .ucolor-*      → username color (also works as a text gradient)
+     · .effect-*      → floating decorations (crown/flame/sparkle) on avatars
+     · .pfx-*         → animated aura/glow layers on the avatar
+     · .pbg-*         → decorative background for the profile card
+     · .theme-*       → whole-page palette override (via <body class="…">)
+     · .badge-*       → little pill labels
+     · .title-*       → user-title chips shown next to the username
+
+   Author’s note: any new css_class shipped by shop/management/commands/
+   seed_shop.py MUST have a matching rule below. Grep for "css_class" in
+   seed_shop.py to verify.
+   ============================================================================ */
 
 
-.lq-framed { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; padding: 3px; position: relative; }
-.frame-gold { background: linear-gradient(135deg,#f6d365,#b8860b); box-shadow: 0 0 10px #f6d36588; }
-.frame-rainbow { background: conic-gradient(#ff0080,#ff8c00,#ffee00,#00ff88,#00cfff,#8a2be2,#ff0080); animation: lq-spin 4s linear infinite; padding: 4px; }
-.frame-fire { background: linear-gradient(180deg,#ff512f,#dd2476); box-shadow: 0 0 12px #ff512f99; animation: lq-pulse 1.6s ease-in-out infinite; }
-.frame-ice { background: linear-gradient(135deg,#89f7fe,#66a6ff); box-shadow: 0 0 10px #89f7fe99; }
-.frame-emerald { background: linear-gradient(135deg,#11998e,#38ef7d); box-shadow: 0 0 10px #38ef7d88; }
-.frame-royal { background: linear-gradient(135deg,#8e2de2,#4a00e0); box-shadow: 0 0 12px #8e2de288; }
-.lq-framed img, .lq-framed .avatar-text { border-radius: 50%; }
+/* ---------------------------------------------------------------------------
+   Shared keyframes
+   --------------------------------------------------------------------------- */
+@keyframes lq-spin        { to   { transform: rotate(360deg); } }
+@keyframes lq-hue         { to   { filter: hue-rotate(360deg); } }
+@keyframes lq-pulse       { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+@keyframes lq-pulse-soft  { 0%,100% { opacity: 1; } 50% { opacity: .7; } }
+@keyframes lq-shimmer     { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+@keyframes lq-float       { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes lq-glow        { 0%,100% { box-shadow: 0 0 12px var(--glow, #fff8), 0 0 22px var(--glow-2, #fff4); }
+                            50%     { box-shadow: 0 0 22px var(--glow, #fff),  0 0 34px var(--glow-2, #fff8); } }
+@keyframes lq-flame       { 0%,100% { transform: translateY(0) scale(1) rotate(-2deg); }
+                            50%     { transform: translateY(-3px) scale(1.08) rotate(3deg); } }
+@keyframes lq-tilt        { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+@keyframes lq-ring        { 0%   { transform: scale(.7); opacity: .8; }
+                            100% { transform: scale(1.6); opacity: 0; } }
+@keyframes lq-sparkle-a   { 0%   { transform: translate(0,0)   rotate(0deg)  scale(1); opacity: 0; }
+                            25%  { opacity: 1; }
+                            100% { transform: translate(6px,-10px) rotate(120deg) scale(.4); opacity: 0; } }
+@keyframes lq-sparkle-b   { 0%   { transform: translate(0,0)   rotate(0deg)  scale(1); opacity: 0; }
+                            30%  { opacity: 1; }
+                            100% { transform: translate(-7px,-8px) rotate(-90deg) scale(.5); opacity: 0; } }
 
-@keyframes lq-spin { to { filter: hue-rotate(360deg); } }
-@keyframes lq-pulse { 0%,100% { transform: scale(1);} 50% { transform: scale(1.05);} }
 
-.ucolor-gold { color: #b8860b !important; font-weight: 800; }
-.ucolor-rainbow { background: linear-gradient(90deg,#ff0080,#ff8c00,#ffee00,#00ff88,#00cfff,#8a2be2); -webkit-background-clip: text; background-clip: text; color: transparent !important; font-weight: 800; }
-.ucolor-toxic { color: #39ff14 !important; font-weight: 800; }
-.ucolor-ocean { color: #0077b6 !important; font-weight: 800; }
-.ucolor-rose { color: #d81159 !important; font-weight: 800; }
-.ucolor-royal { color: #6c2bd9 !important; font-weight: 800; }
+/* ===========================================================================
+   AVATAR FRAMES
+   Applied to any element with .lq-framed (usually the avatar wrapper).
+   The inner image sits inside a padded gradient ring, so bigger avatars just
+   look better — no fixed sizes here.
+   =========================================================================== */
+.lq-framed {
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 50%; padding: 3px; position: relative;
+    box-sizing: content-box;
+    isolation: isolate;
+}
+.lq-framed > * { border-radius: 50%; }
+.lq-framed img,
+.lq-framed .avatar-text,
+.lq-framed .in { border-radius: 50%; overflow: hidden; }
 
-body.theme-dark, body.theme-dark-nav { background: #121826 !important; color: #e8eaf0; }
-body.theme-dark nav ul li a, body.theme-dark .mobile-links a { color: #cdd3e0; }
-body.theme-dark header { background: #1a2236 !important; }
-body.theme-dark .card, body.theme-dark .shop-card, body.theme-dark section, body.theme-dark main { color: #e8eaf0; }
-body.theme-ocean { background: linear-gradient(160deg,#e0f7fa,#f0f8ff) !important; }
-body.theme-ocean header { background: linear-gradient(135deg,#0077b6,#00b4d8) !important; }
-body.theme-forest { background: linear-gradient(160deg,#e8f5e9,#fffde7) !important; }
-body.theme-forest header { background: linear-gradient(135deg,#2d6a4f,#52b788) !important; }
-body.theme-sunset { background: linear-gradient(160deg,#fff1eb,#ffe5ec) !important; }
-body.theme-sunset header { background: linear-gradient(135deg,#dd2476,#ff512f) !important; }
+/* — Gold (Grade A) — */
+.frame-gold {
+    background: conic-gradient(from 210deg, #f9d976 0%, #f39f18 25%, #b8860b 50%, #ffe38a 75%, #f9d976 100%);
+    box-shadow: 0 0 14px rgba(246,211,101,.55), inset 0 0 0 2px rgba(255,255,255,.35);
+}
 
-.effect-sparkle::after { content: '✨'; position: absolute; top: -8px; right: -4px; animation: lq-pulse 1.4s ease-in-out infinite; }
-.effect-crown::after { content: '👑'; position: absolute; top: -14px; right: calc(50% - 10px); font-size: 1.2rem; }
-.effect-flame::after { content: '🔥'; position: absolute; bottom: -4px; left: -4px; animation: lq-pulse 1.2s ease-in-out infinite; }
+/* — Rainbow (animated) — */
+.frame-rainbow {
+    padding: 4px;
+    background: conic-gradient(from 0deg, #ff0080,#ff8c00,#ffee00,#00ff88,#00cfff,#8a2be2,#ff0080);
+    animation: lq-spin 5s linear infinite;
+    box-shadow: 0 0 14px rgba(255,255,255,.35);
+}
+.frame-rainbow > * { animation: lq-spin 5s linear infinite reverse; }
 
-.pbg-gradient { background: linear-gradient(135deg,#667eea,#764ba2) !important; color:#fff; border-radius: 18px; }
-.pbg-space { background: radial-gradient(circle at 30% 20%,#2b1055,#7597de) !important; color:#fff; border-radius: 18px; }
-.pbg-sakura { background: linear-gradient(135deg,#fbc2eb,#a6c1ee) !important; border-radius: 18px; }
+/* — Fire (pulsing) — */
+.frame-fire {
+    background: linear-gradient(180deg,#ff5f2e 0%, #dd2476 60%, #b91663 100%);
+    box-shadow: 0 0 14px rgba(255,95,46,.6), inset 0 0 0 2px rgba(255,220,180,.4);
+    animation: lq-pulse 1.6s ease-in-out infinite;
+}
 
-.badge-limited { background: #ff512f; color:#fff; font-size:.68rem; padding:2px 8px; border-radius: 999px; }
-.badge-featured { background: #b8860b; color:#fff; font-size:.68rem; padding:2px 8px; border-radius: 999px; }
+/* — Ice — */
+.frame-ice {
+    background: linear-gradient(135deg,#e0f7ff 0%,#89f7fe 40%,#66a6ff 100%);
+    box-shadow: 0 0 14px rgba(137,247,254,.6), inset 0 0 0 2px rgba(255,255,255,.45);
+}
+
+/* — Emerald — */
+.frame-emerald {
+    background: linear-gradient(135deg,#0ba36f 0%,#38ef7d 60%,#0ba36f 100%);
+    box-shadow: 0 0 14px rgba(56,239,125,.5), inset 0 0 0 2px rgba(255,255,255,.35);
+}
+
+/* — Royal (limited) — */
+.frame-royal {
+    background: conic-gradient(from 45deg, #ffd700 0%, #8e2de2 15%, #4a00e0 40%, #8e2de2 65%, #ffd700 100%);
+    box-shadow: 0 0 16px rgba(142,45,226,.55), inset 0 0 0 2px rgba(255,215,0,.5);
+    animation: lq-hue 8s linear infinite;
+}
+
+
+/* ===========================================================================
+   USERNAME COLORS
+   These target inline text (usually a <b> or <span> around the username).
+   =========================================================================== */
+.ucolor-gold {
+    color: transparent !important;
+    background: linear-gradient(90deg, #b8860b, #ffd700, #b8860b);
+    -webkit-background-clip: text; background-clip: text;
+    background-size: 200% auto;
+    animation: lq-shimmer 4s linear infinite;
+    font-weight: 800;
+}
+.ucolor-rainbow {
+    color: transparent !important;
+    background: linear-gradient(90deg,#ff0080,#ff8c00,#ffee00,#00ff88,#00cfff,#8a2be2,#ff0080);
+    -webkit-background-clip: text; background-clip: text;
+    background-size: 200% auto;
+    animation: lq-shimmer 3s linear infinite;
+    font-weight: 800;
+}
+.ucolor-toxic  { color: #39ff14 !important; text-shadow: 0 0 8px rgba(57,255,20,.55); font-weight: 800; }
+.ucolor-ocean  { color: #0077b6 !important; text-shadow: 0 0 6px rgba(0,180,216,.4); font-weight: 800; }
+.ucolor-rose   { color: #d81159 !important; text-shadow: 0 0 6px rgba(216,17,89,.35); font-weight: 800; }
+.ucolor-royal  {
+    color: transparent !important;
+    background: linear-gradient(90deg, #6c2bd9, #a78bfa, #6c2bd9);
+    -webkit-background-clip: text; background-clip: text;
+    background-size: 200% auto;
+    animation: lq-shimmer 4s linear infinite;
+    font-weight: 800;
+}
+
+
+/* ===========================================================================
+   AVATAR EFFECTS (add-on decorations)
+   Attach to the same wrapper as .lq-framed. Uses ::after so it doesn’t
+   collide with the frame ring (which is a background on the parent).
+   =========================================================================== */
+.lq-framed[class*="effect-"] { position: relative; overflow: visible; }
+
+.effect-sparkle::after {
+    content: '✨'; position: absolute; top: -6px; right: -6px;
+    font-size: 1rem; filter: drop-shadow(0 2px 4px rgba(255,255,255,.4));
+    animation: lq-float 2.4s ease-in-out infinite;
+    pointer-events: none;
+}
+.effect-sparkle::before {
+    content: '✦'; position: absolute; bottom: -4px; left: -6px;
+    font-size: .8rem; color: #ffe066;
+    animation: lq-float 2.4s ease-in-out .6s infinite;
+    pointer-events: none;
+}
+
+.effect-crown::after {
+    content: '👑'; position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+    font-size: 1.2rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,.25));
+    animation: lq-float 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.effect-flame::after {
+    content: '🔥'; position: absolute; bottom: -6px; left: -6px;
+    font-size: 1.1rem; transform-origin: bottom center;
+    animation: lq-flame 1s ease-in-out infinite;
+    pointer-events: none;
+}
+.effect-flame::before {
+    content: ''; position: absolute; inset: -4px;
+    border-radius: 50%; pointer-events: none;
+    box-shadow: 0 0 18px 4px rgba(255,120,60,.35);
+    animation: lq-pulse-soft 1.6s ease-in-out infinite;
+}
+
+
+/* ===========================================================================
+   Animated “profile card” effects (larger overlays on the whole card)
+   Attach to any wrapper.  Used by profile_card_animated products.
+   =========================================================================== */
+.pfx-flame-anim  {
+    --glow: #ff5b2ecc; --glow-2: #ff8659;
+    animation: lq-glow 2s ease-in-out infinite;
+    border-radius: 50%;
+}
+.pfx-halo {
+    position: relative;
+}
+.pfx-halo::before {
+    content: ''; position: absolute; inset: -8px; border-radius: 50%;
+    border: 2px solid rgba(255,215,0,.7);
+    animation: lq-ring 1.6s ease-out infinite;
+    pointer-events: none;
+}
+
+
+/* ===========================================================================
+   PROFILE-CARD BACKGROUNDS
+   Applied to .profile-card wrapper.
+   Each background stays inside the card’s border-radius by clipping.
+   =========================================================================== */
+.pbg-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 20px 50px rgba(118,75,162,.35);
+}
+.pbg-space {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255,255,255,.15), transparent 30%),
+        radial-gradient(circle at 80% 70%, rgba(255,255,255,.10), transparent 25%),
+        radial-gradient(1px 1px at 20% 30%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 40% 80%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 60% 20%, #fff, transparent 60%),
+        radial-gradient(1px 1px at 80% 50%, #fff, transparent 60%),
+        radial-gradient(circle at 30% 20%, #2b1055, #7597de) !important;
+    background-size: 100% 100%, 100% 100%, 220px 220px, 260px 260px, 240px 240px, 280px 280px, 100% 100%;
+    color: #fff !important;
+    box-shadow: 0 20px 50px rgba(43,16,85,.4);
+}
+.pbg-sakura {
+    background:
+        radial-gradient(circle at 15% 20%, rgba(255,255,255,.35), transparent 25%),
+        radial-gradient(circle at 85% 75%, rgba(255,255,255,.25), transparent 25%),
+        linear-gradient(135deg, #fbc2eb 0%, #f0a4d5 55%, #a6c1ee 100%) !important;
+    color: #4a1e4b !important;
+    box-shadow: 0 20px 50px rgba(251,194,235,.5);
+}
+
+
+/* ===========================================================================
+   THEMES  (applied to <body class="theme-…">)
+   Each theme touches: page background, navbar, footer, cards, buttons, text.
+   Everything uses !important because these override the base theme.
+   =========================================================================== */
+
+/* — Dark (default dark) — */
+body.theme-dark,
+body.theme-dark-nav {
+    background: #0f1626 !important;
+    color: #e6e8f0 !important;
+}
+body.theme-dark header,
+body.theme-dark-nav header {
+    background: rgba(15,22,38,.85) !important;
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+}
+body.theme-dark .card,
+body.theme-dark .section-card,
+body.theme-dark .access-card,
+body.theme-dark .blog-card,
+body.theme-dark .game-card,
+body.theme-dark-nav .card,
+body.theme-dark-nav .section-card {
+    background: rgba(30,38,58,.75) !important;
+    color: #e6e8f0 !important;
+    border-color: rgba(255,255,255,.08) !important;
+}
+body.theme-dark .footer,
+body.theme-dark-nav .footer { background: #0b1120 !important; color: #cbd5e1 !important; }
+body.theme-dark a  { color: #a5b4fc; }
+body.theme-dark nav ul li a,
+body.theme-dark .mobile-links a { color: #e6e8f0 !important; }
+
+/* — Ocean — */
+body.theme-ocean {
+    background: linear-gradient(160deg, #e0f7fa 0%, #b3e5fc 40%, #90caf9 100%) !important;
+    color: #062e57 !important;
+}
+body.theme-ocean header {
+    background: linear-gradient(135deg, #0077b6, #00b4d8) !important;
+    color: #fff !important;
+    border-bottom: 1px solid rgba(255,255,255,.15);
+}
+body.theme-ocean header a,
+body.theme-ocean nav ul li a { color: #fff !important; }
+body.theme-ocean .card,
+body.theme-ocean .section-card,
+body.theme-ocean .access-card { background: rgba(255,255,255,.85) !important; color: #062e57 !important; }
+body.theme-ocean .footer { background: linear-gradient(135deg,#023e8a,#0077b6) !important; color: #cae9ff !important; }
+
+/* — Forest — */
+body.theme-forest {
+    background: linear-gradient(160deg, #e8f5e9 0%, #d0e8b8 45%, #fffde7 100%) !important;
+    color: #14532d !important;
+}
+body.theme-forest header {
+    background: linear-gradient(135deg, #2d6a4f, #52b788) !important;
+    color: #fff !important;
+}
+body.theme-forest header a,
+body.theme-forest nav ul li a { color: #fff !important; }
+body.theme-forest .card,
+body.theme-forest .section-card,
+body.theme-forest .access-card { background: rgba(255,255,255,.85) !important; color: #14532d !important; }
+body.theme-forest .footer { background: linear-gradient(135deg,#1b4332,#2d6a4f) !important; color: #d8f3dc !important; }
+
+/* — Sunset — */
+body.theme-sunset {
+    background: linear-gradient(160deg, #fff1eb 0%, #ffd3b6 45%, #ffe5ec 100%) !important;
+    color: #4a1e2b !important;
+}
+body.theme-sunset header {
+    background: linear-gradient(135deg, #dd2476, #ff512f) !important;
+    color: #fff !important;
+}
+body.theme-sunset header a,
+body.theme-sunset nav ul li a { color: #fff !important; }
+body.theme-sunset .card,
+body.theme-sunset .section-card,
+body.theme-sunset .access-card { background: rgba(255,255,255,.9) !important; color: #4a1e2b !important; }
+body.theme-sunset .footer { background: linear-gradient(135deg,#9d174d,#dd2476) !important; color: #fee2e2 !important; }
+
+
+/* ===========================================================================
+   BADGES  (tiny inline pills)
+   =========================================================================== */
+.badge-limited {
+    display: inline-block;
+    background: linear-gradient(135deg,#ff512f,#dd2476);
+    color: #fff; font-size: .68rem; font-weight: 800;
+    padding: 3px 10px; border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(221,36,118,.35);
+    letter-spacing: .3px;
+}
+.badge-featured {
+    display: inline-block;
+    background: linear-gradient(135deg,#f6d365,#f39f18);
+    color: #4a2f00; font-size: .68rem; font-weight: 800;
+    padding: 3px 10px; border-radius: 999px;
+    box-shadow: 0 4px 10px rgba(243,159,24,.35);
+    letter-spacing: .3px;
+}
+
+
+/* ===========================================================================
+   USER TITLE CHIPS (worn under the username on the profile page)
+   =========================================================================== */
+.title-star,
+.title-master {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: linear-gradient(135deg, #ffd700, #f59e0b);
+    color: #4a2f00 !important;
+    font-size: .78rem; font-weight: 800;
+    padding: 4px 12px; border-radius: 999px;
+    box-shadow: 0 6px 14px rgba(245,158,11,.35);
+}
