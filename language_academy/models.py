@@ -52,8 +52,11 @@ class World(models.Model):
         return (completed / chapters.count()) * 100
 
     def is_unlocked_for_user(self, user):
-        """جهان بعدی فقط بعد از تکمیل کامل جهان قبلی باز می‌شود."""
+        """A world unlocks once the previous published world is fully completed.
+        Staff/superusers always see everything unlocked."""
         if not user or not user.is_authenticated:
+            return True
+        if getattr(user, 'is_staff', False) or getattr(user, 'is_superuser', False):
             return True
         prev = (World.objects
                 .filter(is_published=True, order__lt=self.order)
@@ -101,23 +104,46 @@ class Chapter(models.Model):
         return self.lessons.filter(is_published=True)
 
     def is_unlocked_for_user(self, user):
+        """
+        Chapter is unlocked when:
+          - the previous world is completed (if this is the first chapter of a
+            non-first world), AND
+          - the previous chapter of the SAME world is completed (if any), AND
+          - the explicit `required_chapter` (if set) is completed with score.
+        Staff/superusers always see everything unlocked.
+        """
         if not user or not user.is_authenticated:
             return True
-        if self.required_chapter:
+        if getattr(user, 'is_staff', False) or getattr(user, 'is_superuser', False):
+            return True
+
+        # Explicit dependency wins first
+        if self.required_chapter_id:
             progress = UserChapterProgress.objects.filter(
-                user=user, chapter=self.required_chapter, is_completed=True
+                user=user, chapter_id=self.required_chapter_id, is_completed=True
             ).first()
-            if not progress or progress.exam_score < self.unlock_score:
+            if not progress or (progress.exam_score or 0) < (self.unlock_score or 0):
                 return False
+
+        # Previous chapter of the same world must be completed
         previous_chapter = Chapter.objects.filter(
-            world=self.world, order=self.order - 1, is_published=True
-        ).first()
+            world=self.world, order__lt=self.order, is_published=True
+        ).order_by('-order').first()
         if previous_chapter:
-            prev_progress = UserChapterProgress.objects.filter(
+            if not UserChapterProgress.objects.filter(
                 user=user, chapter=previous_chapter, is_completed=True
-            ).first()
-            if not prev_progress:
+            ).exists():
                 return False
+        else:
+            # First chapter of this world → the previous WORLD (if any) must be completed
+            prev_world = (World.objects
+                          .filter(is_published=True, order__lt=self.world.order)
+                          .order_by('-order').first())
+            if prev_world is not None:
+                if not UserWorldProgress.objects.filter(
+                    user=user, world=prev_world, is_completed=True
+                ).exists():
+                    return False
         return True
 
     def is_completed_for_user(self, user):
@@ -167,9 +193,22 @@ class Lesson(models.Model):
         return LessonContent.objects.filter(lesson=self).first()
 
     def is_unlocked_for_user(self, user):
-        """درس بعدی فقط بعد از تکمیل درس قبلیِ همان فصل باز می‌شود."""
+        """
+        Lesson is unlocked when:
+          - the user is anonymous (they only see the marketing skeleton anyway), OR
+          - the user is staff/superuser (always unlocked), OR
+          - this lesson is `is_free_preview` (marketing preview lesson), OR
+          - the parent chapter is unlocked AND the previous published lesson of
+            the same chapter is completed.
+        """
         if not user or not user.is_authenticated:
             return True
+        if getattr(user, 'is_staff', False) or getattr(user, 'is_superuser', False):
+            return True
+        if getattr(self, 'is_free_preview', False):
+            # a free preview lesson still needs its parent chapter to be reachable
+            return self.chapter.is_unlocked_for_user(user) if self.chapter_id else True
+
         chapter = self.chapter
         if chapter and not chapter.is_unlocked_for_user(user):
             return False
@@ -178,10 +217,9 @@ class Lesson(models.Model):
                 .order_by('-order').first())
         if prev is None:
             return True
-        prog = UserLessonProgress.objects.filter(
+        return UserLessonProgress.objects.filter(
             user=user, lesson=prev, status='completed'
-        ).first()
-        return prog is not None
+        ).exists()
 
     def is_completed_for_user(self, user):
         if not user or not user.is_authenticated:

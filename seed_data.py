@@ -797,7 +797,11 @@ def create_lesson(chapter, name, lesson_type, order, grammar_key, vocab_key):
             "coin_reward": lesson_data["coin_reward"],
             "estimated_time_minutes": lesson_data["estimated_time_minutes"],
             "is_published": lesson_data["is_published"],
-            "is_free_preview": True,
+            # Only the very first lesson of the very first chapter of the very
+            # first world is a free preview; everything else is progression-gated.
+            "is_free_preview": bool(
+                world.order == 1 and chapter.order == 1 and order == 1
+            ),
         }
     )
 
