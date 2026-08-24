@@ -194,29 +194,41 @@ class Lesson(models.Model):
 
     def is_unlocked_for_user(self, user):
         """
-        Lesson is unlocked when:
-          - the user is anonymous (they only see the marketing skeleton anyway), OR
-          - the user is staff/superuser (always unlocked), OR
-          - this lesson is `is_free_preview` (marketing preview lesson), OR
-          - the parent chapter is unlocked AND the previous published lesson of
-            the same chapter is completed.
+        Lesson is unlocked when EITHER:
+          - the user is anonymous (they only get the marketing skeleton), OR
+          - the user is staff/superuser (always unlocked for editing), OR
+          - the parent chapter is unlocked AND the previous published lesson
+            of the same chapter is completed.
+
+        NOTE: `is_free_preview` alone is NOT enough. Previously the flag
+        blindly returned True from anywhere, which meant if an admin (or an
+        old seed) marked every lesson as a free preview the whole chapter
+        gate collapsed. Now the flag only shortcuts the previous-lesson
+        requirement WITHIN an already-reachable chapter — the chapter/world
+        gate above still applies in every case.
         """
         if not user or not user.is_authenticated:
             return True
         if getattr(user, 'is_staff', False) or getattr(user, 'is_superuser', False):
             return True
-        if getattr(self, 'is_free_preview', False):
-            # a free preview lesson still needs its parent chapter to be reachable
-            return self.chapter.is_unlocked_for_user(user) if self.chapter_id else True
 
         chapter = self.chapter
         if chapter and not chapter.is_unlocked_for_user(user):
             return False
+
         prev = (Lesson.objects
                 .filter(chapter=chapter, is_published=True, order__lt=self.order)
                 .order_by('-order').first())
         if prev is None:
+            # First lesson of its chapter — chapter itself is already reachable.
             return True
+
+        # Free-preview flag can shortcut the previous-lesson requirement only
+        # inside an already-reachable chapter; the chapter gate above still
+        # blocks jumping across worlds.
+        if getattr(self, 'is_free_preview', False):
+            return True
+
         return UserLessonProgress.objects.filter(
             user=user, lesson=prev, status='completed'
         ).exists()
