@@ -89,3 +89,14 @@ def effect_icon(effect_type):
         '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" '
         'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>' % icon_inner(effect_type)
     )
+
+
+@register.filter(name='in_owned')
+def in_owned(product_id, owned_ids):
+    """Usage: {{ p.id|in_owned:owned_ids }} → bool"""
+    return product_id in (owned_ids or set())
+
+
+@register.filter(name='in_wished')
+def in_wished(product_id, wish_ids):
+    return product_id in (wish_ids or set())

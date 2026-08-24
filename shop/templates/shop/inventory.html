@@ -7,133 +7,210 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608221">
+<link rel="stylesheet" href="{% static 'css/shop2.css' %}?v=4">
+<style>
+    .lqi-active {
+        background: linear-gradient(135deg,#10b981 0%,#059669 100%);
+        color: #fff; border-radius: 20px; padding: 20px 24px;
+        margin-bottom: 22px; box-shadow: 0 20px 40px rgba(16,185,129,.28);
+    }
+    .lqi-active h3 { font-size: 1rem; font-weight: 900; margin: 0 0 12px; }
+    .lqi-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .lqi-chip {
+        background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
+        color: #fff; padding: 6px 14px; border-radius: 999px;
+        font-size: .82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .lqi-empty-msg { color: rgba(255,255,255,.85); font-size: .84rem; margin: 0; }
+
+    .lqi-sec-head {
+        display: flex; align-items: center; justify-content: space-between; margin: 24px 0 14px;
+    }
+    .lqi-sec-head h2 { font-size: 1.15rem; font-weight: 900; color: var(--lqs-ink); margin: 0; }
+
+    .lqi-eq-btn, .lqi-use-btn, .lqi-unlink-btn {
+        border: none; cursor: pointer; font-family: inherit;
+        padding: 9px 14px; border-radius: 10px;
+        font-weight: 800; font-size: .78rem;
+        display: inline-flex; align-items: center; gap: 5px;
+        transition: transform .15s, box-shadow .15s;
+    }
+    .lqi-eq-btn {
+        background: linear-gradient(135deg,#6C63FF,#4F46E5); color: #fff;
+        box-shadow: 0 6px 14px rgba(79,70,229,.32);
+    }
+    .lqi-eq-btn:hover  { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79,70,229,.45); }
+    .lqi-unlink-btn {
+        background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
+    }
+    .lqi-unlink-btn:hover { border-color: #dc2626; color: #dc2626; }
+    .lqi-use-btn {
+        background: linear-gradient(135deg,#10b981,#059669); color: #fff;
+        box-shadow: 0 6px 14px rgba(16,185,129,.35);
+    }
+    .lqi-use-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16,185,129,.5); }
+    .lqi-passive {
+        display: inline-flex; align-items: center; gap: 5px;
+        color: #059669; font-size: .78rem; font-weight: 800;
+        background: rgba(16,185,129,.1); padding: 8px 12px; border-radius: 10px;
+    }
+
+    .lqi-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: .7rem; color: var(--lqs-ink-3); font-weight: 700; margin-top: 4px; }
+    .lqi-meta span { background: var(--lqs-line-2); padding: 2px 8px; border-radius: 999px; }
+    .lqi-meta .eq { background: rgba(16,185,129,.16); color: #059669; }
+    .lqi-meta .bound { background: rgba(245,158,11,.14); color: #b45309; }
+
+    .lqi-msg { font-size: .75rem; font-weight: 700; margin-top: 6px; min-height: 1em; }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="sq-shell">
-    <div class="sq-hero" style="background:linear-gradient(125deg,#0ea5a4,#0d9488 55%,#14b8a6)">
-        <div class="sq-hero-txt">
-            <h1>🎒 موجودی من</h1>
-            <p>همهٔ چیزهایی که صاحب شدی اینجاست — «استفاده» را بزن تا روی پروفایلت نمایش داده شود ✨</p>
-            <div class="sq-hero-links">
-                <a href="{% url 'shop:home' %}">🛍️ ادامهٔ خرید</a>
-                <a href="{% url 'shop:history' %}">🧾 تاریخچه</a>
+<div class="lqs-shell">
+
+    <section class="lqs-hero" style="background: radial-gradient(600px 220px at 90% -30px, rgba(255,255,255,.35), transparent 60%), linear-gradient(135deg, #0ea5a4 0%, #0d9488 55%, #6C63FF 130%);">
+        <div class="lqs-hero-txt">
+            <span class="lqs-hero-eyebrow">🎒 موجودی من</span>
+            <h1>گنجینه‌ی تو</h1>
+            <p>همهٔ آیتم‌هایی که خریده‌ای اینجاست. رویشون «استفاده» بزن تا روی پروفایلت فعال بشن یا مصرف کنی.</p>
+            <div class="lqs-hero-links">
+                <a href="{% url 'shop:home' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5"/></svg>
+                    ادامهٔ خرید
+                </a>
+                <a href="{% url 'shop:history' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h12a1 1 0 0 1 1 1V21l-3-2-3 2-3-2-3 2V3.5a1 1 0 0 1 1-1z"/></svg>
+                    تاریخچه
+                </a>
             </div>
         </div>
-    </div>
+    </section>
 
     {% if cosmetics %}
-    <div class="sq-panel">
+    <div class="lqi-active">
         <h3>✨ الان روی پروفایلت فعال است</h3>
-        <div class="sq-activecosm">
+        <div class="lqi-chips">
             {% for slot, items in cosmetics.items %}
                 {% for it in items %}
-                    <span>{{ it.emoji }} {{ it.name }}</span>
+                    <span class="lqi-chip">{{ it.emoji }} {{ it.name }}</span>
                 {% endfor %}
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
+    <div class="lqi-sec-head">
+        <h2>🧺 آیتم‌های تو</h2>
+        <span class="lqs-count">{{ rows|length }} آیتم</span>
+    </div>
+
     {% if rows %}
-    <h2 class="sq-sec">🧺 آیتم‌های موجودی تو <span class="sq-count">{{ rows|length }} آیتم</span></h2>
-    <div class="sq-grid">
+    <div class="lqs-grid">
         {% for row in rows %}
         {% with p=row.item.product %}
-        <div class="sq-card" data-item="{{ row.item.id }}">
-            <div class="sq-tile sq-tint-{{ p.tint }}">
-                {% if p.tile_mode == 'img' %}
-                    <span class="sq-fic">{{ p.effect_type|effect_icon }}</span>
-                    <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
-                {% elif p.tile_mode == 'frame' %}
-                    <span class="sq-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                {% elif p.tile_mode == 'ucolor' %}
-                    <span class="sq-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
-                {% elif p.tile_mode == 'effect' %}
-                    <span class="sq-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                {% elif p.tile_mode == 'theme' %}
-                    <span class="sq-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
-                {% elif p.tile_mode == 'pbg' %}
-                    <span class="sq-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
-                {% else %}
-                    <span class="sq-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+        <article class="lqs-card" data-item="{{ row.item.id }}">
+            <a class="lqs-tile lqs-tint-{{ p.tint|default:'lav' }}" href="{% url 'shop:product' p.slug %}">
+                {% if row.item.equipped %}
+                    <div class="lqs-ribs"><span class="lqs-rib own">✨ فعال</span></div>
                 {% endif %}
-                {% if row.item.equipped %}<span class="sq-ribs"><span class="sq-rib own">✨ فعال</span></span>{% endif %}
-            </div>
-            <div class="sq-cbody">
-                <div class="sq-ccat">{{ p.category.emoji }} {{ p.category.name }} <b>·</b> {{ p.get_product_type_display }}</div>
-                <h3 class="sq-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                <div class="sq-ccat">
+                {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+                {% else %}
+                    <span class="emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                {% endif %}
+            </a>
+            <div class="lqs-cbody">
+                <span class="lqs-ccat">{{ p.category.emoji }} {{ p.category.name }} · {{ p.get_product_type_display }}</span>
+                <h3 class="lqs-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="lqi-meta">
                     <span>×{{ row.item.quantity }}</span>
                     {% if row.slot %}<span>🧩 {{ row.slot }}</span>{% endif %}
                     {% if row.item.source != 'shop' %}<span>🎁 هدیه</span>{% endif %}
+                    {% if row.item.equipped %}<span class="eq">✨ فعال</span>{% endif %}
+                    {% if row.bound %}<span class="bound">📌 {{ row.bound|truncatechars:22 }}</span>{% endif %}
                 </div>
-                {% if row.bound %}<div class="sq-ccat" style="color:#b45309">📌 {{ row.bound }}</div>{% endif %}
-                <div class="sq-cfoot" style="padding-top:4px">
+                <div class="lqs-cfoot" style="justify-content: flex-end">
                     {% if row.equippable %}
                         {% if row.item.equipped %}
-                            <button class="sq-btn sm ghost eq-btn" data-act="unequip" data-id="{{ row.item.id }}">❌ خاموش</button>
+                            <button class="lqi-unlink-btn eq-btn" data-act="unequip" data-id="{{ row.item.id }}">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/></svg>
+                                خاموش
+                            </button>
                         {% else %}
-                            <button class="sq-btn sm eq-btn" data-act="equip" data-id="{{ row.item.id }}">✨ استفاده</button>
+                            <button class="lqi-eq-btn eq-btn" data-act="equip" data-id="{{ row.item.id }}">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                                استفاده
+                            </button>
                         {% endif %}
                     {% elif row.consumable %}
-                        <button class="sq-btn sm green use-btn" data-id="{{ row.item.id }}">⚡ مصرف کن</button>
+                        <button class="lqi-use-btn use-btn" data-id="{{ row.item.id }}">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2 4.5 8h-4l3 12L8 13h4z"/></svg>
+                            مصرف کن
+                        </button>
                     {% else %}
-                        <span class="sq-ccat" style="color:#0b6b5a">✅ پسیو — همیشه فعال</span>
+                        <span class="lqi-passive">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            پسیو — همیشه فعال
+                        </span>
                     {% endif %}
                 </div>
-                <div class="msg sq-buymsg"></div>
+                <div class="lqi-msg"></div>
             </div>
-        </div>
+        </article>
         {% endwith %}
         {% endfor %}
     </div>
     {% else %}
-    <div class="sq-empty">
+    <div class="lqs-empty">
         <span class="big">🫙</span>
-        <p><b>هنوز چیزی نداری!</b> برو بازار یک چیز باحال پیدا کن 😄</p>
-        <a href="{% url 'shop:home' %}" class="sq-btn">🛒 رفتن به فروشگاه</a>
+        <p><b>هنوز چیزی توی موجودی‌ات نیست.</b><br>برو فروشگاه، یه آیتم باحال پیدا کن!</p>
+        <a href="{% url 'shop:home' %}" class="btn">🛒 رفتن به فروشگاه</a>
     </div>
     {% endif %}
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-function csrfTok() {
+function _csrf() {
     const h = document.getElementById('lqCsrf');
     if (h && h.value) return h.value;
     const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
     return c ? c.pop() : '';
 }
-document.querySelectorAll('.eq-btn').forEach(btn => {
-    btn.onclick = () => {
+document.querySelectorAll('.eq-btn').forEach(function (btn) {
+    btn.onclick = async function () {
         const act = btn.dataset.act, id = btn.dataset.id;
-        fetch(`/shop/${act === 'equip' ? 'equip' : 'unequip'}/${id}/`, {method: 'POST', headers: {'X-CSRFToken': csrfTok()}})
-            .then(r => r.json())
-            .then(d => { if (d.ok) { location.reload(); } else alert(d.error || 'خطا'); });
+        btn.disabled = true;
+        try {
+            const r = await fetch('/shop/' + (act === 'equip' ? 'equip' : 'unequip') + '/' + id + '/',
+                {method: 'POST', headers: {'X-CSRFToken': _csrf()}});
+            const j = await r.json();
+            if (j.ok) location.reload();
+            else { alert(j.error || 'خطا'); btn.disabled = false; }
+        } catch (e) { alert('خطای شبکه'); btn.disabled = false; }
     };
 });
-document.querySelectorAll('.use-btn').forEach(btn => {
-    btn.onclick = () => {
-        const card = btn.closest('.sq-card');
-        const msg = card.querySelector('.msg');
-        msg.textContent = '⏳ ...';
+document.querySelectorAll('.use-btn').forEach(function (btn) {
+    btn.onclick = async function () {
+        const card = btn.closest('.lqs-card');
+        const msg = card.querySelector('.lqi-msg');
+        msg.style.color = '#64748b'; msg.textContent = '⏳ …';
         btn.disabled = true;
-        fetch(`/shop/consume/${btn.dataset.id}/`, {method: 'POST', headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}})
-            .then(r => r.json())
-            .then(d => {
-                if (d.ok) {
-                    msg.style.color = '#16a34a';
-                    msg.textContent = d.message || '✅ مصرف شد!';
-                    setTimeout(() => location.reload(), 1400);
-                } else {
-                    msg.style.color = '#e11d48';
-                    msg.textContent = '❌ ' + (d.error || 'خطا');
-                    btn.disabled = false;
-                }
-            });
+        try {
+            const r = await fetch('/shop/consume/' + btn.dataset.id + '/',
+                {method: 'POST', headers: {'X-CSRFToken': _csrf(), 'X-Requested-With': 'XMLHttpRequest'}});
+            const j = await r.json();
+            if (j.ok) {
+                msg.style.color = '#059669';
+                msg.textContent = j.message || '✅ مصرف شد!';
+                setTimeout(function () { location.reload(); }, 1400);
+            } else {
+                msg.style.color = '#dc2626';
+                msg.textContent = '❌ ' + (j.error || 'خطا');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            msg.style.color = '#dc2626'; msg.textContent = '❌ خطای شبکه';
+            btn.disabled = false;
+        }
     };
 });
 </script>

@@ -31,3 +31,8 @@ shot_grammar.py
 shot_footer.py
 shot_auth.py
 shot_all.py
+shot_shop.py
+shot_shop_owned.py
+shot_inv.py
+image-search/
+shot_auth_all.py

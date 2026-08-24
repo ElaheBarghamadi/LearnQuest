@@ -29,7 +29,29 @@ CATEGORIES = [
 
 
 def P(slug, name, cat, ptype, effect, payload, coins=0, gems=0, emoji='🎁', desc='',
-      featured=False, discount=0, stock=None, per_user=0):
+      featured=False, discount=0, stock=None, per_user=None):
+    """Product factory. If `per_user` is None it is auto-computed from
+    `effect` so every cosmetic/unlock defaults to per_user_limit=1 and
+    every booster/consumable stays repeatable."""
+    if per_user is None:
+        # keep in sync with shop/management/commands/normalize_limits.py
+        one_time = {
+            'frame', 'frame_animated',
+            'theme', 'theme_dark_variant',
+            'username_color',
+            'badge', 'title',
+            'profile_background',
+            'profile_effect', 'profile_card_animated',
+            'pet_skin', 'pet_accessory',
+            'wallpaper_pack',
+            'pet', 'season_pass',
+            'exclusive_lesson', 'exclusive_minigame',
+            'vocabulary_pack', 'grammar_pack', 'listening_pack', 'speaking_pack',
+            'writing_pack', 'pronunciation_pack', 'music_pack',
+            'sticker_pack', 'emoji_pack',
+            'certificate_special',
+        }
+        per_user = 1 if effect in one_time else 0
     return dict(slug=slug, name=name, category=cat, product_type=ptype, effect_type=effect,
                 effect_payload=payload, price_coins=coins, price_gems=gems,
                 preview_emoji=emoji, description=desc, is_featured=featured,

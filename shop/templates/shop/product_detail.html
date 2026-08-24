@@ -7,303 +7,398 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
-<link rel="stylesheet" href="{% static 'css/shop.css' %}?v=202608221">
+<link rel="stylesheet" href="{% static 'css/shop2.css' %}?v=4">
+<style>
+    .lqp-shell   { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+    .lqp-crumb   { display: flex; gap: 6px; align-items: center; font-size: .82rem; color: var(--lqs-ink-3); margin-bottom: 20px; flex-wrap: wrap; }
+    .lqp-crumb a { color: var(--lqs-primary); text-decoration: none; font-weight: 700; }
+    .lqp-crumb a:hover { text-decoration: underline; }
+    .lqp-crumb .sep { color: var(--lqs-ink-3); }
+
+    .lqp-main {
+        display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px;
+        background: #fff; border: 1px solid var(--lqs-line);
+        border-radius: 24px; padding: 30px;
+        box-shadow: var(--lqs-shadow);
+    }
+    .lqp-gallery {
+        position: relative; aspect-ratio: 1;
+        border-radius: 20px; overflow: hidden;
+        display: grid; place-items: center;
+        background:
+            radial-gradient(circle at 50% 50%, rgba(255,255,255,.9), rgba(240,241,250,.6)),
+            var(--tile-tint, linear-gradient(135deg, #EDE9FE, #DDD6FE));
+    }
+    .lqp-gallery .emo { font-size: 8rem; filter: drop-shadow(0 12px 24px rgba(20,30,80,.12)); }
+    .lqp-gallery img  { max-width: 80%; max-height: 80%; object-fit: contain; }
+    .lqp-gallery .rib {
+        position: absolute; top: 20px; inset-inline-start: 20px;
+        display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+    }
+    .lqp-gallery .rib span {
+        font-size: .74rem; font-weight: 900; color: #fff;
+        padding: 5px 12px; border-radius: 999px;
+        box-shadow: 0 6px 14px rgba(0,0,0,.12);
+    }
+    .lqp-gallery .rib .sale { background: linear-gradient(135deg,#f97316,#dc2626); }
+    .lqp-gallery .rib .feat { background: linear-gradient(135deg,#f59e0b,#d97706); }
+    .lqp-gallery .rib .own  { background: linear-gradient(135deg,#10b981,#059669); }
+    .lqp-gallery .rib .ltd  { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
+
+    .lqp-info { display: flex; flex-direction: column; gap: 16px; }
+    .lqp-cat  { font-size: .78rem; color: var(--lqs-ink-3); font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
+    .lqp-cat b { color: var(--lqs-primary); }
+    .lqp-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: var(--lqs-ink); margin: 0; letter-spacing: -.4px; line-height: 1.4; }
+    .lqp-desc  { font-size: .92rem; line-height: 2; color: var(--lqs-ink-2); margin: 0; }
+
+    .lqp-stars { display: inline-flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--lqs-ink-3); font-weight: 700; }
+    .lqp-stars .s { color: #f59e0b; }
+    .lqp-stars .s svg { width: 14px; height: 14px; fill: currentColor; }
+
+    .lqp-features {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px; margin: 8px 0;
+    }
+    .lqp-features .f {
+        display: flex; align-items: flex-start; gap: 10px;
+        background: var(--lqs-line-2); border: 1px solid var(--lqs-line);
+        border-radius: 12px; padding: 10px 12px;
+        font-size: .8rem; color: var(--lqs-ink-2); font-weight: 600;
+        line-height: 1.6;
+    }
+    .lqp-features .f .ic {
+        width: 28px; height: 28px; border-radius: 8px; flex: 0 0 auto;
+        background: rgba(108,99,255,.14); color: var(--lqs-primary);
+        display: grid; place-items: center; font-size: .9rem;
+    }
+
+    .lqp-buybox {
+        background: linear-gradient(135deg, rgba(108,99,255,.06), rgba(14,165,164,.05));
+        border: 1px solid var(--lqs-line); border-radius: 16px;
+        padding: 20px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .lqp-pricebox { display: flex; align-items: baseline; gap: 14px; }
+    .lqp-pricebox .now {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 2rem; font-weight: 900; color: var(--lqs-ink); line-height: 1;
+    }
+    .lqp-pricebox .now svg { width: 24px; height: 24px; }
+    .lqp-pricebox .now.coin { color: #b45309; }
+    .lqp-pricebox .now.gem  { color: #0e7490; }
+    .lqp-pricebox .now.free { color: var(--lqs-green); }
+    .lqp-pricebox .was { font-size: 1rem; color: var(--lqs-ink-3); text-decoration: line-through; font-weight: 600; }
+    .lqp-pricebox .disc-tag {
+        background: linear-gradient(135deg,#f97316,#dc2626); color: #fff;
+        font-size: .74rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+    }
+
+    .lqp-stock-row {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+        font-size: .82rem; color: var(--lqs-ink-2); font-weight: 700;
+    }
+    .lqp-stock-row .avail { color: var(--lqs-green); display: inline-flex; align-items: center; gap: 5px; }
+    .lqp-stock-row .avail::before { content: '●'; }
+    .lqp-stock-row .low { color: var(--lqs-red); }
+    .lqp-stock-row .low::before { content: '●'; }
+
+    .lqp-actions { display: flex; gap: 10px; }
+    .lqp-buy-big {
+        flex: 1; border: none; cursor: pointer; font-family: inherit;
+        background: linear-gradient(135deg, var(--lqs-primary), var(--lqs-primary-2));
+        color: #fff; font-weight: 900; font-size: 1rem;
+        padding: 15px 20px; border-radius: 14px;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        box-shadow: 0 12px 26px rgba(79,70,229,.4);
+        transition: transform .18s, box-shadow .18s;
+    }
+    .lqp-buy-big svg { width: 18px; height: 18px; }
+    .lqp-buy-big:hover  { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(79,70,229,.5); }
+    .lqp-buy-big:active { transform: translateY(0); }
+    .lqp-buy-big:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .lqp-owned-big {
+        flex: 1; background: linear-gradient(135deg,#10b981,#059669); color: #fff;
+        padding: 15px 20px; border-radius: 14px; font-weight: 900; font-size: 1rem;
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        cursor: default;
+    }
+    .lqp-owned-big svg { width: 18px; height: 18px; }
+
+    .lqp-inv-btn {
+        background: #fff; border: 1.5px solid var(--lqs-line); color: var(--lqs-ink);
+        padding: 15px 20px; border-radius: 14px; font-weight: 800; font-size: .9rem;
+        cursor: pointer; transition: border-color .18s, color .18s;
+        text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .lqp-inv-btn:hover { border-color: var(--lqs-primary); color: var(--lqs-primary); }
+
+    .lqp-wish {
+        background: #fff; border: 1.5px solid var(--lqs-line);
+        color: var(--lqs-ink-3); width: 54px; height: 54px; border-radius: 14px;
+        cursor: pointer; display: grid; place-items: center;
+        transition: color .18s, border-color .18s;
+    }
+    .lqp-wish svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+    .lqp-wish:hover  { color: var(--lqs-pink); border-color: var(--lqs-pink); }
+    .lqp-wish.on     { color: var(--lqs-pink); border-color: var(--lqs-pink); }
+    .lqp-wish.on svg { fill: currentColor; }
+
+    /* Bundle box */
+    .lqp-bundle {
+        margin-top: 24px; background: #fff; border: 1px solid var(--lqs-line);
+        border-radius: 16px; padding: 20px;
+    }
+    .lqp-bundle h3 { margin: 0 0 14px; font-size: .95rem; color: var(--lqs-ink); font-weight: 900; }
+    .lqp-bundle-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+    .lqp-bundle-items a {
+        text-decoration: none; color: var(--lqs-ink);
+        background: var(--lqs-line-2); padding: 12px; border-radius: 12px;
+        display: flex; align-items: center; gap: 10px; font-size: .82rem; font-weight: 700;
+        transition: background .15s;
+    }
+    .lqp-bundle-items a:hover { background: rgba(108,99,255,.1); color: var(--lqs-primary); }
+
+    /* similar products */
+    .lqp-similar { margin-top: 36px; }
+    .lqp-similar h2 {
+        font-size: 1.1rem; font-weight: 900; color: var(--lqs-ink);
+        margin: 0 0 16px; padding-bottom: 12px;
+        border-bottom: 1px dashed var(--lqs-line);
+    }
+
+    @media (max-width: 780px) {
+        .lqp-main { grid-template-columns: 1fr; padding: 20px; gap: 24px; }
+        .lqp-gallery .emo { font-size: 6rem; }
+        .lqp-pricebox .now { font-size: 1.6rem; }
+        .lqp-actions { flex-wrap: wrap; }
+        .lqp-inv-btn { flex: 1; }
+        .lqp-wish { width: 100%; height: 54px; }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="sq-shell">
+<div class="lqp-shell">
 
-    <div class="sq-detail">
+    <nav class="lqp-crumb">
+        <a href="{% url 'shop:home' %}">🛍️ فروشگاه</a>
+        <span class="sep">›</span>
+        {% if product.category %}
+            <a href="{% url 'shop:home' %}?cat={{ product.category.slug }}">{{ product.category.emoji }} {{ product.category.name }}</a>
+            <span class="sep">›</span>
+        {% endif %}
+        <span>{{ product.name }}</span>
+    </nav>
 
-        <div class="sq-gal sq-tint-{{ product.tint }}">
-            {% if product.tile_mode == 'img' %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
-            {% elif product.tile_mode == 'frame' %}
-                <span class="sq-ava lq-framed {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-            {% elif product.tile_mode == 'ucolor' %}
-                <span class="sq-uc {{ product.preview_css }}">✦ {{ request.user.username }}</span>
-            {% elif product.tile_mode == 'effect' %}
-                <span class="sq-ava {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-            {% elif product.tile_mode == 'theme' %}
-                <span class="sq-theme-prev" data-t="{{ product.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
-            {% elif product.tile_mode == 'pbg' %}
-                <span class="sq-pbg-prev {{ product.preview_css }}">{% firstof product.preview_emoji '🌌' %}</span>
+    <div class="lqp-main">
+        <div class="lqp-gallery lqs-tint-{{ product.tint|default:'lav' }}">
+            <div class="rib">
+                {% if owned_item %}<span class="own">✓ خریداری شده</span>{% endif %}
+                {% if disc %}<span class="sale">-{{ disc }}٪</span>{% endif %}
+                {% if product.is_featured %}<span class="feat">⭐ ویژه</span>{% endif %}
+                {% if remaining is not None and remaining > 0 and remaining <= 5 %}<span class="ltd">فقط {{ remaining }} تا</span>{% endif %}
+            </div>
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.remove()">
             {% else %}
-                <span class="sq-emo">{% firstof product.preview_emoji product.category.emoji '🎁' %}</span>
+                <span class="emo">{% firstof product.preview_emoji product.category.emoji '🎁' %}</span>
             {% endif %}
-            {% if disc %}<span class="sq-r sq-r-off">٪{{ disc }} تخفیف</span>{% endif %}
-            {% if product.is_featured %}<span class="sq-r sq-r-feat">⭐ ویژهٔ بازار</span>{% endif %}
-            {% if owned_item %}<span class="sq-r sq-r-own">✓ مال توست</span>{% endif %}
         </div>
 
-        <div class="sq-dinfo">
-            <div class="sq-crumb">
-                <a href="{% url 'shop:home' %}">فروشگاه</a> ‹
-                {% if product.category %}<a href="{% url 'shop:home' %}?cat={{ product.category.slug }}">{{ product.category.emoji }} {{ product.category.name }}</a> ‹{% endif %}
-                <span>{{ product.get_product_type_display }}</span>
+        <div class="lqp-info">
+            <div class="lqp-cat">
+                {{ product.category.emoji }} {{ product.category.name }} · <b>{{ product.get_product_type_display }}</b>
             </div>
-
-            <h1 class="sq-dtitle">{% firstof product.preview_emoji '' %} {{ product.name }}</h1>
-
-            <p class="sq-ddesc">{{ product.description|default:'—'|linebreaksbr }}</p>
-
-            <div class="sq-ticks">
-                {% if equippable %}
-                    <span class="sq-tick">🧩 قابل نصب روی پروفایل — جایگاه: «{{ slot_name }}»</span>
-                {% endif %}
-                {% if consumable_direct %}
-                    <span class="sq-tick">⚡ مصرفی فوری — از داخل «موجودی» فعالش کن</span>
-                {% endif %}
-                {% if bound_note %}
-                    <span class="sq-tick">📌 {{ bound_note }}</span>
-                {% endif %}
-                {% if product.product_type == 'unlock' %}
-                    <span class="sq-tick">🔓 باز شدن دائمی محتوای قفل‌شده</span>
-                {% endif %}
-                {% if product.product_type == 'booster' %}
-                    <span class="sq-tick">🚀 بوستر زمانی — از لحظهٔ فعال‌سازی شروع می‌شود</span>
-                {% endif %}
-                {% if product.per_user_limit %}
-                    <span class="sq-tick">👤 سقف خرید هر کاربر: {{ product.per_user_limit }} عدد</span>
-                {% endif %}
+            <h1 class="lqp-title">{{ product.name }}</h1>
+            {% if product.sold_count or product.views_count %}
+            <div class="lqp-stars">
                 {% if product.sold_count %}
-                    <span class="sq-tick">🤝 {{ product.sold_count }} خرید موفق</span>
+                    <span>🛒 {{ product.sold_count }} فروش</span>
                 {% endif %}
                 {% if product.views_count %}
-                    <span class="sq-tick">👁 {{ product.views_count }} بازدید</span>
+                    <span>· 👁 {{ product.views_count }} بازدید</span>
                 {% endif %}
-            </div>
-
-            {% if bundle_items %}
-            <div class="sq-bundle">
-                <b>📦 داخل این باندل:</b>
-                {% for bi in bundle_items %}
-                    <div class="bi"><span>{% firstof bi.preview_emoji bi.category.emoji '🎁' %}</span> {{ bi.name }} <small>({{ bi.get_product_type_display }})</small></div>
-                {% endfor %}
             </div>
             {% endif %}
+            {% if product.description %}
+                <p class="lqp-desc">{{ product.description|linebreaksbr }}</p>
+            {% endif %}
 
-            <div class="sq-buybox">
-                {% if owned_item %}
-                    <div class="sq-ownnote">✅ این مورد را داری (×{{ owned_item.quantity }}){% if owned_item.equipped %} — الان روی پروفایلت فعال است ✨{% endif %}</div>
+            {# Features / attributes #}
+            <div class="lqp-features">
+                {% if equippable %}
+                    <div class="f"><span class="ic">🧩</span> قابل نصب روی پروفایل<br><small>جایگاه: {{ slot_name }}</small></div>
                 {% endif %}
+                {% if consumable_direct %}
+                    <div class="f"><span class="ic">⚡</span> مصرفی فوری<br><small>از موجودی فعال کن</small></div>
+                {% endif %}
+                {% if product.product_type == 'unlock' %}
+                    <div class="f"><span class="ic">🔓</span> باز شدن دائمی<br><small>محتوای قفل‌شده</small></div>
+                {% endif %}
+                {% if product.product_type == 'booster' %}
+                    <div class="f"><span class="ic">🚀</span> بوستر زمانی<br><small>از لحظهٔ فعال‌سازی</small></div>
+                {% endif %}
+                {% if bound_note %}
+                    <div class="f"><span class="ic">📌</span> {{ bound_note }}</div>
+                {% endif %}
+                {% if product.per_user_limit == 1 %}
+                    <div class="f"><span class="ic">👤</span> فقط یک بار قابل خرید<br><small>یکبار مصرف / تجهیز</small></div>
+                {% elif product.per_user_limit > 1 %}
+                    <div class="f"><span class="ic">👤</span> سقف خرید: {{ product.per_user_limit }} عدد</div>
+                {% endif %}
+            </div>
 
-                <div class="sq-buyrow">
-                    <div class="sq-bigprice">
-                        {% if price_c %}
-                            <span class="val coin">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>{{ price_c }}
-                            </span>
-                            {% if disc %}<span class="old">{{ product.price_coins }}</span><span class="sv">٪{{ disc }} سود تو</span>{% endif %}
-                        {% elif price_g %}
-                            <span class="val gem">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>{{ price_g }}
-                            </span>
-                            {% if disc %}<span class="old">{{ product.price_gems }}</span><span class="sv">٪{{ disc }} سود تو</span>{% endif %}
-                        {% else %}
-                            <span class="val free">رایگان 🎉</span>
+            {# Buy box #}
+            <div class="lqp-buybox">
+                <div class="lqp-pricebox">
+                    {% if price_c %}
+                        <span class="now coin">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>
+                            {{ price_c }}
+                            <small style="font-size:.55em; margin-inline-start:4px; color:var(--lqs-ink-3)">سکه</small>
+                        </span>
+                        {% if disc %}<span class="was">{{ product.price_coins }}</span><span class="disc-tag">-{{ disc }}٪</span>{% endif %}
+                    {% elif price_g %}
+                        <span class="now gem">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>
+                            {{ price_g }}
+                            <small style="font-size:.55em; margin-inline-start:4px; color:var(--lqs-ink-3)">الماس</small>
+                        </span>
+                        {% if disc %}<span class="was">{{ product.price_gems }}</span><span class="disc-tag">-{{ disc }}٪</span>{% endif %}
+                    {% else %}
+                        <span class="now free">✨ رایگان</span>
+                    {% endif %}
+                </div>
+
+                <div class="lqp-stock-row">
+                    {% if remaining is None %}
+                        <span class="avail">موجود</span>
+                    {% elif remaining > 5 %}
+                        <span class="avail">{{ remaining }} عدد موجود</span>
+                    {% elif remaining > 0 %}
+                        <span class="low">فقط {{ remaining }} عدد باقی!</span>
+                    {% else %}
+                        <span class="low">ناموجود</span>
+                    {% endif %}
+                    <span>💰 موجودی: <b>{{ lq_wallet.coins|default:0 }}</b> سکه · <b>{{ lq_wallet.gems|default:0 }}</b> الماس</span>
+                </div>
+
+                <div class="lqp-actions">
+                    {% if owned_item and product.per_user_limit == 1 %}
+                        <span class="lqp-owned-big">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            خریداری شده — در موجودی
+                        </span>
+                        <a href="{% url 'shop:inventory' %}" class="lqp-inv-btn">🎒 مشاهده</a>
+                    {% else %}
+                        <button class="lqp-buy-big" id="lqpBuyBtn"
+                                data-id="{{ product.id }}" data-name="{{ product.name }}"
+                                data-emoji="{% firstof product.preview_emoji product.category.emoji '🎁' %}"
+                                data-price-c="{{ price_c }}" data-price-g="{{ price_g }}">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.68 3.39A1 1 0 0 0 6.22 18H19"/><circle cx="9" cy="21" r="1.5"/><circle cx="17" cy="21" r="1.5"/></svg>
+                            {% if owned_item %}خرید دوباره{% else %}افزودن به موجودی{% endif %}
+                        </button>
+                        {% if owned_item %}
+                        <a href="{% url 'shop:inventory' %}" class="lqp-inv-btn">🎒 موجودی</a>
                         {% endif %}
-                    </div>
-                    <div class="sq-meta">
-                        <span>👛 موجودی تو: 🪙{{ lq_wallet.coins|default:0 }} 💎{{ lq_wallet.gems|default:0 }}</span>
-                        {% if remaining is not None %}<span>📦 {{ remaining }} عدد مانده</span>{% endif %}
-                    </div>
-                </div>
+                    {% endif %}
 
-                <div class="sq-buybtns">
-                    <button id="buyBtn" class="sq-buybig" {% if owned_item and not consumable_direct and product.product_type != 'unlock' %}disabled{% endif %}>
-                        {% if price_c or price_g %}🛒 خرید با {% if price_c %}🪙 {{ price_c }}{% endif %}{% if price_c and price_g %} + {% endif %}{% if price_g %}💎 {{ price_g }}{% endif %}{% else %}🎁 دریافت رایگان{% endif %}
+                    <button type="button" class="lqp-wish wish-btn {% if in_wishlist %}on{% endif %}" data-id="{{ product.id }}" aria-label="علاقه‌مندی">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
-                    <button id="wishBtn" class="sq-heart" style="width:52px;height:52px;border-radius:14px" title="علاقه‌مندی">
-                        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:22px;height:22px" class="{% if in_wishlist %}on{% endif %}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    </button>
-                </div>
-                <div id="buyMsg" class="sq-buymsg"></div>
-                <div class="sq-trust">
-                    <span>⚡ تحویل آنی</span>
-                    <span>🔒 پرداخت امن</span>
-                    <span>↩ ضمانت بازگشت</span>
-                    <span>🧾 ثبت در تاریخچه</span>
                 </div>
             </div>
         </div>
     </div>
 
-    {% if similar_products %}
-    <div class="sq-similar">
-        <h2 class="sq-sec">🛍️ شاید این‌ها را هم بپسندی</h2>
-        <div class="sq-grid">
-            {% for p in similar_products %}
-            <div class="sq-card">
-                <a class="sq-tile sq-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
-                    {% if p.tile_mode == 'img' %}
-                        <span class="sq-fic">{{ p.effect_type|effect_icon }}</span>
-                        <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
-                    {% elif p.tile_mode == 'frame' %}
-                        <span class="sq-ava lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                    {% elif p.tile_mode == 'ucolor' %}
-                        <span class="sq-uc {{ p.preview_css }}">✦ {{ request.user.username }}</span>
-                    {% elif p.tile_mode == 'effect' %}
-                        <span class="sq-ava {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1" }}</span></span>
-                    {% elif p.tile_mode == 'theme' %}
-                        <span class="sq-theme-prev" data-t="{{ p.preview_css }}"><span class="bar"></span><span class="lns"><i></i><i></i><i></i></span></span>
-                    {% elif p.tile_mode == 'pbg' %}
-                        <span class="sq-pbg-prev {{ p.preview_css }}">{% firstof p.preview_emoji '🌌' %}</span>
-                    {% else %}
-                        <span class="sq-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
-                    {% endif %}
-                    {% if p.disc %}<span class="sq-ribs"><span class="sq-rib off">٪{{ p.disc }}−</span></span>{% endif %}
-                    {% if p.is_featured %}<span class="sq-ribs"><span class="sq-rib feat">⭐ ویژه</span></span>{% endif %}
-                </a>
-                <div class="sq-cbody">
-                    <div class="sq-ccat">{{ p.category.emoji }} {{ p.category.name }}</div>
-                    <h3 class="sq-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                    <div class="sq-cfoot">
-                        <div class="sq-price">
-                            {% if p.price_c %}
-                                <span class="sq-val coin">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>{{ p.price_c }}
-                                </span>
-                                {% if p.disc %}<span class="sq-old">{{ p.price_coins }}</span>{% endif %}
-                            {% elif p.price_g %}
-                                <span class="sq-val gem">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>{{ p.price_g }}
-                                </span>
-                                {% if p.disc %}<span class="sq-old">{{ p.price_gems }}</span>{% endif %}
-                            {% else %}
-                                <span class="sq-val free">رایگان 🎉</span>
-                            {% endif %}
-                        </div>
-                        <a href="{% url 'shop:product' p.slug %}" class="sq-buy-mini">مشاهده</a>
-                    </div>
-                </div>
-            </div>
+    {% if bundle_items %}
+    <div class="lqp-bundle">
+        <h3>📦 داخل این باندل چیه:</h3>
+        <div class="lqp-bundle-items">
+            {% for bi in bundle_items %}
+            <a href="{% url 'shop:product' bi.slug %}">
+                <span style="font-size:1.3rem">{% firstof bi.preview_emoji bi.category.emoji '🎁' %}</span>
+                <span>{{ bi.name }}</span>
+            </a>
             {% endfor %}
         </div>
     </div>
     {% endif %}
+
+    {% if similar_products %}
+    <section class="lqp-similar">
+        <h2>🎁 محصولات مشابه</h2>
+        <div class="lqs-grid">
+            {% for p in similar_products %}
+            <article class="lqs-card">
+                <a class="lqs-tile lqs-tint-{{ p.tint|default:'lav' }}" href="{% url 'shop:product' p.slug %}">
+                    {% if p.image %}
+                        <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+                    {% else %}
+                        <span class="emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                    {% endif %}
+                </a>
+                <div class="lqs-cbody">
+                    <span class="lqs-ccat">{{ p.category.emoji }} {{ p.category.name }}</span>
+                    <h3 class="lqs-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                    <div class="lqs-cfoot">
+                        <div class="lqs-price">
+                            {% if p.price_c %}<span class="val coin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/></svg>{{ p.price_c }}</span>{% else %}<span class="val free">رایگان</span>{% endif %}
+                        </div>
+                        <a class="lqs-buy" style="text-decoration:none" href="{% url 'shop:product' p.slug %}">مشاهده</a>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
 </div>
 
-<!-- Confirm purchase modal -->
-<div class="sq-modal-overlay" id="sqModal">
-    <div class="sq-modal">
-        <div class="sq-modal-head">
-            <button class="sq-modal-x" id="sqModalX" type="button" aria-label="بستن">✕</button>
-            <h3>🛒 تأیید خرید</h3>
-            <p>بررسی نهایی سفارش</p>
-        </div>
-        <div class="sq-modal-body">
-            <div class="sq-conf-row"><span class="k">کالا</span><span class="v">{{ product.preview_emoji }} {{ product.name }}</span></div>
-            <div class="sq-conf-row"><span class="k">قیمت</span><span class="v">{% if price_c %}🪙 {{ price_c }}{% endif %}{% if price_c and price_g %} + {% endif %}{% if price_g %}💎 {{ price_g }}{% endif %}{% if not price_c and not price_g %}رایگان 🎉{% endif %}</span></div>
-            <div class="sq-conf-row"><span class="k">موجودی تو</span><span class="v">🪙 {{ lq_wallet.coins|default:0 }} · 💎 {{ lq_wallet.gems|default:0 }}</span></div>
-            <div class="sq-conf-row"><span class="k">بعد از خرید</span><span class="v" id="sqMAfter">—</span></div>
-            <div class="sq-conf-remain" id="sqMRemain"></div>
-        </div>
-        <div class="sq-modal-actions">
-            <button class="sq-btn ghost" id="sqCancel" type="button">انصراف</button>
-            <button class="sq-btn" id="sqConfirm" type="button">✅ تأیید نهایی خرید</button>
-        </div>
-    </div>
-</div>
-
-<!-- Toast -->
-<div class="sq-toast-wrap" id="sqToastWrap"></div>
-{% endblock %}
-
-{% block extra_js %}
 <script>
 (function () {
-    'use strict';
-    function csrfTok() {
-        const h = document.getElementById('lqCsrf');
-        if (h && h.value) return h.value;
-        const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
-        return c ? c.pop() : '';
-    }
-    function toast(text, type) {
-        const wrap = document.getElementById('sqToastWrap');
-        const el = document.createElement('div');
-        el.className = 'sq-toast ' + (type || '');
-        el.textContent = text;
-        wrap.appendChild(el);
-        setTimeout(() => { el.classList.add('out'); setTimeout(() => el.remove(), 260); }, 3600);
-    }
-
-    /* ---- buy via confirm modal ---- */
-    const overlay = document.getElementById('sqModal');
-    const buyBtn = document.getElementById('buyBtn');
-    const confirmBtn = document.getElementById('sqConfirm');
-    const mAfter = document.getElementById('sqMAfter');
-    const mRemain = document.getElementById('sqMRemain');
-    const priceC = {{ price_c|default:0 }};
-    const priceG = {{ price_g|default:0 }};
-    const coins = {{ lq_wallet.coins|default:0 }};
-    const gems = {{ lq_wallet.gems|default:0 }};
-    let busy = false;
-
-    function openModal() {
-        const afterC = coins - priceC, afterG = gems - priceG;
-        mAfter.textContent = '🪙 ' + Math.max(0, afterC).toLocaleString('fa-IR') + ' · 💎 ' + Math.max(0, afterG).toLocaleString('fa-IR');
-        mAfter.className = 'v ' + ((afterC < 0 || afterG < 0) ? 'neg' : 'pos');
-        if (afterC < 0 || afterG < 0) {
-            mRemain.textContent = '⚠️ موجودی‌ات کافی نیست — از بازی‌ها و درس‌ها سکه جمع کن!';
-            mRemain.className = 'sq-conf-remain short';
-            confirmBtn.disabled = true;
-        } else {
-            mRemain.textContent = '✅ موجودی کافی است — با تأیید، خرید انجام می‌شود.';
-            mRemain.className = 'sq-conf-remain enough';
-            confirmBtn.disabled = false;
-        }
-        overlay.classList.add('open');
-    }
-    function closeModal() { overlay.classList.remove('open'); }
-
-    if (buyBtn && !buyBtn.disabled) buyBtn.onclick = openModal;
-    document.getElementById('sqModalX').onclick = closeModal;
-    document.getElementById('sqCancel').onclick = closeModal;
-    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
-
-    confirmBtn.onclick = () => {
-        if (busy || confirmBtn.disabled) return;
-        busy = true;
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = '⏳ در حال پردازش امن…';
-        const idem = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
-        fetch('{% url "shop:buy" product.id %}', {
-            method: 'POST',
-            headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/json'},
-            body: JSON.stringify({idem})
-        })
-            .then(r => r.json().then(d => ({status: r.status, d})))
-            .then(({status, d}) => {
-                if (d.ok) {
-                    closeModal();
-                    toast(d.duplicate ? 'ℹ️ این خرید قبلاً ثبت شده بود.' : '🎉 خرید با موفقیت انجام شد!', 'ok');
-                    setTimeout(() => { window.location = '{% url "shop:inventory" %}'; }, 1300);
+    const btn = document.getElementById('lqpBuyBtn');
+    if (btn) {
+        btn.addEventListener('click', async function () {
+            const orig = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ در حال خرید…';
+            const idem = (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random());
+            try {
+                const r = await fetch('/shop/buy/' + btn.dataset.id + '/', {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'idem=' + encodeURIComponent(idem),
+                });
+                const j = await r.json().catch(() => ({}));
+                if (r.ok && j.ok !== false) {
+                    btn.innerHTML = '✓ خرید موفق!';
+                    setTimeout(function () { window.location.reload(); }, 700);
                 } else {
-                    toast('❌ ' + (d.error || 'خطا در خرید'), 'err');
-                    busy = false;
-                    confirmBtn.disabled = false;
-                    confirmBtn.textContent = '✅ تأیید نهایی خرید';
+                    alert(j.error || 'خطای خرید');
+                    btn.disabled = false; btn.innerHTML = orig;
                 }
-            })
-            .catch(() => {
-                toast('❌ خطای اتصال — دوباره تلاش کن.', 'err');
-                busy = false;
-                confirmBtn.disabled = false;
-                confirmBtn.textContent = '✅ تأیید نهایی خرید';
-            });
-    };
-
-    /* ---- wishlist ---- */
-    const wishBtn = document.getElementById('wishBtn');
-    if (wishBtn) {
-        wishBtn.onclick = () => {
-            fetch('{% url "shop:wishlist_toggle" product.id %}', {method: 'POST', headers: {'X-CSRFToken': csrfTok(), 'X-Requested-With': 'XMLHttpRequest'}})
-                .then(r => r.json())
-                .then(d => { wishBtn.querySelector('svg').classList.toggle('on', !!d.in_wishlist); });
-        };
+            } catch (e) {
+                alert('خطای شبکه');
+                btn.disabled = false; btn.innerHTML = orig;
+            }
+        });
     }
+
+    // wishlist
+    document.querySelectorAll('.wish-btn').forEach(function (w) {
+        w.addEventListener('click', async function () {
+            try {
+                const r = await fetch('/shop/wishlist/toggle/' + w.dataset.id + '/', {
+                    method: 'POST', credentials: 'include',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                });
+                const j = await r.json();
+                if (j.state === 'added') w.classList.add('on'); else w.classList.remove('on');
+            } catch (e) {}
+        });
+    });
 })();
 </script>
 {% endblock %}
