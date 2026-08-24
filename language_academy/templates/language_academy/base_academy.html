@@ -831,169 +831,229 @@
         }
 
         
+        /* =========================================================
+           ACADEMY FOOTER — modern redesign (LTR, English)
+           ========================================================= */
         .academy-footer {
-            background: linear-gradient(180deg, var(--bg-secondary), rgba(255,255,255,0.55));
-            backdrop-filter: blur(var(--blur-amount));
-            -webkit-backdrop-filter: blur(var(--blur-amount));
-            border-top: 1px solid var(--border-color);
-            box-shadow: 0 -8px 34px rgba(59, 130, 246, 0.08), inset 0 1px 0 rgba(255,255,255,0.75);
-            padding: 42px 0 0;
-            margin-top: 60px;
-            color: var(--text-muted);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
+            margin-top: 68px;
+            color: #eef2ff;
+            background:
+                radial-gradient(1000px 380px at 50% -120px, rgba(59,130,246,0.30), transparent 60%),
+                radial-gradient(700px 320px at 100% 100%, rgba(20,184,166,0.14), transparent 55%),
+                linear-gradient(180deg, #0f172a 0%, #131a34 55%, #0b1226 100%);
+            position: relative; overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
         .academy-footer::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(400px 150px at 10% -40px, rgba(59, 130, 246, 0.10), transparent 62%),
-                radial-gradient(380px 140px at 90% -30px, rgba(0, 210, 255, 0.09), transparent 60%);
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.35), transparent 55%),
+                radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.25), transparent 55%),
+                radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.20), transparent 55%),
+                radial-gradient(1px 1px at 85% 20%, rgba(255,255,255,.30), transparent 55%);
+            background-size: 240px 240px, 300px 300px, 260px 260px, 220px 220px;
+            opacity: .5;
         }
+
+        /* CTA on top */
+        .af-cta {
+            position: relative; z-index: 3;
+            max-width: 1180px; margin: -46px auto 0;
+            padding: 26px 30px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 60%, #4338ca 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 22px; flex-wrap: wrap;
+            box-shadow: 0 20px 60px rgba(29,78,216,.45), inset 0 1px 0 rgba(255,255,255,.35);
+        }
+        .af-cta-text h3 { font-size: clamp(1.05rem,2.2vw,1.4rem); font-weight: 900; margin: 0 0 4px; color: #fff; letter-spacing: -.3px; }
+        .af-cta-text p  { font-size: .84rem; margin: 0; color: rgba(255,255,255,.9); font-weight: 500; }
+        .af-cta-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #fff; color: #1d4ed8;
+            font-weight: 900; font-size: .88rem;
+            padding: 12px 24px; border-radius: 999px;
+            text-decoration: none; white-space: nowrap;
+            box-shadow: 0 10px 24px rgba(0,0,0,.2);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .af-cta-btn:hover { transform: translateY(-2px); color: #1d4ed8; box-shadow: 0 14px 30px rgba(0,0,0,.25); }
+
+        .academy-footer-inner { position: relative; z-index: 2; padding: 56px 5% 22px; }
         .academy-footer-grid {
-            position: relative;
-            max-width: 1120px;
-            margin: 0 auto;
-            padding: 0 22px;
+            max-width: 1180px; margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.6fr 1fr 1fr 1fr;
-            gap: 30px;
-            text-align: right;
-            direction: rtl;
+            grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
+            gap: 44px 36px;
+            text-align: left; direction: ltr;
         }
-        .af-logo { display: flex; align-items: center; gap: 10px; }
+
+        .af-brand-col { max-width: 340px; }
+        .af-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .af-logo-badge {
-            width: 42px; height: 42px; border-radius: 13px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.15rem;
-            box-shadow: 0 8px 18px rgba(59, 130, 246, 0.35), inset 0 1px 0 rgba(255,255,255,0.35);
+            width: 46px; height: 46px; border-radius: 14px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #fff; display: grid; place-items: center; font-size: 1.3rem;
+            box-shadow: 0 10px 22px rgba(29,78,216,.5), inset 0 1px 0 rgba(255,255,255,.4);
             flex: 0 0 auto;
         }
-        .af-brand { font-size: 1.18rem; font-weight: 900; color: var(--text-primary); letter-spacing: -0.3px; }
-        .af-tag { font-size: 0.74rem; color: var(--text-muted); margin-top: 1px; }
+        .af-brand { font-size: 1.28rem; font-weight: 900; color: #fff; letter-spacing: -.4px; }
+        .af-tag { font-size: .74rem; color: #cbd5e1; margin-top: 2px; }
         .af-about {
-            font-size: 0.82rem; line-height: 2; color: var(--text-secondary);
-            margin: 14px 0 15px; max-width: 300px;
+            font-size: .84rem; line-height: 1.95;
+            color: #cbd5e1; margin: 0 0 18px;
         }
-        .af-socials { display: flex; gap: 8px; }
+
+        .af-contact { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+        .af-contact a, .af-contact span {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: #cbd5e1; font-size: .8rem; text-decoration: none;
+            transition: color .18s ease;
+        }
+        .af-contact a:hover { color: #3b82f6; }
+        .af-contact .ico {
+            width: 30px; height: 30px; border-radius: 9px;
+            display: grid; place-items: center;
+            background: rgba(59,130,246,.14); color: #7dd3fc;
+            border: 1px solid rgba(59,130,246,.25); flex: 0 0 auto;
+        }
+        .af-contact .ico i { font-size: 12px; }
+
+        .af-socials { display: flex; gap: 9px; flex-wrap: wrap; }
         .af-social {
-            width: 36px; height: 36px; border-radius: 11px;
-            background: var(--bg-glass);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+            width: 40px; height: 40px; border-radius: 12px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.14);
+            color: #eef2ff; display: grid; place-items: center;
+            text-decoration: none; font-size: 1rem;
+            transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease;
         }
         .af-social:hover {
             transform: translateY(-3px);
-            background: linear-gradient(135deg, var(--primary), var(--accent));
+            background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+            border-color: transparent;
+            box-shadow: 0 12px 24px rgba(29,78,216,.45);
             color: #fff;
-            box-shadow: 0 10px 22px rgba(59, 130, 246, 0.32);
         }
+
         .af-title {
-            font-size: 0.85rem; font-weight: 900; color: var(--text-primary);
-            margin-bottom: 12px; padding-bottom: 8px; position: relative;
+            font-size: .82rem; font-weight: 900; color: #fff;
+            margin: 0 0 18px; letter-spacing: .3px; text-transform: uppercase;
+            position: relative; padding-bottom: 12px;
         }
         .af-title::after {
-            content: '';
-            position: absolute; bottom: 0; right: 0;
-            width: 24px; height: 2.5px; border-radius: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            content: ''; position: absolute; bottom: 0; left: 0;
+            width: 34px; height: 3px; border-radius: 4px;
+            background: linear-gradient(90deg, #3b82f6, #36d1dc);
         }
-        .af-col {
-    display: flex; flex-direction: column; gap: 3px;
-    background: rgba(255,255,255,.5);
-    border: 1px solid rgba(255,255,255,.75);
-    border-radius: 18px;
-    padding: 16px 18px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.85);
-    transition: transform .2s ease, box-shadow .2s ease;
-}
-.af-col:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(28,32,64,.08), inset 0 1px 0 rgba(255,255,255,.9); }
+        .af-col { display: flex; flex-direction: column; gap: 2px; }
         .af-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.8rem; font-weight: 600;
-            padding: 5px 0; border-radius: 8px;
-            display: inline-flex; align-items: center; gap: 7px;
-            transition: color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+            color: #cbd5e1; text-decoration: none;
+            font-size: .82rem; font-weight: 500;
+            padding: 6px 0; border-radius: 8px;
+            display: inline-flex; align-items: center; gap: 9px;
+            transition: color .18s ease, transform .18s ease;
+            width: fit-content;
         }
-        .af-link i { width: 16px; text-align: center; opacity: 0.75; font-size: 0.78rem; }
-        .af-link:hover {
-            color: var(--accent-primary, var(--primary));
-            transform: translateX(-4px);
-            background: var(--bg-glass);
-            padding-inline: 8px;
-            margin-inline: -8px;
+        .af-link i { width: 16px; text-align: center; opacity: .75; font-size: .82rem; }
+        .af-link::before {
+            content: ''; width: 0; height: 1.5px; background: #3b82f6;
+            border-radius: 2px; transition: width .22s ease;
         }
-        .academy-footer-bottom {
-            position: relative;
-            max-width: 1120px;
-            margin: 32px auto 0;
-            padding: 14px 22px 16px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-            font-size: 0.76rem;
-            color: var(--text-muted);
-        }
-        .af-made { font-weight: 600; }
+        .af-link:hover { color: #fff; transform: translateX(4px); }
+        .af-link:hover::before { width: 14px; }
 
-        @media (max-width: 992px) {
-            .academy-footer-grid { grid-template-columns: 1fr 1fr; gap: 24px 20px; }
-            .af-brand-col { grid-column: 1 / -1; }
+        /* Newsletter */
+        .af-newsletter-col { max-width: 340px; }
+        .af-newsletter p { font-size: .8rem; line-height: 1.85; color: #cbd5e1; margin: 0 0 14px; }
+        .af-nl-form {
+            display: flex; gap: 6px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 999px; padding: 5px;
+            transition: border-color .2s ease, box-shadow .2s ease;
         }
-        @media (max-width: 620px) {
-            .academy-footer { padding-top: 22px; margin-top: 36px; }
-            .academy-footer-grid {
-                display: flex; flex-direction: column; gap: 10px;
-                max-width: 460px; margin: 0 auto; padding: 0 12px;
-            }
-            .af-brand-col {
-                grid-column: auto; text-align: center;
-                display: flex; flex-direction: column; align-items: center; gap: 8px;
-                background: none; border: none; padding: 4px 0 6px; box-shadow: none;
-            }
-            .af-about { display: none; }
-            .af-logo { gap: 8px; }
-            .af-logo-badge { width: 36px; height: 36px; font-size: .95rem; border-radius: 11px; }
-            .af-brand { font-size: 1rem; }
-            .af-tag { font-size: .65rem; }
-            .af-socials { gap: 8px; margin-top: 2px; }
-            .af-social { width: 33px; height: 33px; border-radius: 50%; }
-            .af-col {
-                flex-direction: row; flex-wrap: wrap; justify-content: center;
-                gap: 7px; padding: 10px; border-radius: 16px;
-                background: rgba(255,255,255,.4);
-            }
-            .af-title { display: none; }
-            .af-link {
-                font-size: .72rem; padding: 5px 12px; gap: 5px;
-                background: rgba(255,255,255,.6);
-                border: 1px solid rgba(255,255,255,.85);
-                border-radius: 999px;
-            }
-            .af-link i { font-size: .66rem; width: 14px; }
-            .af-link:hover { transform: none; background: rgba(255,255,255,.9); padding-inline: 12px; margin-inline: 0; }
+        .af-nl-form:focus-within { border-color: rgba(59,130,246,.55); box-shadow: 0 0 0 4px rgba(59,130,246,.15); }
+        .af-nl-form input {
+            flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+            color: #fff; font: 500 .82rem inherit; padding: 8px 14px;
+        }
+        .af-nl-form input::placeholder { color: rgba(203,213,225,.6); }
+        .af-nl-form button {
+            border: none; cursor: pointer; font-family: inherit;
+            background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+            color: #fff; font-weight: 800; font-size: .78rem;
+            padding: 8px 18px; border-radius: 999px;
+            transition: transform .18s ease, box-shadow .18s ease;
+            box-shadow: 0 6px 14px rgba(29,78,246,.4);
+        }
+        .af-nl-form button:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(29,78,246,.5); }
+        .af-nl-note { font-size: .7rem; color: #94a3b8; margin: 10px 0 0; }
+        .af-nl-note .dot { color: #4ade80; }
+
+        .academy-footer-bottom {
+            position: relative; z-index: 2;
+            max-width: 1180px; margin: 30px auto 0;
+            padding: 20px 5% 26px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 14px; flex-wrap: wrap;
+            font-size: .76rem; color: #94a3b8;
+            direction: ltr; text-align: left;
+        }
+        .af-copy b { color: #cbd5e1; font-weight: 700; }
+        .af-legal { display: inline-flex; gap: 18px; flex-wrap: wrap; }
+        .af-legal a { color: #94a3b8; text-decoration: none; font-weight: 500; transition: color .18s ease; }
+        .af-legal a:hover { color: #3b82f6; }
+        .af-made { font-weight: 600; color: #cbd5e1; }
+        .af-made .heart { color: #f472b6; font-style: normal; }
+
+        /* Back to top */
+        .af-top-btn {
+            position: fixed; bottom: 24px; right: 24px; z-index: 900;
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+            background: linear-gradient(135deg,#3b82f6,#1d4ed8);
+            color: #fff; display: grid; place-items: center;
+            box-shadow: 0 12px 30px rgba(29,78,216,.5);
+            opacity: 0; pointer-events: none; transform: translateY(12px);
+            transition: opacity .25s ease, transform .25s ease;
+        }
+        .af-top-btn.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .af-top-btn:hover { transform: translateY(-3px); }
+        .af-top-btn i { font-size: .9rem; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .academy-footer-grid { grid-template-columns: 1.4fr 1fr 1fr; }
+            .af-newsletter-col { grid-column: 1 / -1; max-width: none; }
+            .af-newsletter { max-width: none; }
+        }
+        @media (max-width: 780px) {
+            .af-cta { flex-direction: column; text-align: center; padding: 22px; gap: 14px; margin: -40px 16px 0; }
+            .academy-footer-grid { grid-template-columns: 1fr 1fr; gap: 32px 24px; }
+            .af-brand-col { grid-column: 1 / -1; max-width: none; }
+        }
+        @media (max-width: 560px) {
+            .academy-footer-inner { padding: 44px 20px 18px; }
+            .academy-footer-grid { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+            .af-brand-col { text-align: center; }
+            .af-logo { justify-content: center; }
+            .af-contact { align-items: center; }
+            .af-socials { justify-content: center; }
+            .af-col { text-align: center; align-items: center; }
+            .af-title { display: inline-block; padding-bottom: 12px; }
+            .af-title::after { left: 50%; transform: translateX(-50%); }
+            .af-link:hover { transform: none; }
+            .af-newsletter-col { text-align: center; }
             .academy-footer-bottom {
-                margin: 14px auto 0; padding: 9px 12px 12px; font-size: .64rem;
-                gap: 3px; flex-direction: column; text-align: center; max-width: 460px;
+                flex-direction: column; text-align: center; padding: 18px 20px 22px; margin-top: 20px;
             }
+            .af-legal { justify-content: center; gap: 12px; }
+            .af-top-btn { width: 40px; height: 40px; bottom: 18px; right: 18px; }
         }
-        @media (max-width: 380px) {
-            .academy-footer-grid { grid-template-columns: 1fr; gap: 14px; }
+        @media (max-width: 360px) {
+            .af-cta-text h3 { font-size: 1rem; }
+            .af-cta-btn { padding: 10px 18px; font-size: .8rem; }
         }
 
         
@@ -1397,53 +1457,120 @@
     </main>
 
     <footer class="academy-footer">
-        <div class="academy-footer-grid">
-            <div class="af-col af-brand-col">
-                <div class="af-logo">
-                    <span class="af-logo-badge"><i class="fas fa-graduation-cap"></i></span>
-                    <div>
-                        <div class="af-brand">LearnQuest Academy</div>
-                        <div class="af-tag">Making language learning feel like a game 🎮</div>
+        <!-- CTA bar -->
+        <div class="af-cta">
+            <div class="af-cta-text">
+                <h3>🎯 Keep your streak alive today</h3>
+                <p>A few minutes of practice a day — worlds, lessons, XP and rewards await.</p>
+            </div>
+            <a href="{% url 'language_academy:learner_dashboard' %}" class="af-cta-btn">
+                Open Dashboard
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="academy-footer-inner">
+            <div class="academy-footer-grid">
+                <!-- Brand -->
+                <div class="af-brand-col">
+                    <div class="af-logo">
+                        <span class="af-logo-badge"><i class="fas fa-graduation-cap"></i></span>
+                        <div>
+                            <div class="af-brand">LearnQuest Academy</div>
+                            <div class="af-tag">Making language learning feel like a game 🎮</div>
+                        </div>
+                    </div>
+                    <p class="af-about">
+                        Learn English through gamified worlds, lessons, quizzes, exams and daily XP challenges — from A1 to B1 and beyond.
+                    </p>
+
+                    <div class="af-contact">
+                        <a href="mailto:hello@learnquest.ir">
+                            <span class="ico"><i class="fas fa-envelope"></i></span>
+                            hello@learnquest.ir
+                        </a>
+                        <a href="tel:+982112345678">
+                            <span class="ico"><i class="fas fa-phone"></i></span>
+                            +98 21 1234 5678
+                        </a>
+                        <span>
+                            <span class="ico"><i class="fas fa-map-marker-alt"></i></span>
+                            Tehran, Iran
+                        </span>
+                    </div>
+
+                    <div class="af-socials">
+                        <a href="#" class="af-social" title="Telegram" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                        <a href="#" class="af-social" title="Instagram" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="af-social" title="YouTube" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="https://github.com/ElaheBarghamadi/LearnQuest" class="af-social" title="GitHub" aria-label="GitHub"><i class="fab fa-github"></i></a>
                     </div>
                 </div>
-                <p class="af-about">Learn English through gamified worlds, lessons, quizzes, exams and daily XP challenges — from A1 to B1 and beyond.</p>
-                <div class="af-socials">
-                    <a href="#" class="af-social" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
-                    <a href="#" class="af-social" title="Instagram"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="af-social" title="GitHub"><i class="fab fa-github"></i></a>
+
+                <!-- Learn -->
+                <div class="af-col">
+                    <h4 class="af-title">Learn</h4>
+                    <a href="{% url 'language_academy:world_map' %}" class="af-link"><i class="fas fa-globe"></i> Worlds</a>
+                    <a href="{% url 'language_academy:vocabulary_list' %}" class="af-link"><i class="fas fa-book"></i> Vocabulary</a>
+                    <a href="{% url 'language_academy:grammar_hub' %}" class="af-link"><i class="fas fa-spell-check"></i> Grammar</a>
+                    <a href="{% url 'language_academy:idioms_hub' %}" class="af-link"><i class="fas fa-comments"></i> Idioms</a>
+                    <a href="{% url 'language_academy:writing_practice' %}" class="af-link"><i class="fas fa-pen"></i> Writing</a>
+                </div>
+
+                <!-- Progress -->
+                <div class="af-col">
+                    <h4 class="af-title">Progress</h4>
+                    <a href="{% url 'language_academy:learner_dashboard' %}" class="af-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+                    <a href="{% url 'language_academy:vocabulary_review' %}" class="af-link"><i class="fas fa-repeat"></i> Review</a>
+                    <a href="{% url 'language_academy:my_certificates' %}" class="af-link"><i class="fas fa-certificate"></i> Certificates</a>
+                    <a href="{% url 'economy:leaderboard' %}" class="af-link"><i class="fas fa-trophy"></i> Leaderboard</a>
+                    <a href="{% url 'shop:home' %}" class="af-link"><i class="fas fa-store"></i> Shop</a>
+                </div>
+
+                <!-- Newsletter -->
+                <div class="af-newsletter-col">
+                    <h4 class="af-title">Stay in the loop</h4>
+                    <div class="af-newsletter">
+                        <p>Weekly tips, new idioms and XP challenges — one email, no spam.</p>
+                        <form class="af-nl-form" onsubmit="event.preventDefault(); const b=this.querySelector('button'); const i=this.querySelector('input'); if(!i.value) return; b.textContent='✓ Subscribed'; b.disabled=true; i.value='';">
+                            <input type="email" placeholder="your@email.com" required aria-label="Email">
+                            <button type="submit">Subscribe</button>
+                        </form>
+                        <p class="af-nl-note"><span class="dot">●</span> No spam — unsubscribe anytime.</p>
+                    </div>
                 </div>
             </div>
-
-            <div class="af-col">
-                <div class="af-title">Learn</div>
-                <a href="{% url 'language_academy:world_map' %}" class="af-link"><i class="fas fa-globe"></i> Worlds</a>
-                <a href="{% url 'language_academy:vocabulary_list' %}" class="af-link"><i class="fas fa-book"></i> Vocabulary</a>
-                <a href="{% url 'language_academy:grammar_hub' %}" class="af-link"><i class="fas fa-spell-check"></i> Grammar</a>
-                <a href="{% url 'language_academy:idioms_hub' %}" class="af-link"><i class="fas fa-comments"></i> Idioms</a>
-                <a href="{% url 'language_academy:writing_practice' %}" class="af-link"><i class="fas fa-pen"></i> Writing</a>
-            </div>
-
-            <div class="af-col">
-                <div class="af-title">Progress</div>
-                <a href="{% url 'language_academy:learner_dashboard' %}" class="af-link"><i class="fas fa-chart-line"></i> Dashboard</a>
-                <a href="{% url 'language_academy:vocabulary_review' %}" class="af-link"><i class="fas fa-repeat"></i> Review</a>
-                <a href="{% url 'language_academy:my_certificates' %}" class="af-link"><i class="fas fa-certificate"></i> Certificates</a>
-                <a href="{% url 'economy:leaderboard' %}" class="af-link"><i class="fas fa-trophy"></i> Leaderboard</a>
-            </div>
-
-            <div class="af-col">
-                <div class="af-title">More</div>
-                <a href="{% url 'shop:home' %}" class="af-link"><i class="fas fa-store"></i> Shop</a>
-                <a href="{% url 'blog:blog_home' %}" class="af-link"><i class="fas fa-newspaper"></i> Blog</a>
-                <a href="{% url 'home' %}" class="af-link"><i class="fas fa-home"></i> Main Site</a>
-                <a href="{% url 'contact' %}" class="af-link"><i class="fas fa-envelope"></i> Contact</a>
-            </div>
         </div>
+
         <div class="academy-footer-bottom">
-            <span>© 2026 LearnQuest Language Academy</span>
-            <span class="af-made">Built with 💜 for Persian speakers</span>
+            <span class="af-copy">© 2026 <b>LearnQuest Academy</b> — All rights reserved.</span>
+            <div class="af-legal">
+                <a href="{% url 'contact' %}">Contact</a>
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="{% url 'home' %}">Main Site</a>
+            </div>
+            <span class="af-made">Built with <i class="heart">💜</i> for Persian speakers</span>
         </div>
     </footer>
+
+    <!-- Back to top -->
+    <button type="button" id="afTopBtn" class="af-top-btn" aria-label="Back to top" title="Back to top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+    <script>
+    (function(){
+        var btn = document.getElementById('afTopBtn');
+        if(!btn) return;
+        function onScroll(){
+            if (window.scrollY > 400) btn.classList.add('show');
+            else btn.classList.remove('show');
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
+        btn.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        onScroll();
+    })();
+    </script>
 
     {% if request.user.is_staff and ve_fab %}
     <a href="{{ request.path }}{% if not visual_edit %}?edit=1{% endif %}" class="ve-fab" title="ویرایش زندهٔ همین صفحه">

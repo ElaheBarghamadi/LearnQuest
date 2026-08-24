@@ -909,213 +909,263 @@
         }
 
 
+        /* =========================================================
+           FOOTER — modern redesign (inspired by Colorlib footers)
+           ========================================================= */
         .footer {
             width: 100%;
-            margin: 56px 0 0;
-            padding: 46px 5% 22px;
-            color: #fff;
-            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.16));
-            backdrop-filter: blur(24px) saturate(170%);
-            -webkit-backdrop-filter: blur(24px) saturate(170%);
-            border-top: 1px solid rgba(255, 255, 255, 0.32);
-            box-shadow: 0 -10px 40px rgba(8, 25, 70, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+            margin: 64px 0 0;
+            color: #eef2ff;
+            background:
+                radial-gradient(1000px 380px at 50% -120px, rgba(76,155,248,0.28), transparent 60%),
+                radial-gradient(700px 320px at 100% 100%, rgba(232,163,61,0.14), transparent 55%),
+                linear-gradient(180deg, #0f172a 0%, #131a34 55%, #0b1226 100%);
             position: relative;
             overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.08);
         }
         .footer::before {
             content: '';
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(420px 160px at 12% -40px, rgba(255,255,255,0.14), transparent 62%),
-                radial-gradient(380px 140px at 88% -30px, rgba(125,211,252,0.12), transparent 60%);
+            position: absolute; inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,.35), transparent 55%),
+                radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,.25), transparent 55%),
+                radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,.20), transparent 55%),
+                radial-gradient(1px 1px at 85% 20%, rgba(255,255,255,.30), transparent 55%);
+            background-size: 240px 240px, 300px 300px, 260px 260px, 220px 220px;
+            opacity: .5; pointer-events: none;
         }
 
-        .footer-grid {
+        /* ---------- CTA bar on top ---------- */
+        .footer-cta {
             position: relative;
-            max-width: 1120px;
-            margin: 0 auto;
+            max-width: 1180px;
+            margin: -46px auto 0;
+            padding: 26px 30px;
+            background: linear-gradient(135deg, #4C9BF8 0%, #1D4ED8 60%, #4338CA 100%);
+            border-radius: 22px;
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 22px; flex-wrap: wrap;
+            box-shadow:
+                0 20px 60px rgba(29,78,216,.45),
+                inset 0 1px 0 rgba(255,255,255,.35);
+            z-index: 3;
+        }
+        .footer-cta::after {
+            content: ''; position: absolute; inset: 0; border-radius: 22px; pointer-events: none;
+            background: radial-gradient(600px 180px at 0% 0%, rgba(255,255,255,.18), transparent 60%);
+        }
+        .footer-cta-text { position: relative; z-index: 1; }
+        .footer-cta-text h3 {
+            font-size: clamp(1.05rem, 2.2vw, 1.4rem);
+            font-weight: 900; margin: 0 0 4px; color: #fff; letter-spacing: -.3px;
+        }
+        .footer-cta-text p { font-size: .84rem; margin: 0; color: rgba(255,255,255,.9); font-weight: 500; }
+        .footer-cta-btn {
+            position: relative; z-index: 1;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #fff; color: #1D4ED8;
+            font-weight: 900; font-size: .88rem;
+            padding: 12px 24px; border-radius: 999px;
+            text-decoration: none; white-space: nowrap;
+            box-shadow: 0 10px 24px rgba(0,0,0,.2);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .footer-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,.25); color: #1D4ED8; }
+
+        /* ---------- Main grid ---------- */
+        .footer-inner { position: relative; z-index: 2; padding: 56px 5% 22px; }
+        .footer-grid {
+            max-width: 1180px; margin: 0 auto;
             display: grid;
-            grid-template-columns: 1.5fr 1fr 1fr 1fr;
-            gap: 34px;
+            grid-template-columns: 1.6fr 1fr 1fr 1.3fr;
+            gap: 44px 36px;
             text-align: right;
         }
 
-        .footer-logo {
-            display: flex;
-            align-items: center;
-            gap: 11px;
-        }
+        /* Brand col */
+        .footer-brand-col { max-width: 320px; }
+        .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
         .footer-logo-badge {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            width: 46px; height: 46px; border-radius: 14px;
             background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
-            display: grid;
-            place-items: center;
-            font-size: 1.25rem;
-            box-shadow: 0 8px 18px rgba(29, 78, 216, 0.4), inset 0 1px 0 rgba(255,255,255,0.35);
+            display: grid; place-items: center; font-size: 1.3rem;
+            box-shadow: 0 10px 22px rgba(29,78,216,.5), inset 0 1px 0 rgba(255,255,255,.4);
             flex: 0 0 auto;
         }
-        .footer-brand { font-size: 1.22rem; font-weight: 900; letter-spacing: -0.3px; }
-        .footer-tag { font-size: 0.74rem; opacity: 0.8; margin: 2px 0 0; font-weight: 500; }
-
+        .footer-brand { font-size: 1.28rem; font-weight: 900; letter-spacing: -.4px; color: #fff; }
+        .footer-tag { font-size: .74rem; opacity: .75; margin: 2px 0 0; font-weight: 500; color: #cbd5e1; }
         .footer-about {
-            font-size: 0.82rem;
-            line-height: 2;
-            opacity: 0.82;
-            margin: 14px 0 16px;
-            max-width: 300px;
+            font-size: .84rem; line-height: 1.95;
+            color: #cbd5e1; margin: 0 0 18px;
         }
 
-        .footer-socials { display: flex; gap: 9px; }
+        /* Contact lines */
+        .footer-contact { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+        .footer-contact a, .footer-contact span {
+            display: inline-flex; align-items: center; gap: 10px;
+            color: #cbd5e1; font-size: .8rem; text-decoration: none;
+            transition: color .18s ease;
+        }
+        .footer-contact a:hover { color: #4C9BF8; }
+        .footer-contact .ico {
+            width: 30px; height: 30px; flex: 0 0 auto;
+            border-radius: 9px; display: grid; place-items: center;
+            background: rgba(76,155,248,.14); color: #7dd3fc;
+            border: 1px solid rgba(76,155,248,.25);
+        }
+        .footer-contact svg { width: 14px; height: 14px; }
+
+        /* Socials */
+        .footer-socials { display: flex; gap: 9px; flex-wrap: wrap; }
         .footer-social {
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.13);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            text-decoration: none;
-            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            width: 40px; height: 40px; border-radius: 12px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.14);
+            display: grid; place-items: center;
+            color: #eef2ff; text-decoration: none;
+            transition: transform .2s ease, background .2s ease, box-shadow .2s ease, border-color .2s ease;
         }
         .footer-social svg { width: 17px; height: 17px; }
         .footer-social:hover {
             transform: translateY(-3px);
-            background: linear-gradient(135deg, #4C9BF8, #1D4ED8);
-            box-shadow: 0 10px 22px rgba(29, 78, 216, 0.35);
+            background: linear-gradient(135deg,#4C9BF8,#1D4ED8);
+            border-color: transparent;
+            box-shadow: 0 12px 24px rgba(29,78,216,.45);
+            color: #fff;
         }
 
+        /* Link cols */
         .footer-col-title {
-            font-size: 0.86rem;
-            font-weight: 900;
-            margin-bottom: 13px;
-            color: #fff;
-            letter-spacing: -0.1px;
-            position: relative;
-            padding-bottom: 8px;
+            font-size: .82rem; font-weight: 900; color: #fff;
+            margin: 0 0 18px; letter-spacing: .3px; text-transform: uppercase;
+            position: relative; padding-bottom: 12px;
         }
         .footer-col-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            width: 26px;
-            height: 2.5px;
-            border-radius: 4px;
+            content: ''; position: absolute; bottom: 0; right: 0;
+            width: 34px; height: 3px; border-radius: 4px;
             background: linear-gradient(90deg, #4C9BF8, #36D1DC);
         }
-
-        .footer-col {
-    display: flex; flex-direction: column; gap: 3px;
-    background: rgba(255, 255, 255, 0.14);
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 18px;
-    padding: 16px 18px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
-    transition: transform .2s ease, box-shadow .2s ease;
-}
-.footer-col:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(8,25,70,.12), inset 0 1px 0 rgba(255,255,255,.25); }
+        .footer-col { display: flex; flex-direction: column; gap: 2px; }
         .footer-link {
-            color: rgba(255, 255, 255, 0.86);
-            text-decoration: none;
-            font-size: 0.8rem;
-            font-weight: 600;
-            padding: 5px 0;
-            border-radius: 8px;
-            transition: color 0.18s ease, transform 0.18s ease, background 0.18s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            color: #cbd5e1; text-decoration: none;
+            font-size: .82rem; font-weight: 500;
+            padding: 6px 0; border-radius: 8px;
+            display: inline-flex; align-items: center; gap: 8px;
+            transition: color .18s ease, transform .18s ease;
+            width: fit-content;
         }
-        .footer-link:hover {
-            color: #fff;
-            transform: translateX(-4px);
-            background: rgba(255, 255, 255, 0.08);
-            padding-inline: 8px;
-            margin-inline: -8px;
+        .footer-link::before {
+            content: ''; width: 0; height: 1.5px; background: #4C9BF8;
+            border-radius: 2px; transition: width .22s ease;
         }
+        .footer-link:hover { color: #fff; transform: translateX(-4px); }
+        .footer-link:hover::before { width: 14px; }
+        .footer-link .fl-ico { opacity: .8; }
 
+        /* Newsletter col */
+        .footer-newsletter { max-width: 340px; }
+        .footer-newsletter p {
+            font-size: .8rem; line-height: 1.85; color: #cbd5e1;
+            margin: 0 0 14px;
+        }
+        .footer-nl-form {
+            display: flex; gap: 6px;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.14);
+            border-radius: 999px; padding: 5px;
+            transition: border-color .2s ease, box-shadow .2s ease;
+        }
+        .footer-nl-form:focus-within {
+            border-color: rgba(76,155,248,.55);
+            box-shadow: 0 0 0 4px rgba(76,155,248,.15);
+        }
+        .footer-nl-form input {
+            flex: 1; min-width: 0; border: none; outline: none; background: transparent;
+            color: #fff; font: 500 .82rem inherit; padding: 8px 14px;
+        }
+        .footer-nl-form input::placeholder { color: rgba(203,213,225,.6); }
+        .footer-nl-form button {
+            border: none; cursor: pointer; font-family: inherit;
+            background: linear-gradient(135deg,#4C9BF8,#1D4ED8);
+            color: #fff; font-weight: 800; font-size: .78rem;
+            padding: 8px 18px; border-radius: 999px;
+            transition: transform .18s ease, box-shadow .18s ease;
+            box-shadow: 0 6px 14px rgba(29,78,216,.4);
+        }
+        .footer-nl-form button:hover { transform: translateY(-1px); box-shadow: 0 10px 20px rgba(29,78,216,.5); }
+        .footer-nl-note { font-size: .7rem; color: #94a3b8; margin: 10px 0 0; }
+        .footer-nl-note .dot { color: #4ade80; }
+
+        /* ---------- Bottom bar ---------- */
         .footer-bottom {
-            position: relative;
-            max-width: 1120px;
-            margin: 34px auto 0;
-            padding-top: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.22);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            font-size: 0.74rem;
-            opacity: 0.85;
+            position: relative; z-index: 2;
+            max-width: 1180px; margin: 30px auto 0;
+            padding: 20px 5% 26px;
+            border-top: 1px solid rgba(255,255,255,.08);
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 14px; flex-wrap: wrap;
+            font-size: .76rem; color: #94a3b8;
         }
-        .footer-made { font-weight: 600; }
+        .footer-copy { display: inline-flex; align-items: center; gap: 6px; }
+        .footer-copy b { color: #cbd5e1; font-weight: 700; }
+        .footer-legal { display: inline-flex; gap: 18px; flex-wrap: wrap; }
+        .footer-legal a {
+            color: #94a3b8; text-decoration: none; font-weight: 500;
+            transition: color .18s ease;
+        }
+        .footer-legal a:hover { color: #4C9BF8; }
+        .footer-made { font-weight: 600; color: #cbd5e1; }
+        .footer-made .heart { color: #f472b6; font-style: normal; }
 
-        @media (max-width: 900px) {
-            .footer-grid { grid-template-columns: 1fr 1fr; gap: 26px 22px; }
-            .footer-brand-col { grid-column: 1 / -1; }
+        /* ---------- Back to top ---------- */
+        .footer-top-btn {
+            position: fixed; bottom: 24px; inset-inline-end: 24px; z-index: 900;
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+            background: linear-gradient(135deg,#4C9BF8,#1D4ED8);
+            color: #fff; display: grid; place-items: center;
+            box-shadow: 0 12px 30px rgba(29,78,216,.5);
+            opacity: 0; pointer-events: none; transform: translateY(12px);
+            transition: opacity .25s ease, transform .25s ease;
         }
-        @media (max-width: 620px) {
-            .footer { padding: 22px 12px 14px; margin-top: 34px; }
-            .footer-grid {
-                display: flex; flex-direction: column; gap: 10px;
-                max-width: 460px; margin: 0 auto;
-            }
-            .footer-brand-col {
-                grid-column: auto; text-align: center;
-                display: flex; flex-direction: column; align-items: center; gap: 8px;
-                background: none; border: none; padding: 4px 0 6px; box-shadow: none;
-            }
-            .footer-about { display: none; }
-            .footer-logo { gap: 8px; }
-            .footer-logo-badge { width: 38px; height: 38px; font-size: 1.05rem; border-radius: 12px; }
-            .footer-brand { font-size: 1.05rem; }
-            .footer-tag { font-size: .68rem; }
-            .footer-socials { gap: 8px; margin-top: 2px; }
-            .footer-social {
-                width: 34px; height: 34px; border-radius: 50%;
-                background: rgba(255,255,255,.16);
-            }
-            .footer-col {
-                flex-direction: row; flex-wrap: wrap; justify-content: center;
-                gap: 7px; padding: 10px 10px; border-radius: 16px;
-                background: rgba(255,255,255,.12);
-            }
-            .footer-col-title { display: none; }
-            .footer-link {
-                font-size: .72rem; padding: 5px 12px; gap: 4px;
-                background: rgba(255,255,255,.14);
-                border: 1px solid rgba(255,255,255,.2);
-                border-radius: 999px;
-            }
-            .footer-link:hover { transform: none; background: rgba(255,255,255,.28); padding-inline: 12px; margin-inline: 0; }
+        .footer-top-btn.show { opacity: 1; pointer-events: auto; transform: translateY(0); }
+        .footer-top-btn:hover { transform: translateY(-3px); }
+        .footer-top-btn svg { width: 18px; height: 18px; }
+
+        /* ---------- Responsive ---------- */
+        @media (max-width: 1024px) {
+            .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; }
+            .footer-newsletter-col { grid-column: 1 / -1; max-width: none; }
+            .footer-newsletter { max-width: none; }
+        }
+        @media (max-width: 780px) {
+            .footer-cta { flex-direction: column; text-align: center; padding: 22px; gap: 14px; margin: -40px 16px 0; }
+            .footer-grid { grid-template-columns: 1fr 1fr; gap: 32px 24px; text-align: right; }
+            .footer-brand-col { grid-column: 1 / -1; max-width: none; text-align: right; }
+        }
+        @media (max-width: 560px) {
+            .footer-inner { padding: 44px 20px 18px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+            .footer-brand-col { text-align: center; }
+            .footer-logo { justify-content: center; }
+            .footer-about { text-align: center; }
+            .footer-contact { align-items: center; }
+            .footer-socials { justify-content: center; }
+            .footer-col { text-align: center; align-items: center; }
+            .footer-col-title { display: inline-block; padding-bottom: 12px; }
+            .footer-col-title::after { right: 50%; transform: translateX(50%); }
+            .footer-link:hover { transform: none; }
+            .footer-newsletter-col { text-align: center; }
+            .footer-newsletter p { text-align: center; }
             .footer-bottom {
-                margin: 14px auto 0; padding-top: 10px; font-size: .64rem;
-                gap: 3px; flex-direction: column; text-align: center;
-                max-width: 460px;
+                flex-direction: column; text-align: center; padding: 18px 20px 22px; margin-top: 20px;
             }
+            .footer-legal { justify-content: center; gap: 12px; }
+            .footer-top-btn { width: 40px; height: 40px; bottom: 18px; inset-inline-end: 18px; }
         }
-        @media (max-width: 380px) {
-            .footer-grid { grid-template-columns: 1fr; gap: 16px; }
-        }
-
-        .footer-copy {
-            margin-top: 15px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255, 255, 255, 0.16);
-            font-size: 0.7rem;
-            opacity: 0.72;
-        }
-
-        @media (max-width: 640px) {
-            .footer { padding: 24px 6% 16px; margin-top: 44px; }
+        @media (max-width: 360px) {
+            .footer-cta-text h3 { font-size: 1rem; }
+            .footer-cta-btn { padding: 10px 18px; font-size: .8rem; }
         }
 
 
@@ -1448,64 +1498,148 @@
 </main>
 
 <footer class="footer">
-    <div class="footer-grid">
-        <div class="footer-col footer-brand-col">
-            <div class="footer-logo">
-                <span class="footer-logo-badge">🎓</span>
-                <div>
-                    <div class="footer-brand">لرن‌کوئست</div>
-                    <div class="footer-tag">یادگیری زبان با بازی، ماجراجویی و پاداش</div>
+    <!-- CTA bar -->
+    {% if not user.is_authenticated %}
+    <div class="footer-cta">
+        <div class="footer-cta-text">
+            <h3>🚀 امروز سفر یادگیری‌ات را شروع کن</h3>
+            <p>رایگان ثبت‌نام کن و به هزاران زبان‌آموز فارسی‌زبان بپیوند.</p>
+        </div>
+        <a href="{% url 'register' %}" class="footer-cta-btn">
+            ثبت‌نام رایگان
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+    </div>
+    {% else %}
+    <div class="footer-cta">
+        <div class="footer-cta-text">
+            <h3>🎯 هدف امروزت رو کامل کن</h3>
+            <p>هر روز کمی تمرین کن، XP بگیر و استریک‌ات را حفظ کن.</p>
+        </div>
+        <a href="{% url 'language_academy:learner_dashboard' %}" class="footer-cta-btn">
+            رفتن به داشبورد
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </a>
+    </div>
+    {% endif %}
+
+    <div class="footer-inner">
+        <div class="footer-grid">
+            <!-- Brand + about + contact + socials -->
+            <div class="footer-brand-col">
+                <div class="footer-logo">
+                    <span class="footer-logo-badge">🎓</span>
+                    <div>
+                        <div class="footer-brand">لرن‌کوئست</div>
+                        <div class="footer-tag">یادگیری زبان با بازی، ماجراجویی و پاداش</div>
+                    </div>
+                </div>
+                <p class="footer-about">
+                    جایی که یادگیری، بازی می‌شود. درس‌های تعاملی، بازی‌های ذهنی، فروشگاه و پیام‌رسان — همه در یک پلتفرم برای فارسی‌زبان‌ها.
+                </p>
+
+                <div class="footer-contact">
+                    <a href="mailto:hello@learnquest.ir">
+                        <span class="ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </span>
+                        hello@learnquest.ir
+                    </a>
+                    <a href="tel:+982112345678" dir="ltr" style="text-align:right">
+                        <span class="ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.37 1.9.72 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.35 1.85.59 2.81.72A2 2 0 0 1 22 16.92z"/></svg>
+                        </span>
+                        +98 21 1234 5678
+                    </a>
+                    <span>
+                        <span class="ico">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        </span>
+                        تهران، ایران
+                    </span>
+                </div>
+
+                <div class="footer-socials">
+                    <a href="#" class="footer-social" title="تلگرام" aria-label="تلگرام">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.6 18.8 19c-.2 1-.8 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-4.8L18.2 6c.4-.4-.1-.6-.6-.2L7.5 12.7l-4.6-1.4c-1-.3-1-1 .2-1.5L20.7 3c.8-.3 1.6.2 1.2 1.6z"/></svg>
+                    </a>
+                    <a href="#" class="footer-social" title="اینستاگرام" aria-label="اینستاگرام">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
+                    </a>
+                    <a href="#" class="footer-social" title="یوتیوب" aria-label="یوتیوب">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2c-.3-1-1.1-1.8-2.1-2.1C19.6 3.6 12 3.6 12 3.6s-7.6 0-9.4.5c-1 .3-1.8 1.1-2.1 2.1C0 8 0 12 0 12s0 4 .5 5.8c.3 1 1.1 1.8 2.1 2.1 1.8.5 9.4.5 9.4.5s7.6 0 9.4-.5c1-.3 1.8-1.1 2.1-2.1C24 16 24 12 24 12s0-4-.5-5.8zM9.6 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+                    </a>
+                    <a href="https://github.com/ElaheBarghamadi/LearnQuest" class="footer-social" title="گیت‌هاب" aria-label="گیت‌هاب">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.1 1.2a10.7 10.7 0 0 1 5.6 0c2.1-1.5 3.1-1.2 3.1-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
+                    </a>
                 </div>
             </div>
-            <p class="footer-about">جایی که یادگیری، بازی می‌شود؛ درس‌های تعاملی، بازی‌های ذهنی، فروشگاه و پیام‌رسان — همه در یک پلتفرم.</p>
-            <div class="footer-socials">
-                <a href="#" class="footer-social" title="تلگرام" aria-label="تلگرام">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.6 18.8 19c-.2 1-.8 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.4-4.8L18.2 6c.4-.4-.1-.6-.6-.2L7.5 12.7l-4.6-1.4c-1-.3-1-1 .2-1.5L20.7 3c.8-.3 1.6.2 1.2 1.6z"/></svg>
-                </a>
-                <a href="#" class="footer-social" title="اینستاگرام" aria-label="اینستاگرام">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
-                </a>
-                <a href="#" class="footer-social" title="گیت‌هاب" aria-label="گیت‌هاب">
-                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.1 1.2a10.7 10.7 0 0 1 5.6 0c2.1-1.5 3.1-1.2 3.1-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.2c0 .4.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>
-                </a>
+
+            <!-- Column: Learning -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">مسیر یادگیری</h4>
+                <a href="{% url 'language_academy:world_map' %}" class="footer-link"><span class="fl-ico">🌍</span> آکادمی زبان</a>
+                <a href="{% url 'language_academy:vocabulary_list' %}" class="footer-link"><span class="fl-ico">📚</span> واژگان</a>
+                <a href="{% url 'language_academy:grammar_hub' %}" class="footer-link"><span class="fl-ico">📘</span> گرامر</a>
+                <a href="{% url 'language_academy:idioms_hub' %}" class="footer-link"><span class="fl-ico">💬</span> اصطلاحات</a>
+                <a href="{% url 'language_academy:my_certificates' %}" class="footer-link"><span class="fl-ico">🎓</span> گواهینامه‌ها</a>
+            </div>
+
+            <!-- Column: Fun & Play -->
+            <div class="footer-col">
+                <h4 class="footer-col-title">سرگرمی و بازی</h4>
+                <a href="{% url 'games' %}" class="footer-link"><span class="fl-ico">🕹️</span> همهٔ بازی‌ها</a>
+                <a href="{% url 'shop:home' %}" class="footer-link"><span class="fl-ico">🛍️</span> فروشگاه</a>
+                <a href="{% url 'economy:leaderboard' %}" class="footer-link"><span class="fl-ico">🏆</span> جدول امتیازات</a>
+                <a href="{% url 'economy:season' %}" class="footer-link"><span class="fl-ico">🌸</span> فصل و سیزن‌پس</a>
+                <a href="{% url 'blog:blog_home' %}" class="footer-link"><span class="fl-ico">📰</span> وبلاگ</a>
+            </div>
+
+            <!-- Column: Newsletter -->
+            <div class="footer-newsletter-col">
+                <h4 class="footer-col-title">همراه ما بمان</h4>
+                <div class="footer-newsletter">
+                    <p>هفته‌ای یک ایمیل — بهترین درس‌ها، اصطلاحات جدید و چالش‌های XP.</p>
+                    <form class="footer-nl-form" onsubmit="event.preventDefault(); const b=this.querySelector('button'); const i=this.querySelector('input'); if(!i.value) return; b.textContent='✓ ثبت شد'; b.disabled=true; i.value='';">
+                        <input type="email" placeholder="ایمیل شما…" required aria-label="ایمیل">
+                        <button type="submit">اشتراک</button>
+                    </form>
+                    <p class="footer-nl-note"><span class="dot">●</span> بدون اسپم — هر زمان می‌توانی لغو کنی.</p>
+                </div>
             </div>
         </div>
-
-        <div class="footer-col">
-            <div class="footer-col-title">مسیر یادگیری</div>
-            <a href="{% url 'language_academy:world_map' %}" class="footer-link">🌍 آکادمی زبان</a>
-            <a href="{% url 'language:drag_drop_game' %}" class="footer-link">🎮 بازی‌های زبانی</a>
-            <a href="{% url 'language_academy:vocabulary_list' %}" class="footer-link">📚 واژگان</a>
-            <a href="{% url 'language_academy:idioms_hub' %}" class="footer-link">💬 اصطلاحات</a>
-            <a href="{% url 'language_academy:my_certificates' %}" class="footer-link">🎓 گواهینامه‌ها</a>
-        </div>
-
-        <div class="footer-col">
-            <div class="footer-col-title">سرگرمی و بازی</div>
-            <a href="{% url 'games' %}" class="footer-link">🕹️ همهٔ بازی‌ها</a>
-            <a href="{% url 'blog:blog_home' %}" class="footer-link">📰 وبلاگ</a>
-            <a href="{% url 'economy:leaderboard' %}" class="footer-link">🏆 جدول امتیازات</a>
-            <a href="{% url 'economy:season' %}" class="footer-link">🌸 فصل و سیزن‌پس</a>
-        </div>
-
-        <div class="footer-col">
-            <div class="footer-col-title">فروشگاه و حساب</div>
-            <a href="{% url 'shop:home' %}" class="footer-link">🛍️ فروشگاه</a>
-            <a href="{% url 'shop:inventory' %}" class="footer-link">🎒 موجودی من</a>
-            <a href="{% url 'profile' %}" class="footer-link">👤 پروفایل</a>
-            <a href="{% url 'contact' %}" class="footer-link">✉️ تماس با ما</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}" class="footer-link">🚪 خروج</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="footer-link">🔑 ورود / ثبت‌نام</a>
-            {% endif %}
-        </div>
     </div>
+
+    <!-- Bottom bar -->
     <div class="footer-bottom">
-        <span>© ۲۰۲۶ لرن‌کوئست — جایی که یادگیری، بازی می‌شود</span>
-        <span class="footer-made">ساخته‌شده با 💜 برای فارسی‌زبان‌ها</span>
+        <span class="footer-copy">© ۲۰۲۶ <b>لرن‌کوئست</b> — همهٔ حقوق محفوظ است.</span>
+        <div class="footer-legal">
+            <a href="{% url 'contact' %}">تماس با ما</a>
+            <a href="#">حریم خصوصی</a>
+            <a href="#">قوانین</a>
+            <a href="#">راهنما</a>
+        </div>
+        <span class="footer-made">ساخته‌شده با <i class="heart">💜</i> برای فارسی‌زبان‌ها</span>
     </div>
 </footer>
+
+<!-- Back to top -->
+<button type="button" id="lqFooterTop" class="footer-top-btn" aria-label="بازگشت به بالا" title="بازگشت به بالا">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<script>
+(function(){
+    var btn = document.getElementById('lqFooterTop');
+    if(!btn) return;
+    function onScroll(){
+        if (window.scrollY > 400) btn.classList.add('show');
+        else btn.classList.remove('show');
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    btn.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    onScroll();
+})();
+</script>
 
 <script>
     (function () {
