@@ -489,8 +489,27 @@ def submit_quiz_auto(request, session_key):
 
     if passed:
         _grant_pass_rewards_once(request.user, quiz, 'quiz')
+        messages.warning(request, f'⏱ Quiz time is up! You passed with {final_score}%.')
+    else:
+        # Same reset-on-out-of-attempts behaviour as manual submit
+        used_attempts = QuizAttempt.objects.filter(user=request.user, quiz=quiz).count()
+        max_att = quiz.max_attempts or 3
+        if used_attempts >= max_att and lesson_progress:
+            QuizAttempt.objects.filter(user=request.user, quiz=quiz).delete()
+            lesson_progress.status = 'not_started'
+            lesson_progress.progress_percentage = 0
+            lesson_progress.quiz_score = 0
+            lesson_progress.quiz_passed = False
+            lesson_progress.completed_at = None
+            lesson_progress.save()
+            messages.error(
+                request,
+                f'⏱ Time is up and you used all {max_att} attempts ({final_score}%). '
+                f'The lesson "{quiz.lesson.name}" has been reset — please study it again.'
+            )
+            return redirect('language_academy:lesson_detail', lesson_id=quiz.lesson.id)
+        messages.warning(request, f'⏱ Quiz time is up! Your score: {final_score}%')
 
-    messages.warning(request, f'Quiz time is up! Your score: {final_score}%')
     return redirect('language_academy:quiz_result', attempt_id=attempt.id)
 
 
@@ -587,8 +606,33 @@ def submit_quiz(request, quiz_id):
 
         messages.success(request, f'🎉 Congrats! Lesson "{lesson.name}" completed! +{lesson.xp_reward + quiz.xp_reward} XP')
     else:
-        lesson_progress.save()
-        messages.warning(request, f'{final_score}% — you need {quiz.passing_score}% to pass.')
+        # Count how many attempts (including this one) the user has now used
+        used_attempts = QuizAttempt.objects.filter(user=request.user, quiz=quiz).count()
+        max_att = quiz.max_attempts or 3
+        if used_attempts >= max_att:
+            # Ran out of attempts and never passed → reset the lesson so the
+            # learner has to study it again from scratch.
+            QuizAttempt.objects.filter(user=request.user, quiz=quiz).delete()
+            lesson_progress.status = 'not_started'
+            lesson_progress.progress_percentage = 0
+            lesson_progress.quiz_score = 0
+            lesson_progress.quiz_passed = False
+            lesson_progress.completed_at = None
+            lesson_progress.save()
+            messages.error(
+                request,
+                f'❌ You used all {max_att} attempts and did not pass ({final_score}%). '
+                f'The lesson "{lesson.name}" has been reset — please study it again and retry the quiz.'
+            )
+            return redirect('language_academy:lesson_detail', lesson_id=lesson.id)
+        else:
+            lesson_progress.save()
+            remaining = max_att - used_attempts
+            messages.warning(
+                request,
+                f'{final_score}% — you need {quiz.passing_score}% to pass. '
+                f'{remaining} attempt{"s" if remaining != 1 else ""} left before the lesson is reset.'
+            )
 
     lesson_progress.save()
 
@@ -957,8 +1001,36 @@ def submit_exam(request, exam_id):
             if wp.is_completed:
                 messages.success(request, f'🎉 World "{exam.chapter.world.name}" completed!')
         else:
+            # Chapter-level exam failed → check attempts and possibly reset the
+            # whole chapter so the learner has to redo every lesson + its quiz.
+            used_attempts = ExamAttempt.objects.filter(user=request.user, exam=exam).count()
+            max_att = exam.max_attempts or 3
+            if used_attempts >= max_att:
+                ExamAttempt.objects.filter(user=request.user, exam=exam).delete()
+                # Wipe every lesson-progress + quiz-attempt inside this chapter
+                lessons = list(Lesson.objects.filter(chapter=exam.chapter, is_published=True))
+                UserLessonProgress.objects.filter(user=request.user, lesson__in=lessons).delete()
+                QuizAttempt.objects.filter(user=request.user, quiz__lesson__in=lessons).delete()
+                QuizSession.objects.filter(user=request.user, quiz__lesson__in=lessons).delete()
+                chapter_progress.is_completed = False
+                chapter_progress.completed_at = None
+                chapter_progress.exam_score = 0
+                chapter_progress.exam_passed = False
+                chapter_progress.lessons_completed = 0
+                chapter_progress.save()
+                messages.error(
+                    request,
+                    f'❌ You used all {max_att} attempts and did not pass ({final_score}%). '
+                    f'The whole chapter "{exam.chapter.name}" has been reset — please study every lesson again.'
+                )
+                return redirect('language_academy:chapter_detail', chapter_id=exam.chapter.id)
             chapter_progress.save()
-            messages.warning(request, f'{final_score}% — you need {exam.passing_score}% to pass.')
+            remaining = max_att - used_attempts
+            messages.warning(
+                request,
+                f'{final_score}% — you need {exam.passing_score}% to pass. '
+                f'{remaining} attempt{"s" if remaining != 1 else ""} left before the chapter is reset.'
+            )
 
     elif exam.world and passed:
         # امتحان نهایی جهان پاس شد → جهان کامل می‌شود

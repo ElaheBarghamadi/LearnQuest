@@ -1,279 +1,29 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ورود | لرن کویست</title>
+<title>ورود | لرن‌کوئست</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/auth.css' %}?v=20260824">
 <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body {
-        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
-        background: linear-gradient(135deg, #9CC1F4 0%, #7FA9EE 34%, #B3A5EE 68%, #EBB3D9 100%);
-        background-attachment: fixed;
-        color: #262B47;
-        overflow-x: hidden;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
-    }
-
-    /* ---------- پس‌زمینهٔ متحرک ---------- */
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, rgba(108,99,255,.55), rgba(54,209,220,.5));
-        border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
-    }
-    ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-    html { scrollbar-width: thin; scrollbar-color: rgba(108,99,255,.45) transparent; }
-
-    /* ---------- Animated background ---------- */
-    .au-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .au-blob {
-        position: absolute; border-radius: 50%; filter: blur(90px);
-        opacity: .5; animation: auFloat 18s ease-in-out infinite alternate;
-    }
-    .au-blob.b1 { width: 520px; height: 520px; background: rgba(108,99,255,.55); top: -160px; right: -140px; }
-    .au-blob.b2 { width: 460px; height: 460px; background: rgba(54,209,220,.50); bottom: -140px; left: -120px; animation-delay: 3s; }
-    .au-blob.b3 { width: 320px; height: 320px; background: rgba(236,72,153,.40); top: 45%; left: 12%; animation-delay: 6s; }
-    @keyframes auFloat {
-        0%   { transform: translate(0,0) scale(1); }
-        100% { transform: translate(40px,-50px) scale(1.15); }
-    }
-    .au-dots {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: radial-gradient(rgba(255,255,255,.35) 1.2px, transparent 1.3px);
-        background-size: 30px 30px; opacity: .5;
-    }
-
-    /* ---------- Shell — bigger, better proportioned ---------- */
-    .au-shell {
-        position: relative; z-index: 1;
-        width: 100%; max-width: 1100px; min-height: 640px;
-        display: grid; grid-template-columns: 1.05fr 1fr;
-        background: rgba(255,255,255,.72);
-        backdrop-filter: blur(24px) saturate(170%);
-        -webkit-backdrop-filter: blur(24px) saturate(170%);
-        border: 1px solid rgba(255,255,255,.9);
-        border-radius: 28px;
-        box-shadow: 0 30px 80px rgba(28,32,64,.22), inset 0 1px 0 rgba(255,255,255,.95);
-        overflow: hidden;
-        animation: auIn .6s cubic-bezier(.22,1,.36,1);
-    }
-    @keyframes auIn { from { opacity: 0; transform: translateY(26px) scale(.97); } }
-
-    /* ---------- Marketing panel ---------- */
-    .au-showcase {
-        background:
-            radial-gradient(circle at 82% 12%, rgba(255,255,255,.24), transparent 42%),
-            radial-gradient(circle at 15% 88%, rgba(255,255,255,.16), transparent 40%),
-            linear-gradient(155deg, #6C63FF 0%, #4F46E5 45%, #0ea5a4 130%);
-        color: #fff; padding: 52px 48px;
-        display: flex; flex-direction: column; justify-content: space-between;
-        gap: 30px; position: relative; overflow: hidden;
-    }
-    .au-showcase::after {
-        content: ''; position: absolute; inset: auto -30% -40% -30%; height: 260px;
-        background: radial-gradient(closest-side, rgba(255,255,255,.10), transparent 70%);
-        pointer-events: none;
-    }
-    .au-show-logo { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1.25rem; position: relative; }
-    .au-show-logo .mark {
-        width: 44px; height: 44px; border-radius: 14px;
-        background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35);
-        display: grid; place-items: center; font-size: 1.35rem;
-        box-shadow: 0 8px 20px rgba(0,0,0,.18);
-    }
-    .au-show-title {
-        font-size: clamp(1.6rem, 2.4vw, 2.1rem);
-        font-weight: 900; line-height: 1.5; margin: 4px 0 14px; position: relative; letter-spacing: -.4px;
-    }
-    .au-show-title em { font-style: normal; background: linear-gradient(90deg,#7df3e6,#fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .au-show-sub { font-size: .95rem; opacity: .92; line-height: 2; margin-bottom: 8px; position: relative; }
-
-    .au-feats { display: flex; flex-direction: column; gap: 12px; position: relative; }
-    .au-feat {
-        display: flex; align-items: center; gap: 14px;
-        background: rgba(255,255,255,.13);
-        border: 1px solid rgba(255,255,255,.22);
-        border-radius: 14px; padding: 13px 17px;
-        font-size: .88rem; font-weight: 700;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    }
-    .au-feat .ic {
-        width: 38px; height: 38px; border-radius: 12px; flex: 0 0 auto;
-        background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 1.1rem;
-    }
-
-    .au-show-stats { display: flex; gap: 10px; position: relative; }
-    .au-show-stat {
-        flex: 1; text-align: center;
-        background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2);
-        border-radius: 14px; padding: 12px 8px;
-    }
-    .au-show-stat b     { display: block; font-size: 1.25rem; font-weight: 900; line-height: 1.2; }
-    .au-show-stat small { font-size: .68rem; opacity: .88; }
-
-    /* ---------- Form side ---------- */
-    .au-formside {
-        padding: 56px 56px;
-        display: flex; flex-direction: column; justify-content: center;
-        background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.72));
-    }
-    .au-formside-inner { max-width: 420px; width: 100%; margin: 0 auto; }
-
-    /* mobile-only compact header */
-    .au-mobile-hero { display: none; }
-
-    .au-badge {
-        width: 66px; height: 66px; border-radius: 20px;
-        background: linear-gradient(135deg, #6C63FF, #36D1DC);
-        display: grid; place-items: center;
-        font-size: 1.9rem; margin-bottom: 20px;
-        box-shadow: 0 14px 30px rgba(108,99,255,.4), inset 0 1.5px 0 rgba(255,255,255,.5);
-        animation: auBob 3.2s ease-in-out infinite;
-    }
-    @keyframes auBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-    .au-h1 { font-size: clamp(1.55rem, 2.4vw, 1.9rem); font-weight: 900; color: #1e293b; letter-spacing: -.3px; margin-bottom: 8px; line-height: 1.4; }
-    .au-h1 .gt { background: linear-gradient(120deg,#6C63FF,#0ea5a4); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .au-sub { font-size: .9rem; color: #64748b; margin-bottom: 28px; line-height: 1.9; }
-
-    .au-flash { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-    .au-flash-item {
-        font-size: .8rem; font-weight: 700;
-        padding: 10px 14px; border-radius: 12px;
-        background: rgba(255,255,255,.8); border: 1px solid rgba(148,163,184,.3);
-        border-inline-start: 4px solid #3B82F6;
-    }
-    .au-flash-item.error { border-inline-start-color: #ef4444; color: #b91c1c; }
-    .au-flash-item.success { border-inline-start-color: #22c55e; color: #15803d; }
-
-    .au-field {
-        position: relative; display: flex; align-items: center; gap: 12px;
-        background: rgba(255,255,255,.9);
-        border: 1.5px solid rgba(148,163,184,.28);
-        border-radius: 14px; padding: 2px 16px; margin-bottom: 14px;
-        transition: border-color .2s, box-shadow .2s, transform .2s;
-    }
-    .au-field:focus-within {
-        border-color: #6C63FF;
-        box-shadow: 0 0 0 4px rgba(108,99,255,.16);
-        transform: translateY(-1px);
-    }
-    .au-field .ico { font-size: 1.05rem; opacity: .55; flex-shrink: 0; }
-    .au-field input {
-        flex: 1; min-width: 0; border: none; outline: none; background: none;
-        padding: 15px 0; font-family: inherit; font-size: .95rem; font-weight: 600; color: #1e293b;
-    }
-    .au-eye { border: none; background: none; font-size: 1.05rem; cursor: pointer; opacity: .55; padding: 6px; transition: opacity .18s; }
-    .au-eye:hover { opacity: 1; }
-    .au-err { font-size: .78rem; color: #dc2626; font-weight: 700; margin: -8px 0 12px 6px; }
-
-    .au-btn {
-        width: 100%; border: none; cursor: pointer;
-        background: linear-gradient(135deg, #6C63FF, #4F46E5);
-        color: #fff; font-family: inherit; font-size: 1.02rem; font-weight: 900;
-        padding: 16px; border-radius: 14px; margin-top: 6px;
-        box-shadow: 0 10px 26px rgba(108,99,255,.42);
-        transition: transform .2s, box-shadow .2s;
-        letter-spacing: .2px;
-    }
-    .au-btn:hover  { transform: translateY(-2px); box-shadow: 0 15px 34px rgba(108,99,255,.55); }
-    .au-btn:active { transform: translateY(0); }
-
-    .au-alt {
-        display: flex; align-items: center; justify-content: space-between; gap: 8px;
-        margin-top: 20px; font-size: .82rem; font-weight: 700;
-    }
-    .au-alt a { color: #6C63FF; text-decoration: none; transition: color .18s; }
-    .au-alt a:hover { color: #4F46E5; text-decoration: underline; }
-    .au-sep { flex: 1; height: 1px; background: rgba(148,163,184,.3); }
-
-    .au-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 24px; }
-    .au-chips span {
-        font-size: .72rem; font-weight: 700; color: #5f6889;
-        background: rgba(108,99,255,.08); border: 1px solid rgba(108,99,255,.2);
-        padding: 6px 13px; border-radius: 999px;
-    }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width: 960px) {
-        .au-shell { max-width: 640px; grid-template-columns: 1fr; min-height: auto; }
-        .au-showcase { display: none; }
-        .au-formside { padding: 44px 44px; }
-        .au-mobile-hero {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 22px; padding-bottom: 20px;
-            border-bottom: 1px dashed rgba(148,163,184,.35);
-        }
-        .au-mobile-hero .mh-badge {
-            width: 42px; height: 42px; border-radius: 13px;
-            background: linear-gradient(135deg,#6C63FF,#36D1DC); color: #fff;
-            display: grid; place-items: center; font-size: 1.2rem;
-            box-shadow: 0 8px 18px rgba(108,99,255,.3);
-        }
-        .au-mobile-hero .mh-text b { display: block; font-size: 1rem; font-weight: 900; color: #1e293b; }
-        .au-mobile-hero .mh-text small { font-size: .72rem; color: #64748b; }
-    }
-    @media (max-width: 620px) {
-        body { padding: 0; align-items: stretch; }
-        .au-shell { max-width: none; border-radius: 0; min-height: 100vh; border: none; box-shadow: none; }
-        .au-formside { padding: 34px 22px 40px; justify-content: flex-start; }
-        .au-formside-inner { max-width: none; }
-        .au-badge { width: 56px; height: 56px; font-size: 1.5rem; border-radius: 17px; margin-bottom: 16px; }
-    }
-    @media (max-width: 400px) {
-        .au-formside { padding: 28px 18px 34px; }
-        .au-h1 { font-size: 1.4rem; }
-        .au-field { padding: 2px 14px; }
-        .au-field input { padding: 14px 0; font-size: .9rem; }
-        .au-btn { padding: 15px; font-size: .95rem; }
-        .au-alt { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; margin-top: 22px; }
-        .au-sep { display: none; }
+    :root {
+        --au-panel-1: #6C63FF; --au-panel-2: #4F46E5; --au-panel-3: #0ea5a4;
+        --au-badge-1: #6C63FF; --au-badge-2: #36D1DC;
+        --au-btn-1:   #6C63FF; --au-btn-2:   #4F46E5;
     }
 </style>
 </head>
 <body>
 
-<div class="au-bg">
-    <span class="au-blob b1"></span>
-    <span class="au-blob b2"></span>
-    <span class="au-blob b3"></span>
-</div>
-<div class="au-dots"></div>
-
 <div class="au-shell">
+    {% include '_auth_showcase.html' %}
 
-    <!-- پنل معرفی -->
-    <div class="au-showcase">
-        <div class="au-show-logo"><span class="mark">🎓</span> لرن‌کوئست</div>
-        <div>
-            <div class="au-show-title">یادگیری که مثل <em>بازی</em> می‌مونه 🎮</div>
-            <p class="au-show-sub">دنیاهای زبان، بازی‌های ذهنی، فروشگاه و پیام‌رسان — همه در یک پلتفرم، برای فارسی‌زبان‌ها.</p>
-            <div class="au-feats">
-                <div class="au-feat"><span class="ic">🌍</span> ۳ جهان کامل انگلیسی + گرامر درسبه‌درس</div>
-                <div class="au-feat"><span class="ic">🏆</span> XP، سطح، استریک و لیدربورد</div>
-                <div class="au-feat"><span class="ic">🛍️</span> فروشگاه با قاب، پت و بوستر</div>
-                <div class="au-feat"><span class="ic">💬</span> پیام‌رسان امن با رمزنگاری</div>
-            </div>
-        </div>
-        <div class="au-show-stats">
-            <div class="au-show-stat"><b>۳</b><small>جهان آموزشی</small></div>
-            <div class="au-show-stat"><b>۱۹+</b><small>درس کامل</small></div>
-            <div class="au-show-stat"><b>۱۲+</b><small>بازی</small></div>
-        </div>
-    </div>
-
-    <!-- فرم -->
     <div class="au-formside">
       <div class="au-formside-inner">
 
-        <!-- mobile-only compact hero (marketing panel is hidden on mobile) -->
         <div class="au-mobile-hero">
             <div class="mh-badge">🎓</div>
             <div class="mh-text">
@@ -289,7 +39,7 @@
         {% if messages %}
         <div class="au-flash">
             {% for message in messages %}
-            <div class="au-flash-item {{ message.tags }}">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}💡{% endif %} {{ message }}</div>
+            <div class="au-flash-item {{ message.tags }}">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% elif message.tags == 'warning' %}💡{% else %}💬{% endif %} {{ message }}</div>
             {% endfor %}
         </div>
         {% endif %}
@@ -316,7 +66,7 @@
         </form>
 
         <div class="au-alt">
-            <a href="{% url 'password_reset' %}">🔑 فراموشی رمز؟</a>
+            <a href="{% url 'password_reset_request' %}">🔑 فراموشی رمز؟</a>
             <span class="au-sep"></span>
             <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}">ساخت حساب ✨</a>
         </div>
@@ -327,7 +77,7 @@
             <span>🏆 سطح‌بندی</span>
         </div>
 
-      </div><!-- /au-formside-inner -->
+      </div>
     </div>
 </div>
 

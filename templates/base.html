@@ -1500,31 +1500,6 @@
 </main>
 
 <footer class="footer">
-    <!-- CTA bar -->
-    {% if not user.is_authenticated %}
-    <div class="footer-cta">
-        <div class="footer-cta-text">
-            <h3>🚀 امروز سفر یادگیری‌ات را شروع کن</h3>
-            <p>رایگان ثبت‌نام کن و به هزاران زبان‌آموز فارسی‌زبان بپیوند.</p>
-        </div>
-        <a href="{% url 'register' %}" class="footer-cta-btn">
-            ثبت‌نام رایگان
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </a>
-    </div>
-    {% else %}
-    <div class="footer-cta">
-        <div class="footer-cta-text">
-            <h3>🎯 هدف امروزت رو کامل کن</h3>
-            <p>هر روز کمی تمرین کن، XP بگیر و استریک‌ات را حفظ کن.</p>
-        </div>
-        <a href="{% url 'language_academy:learner_dashboard' %}" class="footer-cta-btn">
-            رفتن به داشبورد
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </a>
-    </div>
-    {% endif %}
-
     <div class="footer-inner">
         <div class="footer-grid">
             <!-- Brand + about + contact + socials -->

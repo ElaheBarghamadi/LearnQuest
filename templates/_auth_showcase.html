@@ -1,0 +1,41 @@
+{% comment %}
+Reusable marketing panel for all auth pages.
+Optional context vars:
+  au_show_title  – HTML string for the big title (use <em> for gradient word)
+  au_show_sub    – subtitle paragraph
+  au_show_stats  – list of {"b": "...", "s": "..."} up to 3 items
+Falls back to a sensible default.
+{% endcomment %}
+
+<div class="au-showcase">
+    <div class="au-show-inner">
+        <div class="au-show-logo"><span class="mark">🎓</span> لرن‌کوئست</div>
+
+        <div class="au-show-title">
+            {{ au_show_title|default:"یادگیری که مثل <em>بازی</em> می‌مونه 🎮"|safe }}
+        </div>
+        <p class="au-show-sub">
+            {{ au_show_sub|default:"دنیاهای زبان، بازی‌های ذهنی، فروشگاه و پیام‌رسان — همه در یک پلتفرم، برای فارسی‌زبان‌ها." }}
+        </p>
+
+        <div class="au-feats">
+            <div class="au-feat"><span class="ic">🌍</span> ۳ جهان کامل انگلیسی + گرامر درس‌به‌درس</div>
+            <div class="au-feat"><span class="ic">🏆</span> XP، سطح، استریک و لیدربورد</div>
+            <div class="au-feat"><span class="ic">🛍️</span> فروشگاه با قاب، پت و بوستر</div>
+            <div class="au-feat"><span class="ic">💬</span> پیام‌رسان امن با رمزنگاری</div>
+        </div>
+    </div>
+
+    <div class="au-show-stats">
+        <div class="au-show-stat"><b>۳</b><small>جهان آموزشی</small></div>
+        <div class="au-show-stat"><b>+۱۹</b><small>درس کامل</small></div>
+        <div class="au-show-stat"><b>+۱۲</b><small>بازی</small></div>
+    </div>
+</div>
+
+<div class="au-bg" aria-hidden="true">
+    <span class="au-blob b1"></span>
+    <span class="au-blob b2"></span>
+    <span class="au-blob b3"></span>
+</div>
+<div class="au-dots" aria-hidden="true"></div>

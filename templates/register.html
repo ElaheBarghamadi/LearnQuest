@@ -1,265 +1,33 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ثبت‌نام | لرن کویست</title>
+<title>ثبت‌نام | لرن‌کوئست</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/auth.css' %}?v=20260824">
 <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
-    body {
-        font-family: 'Vazirmatn', 'Segoe UI', Tahoma, system-ui, sans-serif;
-        background: linear-gradient(135deg, #9CC1F4 0%, #7FA9EE 34%, #B3A5EE 68%, #EBB3D9 100%);
-        background-attachment: fixed;
-        color: #262B47;
-        overflow-x: hidden;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 18px;
+    :root {
+        --au-panel-1: #0ea5a4; --au-panel-2: #0d9488; --au-panel-3: #6C63FF;
+        --au-badge-1: #0ea5a4; --au-badge-2: #6C63FF;
+        --au-btn-1:   #0ea5a4; --au-btn-2:   #6C63FF;
+        --au-accent-1: #a7f3d0; --au-accent-2: #fbbf24;
     }
-    ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
-    ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, rgba(108,99,255,.55), rgba(54,209,220,.5));
-        border-radius: 999px; border: 2px solid transparent; background-clip: padding-box;
-    }
-    ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
-    html { scrollbar-width: thin; scrollbar-color: rgba(108,99,255,.45) transparent; }
-
-    .au-bg { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-    .au-blob {
-        position: absolute; border-radius: 50%; filter: blur(80px);
-        opacity: .45; animation: auFloat 18s ease-in-out infinite alternate;
-    }
-    .au-blob.b1 { width: 420px; height: 420px; background: rgba(108,99,255,.5); top: -120px; right: -100px; }
-    .au-blob.b2 { width: 360px; height: 360px; background: rgba(54,209,220,.45); bottom: -110px; left: -90px; animation-delay: 3s; }
-    .au-blob.b3 { width: 260px; height: 260px; background: rgba(236,72,153,.35); top: 45%; left: 12%; animation-delay: 6s; }
-    @keyframes auFloat {
-        0% { transform: translate(0,0) scale(1); }
-        100% { transform: translate(40px,-50px) scale(1.15); }
-    }
-    .au-dots {
-        position: fixed; inset: 0; z-index: 0; pointer-events: none;
-        background-image: radial-gradient(rgba(255,255,255,.35) 1.2px, transparent 1.3px);
-        background-size: 30px 30px; opacity: .5;
-    }
-
-    .au-shell {
-        position: relative; z-index: 1;
-        width: 100%; max-width: 1100px; min-height: 640px;
-        display: grid; grid-template-columns: 1fr 1.1fr;
-        background: rgba(255,255,255,.72);
-        backdrop-filter: blur(24px) saturate(170%);
-        -webkit-backdrop-filter: blur(24px) saturate(170%);
-        border: 1px solid rgba(255,255,255,.9);
-        border-radius: 28px;
-        box-shadow: 0 30px 80px rgba(28,32,64,.22), inset 0 1px 0 rgba(255,255,255,.95);
-        overflow: hidden;
-        animation: auIn .6s cubic-bezier(.22,1,.36,1);
-    }
-    @keyframes auIn { from { opacity: 0; transform: translateY(26px) scale(.97); } }
-
-    .au-showcase {
-        background:
-            radial-gradient(circle at 82% 12%, rgba(255,255,255,.24), transparent 42%),
-            radial-gradient(circle at 15% 88%, rgba(255,255,255,.16), transparent 40%),
-            linear-gradient(155deg, #0ea5a4 0%, #0d9488 45%, #6C63FF 130%);
-        color: #fff; padding: 52px 44px;
-        display: flex; flex-direction: column; justify-content: space-between;
-        gap: 30px; position: relative; overflow: hidden;
-    }
-    .au-show-logo { display: flex; align-items: center; gap: 12px; font-weight: 900; font-size: 1.25rem; position: relative; }
-    .au-show-logo .mark {
-        width: 44px; height: 44px; border-radius: 14px;
-        background: rgba(255,255,255,.22); border: 1px solid rgba(255,255,255,.35);
-        display: grid; place-items: center; font-size: 1.35rem;
-        box-shadow: 0 8px 20px rgba(0,0,0,.18);
-    }
-    .au-show-title { font-size: clamp(1.5rem, 2.2vw, 1.95rem); font-weight: 900; line-height: 1.55; margin: 4px 0 12px; position: relative; letter-spacing: -.4px; }
-    .au-show-title em { font-style: normal; background: linear-gradient(90deg,#a7f3d0,#fbbf24); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .au-show-sub { font-size: .92rem; opacity: .92; line-height: 2; margin-bottom: 4px; position: relative; }
-    .au-feats { display: flex; flex-direction: column; gap: 11px; position: relative; }
-    .au-feat {
-        display: flex; align-items: center; gap: 13px;
-        background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.22);
-        border-radius: 14px; padding: 12px 15px;
-        font-size: .85rem; font-weight: 700;
-        backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    }
-    .au-feat .ic {
-        width: 36px; height: 36px; border-radius: 12px; flex: 0 0 auto;
-        background: rgba(255,255,255,.22); display: grid; place-items: center; font-size: 1.05rem;
-    }
-    .au-show-stats { display: flex; gap: 10px; position: relative; }
-    .au-show-stat {
-        flex: 1; text-align: center;
-        background: rgba(255,255,255,.13); border: 1px solid rgba(255,255,255,.2);
-        border-radius: 14px; padding: 12px 8px;
-    }
-    .au-show-stat b { display: block; font-size: 1.2rem; font-weight: 900; line-height: 1.2; }
-    .au-show-stat small { font-size: .66rem; opacity: .88; }
-
-    .au-formside {
-        padding: 48px 52px;
-        display: flex; flex-direction: column; justify-content: center;
-        background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.72));
-        overflow-y: auto;
-    }
-    .au-formside-inner { max-width: 440px; width: 100%; margin: 0 auto; }
-    .au-mobile-hero { display: none; }
-
-    .au-badge {
-        width: 62px; height: 62px; border-radius: 19px;
-        background: linear-gradient(135deg, #0ea5a4, #6C63FF);
-        display: grid; place-items: center;
-        font-size: 1.75rem; margin-bottom: 18px;
-        box-shadow: 0 14px 30px rgba(14,165,164,.4), inset 0 1.5px 0 rgba(255,255,255,.5);
-        animation: auBob 3.2s ease-in-out infinite;
-    }
-    @keyframes auBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-    .au-h1 { font-size: clamp(1.45rem, 2.2vw, 1.8rem); font-weight: 900; color: #1e293b; letter-spacing: -.3px; margin-bottom: 6px; line-height: 1.4; }
-    .au-h1 .gt { background: linear-gradient(120deg,#0ea5a4,#6C63FF); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .au-sub { font-size: .88rem; color: #64748b; margin-bottom: 24px; line-height: 1.85; }
-
-    .au-flash { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-    .au-flash-item {
-        font-size: .78rem; font-weight: 700;
-        padding: 10px 14px; border-radius: 12px;
-        background: rgba(255,255,255,.8); border: 1px solid rgba(148,163,184,.3);
-        border-inline-start: 4px solid #3B82F6;
-    }
-    .au-flash-item.error { border-inline-start-color: #ef4444; color: #b91c1c; }
-    .au-flash-item.success { border-inline-start-color: #22c55e; color: #15803d; }
-
-    .au-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .au-field {
-        position: relative; display: flex; align-items: center; gap: 12px;
-        background: rgba(255,255,255,.9);
-        border: 1.5px solid rgba(148,163,184,.28);
-        border-radius: 14px; padding: 2px 16px; margin-bottom: 13px;
-        transition: border-color .2s, box-shadow .2s, transform .2s;
-    }
-    .au-field:focus-within {
-        border-color: #6C63FF;
-        box-shadow: 0 0 0 4px rgba(108,99,255,.16);
-        transform: translateY(-1px);
-    }
-    .au-field .ico { font-size: 1.05rem; opacity: .55; flex-shrink: 0; }
-    .au-field input {
-        flex: 1; min-width: 0; border: none; outline: none; background: none;
-        padding: 14px 0; font-family: inherit; font-size: .93rem; font-weight: 600; color: #1e293b;
-    }
-    .au-eye { border: none; background: none; font-size: 1rem; cursor: pointer; opacity: .55; padding: 6px; transition: opacity .18s; }
-    .au-eye:hover { opacity: 1; }
-    .au-err { font-size: .76rem; color: #dc2626; font-weight: 700; margin: -8px 0 10px 6px; }
-    .au-meter { height: 5px; border-radius: 99px; background: rgba(148,163,184,.25); overflow: hidden; margin: -7px 4px 12px; display: none; }
-    .au-meter.show { display: block; }
-    .au-meter span { display: block; height: 100%; width: 0; border-radius: 99px; transition: width .3s, background .3s; }
-    .au-meter-txt { font-size: .7rem; font-weight: 700; margin: -8px 6px 10px; color: #6B7399; display: none; }
-    .au-meter-txt.show { display: block; }
-    .au-match { font-size: .72rem; font-weight: 800; margin: -8px 6px 10px; display: none; }
-    .au-match.show { display: block; }
-    .au-match.ok { color: #16a34a; }
-    .au-match.bad { color: #dc2626; }
-
-    .au-btn {
-        width: 100%; border: none; cursor: pointer;
-        background: linear-gradient(135deg, #0ea5a4, #6C63FF);
-        color: #fff; font-family: inherit; font-size: 1.02rem; font-weight: 900;
-        padding: 16px; border-radius: 14px; margin-top: 6px;
-        box-shadow: 0 10px 26px rgba(14,165,164,.42);
-        transition: transform .2s, box-shadow .2s;
-        letter-spacing: .2px;
-    }
-    .au-btn:hover  { transform: translateY(-2px); box-shadow: 0 15px 34px rgba(14,165,164,.55); }
-    .au-btn:active { transform: translateY(0); }
-
-    .au-alt {
-        display: flex; align-items: center; justify-content: space-between; gap: 8px;
-        margin-top: 20px; font-size: .82rem; font-weight: 700;
-    }
-    .au-alt a { color: #6C63FF; text-decoration: none; transition: color .18s; }
-    .au-alt a:hover { color: #4F46E5; text-decoration: underline; }
-    .au-sep { flex: 1; height: 1px; background: rgba(148,163,184,.3); }
-
-    /* Responsive */
-    @media (max-width: 960px) {
-        .au-shell { max-width: 640px; grid-template-columns: 1fr; min-height: auto; }
-        .au-showcase { display: none; }
-        .au-formside { padding: 40px 40px; overflow-y: visible; }
-        .au-mobile-hero {
-            display: flex; align-items: center; gap: 12px;
-            margin-bottom: 22px; padding-bottom: 20px;
-            border-bottom: 1px dashed rgba(148,163,184,.35);
-        }
-        .au-mobile-hero .mh-badge {
-            width: 42px; height: 42px; border-radius: 13px;
-            background: linear-gradient(135deg,#0ea5a4,#6C63FF); color: #fff;
-            display: grid; place-items: center; font-size: 1.2rem;
-            box-shadow: 0 8px 18px rgba(14,165,164,.35);
-        }
-        .au-mobile-hero .mh-text b { display: block; font-size: 1rem; font-weight: 900; color: #1e293b; }
-        .au-mobile-hero .mh-text small { font-size: .72rem; color: #64748b; }
-    }
-    @media (max-width: 620px) {
-        body { padding: 0; align-items: stretch; }
-        .au-shell { max-width: none; border-radius: 0; min-height: 100vh; border: none; box-shadow: none; }
-        .au-formside { padding: 32px 22px 40px; justify-content: flex-start; }
-        .au-formside-inner { max-width: none; }
-        .au-badge { width: 54px; height: 54px; font-size: 1.45rem; border-radius: 17px; margin-bottom: 14px; }
-    }
-    @media (max-width: 480px) {
-        .au-row { grid-template-columns: 1fr; gap: 0; }
-    }
-    @media (max-width: 400px) {
-        .au-formside { padding: 26px 18px 34px; }
-        .au-h1 { font-size: 1.35rem; }
-        .au-field { padding: 2px 14px; }
-        .au-field input { padding: 12px 0; font-size: .88rem; }
-        .au-btn { padding: 15px; font-size: .95rem; }
-        .au-alt { flex-direction: column; gap: 10px; align-items: stretch; text-align: center; margin-top: 22px; }
-        .au-sep { display: none; }
-    }
+    .au-btn { box-shadow: 0 10px 26px rgba(14,165,164,.42); }
+    .au-btn:hover { box-shadow: 0 15px 34px rgba(14,165,164,.55); }
+    .au-badge { box-shadow: 0 14px 30px rgba(14,165,164,.4), inset 0 1.5px 0 rgba(255,255,255,.5); }
 </style>
 </head>
 <body>
 
-<div class="au-bg">
-    <span class="au-blob b1"></span>
-    <span class="au-blob b2"></span>
-    <span class="au-blob b3"></span>
-</div>
-<div class="au-dots"></div>
-
 <div class="au-shell">
-
-    <div class="au-showcase">
-        <div class="au-show-logo"><span class="mark">🎓</span> لرن‌کوئست</div>
-        <div>
-            <div class="au-show-title">سفر یادگیری‌ات را <em>همین حالا</em> شروع کن 🚀</div>
-            <p class="au-show-sub">ثبت‌نام رایگان است؛ از همان روز اول سکه و XP جمع کن و وارد دنیای اول شو.</p>
-            <div class="au-feats">
-                <div class="au-feat"><span class="ic">🎁</span> جایزهٔ ورود روزانه و استریک</div>
-                <div class="au-feat"><span class="ic">📘</span> گرامر درسبه‌درس از Grammar in Use</div>
-                <div class="au-feat"><span class="ic">🐾</span> پت مجازی که با تو بزرگ می‌شه</div>
-                <div class="au-feat"><span class="ic">🎫</span> درس‌های ویژه با بلیط فروشگاه</div>
-            </div>
-        </div>
-        <div class="au-show-stats">
-            <div class="au-show-stat"><b>رایگان</b><small>ثبت‌نام</small></div>
-            <div class="au-show-stat"><b>۲۴/۷</b><small>دسترسی</small></div>
-            <div class="au-show-stat"><b>فارسی</b><small>رابط کاربری</small></div>
-        </div>
-    </div>
+    {% include '_auth_showcase.html' with au_show_title='سفر یادگیری‌ات را <em>همین حالا</em> شروع کن 🚀' au_show_sub='ثبت‌نام رایگان است؛ از همان روز اول سکه و XP جمع کن و وارد دنیای اول شو.' %}
 
     <div class="au-formside">
       <div class="au-formside-inner">
 
-        <!-- mobile-only compact hero -->
         <div class="au-mobile-hero">
             <div class="mh-badge">🚀</div>
             <div class="mh-text">
@@ -275,7 +43,7 @@
         {% if messages %}
         <div class="au-flash">
             {% for message in messages %}
-            <div class="au-flash-item {{ message.tags }}">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}💡{% endif %} {{ message }}</div>
+            <div class="au-flash-item {{ message.tags }}">{% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% elif message.tags == 'warning' %}💡{% else %}💬{% endif %} {{ message }}</div>
             {% endfor %}
         </div>
         {% endif %}
@@ -331,7 +99,7 @@
             <a href="{% url 'login' %}{% if next %}?next={{ next|urlencode }}{% endif %}">از قبل حساب داری؟ ورود 👈</a>
         </div>
 
-      </div><!-- /au-formside-inner -->
+      </div>
     </div>
 </div>
 
@@ -349,45 +117,50 @@
     const p1 = document.getElementById('auPass1');
     const p2 = document.getElementById('auPass2');
     const bar = document.getElementById('auStrBar');
-    const txt = document.getElementById('auStrTxt');
+    const barSpan = bar ? bar.querySelector('span') : null;
+    const barTxt = document.getElementById('auStrTxt');
     const match = document.getElementById('auMatch');
-    if (p1 && bar && txt) {
-        function strength(v) {
-            let s = 0;
-            if (v.length >= 6) s++;
-            if (v.length >= 10) s++;
-            if (/[a-z]/.test(v) && /[A-Z]/.test(v)) s++;
-            if (/\d/.test(v)) s++;
-            if (/[^a-zA-Z0-9]/.test(v)) s++;
-            return s;
-        }
-        p1.addEventListener('input', function () {
-            const s = strength(p1.value);
-            bar.classList.add('show');
-            txt.classList.add('show');
-            bar.querySelector('span').style.width = (s * 20) + '%';
-            if (s <= 1) { bar.querySelector('span').style.background = '#ef4444'; txt.textContent = 'خیلی ضعیفه!'; }
-            else if (s <= 2) { bar.querySelector('span').style.background = '#f59e0b'; txt.textContent = 'ضعیف'; }
-            else if (s <= 3) { bar.querySelector('span').style.background = '#eab308'; txt.textContent = 'متوسط'; }
-            else if (s <= 4) { bar.querySelector('span').style.background = '#22c55e'; txt.textContent = 'قوی 💪'; }
-            else { bar.querySelector('span').style.background = '#16a34a'; txt.textContent = 'خیلی قوی 🔥'; }
-            if (p2 && p2.value) check();
-        });
+
+    function strength(pw) {
+        if (!pw) return {p:0, t:'', c:'#94a3b8'};
+        let s = 0;
+        if (pw.length >= 8)  s++;
+        if (pw.length >= 12) s++;
+        if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) s++;
+        if (/\d/.test(pw))   s++;
+        if (/[^A-Za-z0-9]/.test(pw)) s++;
+        const map = [
+            {p:15, t:'خیلی ضعیف',  c:'#ef4444'},
+            {p:35, t:'ضعیف',       c:'#f97316'},
+            {p:55, t:'متوسط',      c:'#f59e0b'},
+            {p:78, t:'خوب',        c:'#22c55e'},
+            {p:100,t:'عالی',       c:'#16a34a'},
+        ];
+        return map[Math.min(s, 4)];
     }
-    if (p2 && match) {
-        function check() {
-            if (!p2.value) { match.classList.remove('show'); return; }
-            match.classList.add('show');
-            if (p2.value === p1.value) {
-                match.classList.remove('bad'); match.classList.add('ok');
-                match.textContent = '✅ رمزها یکی‌ست';
-            } else {
-                match.classList.remove('ok'); match.classList.add('bad');
-                match.textContent = '❌ رمزها یکی نیست';
-            }
+
+    p1 && p1.addEventListener('input', function () {
+        const st = strength(p1.value);
+        if (p1.value) { bar.classList.add('show'); barTxt.classList.add('show'); }
+        else          { bar.classList.remove('show'); barTxt.classList.remove('show'); }
+        barSpan.style.width = st.p + '%';
+        barSpan.style.background = st.c;
+        barTxt.textContent = st.t ? '💪 ' + st.t : '';
+        barTxt.style.color = st.c;
+        checkMatch();
+    });
+    p2 && p2.addEventListener('input', checkMatch);
+
+    function checkMatch() {
+        if (!p2.value) { match.classList.remove('show'); return; }
+        match.classList.add('show');
+        if (p1.value === p2.value) {
+            match.textContent = '✓ رمزها مطابقت دارند';
+            match.className = 'au-match show ok';
+        } else {
+            match.textContent = '✗ رمزها یکی نیستند';
+            match.className = 'au-match show bad';
         }
-        p2.addEventListener('input', check);
-        if (p1) p1.addEventListener('input', check);
     }
 })();
 </script>
