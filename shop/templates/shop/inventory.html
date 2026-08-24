@@ -7,166 +7,196 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
-<link rel="stylesheet" href="{% static 'css/shop2.css' %}?v=4">
+<link rel="stylesheet" href="{% static 'css/shop3.css' %}?v=2">
 <style>
-    .lqi-active {
-        background: linear-gradient(135deg,#10b981 0%,#059669 100%);
-        color: #fff; border-radius: 20px; padding: 20px 24px;
-        margin-bottom: 22px; box-shadow: 0 20px 40px rgba(16,185,129,.28);
-    }
-    .lqi-active h3 { font-size: 1rem; font-weight: 900; margin: 0 0 12px; }
-    .lqi-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .lqi-chip {
-        background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.3);
-        color: #fff; padding: 6px 14px; border-radius: 999px;
-        font-size: .82rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;
-    }
-    .lqi-empty-msg { color: rgba(255,255,255,.85); font-size: .84rem; margin: 0; }
+    .sh3-tint-0 { --tile-bg: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+    .sh3-tint-1 { --tile-bg: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); }
+    .sh3-tint-2 { --tile-bg: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); }
+    .sh3-tint-3 { --tile-bg: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); }
+    .sh3-tint-4 { --tile-bg: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%); }
+    .sh3-tint-5 { --tile-bg: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%); }
+    .sh3-tint-6 { --tile-bg: linear-gradient(135deg, #A5F3FC 0%, #67E8F9 100%); }
+    .sh3-tint-7 { --tile-bg: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); }
 
-    .lqi-sec-head {
-        display: flex; align-items: center; justify-content: space-between; margin: 24px 0 14px;
+    .inv-active-bar {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        color: #fff; border-radius: 20px; padding: 22px 26px; margin-bottom: 26px;
+        box-shadow: 0 20px 40px rgba(5,150,105,.25);
     }
-    .lqi-sec-head h2 { font-size: 1.15rem; font-weight: 900; color: var(--lqs-ink); margin: 0; }
+    .inv-active-bar h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 900; display: inline-flex; align-items: center; gap: 8px; }
+    .inv-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .inv-chip  {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28);
+        color: #fff; padding: 7px 14px; border-radius: 999px;
+        font-weight: 700; font-size: .8rem;
+    }
 
-    .lqi-eq-btn, .lqi-use-btn, .lqi-unlink-btn {
+    /* inventory action zone (replaces the buy button) */
+    .inv-actions { display: inline-flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .inv-btn {
         border: none; cursor: pointer; font-family: inherit;
-        padding: 9px 14px; border-radius: 10px;
-        font-weight: 800; font-size: .78rem;
+        padding: 9px 14px; border-radius: 999px;
+        font-weight: 800; font-size: .76rem;
         display: inline-flex; align-items: center; gap: 5px;
-        transition: transform .15s, box-shadow .15s;
+        transition: transform .15s, box-shadow .15s, background .15s;
     }
-    .lqi-eq-btn {
-        background: linear-gradient(135deg,#6C63FF,#4F46E5); color: #fff;
-        box-shadow: 0 6px 14px rgba(79,70,229,.32);
+    .inv-btn.equip {
+        background: var(--sh3-ink); color: #fff;
+        box-shadow: 0 4px 12px rgba(15,22,38,.22);
     }
-    .lqi-eq-btn:hover  { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(79,70,229,.45); }
-    .lqi-unlink-btn {
-        background: #fff; color: #64748b; border: 1.5px solid #e2e8f0;
+    .inv-btn.equip:hover { background: var(--sh3-accent); transform: translateY(-2px); }
+    .inv-btn.unequip {
+        background: #fff; color: var(--sh3-ink-3); border: 1.5px solid var(--sh3-line);
     }
-    .lqi-unlink-btn:hover { border-color: #dc2626; color: #dc2626; }
-    .lqi-use-btn {
-        background: linear-gradient(135deg,#10b981,#059669); color: #fff;
-        box-shadow: 0 6px 14px rgba(16,185,129,.35);
+    .inv-btn.unequip:hover { border-color: #DC2626; color: #DC2626; }
+    .inv-btn.use {
+        background: linear-gradient(135deg, var(--sh3-owned), #059669); color: #fff;
+        box-shadow: 0 4px 12px rgba(5,150,105,.3);
     }
-    .lqi-use-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16,185,129,.5); }
-    .lqi-passive {
+    .inv-btn.use:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(5,150,105,.45); }
+    .inv-passive {
         display: inline-flex; align-items: center; gap: 5px;
-        color: #059669; font-size: .78rem; font-weight: 800;
-        background: rgba(16,185,129,.1); padding: 8px 12px; border-radius: 10px;
+        background: var(--sh3-owned-bg); color: var(--sh3-owned);
+        padding: 8px 14px; border-radius: 999px;
+        font-size: .74rem; font-weight: 800;
     }
-
-    .lqi-meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: .7rem; color: var(--lqs-ink-3); font-weight: 700; margin-top: 4px; }
-    .lqi-meta span { background: var(--lqs-line-2); padding: 2px 8px; border-radius: 999px; }
-    .lqi-meta .eq { background: rgba(16,185,129,.16); color: #059669; }
-    .lqi-meta .bound { background: rgba(245,158,11,.14); color: #b45309; }
-
-    .lqi-msg { font-size: .75rem; font-weight: 700; margin-top: 6px; min-height: 1em; }
+    .inv-meta {
+        display: flex; flex-wrap: wrap; gap: 6px; font-size: .7rem; color: var(--sh3-ink-4); font-weight: 700;
+    }
+    .inv-meta span { background: var(--sh3-line-2); padding: 2px 8px; border-radius: 999px; }
+    .inv-meta .eq { background: rgba(5,150,105,.14); color: var(--sh3-owned); }
+    .inv-msg { font-size: .74rem; font-weight: 700; margin-top: 6px; min-height: 1em; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="lqs-shell">
+<div class="sh3">
+<div class="sh3-shell">
 
-    <section class="lqs-hero" style="background: radial-gradient(600px 220px at 90% -30px, rgba(255,255,255,.35), transparent 60%), linear-gradient(135deg, #0ea5a4 0%, #0d9488 55%, #6C63FF 130%);">
-        <div class="lqs-hero-txt">
-            <span class="lqs-hero-eyebrow">🎒 موجودی من</span>
-            <h1>گنجینه‌ی تو</h1>
-            <p>همهٔ آیتم‌هایی که خریده‌ای اینجاست. رویشون «استفاده» بزن تا روی پروفایلت فعال بشن یا مصرف کنی.</p>
-            <div class="lqs-hero-links">
-                <a href="{% url 'shop:home' %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5"/></svg>
+    {# hero #}
+    <section class="sh3-hero" style="background: radial-gradient(700px 300px at 88% 30%, rgba(16,185,129,.35), transparent 60%), radial-gradient(500px 260px at 12% 90%, rgba(108,99,255,.28), transparent 60%), linear-gradient(150deg, #0F1626 0%, #1B2340 55%, #0F1626 100%);">
+        <div class="sh3-hero-txt">
+            <span class="sh3-hero-eyebrow" style="background: rgba(16,185,129,.2); border-color: rgba(16,185,129,.5); color:#A7F3D0">🎒 موجودی من</span>
+            <h1>گنجینه‌ی <em>تو</em></h1>
+            <p class="sh3-hero-lead">
+                همهٔ آیتم‌هایی که خریدی این‌جاست. رویشون «استفاده» بزن تا روی پروفایلت فعال شن،
+                یا اگه مصرفی‌اند از همین‌جا مصرف کن.
+            </p>
+            <div class="sh3-hero-cta">
+                <a class="primary" href="{% url 'shop:home' %}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4"/></svg>
                     ادامهٔ خرید
                 </a>
-                <a href="{% url 'shop:history' %}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2.5h12a1 1 0 0 1 1 1V21l-3-2-3 2-3-2-3 2V3.5a1 1 0 0 1 1-1z"/></svg>
-                    تاریخچه
-                </a>
+                <a class="ghost" href="{% url 'shop:history' %}">🧾 تاریخچه</a>
+            </div>
+        </div>
+        <div class="sh3-hero-side">
+            <div class="sh3-wallets">
+                <div class="sh3-wallet"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/></svg></span><div class="n"><b>{{ lq_wallet.coins|default:0 }}</b><small>سکه</small></div></div>
+                <div class="sh3-wallet gem"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg></span><div class="n"><b>{{ lq_wallet.gems|default:0 }}</b><small>الماس</small></div></div>
             </div>
         </div>
     </section>
 
+    {# currently equipped #}
     {% if cosmetics %}
-    <div class="lqi-active">
-        <h3>✨ الان روی پروفایلت فعال است</h3>
-        <div class="lqi-chips">
+    <div class="inv-active-bar">
+        <h3><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="m12 2 3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7z"/></svg> الان روی پروفایلت فعال است</h3>
+        <div class="inv-chips">
             {% for slot, items in cosmetics.items %}
                 {% for it in items %}
-                    <span class="lqi-chip">{{ it.emoji }} {{ it.name }}</span>
+                    <span class="inv-chip">{{ it.emoji }} {{ it.name }}</span>
                 {% endfor %}
             {% endfor %}
         </div>
     </div>
     {% endif %}
 
-    <div class="lqi-sec-head">
-        <h2>🧺 آیتم‌های تو</h2>
-        <span class="lqs-count">{{ rows|length }} آیتم</span>
+    <div class="sh3-sec">
+        <h2>آیتم‌های تو <small>Your collection · {{ rows|length }}</small></h2>
     </div>
 
     {% if rows %}
-    <div class="lqs-grid">
+    <div class="sh3-grid">
         {% for row in rows %}
         {% with p=row.item.product %}
-        <article class="lqs-card" data-item="{{ row.item.id }}">
-            <a class="lqs-tile lqs-tint-{{ p.tint|default:'lav' }}" href="{% url 'shop:product' p.slug %}">
-                {% if row.item.equipped %}
-                    <div class="lqs-ribs"><span class="lqs-rib own">✨ فعال</span></div>
-                {% endif %}
-                {% if p.image %}
+        <article class="sh3-card {% if row.item.equipped %}owned{% endif %}" data-item="{{ row.item.id }}">
+            <div class="sh3-ribs">
+                {% if row.item.equipped %}<span class="sh3-rib owned">✨ فعال</span>{% endif %}
+                {% if row.item.source != 'shop' %}<span class="sh3-rib hot">🎁 هدیه</span>{% endif %}
+            </div>
+            <a class="sh3-tile sh3-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+                {% if p.tile_mode == 'img' and p.image %}
                     <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+                {% elif p.tile_mode == 'frame' %}
+                    <span class="avatar-frame lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+                {% elif p.tile_mode == 'ucolor' %}
+                    <span class="username-preview {{ p.preview_css }}">{{ request.user.username|truncatechars:14 }}</span>
+                {% elif p.tile_mode == 'effect' %}
+                    <span class="avatar-frame lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+                {% elif p.tile_mode == 'theme' %}
+                    <span class="theme-preview {{ p.preview_css }}"><span class="bar"></span><span class="lines"><i></i><i></i><i></i></span></span>
+                {% elif p.tile_mode == 'pbg' %}
+                    <span class="avatar-frame {{ p.preview_css }}" style="background-image:none">{% firstof p.preview_emoji '🌌' %}</span>
                 {% else %}
-                    <span class="emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+                    <span class="sh3-tile-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
                 {% endif %}
             </a>
-            <div class="lqs-cbody">
-                <span class="lqs-ccat">{{ p.category.emoji }} {{ p.category.name }} · {{ p.get_product_type_display }}</span>
-                <h3 class="lqs-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                <div class="lqi-meta">
+
+            <div class="sh3-body">
+                <span class="sh3-crumbs">{{ p.category.name }} <b>·</b> {{ p.get_product_type_display }}</span>
+                <h3 class="sh3-name"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+                <div class="inv-meta">
                     <span>×{{ row.item.quantity }}</span>
                     {% if row.slot %}<span>🧩 {{ row.slot }}</span>{% endif %}
-                    {% if row.item.source != 'shop' %}<span>🎁 هدیه</span>{% endif %}
-                    {% if row.item.equipped %}<span class="eq">✨ فعال</span>{% endif %}
-                    {% if row.bound %}<span class="bound">📌 {{ row.bound|truncatechars:22 }}</span>{% endif %}
+                    {% if row.item.equipped %}<span class="eq">✨ فعال روی پروفایل</span>{% endif %}
+                    {% if row.bound %}<span title="{{ row.bound }}">📌 مصرف در بازی</span>{% endif %}
                 </div>
-                <div class="lqs-cfoot" style="justify-content: flex-end">
-                    {% if row.equippable %}
-                        {% if row.item.equipped %}
-                            <button class="lqi-unlink-btn eq-btn" data-act="unequip" data-id="{{ row.item.id }}">
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/></svg>
-                                خاموش
+                <div class="sh3-foot" style="justify-content: flex-end">
+                    <div class="inv-actions">
+                        {% if row.equippable %}
+                            {% if row.item.equipped %}
+                                <button class="inv-btn unequip eq-btn" data-act="unequip" data-id="{{ row.item.id }}">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/></svg>
+                                    خاموش
+                                </button>
+                            {% else %}
+                                <button class="inv-btn equip eq-btn" data-act="equip" data-id="{{ row.item.id }}">
+                                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
+                                    استفاده
+                                </button>
+                            {% endif %}
+                        {% elif row.consumable %}
+                            <button class="inv-btn use use-btn" data-id="{{ row.item.id }}">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2 4.5 8h-4l3 12L8 13h4z"/></svg>
+                                مصرف
                             </button>
                         {% else %}
-                            <button class="lqi-eq-btn eq-btn" data-act="equip" data-id="{{ row.item.id }}">
-                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26"/></svg>
-                                استفاده
-                            </button>
+                            <span class="inv-passive">
+                                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                پسیو — همیشه فعال
+                            </span>
                         {% endif %}
-                    {% elif row.consumable %}
-                        <button class="lqi-use-btn use-btn" data-id="{{ row.item.id }}">
-                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2 4.5 8h-4l3 12L8 13h4z"/></svg>
-                            مصرف کن
-                        </button>
-                    {% else %}
-                        <span class="lqi-passive">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                            پسیو — همیشه فعال
-                        </span>
-                    {% endif %}
+                    </div>
                 </div>
-                <div class="lqi-msg"></div>
+                <div class="inv-msg"></div>
             </div>
         </article>
         {% endwith %}
         {% endfor %}
     </div>
     {% else %}
-    <div class="lqs-empty">
+    <div class="sh3-empty">
         <span class="big">🫙</span>
-        <p><b>هنوز چیزی توی موجودی‌ات نیست.</b><br>برو فروشگاه، یه آیتم باحال پیدا کن!</p>
-        <a href="{% url 'shop:home' %}" class="btn">🛒 رفتن به فروشگاه</a>
+        <p><b>هنوز چیزی توی موجودی‌ات نیست.</b><br>برو فروشگاه و یه چیز باحال پیدا کن!</p>
+        <a class="btn" href="{% url 'shop:home' %}">🛒 رفتن به فروشگاه</a>
     </div>
     {% endif %}
 </div>
+</div>
+
+<div class="sh3-toast" id="sh3Toast"></div>
 
 <script>
 function _csrf() {
@@ -175,41 +205,48 @@ function _csrf() {
     const c = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
     return c ? c.pop() : '';
 }
-document.querySelectorAll('.eq-btn').forEach(function (btn) {
-    btn.onclick = async function () {
+function toast(m, k) {
+    const t = document.getElementById('sh3Toast');
+    t.className = 'sh3-toast show ' + (k || '');
+    t.textContent = m;
+    clearTimeout(t._t);
+    t._t = setTimeout(() => t.className = 'sh3-toast', 2600);
+}
+document.querySelectorAll('.eq-btn').forEach(btn => {
+    btn.onclick = async () => {
         const act = btn.dataset.act, id = btn.dataset.id;
         btn.disabled = true;
         try {
             const r = await fetch('/shop/' + (act === 'equip' ? 'equip' : 'unequip') + '/' + id + '/',
-                {method: 'POST', headers: {'X-CSRFToken': _csrf()}});
+                { method: 'POST', headers: { 'X-CSRFToken': _csrf() } });
             const j = await r.json();
-            if (j.ok) location.reload();
-            else { alert(j.error || 'خطا'); btn.disabled = false; }
-        } catch (e) { alert('خطای شبکه'); btn.disabled = false; }
+            if (j.ok) { toast(act === 'equip' ? '✨ فعال شد' : '❌ خاموش شد', 'ok'); setTimeout(() => location.reload(), 700); }
+            else { toast(j.error || 'خطا', 'err'); btn.disabled = false; }
+        } catch (e) { toast('❌ خطای شبکه', 'err'); btn.disabled = false; }
     };
 });
-document.querySelectorAll('.use-btn').forEach(function (btn) {
-    btn.onclick = async function () {
-        const card = btn.closest('.lqs-card');
-        const msg = card.querySelector('.lqi-msg');
-        msg.style.color = '#64748b'; msg.textContent = '⏳ …';
+document.querySelectorAll('.use-btn').forEach(btn => {
+    btn.onclick = async () => {
+        const card = btn.closest('.sh3-card');
+        const msg = card.querySelector('.inv-msg');
+        msg.style.color = '#6B7285'; msg.textContent = '⏳ در حال مصرف…';
         btn.disabled = true;
         try {
             const r = await fetch('/shop/consume/' + btn.dataset.id + '/',
-                {method: 'POST', headers: {'X-CSRFToken': _csrf(), 'X-Requested-With': 'XMLHttpRequest'}});
+                { method: 'POST', headers: { 'X-CSRFToken': _csrf(), 'X-Requested-With': 'XMLHttpRequest' } });
             const j = await r.json();
             if (j.ok) {
                 msg.style.color = '#059669';
                 msg.textContent = j.message || '✅ مصرف شد!';
-                setTimeout(function () { location.reload(); }, 1400);
+                toast(j.message || '✅ مصرف شد!', 'ok');
+                setTimeout(() => location.reload(), 1400);
             } else {
-                msg.style.color = '#dc2626';
+                msg.style.color = '#DC2626';
                 msg.textContent = '❌ ' + (j.error || 'خطا');
                 btn.disabled = false;
             }
         } catch (e) {
-            msg.style.color = '#dc2626'; msg.textContent = '❌ خطای شبکه';
-            btn.disabled = false;
+            msg.style.color = '#DC2626'; msg.textContent = '❌ خطای شبکه'; btn.disabled = false;
         }
     };
 });

@@ -7,303 +7,384 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=202608078">
-<link rel="stylesheet" href="{% static 'css/shop2.css' %}?v=4">
+<link rel="stylesheet" href="{% static 'css/shop3.css' %}?v=2">
 <style>
-    .lqp-shell   { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
-    .lqp-crumb   { display: flex; gap: 6px; align-items: center; font-size: .82rem; color: var(--lqs-ink-3); margin-bottom: 20px; flex-wrap: wrap; }
-    .lqp-crumb a { color: var(--lqs-primary); text-decoration: none; font-weight: 700; }
-    .lqp-crumb a:hover { text-decoration: underline; }
-    .lqp-crumb .sep { color: var(--lqs-ink-3); }
+    .sh3-tint-0 { --tile-bg: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
+    .sh3-tint-1 { --tile-bg: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); }
+    .sh3-tint-2 { --tile-bg: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); }
+    .sh3-tint-3 { --tile-bg: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); }
+    .sh3-tint-4 { --tile-bg: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%); }
+    .sh3-tint-5 { --tile-bg: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%); }
+    .sh3-tint-6 { --tile-bg: linear-gradient(135deg, #A5F3FC 0%, #67E8F9 100%); }
+    .sh3-tint-7 { --tile-bg: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); }
 
-    .lqp-main {
-        display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px;
-        background: #fff; border: 1px solid var(--lqs-line);
-        border-radius: 24px; padding: 30px;
-        box-shadow: var(--lqs-shadow);
+    .pd-shell { max-width: 1240px; margin: 0 auto; padding: 24px 24px 80px; }
+
+    /* Breadcrumb */
+    .pd-crumb {
+        display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+        font-size: .8rem; color: var(--sh3-ink-3); margin-bottom: 22px;
     }
-    .lqp-gallery {
-        position: relative; aspect-ratio: 1;
-        border-radius: 20px; overflow: hidden;
+    .pd-crumb a  { color: var(--sh3-ink-2); text-decoration: none; font-weight: 700; transition: color .15s; }
+    .pd-crumb a:hover { color: var(--sh3-accent); }
+    .pd-crumb .sep { color: var(--sh3-ink-4); }
+    .pd-crumb .cur { color: var(--sh3-ink); font-weight: 800; }
+
+    /* Layout */
+    .pd-main {
+        display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px;
+        margin-bottom: 40px;
+    }
+
+    /* Gallery */
+    .pd-gal {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 24px;
+        overflow: hidden;
+        background: var(--tile-bg, linear-gradient(135deg, #EDE9FE, #DDD6FE));
         display: grid; place-items: center;
-        background:
-            radial-gradient(circle at 50% 50%, rgba(255,255,255,.9), rgba(240,241,250,.6)),
-            var(--tile-tint, linear-gradient(135deg, #EDE9FE, #DDD6FE));
+        box-shadow: 0 30px 60px rgba(15,22,38,.08);
     }
-    .lqp-gallery .emo { font-size: 8rem; filter: drop-shadow(0 12px 24px rgba(20,30,80,.12)); }
-    .lqp-gallery img  { max-width: 80%; max-height: 80%; object-fit: contain; }
-    .lqp-gallery .rib {
+    .pd-gal .emo { font-size: 10rem; filter: drop-shadow(0 20px 40px rgba(15,22,38,.15)); }
+    .pd-gal img  { max-width: 78%; max-height: 78%; object-fit: contain; }
+    .pd-gal .avatar-frame {
+        width: 190px; height: 190px; border-radius: 50%;
+        display: grid; place-items: center;
+        color: #fff; font-size: 4rem; font-weight: 900;
+        background: linear-gradient(135deg, var(--sh3-brand), var(--sh3-brand-2));
+        box-shadow: 0 30px 60px rgba(15,22,38,.2);
+    }
+    .pd-gal .username-preview {
+        font-size: 3rem; font-weight: 900; letter-spacing: -.6px;
+        padding: 20px 40px; border-radius: 20px; background: #fff;
+        box-shadow: 0 30px 60px rgba(15,22,38,.16);
+    }
+    .pd-gal .theme-preview {
+        width: 78%; aspect-ratio: 16/10; border-radius: 16px; overflow: hidden;
+        box-shadow: 0 30px 60px rgba(15,22,38,.18);
+        background: var(--theme-bg, linear-gradient(135deg,#F7F5FB,#EDEBF7));
+        display: flex; flex-direction: column; padding: 16px; gap: 10px;
+    }
+    .pd-gal .theme-preview .bar { height: 18px; border-radius: 6px; background: rgba(255,255,255,.4); }
+    .pd-gal .theme-preview .lines { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+    .pd-gal .theme-preview .lines i { height: 8px; border-radius: 6px; background: rgba(255,255,255,.32); }
+    .pd-gal .theme-preview .lines i:nth-child(2) { width: 78%; }
+    .pd-gal .theme-preview .lines i:nth-child(3) { width: 55%; }
+
+    .pd-gal-badges {
         position: absolute; top: 20px; inset-inline-start: 20px;
-        display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+        display: flex; flex-direction: column; gap: 8px; z-index: 3;
     }
-    .lqp-gallery .rib span {
-        font-size: .74rem; font-weight: 900; color: #fff;
-        padding: 5px 12px; border-radius: 999px;
-        box-shadow: 0 6px 14px rgba(0,0,0,.12);
+    .pd-gal-badges span {
+        font-size: .74rem; font-weight: 900; padding: 6px 14px; border-radius: 999px;
+        color: #fff; letter-spacing: .4px; text-transform: uppercase;
+        box-shadow: 0 6px 16px rgba(0,0,0,.14);
     }
-    .lqp-gallery .rib .sale { background: linear-gradient(135deg,#f97316,#dc2626); }
-    .lqp-gallery .rib .feat { background: linear-gradient(135deg,#f59e0b,#d97706); }
-    .lqp-gallery .rib .own  { background: linear-gradient(135deg,#10b981,#059669); }
-    .lqp-gallery .rib .ltd  { background: linear-gradient(135deg,#8b5cf6,#6d28d9); }
+    .pd-gal-badges .owned { background: linear-gradient(135deg,#059669,#047857); }
+    .pd-gal-badges .sale  { background: linear-gradient(135deg,#DC2626,#B91C1C); }
+    .pd-gal-badges .feat  { background: linear-gradient(135deg,#F59E0B,#D97706); }
+    .pd-gal-badges .ltd   { background: linear-gradient(135deg,#8B5CF6,#6D28D9); }
 
-    .lqp-info { display: flex; flex-direction: column; gap: 16px; }
-    .lqp-cat  { font-size: .78rem; color: var(--lqs-ink-3); font-weight: 700; letter-spacing: .3px; text-transform: uppercase; }
-    .lqp-cat b { color: var(--lqs-primary); }
-    .lqp-title { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: var(--lqs-ink); margin: 0; letter-spacing: -.4px; line-height: 1.4; }
-    .lqp-desc  { font-size: .92rem; line-height: 2; color: var(--lqs-ink-2); margin: 0; }
+    /* Info column */
+    .pd-info { display: flex; flex-direction: column; gap: 18px; }
+    .pd-cat {
+        font-size: .76rem; font-weight: 800; color: var(--sh3-ink-3);
+        letter-spacing: .8px; text-transform: uppercase;
+    }
+    .pd-cat b { color: var(--sh3-accent); }
+    .pd-title {
+        font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+        font-weight: 900; color: var(--sh3-ink);
+        letter-spacing: -.8px; line-height: 1.25; margin: 0;
+    }
+    .pd-meta {
+        display: inline-flex; align-items: center; gap: 12px;
+        font-size: .8rem; color: var(--sh3-ink-3); font-weight: 700;
+    }
+    .pd-meta span { display: inline-flex; align-items: center; gap: 4px; }
+    .pd-desc {
+        font-size: .95rem; line-height: 2; color: var(--sh3-ink-2); margin: 0;
+    }
 
-    .lqp-stars { display: inline-flex; align-items: center; gap: 8px; font-size: .84rem; color: var(--lqs-ink-3); font-weight: 700; }
-    .lqp-stars .s { color: #f59e0b; }
-    .lqp-stars .s svg { width: 14px; height: 14px; fill: currentColor; }
-
-    .lqp-features {
+    /* Feature chips */
+    .pd-features {
         display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 10px; margin: 8px 0;
+        gap: 10px;
     }
-    .lqp-features .f {
-        display: flex; align-items: flex-start; gap: 10px;
-        background: var(--lqs-line-2); border: 1px solid var(--lqs-line);
-        border-radius: 12px; padding: 10px 12px;
-        font-size: .8rem; color: var(--lqs-ink-2); font-weight: 600;
-        line-height: 1.6;
+    .pd-feat {
+        display: flex; gap: 10px; align-items: flex-start;
+        background: var(--sh3-line-2); border: 1px solid var(--sh3-line);
+        border-radius: 14px; padding: 12px 14px;
+        font-size: .82rem; color: var(--sh3-ink-2); font-weight: 700; line-height: 1.55;
     }
-    .lqp-features .f .ic {
-        width: 28px; height: 28px; border-radius: 8px; flex: 0 0 auto;
-        background: rgba(108,99,255,.14); color: var(--lqs-primary);
-        display: grid; place-items: center; font-size: .9rem;
+    .pd-feat .ic {
+        width: 34px; height: 34px; border-radius: 10px; flex: 0 0 auto;
+        background: rgba(255,91,46,.14); color: var(--sh3-accent);
+        display: grid; place-items: center; font-size: .95rem;
+    }
+    .pd-feat small { display: block; color: var(--sh3-ink-4); font-weight: 600; font-size: .72rem; margin-top: 2px; }
+
+    /* Buy box */
+    .pd-buy-card {
+        background: var(--sh3-surface);
+        border: 1px solid var(--sh3-line);
+        border-radius: 20px; padding: 24px;
+        margin-top: 4px;
+    }
+    .pd-price-row { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+    .pd-price-row .now {
+        font-size: 2.4rem; font-weight: 900; letter-spacing: -1px;
+        color: var(--sh3-ink); display: inline-flex; align-items: center; gap: 10px; line-height: 1;
+    }
+    .pd-price-row .now.coin { color: var(--sh3-coin); }
+    .pd-price-row .now.gem  { color: var(--sh3-gem); }
+    .pd-price-row .now.free { color: var(--sh3-owned); }
+    .pd-price-row .now svg { width: 26px; height: 26px; }
+    .pd-price-row .now small { font-size: .5em; color: var(--sh3-ink-4); font-weight: 700; margin-inline-start: 4px; }
+    .pd-price-row .was { text-decoration: line-through; color: var(--sh3-ink-4); font-weight: 700; font-size: 1rem; }
+    .pd-price-row .tag {
+        background: linear-gradient(135deg, #DC2626, #B91C1C); color: #fff;
+        font-size: .72rem; font-weight: 900; padding: 4px 12px; border-radius: 999px;
     }
 
-    .lqp-buybox {
-        background: linear-gradient(135deg, rgba(108,99,255,.06), rgba(14,165,164,.05));
-        border: 1px solid var(--lqs-line); border-radius: 16px;
-        padding: 20px; display: flex; flex-direction: column; gap: 14px;
+    .pd-avail {
+        display: flex; align-items: center; justify-content: space-between; gap: 10px;
+        font-size: .8rem; font-weight: 700; color: var(--sh3-ink-2);
+        padding: 12px 0; border-top: 1px dashed var(--sh3-line);
+        border-bottom: 1px dashed var(--sh3-line); margin-bottom: 18px;
     }
-    .lqp-pricebox { display: flex; align-items: baseline; gap: 14px; }
-    .lqp-pricebox .now {
-        display: inline-flex; align-items: center; gap: 8px;
-        font-size: 2rem; font-weight: 900; color: var(--lqs-ink); line-height: 1;
-    }
-    .lqp-pricebox .now svg { width: 24px; height: 24px; }
-    .lqp-pricebox .now.coin { color: #b45309; }
-    .lqp-pricebox .now.gem  { color: #0e7490; }
-    .lqp-pricebox .now.free { color: var(--lqs-green); }
-    .lqp-pricebox .was { font-size: 1rem; color: var(--lqs-ink-3); text-decoration: line-through; font-weight: 600; }
-    .lqp-pricebox .disc-tag {
-        background: linear-gradient(135deg,#f97316,#dc2626); color: #fff;
-        font-size: .74rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;
-    }
+    .pd-avail .ok  { color: var(--sh3-owned); display: inline-flex; align-items: center; gap: 6px; }
+    .pd-avail .ok::before  { content: '●'; font-size: .7em; }
+    .pd-avail .low { color: var(--sh3-accent); display: inline-flex; align-items: center; gap: 6px; }
+    .pd-avail .low::before { content: '●'; font-size: .7em; }
 
-    .lqp-stock-row {
-        display: flex; align-items: center; justify-content: space-between; gap: 12px;
-        font-size: .82rem; color: var(--lqs-ink-2); font-weight: 700;
-    }
-    .lqp-stock-row .avail { color: var(--lqs-green); display: inline-flex; align-items: center; gap: 5px; }
-    .lqp-stock-row .avail::before { content: '●'; }
-    .lqp-stock-row .low { color: var(--lqs-red); }
-    .lqp-stock-row .low::before { content: '●'; }
-
-    .lqp-actions { display: flex; gap: 10px; }
-    .lqp-buy-big {
+    .pd-actions { display: flex; gap: 10px; }
+    .pd-buy-btn {
         flex: 1; border: none; cursor: pointer; font-family: inherit;
-        background: linear-gradient(135deg, var(--lqs-primary), var(--lqs-primary-2));
-        color: #fff; font-weight: 900; font-size: 1rem;
-        padding: 15px 20px; border-radius: 14px;
+        background: var(--sh3-ink); color: #fff;
+        font-weight: 900; font-size: 1rem;
+        padding: 16px 22px; border-radius: 14px;
         display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        box-shadow: 0 12px 26px rgba(79,70,229,.4);
-        transition: transform .18s, box-shadow .18s;
+        box-shadow: 0 10px 22px rgba(15,22,38,.28);
+        transition: transform .18s, background .18s, box-shadow .18s;
     }
-    .lqp-buy-big svg { width: 18px; height: 18px; }
-    .lqp-buy-big:hover  { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(79,70,229,.5); }
-    .lqp-buy-big:active { transform: translateY(0); }
-    .lqp-buy-big:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+    .pd-buy-btn svg { width: 18px; height: 18px; }
+    .pd-buy-btn:hover  { background: var(--sh3-accent); transform: translateY(-2px); box-shadow: 0 14px 28px rgba(255,91,46,.45); }
+    .pd-buy-btn:active { transform: translateY(0); }
+    .pd-buy-btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
 
-    .lqp-owned-big {
-        flex: 1; background: linear-gradient(135deg,#10b981,#059669); color: #fff;
-        padding: 15px 20px; border-radius: 14px; font-weight: 900; font-size: 1rem;
+    .pd-owned-big {
+        flex: 1;
+        background: var(--sh3-owned-bg); color: var(--sh3-owned);
+        border: 2px solid var(--sh3-owned);
+        padding: 15px 22px; border-radius: 14px;
+        font-weight: 900; font-size: 1rem;
         display: inline-flex; align-items: center; justify-content: center; gap: 8px;
         cursor: default;
     }
-    .lqp-owned-big svg { width: 18px; height: 18px; }
+    .pd-owned-big svg { width: 18px; height: 18px; }
 
-    .lqp-inv-btn {
-        background: #fff; border: 1.5px solid var(--lqs-line); color: var(--lqs-ink);
+    .pd-inv-btn {
+        background: #fff; border: 1.5px solid var(--sh3-line); color: var(--sh3-ink);
         padding: 15px 20px; border-radius: 14px; font-weight: 800; font-size: .9rem;
-        cursor: pointer; transition: border-color .18s, color .18s;
-        text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        text-decoration: none;
+        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+        transition: border-color .15s, color .15s;
     }
-    .lqp-inv-btn:hover { border-color: var(--lqs-primary); color: var(--lqs-primary); }
+    .pd-inv-btn:hover { border-color: var(--sh3-ink); color: var(--sh3-accent); }
 
-    .lqp-wish {
-        background: #fff; border: 1.5px solid var(--lqs-line);
-        color: var(--lqs-ink-3); width: 54px; height: 54px; border-radius: 14px;
-        cursor: pointer; display: grid; place-items: center;
-        transition: color .18s, border-color .18s;
+    .pd-wish-big {
+        width: 56px; height: 56px; border-radius: 14px;
+        border: 1.5px solid var(--sh3-line); background: #fff;
+        color: var(--sh3-ink-4); cursor: pointer;
+        display: grid; place-items: center; transition: color .18s, border-color .18s;
     }
-    .lqp-wish svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; }
-    .lqp-wish:hover  { color: var(--lqs-pink); border-color: var(--lqs-pink); }
-    .lqp-wish.on     { color: var(--lqs-pink); border-color: var(--lqs-pink); }
-    .lqp-wish.on svg { fill: currentColor; }
+    .pd-wish-big svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; }
+    .pd-wish-big:hover  { color: var(--sh3-accent); border-color: var(--sh3-accent); }
+    .pd-wish-big.on     { color: var(--sh3-accent); border-color: var(--sh3-accent); }
+    .pd-wish-big.on svg { fill: currentColor; }
 
-    /* Bundle box */
-    .lqp-bundle {
-        margin-top: 24px; background: #fff; border: 1px solid var(--lqs-line);
-        border-radius: 16px; padding: 20px;
+    /* wallet reminder */
+    .pd-wallet {
+        display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        margin-top: 14px; font-size: .78rem; color: var(--sh3-ink-3); font-weight: 700;
     }
-    .lqp-bundle h3 { margin: 0 0 14px; font-size: .95rem; color: var(--lqs-ink); font-weight: 900; }
-    .lqp-bundle-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
-    .lqp-bundle-items a {
-        text-decoration: none; color: var(--lqs-ink);
-        background: var(--lqs-line-2); padding: 12px; border-radius: 12px;
-        display: flex; align-items: center; gap: 10px; font-size: .82rem; font-weight: 700;
-        transition: background .15s;
-    }
-    .lqp-bundle-items a:hover { background: rgba(108,99,255,.1); color: var(--lqs-primary); }
+    .pd-wallet b { color: var(--sh3-ink); }
 
-    /* similar products */
-    .lqp-similar { margin-top: 36px; }
-    .lqp-similar h2 {
-        font-size: 1.1rem; font-weight: 900; color: var(--lqs-ink);
-        margin: 0 0 16px; padding-bottom: 12px;
-        border-bottom: 1px dashed var(--lqs-line);
+    /* Bundle */
+    .pd-bundle {
+        background: var(--sh3-surface); border: 1px solid var(--sh3-line);
+        border-radius: 20px; padding: 22px; margin-top: 30px;
     }
+    .pd-bundle h3 { font-size: 1rem; font-weight: 900; margin: 0 0 14px; color: var(--sh3-ink); }
+    .pd-bundle-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+    .pd-bundle-grid a {
+        display: flex; align-items: center; gap: 10px;
+        background: var(--sh3-line-2); border-radius: 12px; padding: 12px;
+        color: var(--sh3-ink); text-decoration: none;
+        font-size: .82rem; font-weight: 700;
+        transition: background .15s, color .15s;
+    }
+    .pd-bundle-grid a:hover { background: rgba(255,91,46,.1); color: var(--sh3-accent); }
+    .pd-bundle-grid .emo { font-size: 1.3rem; }
 
-    @media (max-width: 780px) {
-        .lqp-main { grid-template-columns: 1fr; padding: 20px; gap: 24px; }
-        .lqp-gallery .emo { font-size: 6rem; }
-        .lqp-pricebox .now { font-size: 1.6rem; }
-        .lqp-actions { flex-wrap: wrap; }
-        .lqp-inv-btn { flex: 1; }
-        .lqp-wish { width: 100%; height: 54px; }
+    /* Similar */
+    .pd-similar { margin-top: 42px; }
+    .pd-similar-head {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--sh3-line);
+    }
+    .pd-similar-head h2 {
+        font-size: 1.4rem; font-weight: 900; letter-spacing: -.5px; color: var(--sh3-ink); margin: 0;
+    }
+    .pd-similar-head small { font-size: .72rem; color: var(--sh3-accent); font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+
+    @media (max-width: 900px) {
+        .pd-main { grid-template-columns: 1fr; gap: 24px; }
+        .pd-gal .emo { font-size: 6rem; }
+        .pd-gal .avatar-frame { width: 130px; height: 130px; font-size: 2.6rem; }
+        .pd-gal .username-preview { font-size: 2rem; padding: 14px 26px; }
+    }
+    @media (max-width: 560px) {
+        .pd-shell { padding: 16px 14px 60px; }
+        .pd-title { font-size: 1.5rem; }
+        .pd-price-row .now { font-size: 1.8rem; }
+        .pd-actions { flex-wrap: wrap; }
+        .pd-buy-btn, .pd-owned-big { flex: 1 1 100%; }
+        .pd-wish-big { flex: 0 0 auto; }
+        .pd-inv-btn { flex: 1; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="lqp-shell">
+<div class="sh3">
+<div class="pd-shell">
 
-    <nav class="lqp-crumb">
+    <nav class="pd-crumb">
         <a href="{% url 'shop:home' %}">🛍️ فروشگاه</a>
-        <span class="sep">›</span>
+        <span class="sep">/</span>
         {% if product.category %}
             <a href="{% url 'shop:home' %}?cat={{ product.category.slug }}">{{ product.category.emoji }} {{ product.category.name }}</a>
-            <span class="sep">›</span>
+            <span class="sep">/</span>
         {% endif %}
-        <span>{{ product.name }}</span>
+        <span class="cur">{{ product.name }}</span>
     </nav>
 
-    <div class="lqp-main">
-        <div class="lqp-gallery lqs-tint-{{ product.tint|default:'lav' }}">
-            <div class="rib">
-                {% if owned_item %}<span class="own">✓ خریداری شده</span>{% endif %}
-                {% if disc %}<span class="sale">-{{ disc }}٪</span>{% endif %}
-                {% if product.is_featured %}<span class="feat">⭐ ویژه</span>{% endif %}
+    <div class="pd-main">
+        <div class="pd-gal sh3-tint-{{ product.tint|default:0 }}">
+            <div class="pd-gal-badges">
+                {% if owned_item %}<span class="owned">✓ خریداری شده</span>{% endif %}
+                {% if disc %}<span class="sale">-{{ disc }}%</span>{% endif %}
+                {% if product.is_featured %}<span class="feat">⭐ Editor's pick</span>{% endif %}
                 {% if remaining is not None and remaining > 0 and remaining <= 5 %}<span class="ltd">فقط {{ remaining }} تا</span>{% endif %}
             </div>
-            {% if product.image %}
+            {% if product.tile_mode == 'img' and product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" onerror="this.remove()">
+            {% elif product.tile_mode == 'frame' %}
+                <span class="avatar-frame lq-framed {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+            {% elif product.tile_mode == 'ucolor' %}
+                <span class="username-preview {{ product.preview_css }}">{{ request.user.username|truncatechars:14 }}</span>
+            {% elif product.tile_mode == 'effect' %}
+                <span class="avatar-frame lq-framed {{ product.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+            {% elif product.tile_mode == 'theme' %}
+                <span class="theme-preview {{ product.preview_css }}"><span class="bar"></span><span class="lines"><i></i><i></i><i></i></span></span>
+            {% elif product.tile_mode == 'pbg' %}
+                <span class="avatar-frame {{ product.preview_css }}" style="background-image:none">{% firstof product.preview_emoji '🌌' %}</span>
             {% else %}
                 <span class="emo">{% firstof product.preview_emoji product.category.emoji '🎁' %}</span>
             {% endif %}
         </div>
 
-        <div class="lqp-info">
-            <div class="lqp-cat">
-                {{ product.category.emoji }} {{ product.category.name }} · <b>{{ product.get_product_type_display }}</b>
+        <div class="pd-info">
+            <div class="pd-cat">{{ product.category.name }} <b>· {{ product.get_product_type_display }}</b></div>
+            <h1 class="pd-title">{{ product.name }}</h1>
+            <div class="pd-meta">
+                {% if product.sold_count %}<span>🛒 {{ product.sold_count }} فروش</span>{% endif %}
+                {% if product.sold_count and product.views_count %}<span>·</span>{% endif %}
+                {% if product.views_count %}<span>👁 {{ product.views_count }} بازدید</span>{% endif %}
             </div>
-            <h1 class="lqp-title">{{ product.name }}</h1>
-            {% if product.sold_count or product.views_count %}
-            <div class="lqp-stars">
-                {% if product.sold_count %}
-                    <span>🛒 {{ product.sold_count }} فروش</span>
-                {% endif %}
-                {% if product.views_count %}
-                    <span>· 👁 {{ product.views_count }} بازدید</span>
-                {% endif %}
-            </div>
-            {% endif %}
             {% if product.description %}
-                <p class="lqp-desc">{{ product.description|linebreaksbr }}</p>
+                <p class="pd-desc">{{ product.description|linebreaksbr }}</p>
             {% endif %}
 
-            {# Features / attributes #}
-            <div class="lqp-features">
+            <div class="pd-features">
                 {% if equippable %}
-                    <div class="f"><span class="ic">🧩</span> قابل نصب روی پروفایل<br><small>جایگاه: {{ slot_name }}</small></div>
+                    <div class="pd-feat"><span class="ic">🧩</span><div>قابل نصب<small>جایگاه: {{ slot_name }}</small></div></div>
                 {% endif %}
                 {% if consumable_direct %}
-                    <div class="f"><span class="ic">⚡</span> مصرفی فوری<br><small>از موجودی فعال کن</small></div>
+                    <div class="pd-feat"><span class="ic">⚡</span><div>مصرفی فوری<small>از موجودی فعال کن</small></div></div>
                 {% endif %}
                 {% if product.product_type == 'unlock' %}
-                    <div class="f"><span class="ic">🔓</span> باز شدن دائمی<br><small>محتوای قفل‌شده</small></div>
+                    <div class="pd-feat"><span class="ic">🔓</span><div>باز شدن دائمی<small>محتوای قفل‌شده</small></div></div>
                 {% endif %}
                 {% if product.product_type == 'booster' %}
-                    <div class="f"><span class="ic">🚀</span> بوستر زمانی<br><small>از لحظهٔ فعال‌سازی</small></div>
+                    <div class="pd-feat"><span class="ic">🚀</span><div>بوستر زمان‌دار<small>از فعال‌سازی شروع</small></div></div>
                 {% endif %}
                 {% if bound_note %}
-                    <div class="f"><span class="ic">📌</span> {{ bound_note }}</div>
+                    <div class="pd-feat"><span class="ic">📌</span><div>{{ bound_note }}</div></div>
                 {% endif %}
                 {% if product.per_user_limit == 1 %}
-                    <div class="f"><span class="ic">👤</span> فقط یک بار قابل خرید<br><small>یکبار مصرف / تجهیز</small></div>
+                    <div class="pd-feat"><span class="ic">👤</span><div>فقط یک بار<small>قابل خرید در حساب</small></div></div>
                 {% elif product.per_user_limit > 1 %}
-                    <div class="f"><span class="ic">👤</span> سقف خرید: {{ product.per_user_limit }} عدد</div>
+                    <div class="pd-feat"><span class="ic">👤</span><div>حداکثر {{ product.per_user_limit }} عدد<small>سقف خرید</small></div></div>
+                {% endif %}
+                {% if product.remaining %}
+                    <div class="pd-feat"><span class="ic">📦</span><div>{{ product.remaining }} عدد موجود</div></div>
                 {% endif %}
             </div>
 
-            {# Buy box #}
-            <div class="lqp-buybox">
-                <div class="lqp-pricebox">
+            <div class="pd-buy-card">
+                <div class="pd-price-row">
                     {% if price_c %}
                         <span class="now coin">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>
-                            {{ price_c }}
-                            <small style="font-size:.55em; margin-inline-start:4px; color:var(--lqs-ink-3)">سکه</small>
+                            {{ price_c }}<small>سکه</small>
                         </span>
-                        {% if disc %}<span class="was">{{ product.price_coins }}</span><span class="disc-tag">-{{ disc }}٪</span>{% endif %}
+                        {% if disc %}<span class="was">{{ product.price_coins }}</span><span class="tag">-{{ disc }}%</span>{% endif %}
                     {% elif price_g %}
                         <span class="now gem">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>
-                            {{ price_g }}
-                            <small style="font-size:.55em; margin-inline-start:4px; color:var(--lqs-ink-3)">الماس</small>
+                            {{ price_g }}<small>الماس</small>
                         </span>
-                        {% if disc %}<span class="was">{{ product.price_gems }}</span><span class="disc-tag">-{{ disc }}٪</span>{% endif %}
+                        {% if disc %}<span class="was">{{ product.price_gems }}</span><span class="tag">-{{ disc }}%</span>{% endif %}
                     {% else %}
                         <span class="now free">✨ رایگان</span>
                     {% endif %}
                 </div>
 
-                <div class="lqp-stock-row">
+                <div class="pd-avail">
                     {% if remaining is None %}
-                        <span class="avail">موجود</span>
+                        <span class="ok">موجود</span>
                     {% elif remaining > 5 %}
-                        <span class="avail">{{ remaining }} عدد موجود</span>
+                        <span class="ok">{{ remaining }} عدد موجود</span>
                     {% elif remaining > 0 %}
                         <span class="low">فقط {{ remaining }} عدد باقی!</span>
                     {% else %}
                         <span class="low">ناموجود</span>
                     {% endif %}
-                    <span>💰 موجودی: <b>{{ lq_wallet.coins|default:0 }}</b> سکه · <b>{{ lq_wallet.gems|default:0 }}</b> الماس</span>
+                    <span>💰 موجودی: <b>{{ lq_wallet.coins|default:0 }}</b> سکه</span>
                 </div>
 
-                <div class="lqp-actions">
+                <div class="pd-actions">
                     {% if owned_item and product.per_user_limit == 1 %}
-                        <span class="lqp-owned-big">
+                        <span class="pd-owned-big">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                            خریداری شده — در موجودی
+                            خریداری شده
                         </span>
-                        <a href="{% url 'shop:inventory' %}" class="lqp-inv-btn">🎒 مشاهده</a>
+                        <a href="{% url 'shop:inventory' %}" class="pd-inv-btn">🎒 موجودی</a>
                     {% else %}
-                        <button class="lqp-buy-big" id="lqpBuyBtn"
+                        <button class="pd-buy-btn" id="pdBuyBtn"
                                 data-id="{{ product.id }}" data-name="{{ product.name }}"
                                 data-emoji="{% firstof product.preview_emoji product.category.emoji '🎁' %}"
                                 data-price-c="{{ price_c }}" data-price-g="{{ price_g }}">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.68 3.39A1 1 0 0 0 6.22 18H19"/><circle cx="9" cy="21" r="1.5"/><circle cx="17" cy="21" r="1.5"/></svg>
                             {% if owned_item %}خرید دوباره{% else %}افزودن به موجودی{% endif %}
                         </button>
-                        {% if owned_item %}
-                        <a href="{% url 'shop:inventory' %}" class="lqp-inv-btn">🎒 موجودی</a>
-                        {% endif %}
+                        {% if owned_item %}<a href="{% url 'shop:inventory' %}" class="pd-inv-btn">🎒 موجودی</a>{% endif %}
                     {% endif %}
-
-                    <button type="button" class="lqp-wish wish-btn {% if in_wishlist %}on{% endif %}" data-id="{{ product.id }}" aria-label="علاقه‌مندی">
+                    <button type="button" class="pd-wish-big {% if in_wishlist %}on{% endif %}" data-wish data-id="{{ product.id }}" aria-label="علاقه‌مندی">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </button>
                 </div>
@@ -312,12 +393,12 @@
     </div>
 
     {% if bundle_items %}
-    <div class="lqp-bundle">
-        <h3>📦 داخل این باندل چیه:</h3>
-        <div class="lqp-bundle-items">
+    <div class="pd-bundle">
+        <h3>📦 داخل این باندل:</h3>
+        <div class="pd-bundle-grid">
             {% for bi in bundle_items %}
             <a href="{% url 'shop:product' bi.slug %}">
-                <span style="font-size:1.3rem">{% firstof bi.preview_emoji bi.category.emoji '🎁' %}</span>
+                <span class="emo">{% firstof bi.preview_emoji bi.category.emoji '🎁' %}</span>
                 <span>{{ bi.name }}</span>
             </a>
             {% endfor %}
@@ -326,79 +407,129 @@
     {% endif %}
 
     {% if similar_products %}
-    <section class="lqp-similar">
-        <h2>🎁 محصولات مشابه</h2>
-        <div class="lqs-grid">
+    <section class="pd-similar">
+        <div class="pd-similar-head">
+            <h2>محصولات مشابه</h2>
+            <small>You might also love</small>
+        </div>
+        <div class="sh3-grid">
             {% for p in similar_products %}
-            <article class="lqs-card">
-                <a class="lqs-tile lqs-tint-{{ p.tint|default:'lav' }}" href="{% url 'shop:product' p.slug %}">
-                    {% if p.image %}
-                        <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
-                    {% else %}
-                        <span class="emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
-                    {% endif %}
-                </a>
-                <div class="lqs-cbody">
-                    <span class="lqs-ccat">{{ p.category.emoji }} {{ p.category.name }}</span>
-                    <h3 class="lqs-cname"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
-                    <div class="lqs-cfoot">
-                        <div class="lqs-price">
-                            {% if p.price_c %}<span class="val coin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/></svg>{{ p.price_c }}</span>{% else %}<span class="val free">رایگان</span>{% endif %}
-                        </div>
-                        <a class="lqs-buy" style="text-decoration:none" href="{% url 'shop:product' p.slug %}">مشاهده</a>
-                    </div>
-                </div>
-            </article>
+                {% include 'shop/_product_card.html' with p=p owned_ids=owned_ids wish_ids=wish_ids %}
             {% endfor %}
         </div>
     </section>
     {% endif %}
 
 </div>
+</div>
+
+{# reuse the modal + toast + JS from shop.html by inlining them #}
+<div class="sh3-modal-o" id="sh3Modal">
+    <div class="sh3-modal">
+        <div class="sh3-modal-hero">
+            <button type="button" class="sh3-modal-x" id="sh3MX">✕</button>
+            <span class="emo" id="sh3MEmo">🎁</span>
+        </div>
+        <div class="sh3-modal-body">
+            <h3 id="sh3MName">…</h3>
+            <p class="sub">تأیید خرید و کسر از کیف‌پول</p>
+            <div class="sh3-modal-price"><span class="now" id="sh3MPrice">—</span><small>پس از تأیید، به موجودی‌ات اضافه می‌شود ✨</small></div>
+            <div class="sh3-modal-actions">
+                <button type="button" class="ghost" id="sh3MCancel">لغو</button>
+                <button type="button" class="pri" id="sh3MOk">تأیید و خرید</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="sh3-toast" id="sh3Toast"></div>
 
 <script>
-(function () {
-    const btn = document.getElementById('lqpBuyBtn');
-    if (btn) {
-        btn.addEventListener('click', async function () {
-            const orig = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '⏳ در حال خرید…';
-            const idem = (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random());
-            try {
-                const r = await fetch('/shop/buy/' + btn.dataset.id + '/', {
-                    method: 'POST', credentials: 'include',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'idem=' + encodeURIComponent(idem),
-                });
-                const j = await r.json().catch(() => ({}));
-                if (r.ok && j.ok !== false) {
-                    btn.innerHTML = '✓ خرید موفق!';
-                    setTimeout(function () { window.location.reload(); }, 700);
-                } else {
-                    alert(j.error || 'خطای خرید');
-                    btn.disabled = false; btn.innerHTML = orig;
-                }
-            } catch (e) {
-                alert('خطای شبکه');
-                btn.disabled = false; btn.innerHTML = orig;
-            }
-        });
-    }
+function sh3ShowToast(msg, kind) {
+    const t = document.getElementById('sh3Toast');
+    t.className = 'sh3-toast show ' + (kind || '');
+    t.textContent = msg;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.className = 'sh3-toast', 3200);
+}
 
-    // wishlist
-    document.querySelectorAll('.wish-btn').forEach(function (w) {
-        w.addEventListener('click', async function () {
-            try {
-                const r = await fetch('/shop/wishlist/toggle/' + w.dataset.id + '/', {
-                    method: 'POST', credentials: 'include',
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                });
-                const j = await r.json();
-                if (j.state === 'added') w.classList.add('on'); else w.classList.remove('on');
-            } catch (e) {}
-        });
+(function () {
+    const modal = document.getElementById('sh3Modal');
+    const emo   = document.getElementById('sh3MEmo');
+    const name  = document.getElementById('sh3MName');
+    const price = document.getElementById('sh3MPrice');
+    const cancel= document.getElementById('sh3MCancel');
+    const xBtn  = document.getElementById('sh3MX');
+    const ok    = document.getElementById('sh3MOk');
+    let btn = null;
+
+    function open(b) {
+        btn = b;
+        emo.textContent  = b.dataset.emoji || '🎁';
+        name.textContent = b.dataset.name || '';
+        const pc = parseInt(b.dataset.priceC || 0, 10);
+        const pg = parseInt(b.dataset.priceG || 0, 10);
+        let html = ''; let cls = 'now';
+        if (pc) { html = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>' + pc + ' سکه'; cls = 'now coin'; }
+        else if (pg) { html = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>' + pg + ' الماس'; cls = 'now gem'; }
+        else html = '✨ رایگان';
+        price.className = cls;
+        price.innerHTML = html;
+        ok.disabled = false; ok.textContent = 'تأیید و خرید';
+        modal.classList.add('open');
+    }
+    function close() { modal.classList.remove('open'); btn = null; }
+    cancel.addEventListener('click', close);
+    xBtn.addEventListener('click', close);
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.classList.contains('open')) close(); });
+
+    document.addEventListener('click', e => {
+        const b = e.target.closest('[data-buy], #pdBuyBtn');
+        if (b) { e.preventDefault(); open(b); }
+    });
+
+    ok.addEventListener('click', async () => {
+        if (!btn) return;
+        ok.disabled = true; ok.textContent = 'در حال پردازش…';
+        const id = btn.dataset.id;
+        const idem = (crypto.randomUUID && crypto.randomUUID()) || (Date.now() + '-' + Math.random());
+        try {
+            const r = await fetch('/shop/buy/' + id + '/', {
+                method: 'POST', credentials: 'include',
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'idem=' + encodeURIComponent(idem),
+            });
+            const j = await r.json().catch(() => ({}));
+            if (r.ok && j.ok !== false) {
+                ok.textContent = '✓ خرید موفق!';
+                sh3ShowToast('🎉 «' + btn.dataset.name + '» به موجودی‌ات اضافه شد', 'ok');
+                setTimeout(() => window.location.reload(), 900);
+            } else {
+                sh3ShowToast('❌ ' + (j.error || 'خطا'), 'err');
+                ok.disabled = false; ok.textContent = 'تلاش دوباره';
+            }
+        } catch (e) {
+            sh3ShowToast('❌ خطای شبکه', 'err');
+            ok.disabled = false; ok.textContent = 'تلاش دوباره';
+        }
     });
 })();
+
+/* wishlist */
+document.addEventListener('click', async e => {
+    const w = e.target.closest('[data-wish]');
+    if (!w) return;
+    e.preventDefault();
+    try {
+        const r = await fetch('/shop/wishlist/toggle/' + w.dataset.id + '/', {
+            method: 'POST', credentials: 'include',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        });
+        const j = await r.json();
+        if (j.state === 'added') { w.classList.add('on'); sh3ShowToast('❤️ به علاقه‌مندی‌ها اضافه شد'); }
+        else { w.classList.remove('on'); sh3ShowToast('💔 حذف شد'); }
+    } catch (e) { sh3ShowToast('❌ خطای شبکه', 'err'); }
+});
 </script>
 {% endblock %}

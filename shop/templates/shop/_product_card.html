@@ -1,0 +1,94 @@
+{% load shop_extras %}
+{% with is_owned=p.id|in_owned:owned_ids one_time=p.per_user_limit is_wished=p.id|in_wished:wish_ids %}
+<article class="sh3-card {% if is_owned and one_time %}owned{% endif %}">
+
+    <div class="sh3-ribs">
+        {% if is_owned and one_time %}<span class="sh3-rib owned">✓ خریداری شده</span>{% endif %}
+        {% if p.disc %}<span class="sh3-rib sale">-{{ p.disc }}%</span>{% endif %}
+        {% if p.is_featured and not is_owned %}<span class="sh3-rib hot">⭐ ویژه</span>{% endif %}
+        {% if p.remaining is not None and p.remaining > 0 and p.remaining <= 5 %}<span class="sh3-rib ltd">فقط {{ p.remaining }} تا</span>{% endif %}
+        {% if not p.price_c and not p.price_g %}<span class="sh3-rib free">رایگان</span>{% endif %}
+    </div>
+
+    <button type="button" class="sh3-heart {% if is_wished %}on{% endif %}" data-wish data-id="{{ p.id }}" aria-label="علاقه‌مندی">
+        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
+
+    <a class="sh3-tile sh3-tint-{{ p.tint }}" href="{% url 'shop:product' p.slug %}">
+        {% if p.tile_mode == 'img' and p.image %}
+            <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" onerror="this.remove()">
+        {% elif p.tile_mode == 'frame' %}
+            <span class="avatar-frame lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+        {% elif p.tile_mode == 'ucolor' %}
+            <span class="username-preview {{ p.preview_css }}">{{ request.user.username|truncatechars:14 }}</span>
+        {% elif p.tile_mode == 'effect' %}
+            <span class="avatar-frame lq-framed {{ p.preview_css }}"><span class="in">{{ request.user.username|slice:":1"|upper }}</span></span>
+        {% elif p.tile_mode == 'theme' %}
+            <span class="theme-preview {{ p.preview_css }}"><span class="bar"></span><span class="lines"><i></i><i></i><i></i></span></span>
+        {% elif p.tile_mode == 'pbg' %}
+            <span class="avatar-frame {{ p.preview_css }}" style="background-image: none">{% firstof p.preview_emoji '🌌' %}</span>
+        {% else %}
+            <span class="sh3-tile-emo">{% firstof p.preview_emoji p.category.emoji '🎁' %}</span>
+        {% endif %}
+    </a>
+
+    <div class="sh3-quickview">
+        <a href="{% url 'shop:product' p.slug %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg>
+            مشاهدهٔ سریع
+        </a>
+    </div>
+
+    <div class="sh3-body">
+        <span class="sh3-crumbs">{{ p.category.name|default:'—' }} <b>·</b> {{ p.get_product_type_display }}</span>
+        <h3 class="sh3-name"><a href="{% url 'shop:product' p.slug %}">{{ p.name }}</a></h3>
+        {% if p.description %}<p class="sh3-desc">{{ p.description|truncatewords:16 }}</p>{% endif %}
+
+        {% if p.remaining is not None and p.stock_limit %}
+        <div class="sh3-stock {% if p.remaining|add:0 < 20 %}low{% endif %}">
+            <div class="bar"><i style="width:{% widthratio p.remaining p.stock_limit 100 %}%"></i></div>
+            <small>{{ p.remaining }}/{{ p.stock_limit }} باقی</small>
+        </div>
+        {% endif %}
+
+        <div class="sh3-foot">
+            <div class="sh3-price">
+                {% if p.price_c %}
+                    <span class="val coin">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg>
+                        {{ p.price_c }}
+                    </span>
+                    {% if p.disc %}<span class="old">{{ p.price_coins }}</span>{% endif %}
+                {% elif p.price_g %}
+                    <span class="val gem">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 3h10l4 6-9 12L3 9z"/></svg>
+                        {{ p.price_g }}
+                    </span>
+                    {% if p.disc %}<span class="old">{{ p.price_gems }}</span>{% endif %}
+                {% else %}
+                    <span class="val free">✨ رایگان</span>
+                {% endif %}
+            </div>
+
+            {% if is_owned and one_time %}
+                <span class="sh3-btn-owned">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    خریداری شده
+                </span>
+            {% else %}
+                <button type="button" class="sh3-btn"
+                        data-buy data-id="{{ p.id }}" data-name="{{ p.name }}"
+                        data-emoji="{% firstof p.preview_emoji p.category.emoji '🎁' %}"
+                        data-price-c="{{ p.price_c }}" data-price-g="{{ p.price_g }}">
+                    {% if is_owned %}
+                        دوباره
+                    {% else %}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.68 3.39A1 1 0 0 0 6.22 18H19"/><circle cx="9" cy="21" r="1.5"/><circle cx="17" cy="21" r="1.5"/></svg>
+                        خرید
+                    {% endif %}
+                </button>
+            {% endif %}
+        </div>
+    </div>
+</article>
+{% endwith %}
