@@ -92,6 +92,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             await self._update_last_seen()
 
+            # A user can be removed after their socket connected. Re-checking
+            # membership for every event prevents a stale socket from reading,
+            # typing in, or sending to a group it no longer belongs to.
+            if not await self._check_membership():
+                await self.send(text_data=json.dumps({
+                    'type': 'error', 'message': 'دیگر به این گفت‌وگو دسترسی ندارید'
+                }, ensure_ascii=False))
+                await self.close(code=4003)
+                return
+
             if msg_type == 'send_message':
                 await self._handle_send_message(data)
 
@@ -260,6 +270,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def _save_message(self, content: str) -> dict | None:
         try:
             conv = Conversation.objects.get(pk=self.conversation_id)
+            # Defence in depth: the websocket membership may have changed in
+            # the short interval after receive() performed its check.
+            if not conv.participants.filter(pk=self.user.pk).exists():
+                return None
             msg = Message(conversation=conv, sender=self.user)
             msg.set_content(content)
             msg.save()

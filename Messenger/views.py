@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
+from django.db import transaction
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -124,12 +125,17 @@ def join_group(request, token: str):
     is_member = conv.participants.filter(pk=request.user.pk).exists()
 
     if request.method == 'POST':
-        if not is_member:
-            if conv.participants.count() >= 200:
-                messages.error(request, 'ظرفیت گروه تکمیل است!')
-                return redirect('messenger:join_group', token=token)
-            conv.participants.add(request.user)
-            _system_message(conv, request.user, f'{request.user.username} با لینک دعوت به گروه پیوست 🎉')
+        # Lock the group while checking capacity so simultaneous invite joins
+        # cannot make a 200-member group overflow its stated limit.
+        with transaction.atomic():
+            conv = Conversation.objects.select_for_update().get(pk=conv.pk)
+            is_member = conv.participants.filter(pk=request.user.pk).exists()
+            if not is_member:
+                if conv.participants.count() >= 200:
+                    messages.error(request, 'ظرفیت گروه تکمیل است!')
+                    return redirect('messenger:join_group', token=token)
+                conv.participants.add(request.user)
+                _system_message(conv, request.user, f'{request.user.username} با لینک دعوت به گروه پیوست 🎉')
         return redirect(f'/messenger/?c={conv.pk}')
 
     return render(request, 'messenger/join.html', {
@@ -314,19 +320,21 @@ def create_group(request) -> JsonResponse:
         if len(participants) != len(participant_ids):
             return JsonResponse({'success': False, 'error': 'برخی از کاربران یافت نشدند'}, status=400)
 
-        conv = Conversation.objects.create(
-            name=name, is_group=True, created_by=request.user,
-        )
-        conv.participants.add(request.user, *participants)
-        _system_message(conv, request.user, f'گروه «{name}» ساخته شد 🎉')
+        # Keep creation and its initial system event all-or-nothing.
+        with transaction.atomic():
+            conv = Conversation.objects.create(
+                name=name, is_group=True, created_by=request.user,
+            )
+            conv.participants.add(request.user, *participants)
+            _system_message(conv, request.user, f'گروه «{name}» ساخته شد 🎉')
 
         return JsonResponse({'success': True,
                              'conversation': _format_conversation(request, conv, request.user)}, status=201)
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'فرمت JSON نامعتبر'}, status=400)
-    except Exception as e:
-        logger.error(f"خطا در ایجاد گروه: {e}", exc_info=True)
-        return JsonResponse({'success': False, 'error': f'خطا در ایجاد گروه: {e}'}, status=500)
+    except (json.JSONDecodeError, ValueError, TypeError):
+        return JsonResponse({'success': False, 'error': 'شناسهٔ اعضا یا فرمت درخواست نامعتبر است'}, status=400)
+    except Exception:
+        logger.error('خطا در ایجاد گروه', exc_info=True)
+        return JsonResponse({'success': False, 'error': 'خطا در ایجاد گروه'}, status=500)
 
 
 @login_required
@@ -374,14 +382,22 @@ def group_add_members(request, conversation_id: int) -> JsonResponse:
         users = list(User.objects.filter(pk__in=ids))
         if len(users) != len(ids):
             return JsonResponse({'success': False, 'error': 'برخی کاربران یافت نشدند'}, status=400)
-        added = []
-        for u in users:
-            if not conv.participants.filter(pk=u.pk).exists():
+        with transaction.atomic():
+            conv = Conversation.objects.select_for_update().get(pk=conv.pk)
+            if not conv.is_owner(request.user):
+                return JsonResponse({'success': False, 'error': 'فقط مدیر گروه می‌تواند عضو اضافه کند'}, status=403)
+            existing_ids = set(conv.participants.values_list('pk', flat=True))
+            new_users = [u for u in users if u.pk not in existing_ids]
+            if conv.participants.count() + len(new_users) > 200:
+                return JsonResponse({'success': False, 'error': 'افزودن این تعداد عضو از ظرفیت ۲۰۰ نفر گروه بیشتر است'}, status=400)
+            added = []
+            for u in new_users:
                 conv.participants.add(u)
                 _system_message(conv, request.user, f'{u.username} به گروه اضافه شد ➕')
                 added.append(u.username)
+            members_count = conv.participants.count()
         return JsonResponse({'success': True, 'added': added,
-                             'members_count': conv.participants.count()})
+                             'members_count': members_count})
     except (json.JSONDecodeError, ValueError):
         return JsonResponse({'success': False, 'error': 'فرمت JSON نامعتبر'}, status=400)
 

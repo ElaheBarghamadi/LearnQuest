@@ -14,9 +14,18 @@ async function api(url, opts) {
     try { data = await res.json(); } catch (e) { /* بدنه خالی */ }
     return { ok: res.ok, status: res.status, data };
 }
+// Django protects every state-changing endpoint.  Read the token supplied by
+// base.html (with a cookie fallback) so group management does not silently fail.
+function csrfToken() {
+    const injected = document.querySelector('#lqCsrf')?.value;
+    if (injected) return injected;
+    const row = document.cookie.split('; ').find((item) => item.startsWith('csrftoken='));
+    return row ? decodeURIComponent(row.split('=').slice(1).join('=')) : '';
+}
 const post = (url, body) => api(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken() },
+    credentials: 'same-origin',
     body: body ? JSON.stringify(body) : '{}',
 });
 
