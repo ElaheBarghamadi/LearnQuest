@@ -165,7 +165,10 @@ function renderHead() {
         ? esc(c.username)
         : `<a href="/u/${encodeURIComponent(c.username)}/">${esc(c.username)}</a>`;
     const sub = $('#msHeadSub');
-    if (c.is_group) sub.innerHTML = `👥 ${faNum(c.members_count)} عضو`;
+    const head = $('#msChatHead');
+    head.classList.toggle('group-profile-trigger', Boolean(c.is_group));
+    head.title = c.is_group ? 'برای دیدن اعضا و امکانات گروه بزن' : '';
+    if (c.is_group) sub.innerHTML = `👥 ${faNum(c.members_count)} عضو <span class="ms-head-open">مشاهدهٔ گروه ←</span>`;
     else sub.innerHTML = c.online ? '<span class="on-txt">● آنلاین</span>'
         : `<span>آفلاین</span>`;
 }
@@ -522,10 +525,21 @@ $('#btnCreateGroup').addEventListener('click', async () => {
     await openConv(r.data.conversation.id);
 });
 
-$('#btnInfo').addEventListener('click', () => {
+function openConversationInfo() {
     if (!state.active) return;
     if (state.active.is_group) renderGroupInfo();
     else renderUserInfo();
+    openModal('#modalInfo');
+}
+$('#btnInfo').addEventListener('click', (event) => {
+    event.stopPropagation();
+    openConversationInfo();
+});
+// On group chats the complete white header is a clear, generously sized
+// entry-point to members, invites and administration — not only the tiny info icon.
+$('#msChatHead').addEventListener('click', (event) => {
+    if (!state.active?.is_group || event.target.closest('button, a')) return;
+    openConversationInfo();
 });
 
 function renderGroupInfo() {
