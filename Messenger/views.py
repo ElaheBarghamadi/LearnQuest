@@ -74,7 +74,7 @@ def _format_conversation(request, conv: Conversation, current_user) -> dict:
             'is_group': True,
             'online': False,
             'members_count': conv.participants.count(),
-            'owner_id': conv.created_by_id,
+            'owner_id': conv.created_by_id or (conv.participants.order_by('pk').values_list('pk', flat=True).first()),
             'is_owner': conv.is_owner(current_user),
             'invite_url': _invite_url(request, conv),
         })
@@ -211,7 +211,7 @@ def get_messages(request, conversation_id: int) -> JsonResponse:
         }
         if conv.is_group:
             payload['participants'] = [
-                {'id': u.pk, 'username': u.username, 'is_owner': conv.created_by_id == u.pk,
+                {'id': u.pk, 'username': u.username, 'is_owner': conv.is_owner(u),
                  'online': _is_user_online(u.pk)}
                 for u in conv.participants.all().order_by('username')
             ]
@@ -405,8 +405,11 @@ def group_add_members(request, conversation_id: int) -> JsonResponse:
             members_count = conv.participants.count()
         return JsonResponse({'success': True, 'added': added,
                              'members_count': members_count})
-    except (json.JSONDecodeError, ValueError):
-        return JsonResponse({'success': False, 'error': 'فرمت JSON نامعتبر'}, status=400)
+    except (json.JSONDecodeError, ValueError, TypeError):
+        return JsonResponse({'success': False, 'error': 'فرمت انتخاب اعضا نامعتبر است'}, status=400)
+    except Exception:
+        logger.error('خطا در افزودن عضو به گروه', exc_info=True)
+        return JsonResponse({'success': False, 'error': 'افزودن عضو انجام نشد؛ دوباره تلاش کنید'}, status=500)
 
 
 @login_required

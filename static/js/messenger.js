@@ -683,23 +683,31 @@ function wireAddMember(c) {
             $$('.ms-search-hit[data-uid]', box).forEach((el) =>
                 el.addEventListener('click', () => {
                     const uid = +el.dataset.uid;
-                    if (!state.addMembers.some((x) => x.id === uid))
+                    if (!state.addMembers.some((x) => x.id === uid)) {
                         state.addMembers.push({ id: uid, username: el.dataset.uname });
-                    renderChips('#addChips', state.addMembers, removeAddChip);
+                        renderChips('#addChips', state.addMembers, removeAddChip);
+                        inp.value = ''; box.innerHTML = ''; box.classList.remove('open');
+                        toast(`«${el.dataset.uname}» برای افزودن انتخاب شد`, 'ok');
+                    }
                 }));
         }, 350);
     });
     $('#btnAddMembers').addEventListener('click', async () => {
-        if (!state.addMembers.length) { toast('کسی انتخاب نشده', 'error'); return; }
+        if (!state.addMembers.length) { toast('ابتدا یک کاربر را از نتایج جست‌وجو انتخاب کن', 'error'); return; }
+        const btn = $('#btnAddMembers');
+        btn.disabled = true; btn.textContent = 'در حال افزودن…';
         const r = await post(`/messenger/group/${c.id}/add-members/`, {
             participant_ids: state.addMembers.map((u) => u.id),
         });
+        btn.disabled = false; btn.textContent = 'افزودن اعضای انتخاب‌شده';
         if (r.ok && r.data?.success) {
-            toast(`${(r.data.added || []).join('، ')} اضافه شدند ➕`, 'ok');
-            reloadMessages();
-            c.members_count = r.data.members_count; renderHead();
-            document.querySelector('#modalInfo').classList.remove('open');
-        } else toast(r.data?.error || 'خطا', 'error');
+            const added = r.data.added || [];
+            if (!added.length) { toast('کاربران انتخاب‌شده از قبل عضو گروه هستند', 'error'); return; }
+            toast(`${added.join('، ')} به گروه اضافه شدند ➕`, 'ok');
+            state.addMembers = [];
+            await reloadMessages();
+            c.members_count = r.data.members_count; renderHead(); renderGroupInfo();
+        } else toast(r.data?.error || 'افزودن عضو انجام نشد', 'error');
     });
 }
 

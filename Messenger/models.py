@@ -80,7 +80,14 @@ class Conversation(models.Model):
         return self.participants.count()
 
     def is_owner(self, user) -> bool:
-        return bool(self.created_by and user and self.created_by_id == user.pk)
+        if not user or not self.is_group:
+            return False
+        if self.created_by_id:
+            return self.created_by_id == user.pk
+        # Groups created before the ownership field existed have no manager.
+        # Promote their earliest member virtually so they remain manageable.
+        first_member = self.participants.order_by('pk').first()
+        return bool(first_member and first_member.pk == user.pk)
 
 
 class BlockedUser(models.Model):
