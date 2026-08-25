@@ -156,7 +156,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
 
-        msg = await self._save_message(raw_content)
+        msg = await self._save_message(raw_content, data.get('reply_to_id'))
         if not msg:
             await self.send(text_data=json.dumps({
                 'type': 'error',
@@ -176,6 +176,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'created_at': msg['created_at'],
                 'created_at_day': msg['created_at_day'],
                 'conversation_id': int(self.conversation_id),
+                'reply_to': msg.get('reply_to'),
             }
         )
 
@@ -218,6 +219,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'created_at': event['created_at'],
             'created_at_day': event.get('created_at_day', ''),
             'conversation_id': event['conversation_id'],
+            'reply_to': event.get('reply_to'),
             'is_mine': event['sender_id'] == self.user.pk,
         }))
 
@@ -229,6 +231,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'username': event['username'],
                 'is_typing': event['is_typing'],
             }))
+
+    async def message_deleted(self, event):
+        await self.send(text_data=json.dumps({'type': 'message_deleted', 'message_id': event['message_id'], 'conversation_id': event['conversation_id']}))
 
     async def messages_read(self, event):
         await self.send(text_data=json.dumps({
@@ -268,14 +273,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return False
 
     @database_sync_to_async
-    def _save_message(self, content: str) -> dict | None:
+    def _save_message(self, content: str, reply_to_id=None) -> dict | None:
         try:
             conv = Conversation.objects.get(pk=self.conversation_id)
             # Defence in depth: the websocket membership may have changed in
             # the short interval after receive() performed its check.
             if not conv.participants.filter(pk=self.user.pk).exists():
                 return None
-            msg = Message(conversation=conv, sender=self.user)
+            reply_to = Message.objects.filter(pk=reply_to_id, conversation=conv).select_related('sender').first() if reply_to_id else None
+            msg = Message(conversation=conv, sender=self.user, reply_to=reply_to)
             msg.set_content(content)
             msg.save()
 
@@ -292,6 +298,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'sender_id': msg.sender_id,
                 'sender_username': self.user.username,
                 'sender_avatar': self.user.avatar.url if self.user.avatar else '',
+                'reply_to': ({'id': reply_to.pk, 'sender_username': reply_to.sender.username, 'content': reply_to.get_content()[:120]} if reply_to else None),
                 'content': content,
                 'created_at': jalali_time(msg.created_at, fa=False),
                 'created_at_full': msg.created_at.isoformat(),

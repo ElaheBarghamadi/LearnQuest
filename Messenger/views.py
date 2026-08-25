@@ -105,11 +105,16 @@ def _format_message(msg: Message, current_user) -> dict:
             avatar_url = msg.sender.avatar.url
     except Exception:
         pass
+    reply = None
+    if msg.reply_to_id:
+        reply = {'id': msg.reply_to_id, 'sender_username': msg.reply_to.sender.username,
+                 'content': msg.reply_to.get_content()[:120]}
     return {
         'id': msg.pk,
         'sender_id': msg.sender_id,
         'sender_username': msg.sender.username,
         'sender_avatar': avatar_url,
+        'reply_to': reply,
         'content': content,
         'is_system': content.startswith('ℹ️'),
         'created_at': jalali_time(msg.created_at, fa=False),
@@ -200,7 +205,7 @@ def get_messages(request, conversation_id: int) -> JsonResponse:
         Message.objects.filter(conversation=conv, is_read=False) \
             .exclude(sender=request.user).update(is_read=True)
 
-        messages_qs = conv.messages.select_related('sender').order_by('created_at')
+        messages_qs = conv.messages.select_related('sender', 'reply_to__sender').order_by('created_at')
         data = [_format_message(m, request.user) for m in messages_qs]
 
         payload = {
@@ -228,6 +233,7 @@ def send_message(request) -> JsonResponse:
         body = json.loads(request.body)
         conversation_id = body.get('conversation_id')
         raw_content = (body.get('content') or '').strip()
+        reply_to_id = body.get('reply_to_id')
 
         if not conversation_id:
             return JsonResponse({'success': False, 'error': 'شناسه مکالمه الزامی است'}, status=400)
@@ -247,7 +253,10 @@ def send_message(request) -> JsonResponse:
                 return JsonResponse({'success': False, 'blocked': True,
                                      'error': 'امکان ارسال پیام در این گفت‌وگو وجود ندارد'}, status=403)
 
-        msg = Message(conversation=conv, sender=request.user)
+        reply_to = None
+        if reply_to_id:
+            reply_to = get_object_or_404(Message, pk=reply_to_id, conversation=conv)
+        msg = Message(conversation=conv, sender=request.user, reply_to=reply_to)
         msg.set_content(raw_content)
         msg.save()
         conv.save(update_fields=['updated_at'])
@@ -261,6 +270,25 @@ def send_message(request) -> JsonResponse:
     except Exception as e:
         logger.error(f"خطا در ارسال پیام: {e}", exc_info=True)
         return JsonResponse({'success': False, 'error': 'خطا در ارسال پیام'}, status=500)
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_message(request, message_id: int) -> JsonResponse:
+    msg = get_object_or_404(Message, pk=message_id)
+    if msg.sender_id != request.user.pk:
+        return JsonResponse({'success': False, 'error': 'فقط فرستنده می‌تواند پیام را حذف کند'}, status=403)
+    conversation_id = msg.conversation_id
+    msg.delete()
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+    try:
+        async_to_sync(get_channel_layer().group_send)(f'chat_{conversation_id}', {
+            'type': 'message_deleted', 'message_id': message_id, 'conversation_id': conversation_id,
+        })
+    except Exception:
+        logger.error('خطا در پخش حذف پیام', exc_info=True)
+    return JsonResponse({'success': True, 'message_id': message_id})
 
 
 @login_required

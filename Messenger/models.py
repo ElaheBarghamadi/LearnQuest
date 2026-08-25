@@ -131,6 +131,8 @@ class Message(models.Model):
         related_name='sent_messages'
     )
     encrypted_content = models.TextField(verbose_name='محتوای رمزنگاری‌شده')
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL,
+                                 related_name='replies', verbose_name='پاسخ به')
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
 

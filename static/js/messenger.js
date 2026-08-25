@@ -70,6 +70,7 @@ const state = {
     typingHideTimer: null,
     groupMembers: [],      // انتخاب‌شده‌ها برای گروه جدید
     addMembers: [],        // انتخاب‌شده‌ها برای افزودن عضو
+    replyingTo: null,
 };
 
 function openModal(id) { $(id).classList.add('open'); }
@@ -205,8 +206,8 @@ function msgHTML(m) {
         ? `<a class="ms-message-avatar" href="/u/${encodeURIComponent(m.sender_username)}/" title="${esc(m.sender_username)}">${avatarHTML(m.sender_username + m.sender_id, (m.sender_username || '؟').charAt(0), undefined, m.sender_avatar || '')}</a>` : '';
     return `<div class="ms-msg ${m.is_mine ? 'mine' : 'theirs'}${groupIncoming ? ' group-incoming' : ''}" data-id="${m.id}">${avatar}
         <div class="bubble">${sender}
-            <div class="text">${esc(m.content)}</div>
-            <span class="b-foot">${faNum(m.created_at)} ${ticks}</span>
+            ${m.reply_to ? `<div class="ms-replied">↩ ${esc(m.reply_to.sender_username)}: ${esc(m.reply_to.content)}</div>` : ''}<div class="text">${esc(m.content)}</div>
+            <span class="b-foot">${faNum(m.created_at)} ${ticks}</span><div class="ms-msg-tools"><button data-reply="${m.id}" data-name="${esc(m.sender_username)}" data-text="${esc(m.content).slice(0,120)}">پاسخ</button>${m.is_mine ? `<button data-delete="${m.id}">حذف</button>` : ''}</div>
         </div></div>`;
 }
 function renderMessages(messages) {
@@ -301,13 +302,16 @@ function handleWSEvent(d) {
         case 'new_message':
             appendMessage({
                 id: d.message_id, sender_id: d.sender_id,
-                sender_username: d.sender_username, sender_avatar: d.sender_avatar || '', content: d.content,
+                sender_username: d.sender_username, sender_avatar: d.sender_avatar || '', reply_to: d.reply_to || null, content: d.content,
                 created_at: d.created_at, created_at_full: new Date().toISOString(),
                 created_at_day: d.created_at_day || '',
                 is_mine: d.is_mine, is_read: false,
                 is_system: (d.content || '').startsWith('ℹ️'),
             });
             loadConversations();
+            break;
+        case 'message_deleted':
+            document.querySelector(`#msMessages [data-id="${d.message_id}"]`)?.remove();
             break;
         case 'typing':
             showTyping(d.is_typing);
@@ -378,9 +382,10 @@ async function sendCurrent() {
     input.value = ''; autosize(); input.focus();
 
     if (state.ws?.readyState === 1) {
-        state.ws.send(JSON.stringify({ type: 'send_message', content }));
+        state.ws.send(JSON.stringify({ type: 'send_message', content, reply_to_id: state.replyingTo?.id || null }));
+        clearReply();
     } else {
-        const r = await post('/messenger/send/', { conversation_id: state.activeId, content });
+        const r = await post('/messenger/send/', { conversation_id: state.activeId, content, reply_to_id: state.replyingTo?.id || null });
         if (!r.ok || !r.data?.success) {
             toast(r.data?.error || 'پیام ارسال نشد', 'error');
             if (r.status === 403) renderComposerBlockedNow();
@@ -390,6 +395,11 @@ async function sendCurrent() {
         loadConversations();
     }
 }
+
+function setReply(id, name, text) { state.replyingTo = {id, name, text}; $('#msReplyText').textContent = `پاسخ به ${name}: ${text}`; $('#msReplyBar').style.display = 'flex'; input.focus(); }
+function clearReply() { state.replyingTo = null; $('#msReplyBar').style.display = 'none'; }
+$('#btnCancelReply').addEventListener('click', clearReply);
+$('#msMessages').addEventListener('click', async (e) => { const r=e.target.closest('[data-reply]'); if(r) return setReply(+r.dataset.reply,r.dataset.name,r.dataset.text); const d=e.target.closest('[data-delete]'); if(d && confirm('این پیام حذف شود؟')) { const x=await post(`/messenger/message/${d.dataset.delete}/delete/`); if(x.ok&&x.data?.success) document.querySelector(`#msMessages [data-id="${d.dataset.delete}"]`)?.remove(); else toast(x.data?.error||'حذف انجام نشد','error'); } });
 
 const EMOJIS = ['😀','😂','🤣','😊','😍','😘','😉','😎','🤩','🥳','😢','😭','😡','🤔','👍','👎','🙏','👏','💪','🔥','❤️','💔','🎉','✨','💯','⚡','🌹','🤝','😴','🙃'];
 $('#btnEmoji').addEventListener('click', (e) => {
