@@ -99,10 +99,17 @@ def _format_conversation(request, conv: Conversation, current_user) -> dict:
 
 def _format_message(msg: Message, current_user) -> dict:
     content = msg.get_content()
+    avatar_url = ''
+    try:
+        if msg.sender.avatar:
+            avatar_url = msg.sender.avatar.url
+    except Exception:
+        pass
     return {
         'id': msg.pk,
         'sender_id': msg.sender_id,
         'sender_username': msg.sender.username,
+        'sender_avatar': avatar_url,
         'content': content,
         'is_system': content.startswith('ℹ️'),
         'created_at': jalali_time(msg.created_at, fa=False),

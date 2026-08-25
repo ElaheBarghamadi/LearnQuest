@@ -48,10 +48,11 @@ function avatarStyle(key) {
     const [a, b] = PALETTE[h % PALETTE.length];
     return `background:linear-gradient(135deg,${a},${b})`;
 }
-function avatarHTML(key, label, online) {
+function avatarHTML(key, label, online, imageUrl = '') {
     const dot = online === undefined ? '' :
         `<span class="dot${online ? ' on' : ''}"></span>`;
-    return `<div class="ms-avatar" style="${avatarStyle(key)}">${esc(label)}${dot}</div>`;
+    const face = imageUrl ? `<img src="${esc(imageUrl)}" alt="">` : esc(label);
+    return `<div class="ms-avatar" style="${avatarStyle(key)}">${face}${dot}</div>`;
 }
 
 const state = {
@@ -197,9 +198,12 @@ function msgHTML(m) {
              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
              <path d="M2 12l5 5L18 6"/><path d="M9 12l5 5L25 6" transform="translate(-3 0)"/></svg></span>`
         : '';
-    const sender = (!m.is_mine && state.active?.is_group)
+    const groupIncoming = !m.is_mine && state.active?.is_group;
+    const sender = groupIncoming
         ? `<a class="sender" href="/u/${encodeURIComponent(m.sender_username)}/">${esc(m.sender_username)}</a>` : '';
-    return `<div class="ms-msg ${m.is_mine ? 'mine' : 'theirs'}" data-id="${m.id}">
+    const avatar = groupIncoming
+        ? `<a class="ms-message-avatar" href="/u/${encodeURIComponent(m.sender_username)}/" title="${esc(m.sender_username)}">${avatarHTML(m.sender_username + m.sender_id, (m.sender_username || '؟').charAt(0), undefined, m.sender_avatar || '')}</a>` : '';
+    return `<div class="ms-msg ${m.is_mine ? 'mine' : 'theirs'}${groupIncoming ? ' group-incoming' : ''}" data-id="${m.id}">${avatar}
         <div class="bubble">${sender}
             <div class="text">${esc(m.content)}</div>
             <span class="b-foot">${faNum(m.created_at)} ${ticks}</span>
@@ -297,7 +301,7 @@ function handleWSEvent(d) {
         case 'new_message':
             appendMessage({
                 id: d.message_id, sender_id: d.sender_id,
-                sender_username: d.sender_username, content: d.content,
+                sender_username: d.sender_username, sender_avatar: d.sender_avatar || '', content: d.content,
                 created_at: d.created_at, created_at_full: new Date().toISOString(),
                 created_at_day: d.created_at_day || '',
                 is_mine: d.is_mine, is_read: false,
