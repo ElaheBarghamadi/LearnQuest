@@ -580,3 +580,6 @@ html, body {
 
 /* Messenger-local action alerts match the new rounded notification language. */
 .ms-toast{border-radius:17px!important;border:1px solid rgba(255,255,255,.26);box-shadow:0 13px 30px rgba(25,35,71,.22);padding:12px 16px!important;backdrop-filter:blur(14px)}
+
+/* Keep the add-member search results inside the group panel (not under its modal). */
+.ms-group-card.add-card{position:relative}.ms-group-card.add-card .ms-search-results{position:static;right:auto;left:auto;display:none;margin-top:8px;border:1px dashed var(--ms-line);border-radius:12px;box-shadow:none;background:#fff;max-height:220px}.ms-group-card.add-card .ms-search-results.open{display:block}.ms-group-card.add-card .ms-search-hit{padding:9px 6px;border-bottom:1px solid #eff2f7}.ms-group-card.add-card .ms-search-hit:last-child{border-bottom:0}
