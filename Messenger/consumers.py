@@ -164,7 +164,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
             return
 
-
         await self.channel_layer.group_send(
             self.group_name,
             {
@@ -172,6 +171,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'message_id': msg['id'],
                 'sender_id': msg['sender_id'],
                 'sender_username': msg['sender_username'],
+                'sender_avatar': msg.get('sender_avatar', ''),
                 'content': msg['content'],
                 'created_at': msg['created_at'],
                 'created_at_day': msg['created_at_day'],
