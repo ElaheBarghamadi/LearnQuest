@@ -531,52 +531,63 @@ $('#btnInfo').addEventListener('click', () => {
 function renderGroupInfo() {
     const c = state.active;
     $('#infoTitle').textContent = `👥 ${c.username}`;
+    const memberFaces = state.participants.slice(0, 6).map((p, i) =>
+        `<span class="ms-member-face" title="${esc(p.username)}" style="${avatarStyle(p.username + p.id)};z-index:${10 - i}">${esc((p.username || '؟').charAt(0))}</span>`).join('');
+    const extraFaces = state.participants.length > 6
+        ? `<span class="ms-member-face more">+${faNum(state.participants.length - 6)}</span>` : '';
     const inviteBlock = c.invite_url ? `
-        <div class="ms-field">
-            <label><svg width="14" height="14" style="vertical-align:-2px"><use href="#i-link"/></svg> لینک دعوت گروه</label>
-            <div class="ms-invite-box">
-                <code>${esc(c.invite_url)}</code>
-                <button class="ms-copy-btn" id="btnCopyInvite">کپی</button>
+        <section class="ms-group-card invite-card">
+            <div class="ms-group-card-title"><span class="ms-card-icon">🔗</span><div><b>دعوت با لینک</b><small>لینک را کپی کن یا مستقیم بفرست</small></div></div>
+            <div class="ms-invite-box"><code>${esc(c.invite_url)}</code></div>
+            <div class="ms-invite-actions">
+                <button class="ms-btn primary" id="btnShareInvite">ارسال لینک ↗</button>
+                <button class="ms-btn ghost" id="btnCopyInvite">کپی لینک</button>
             </div>
-            <div class="ms-hint">هرکس این لینک را باز کند می‌تواند عضو گروه شود
-                ${c.is_owner ? ' — <a href="#" id="btnRegenInvite">بازتولید لینک</a>' : ''}</div>
-        </div>` : '';
+            ${c.is_owner ? `<a class="ms-text-action" href="#" id="btnRegenInvite">↻ ساخت لینک جدید و غیرفعال‌کردن قبلی</a>` : ''}
+        </section>` : '';
     const members = state.participants.map((p) => `
-        <div class="ms-list-row">
+        <div class="ms-member-row">
             ${avatarHTML(p.username + p.id, (p.username || '؟').charAt(0), p.online)}
-            <div class="meta">
-                <b><a href="/u/${encodeURIComponent(p.username)}/">${esc(p.username)}</a>
-                    ${p.is_owner ? '<span class="ms-chip owner" style="font-size:.62rem">👑 مدیر</span>' : ''}</b>
-                <small>${p.online ? '🟢 آنلاین' : 'آفلاین'}</small>
-            </div>
+            <div class="meta"><b><a href="/u/${encodeURIComponent(p.username)}/">${esc(p.username)}</a>
+                ${p.is_owner ? '<span class="ms-role">👑 مدیر</span>' : ''}</b>
+                <small>${p.online ? '● آنلاین' : 'آخرین وضعیت نامشخص'}</small></div>
             ${c.is_owner && !p.is_owner ? `<button class="ms-row-btn danger" data-kick="${p.id}" data-name="${esc(p.username)}">حذف</button>` : ''}
         </div>`).join('');
 
     $('#infoBody').innerHTML = `
-        <div class="ms-field" style="text-align:center;margin-bottom:6px">
-            <div class="ms-avatar" style="${avatarStyle(c.username + c.id)};width:72px;height:72px;border-radius:22px;margin:0 auto;font-size:1.8rem">👥</div>
-            <h3 style="margin:10px 0 2px">${esc(c.username)}</h3>
-            <small style="color:var(--ms-muted)">${faNum(c.members_count)} عضو</small>
-        </div>
+        <section class="ms-group-hero">
+            <div class="ms-avatar group-avatar" style="${avatarStyle(c.username + c.id)}">👥</div>
+            <div class="ms-group-identity"><h3>${esc(c.username)}</h3><p>فضایی برای گفت‌وگوی اعضای گروه</p></div>
+            <div class="ms-member-stack">${memberFaces}${extraFaces}</div>
+            <div class="ms-group-count">${faNum(c.members_count)} عضو</div>
+        </section>
         ${inviteBlock}
         ${c.is_owner ? `
-        <div class="ms-field">
-            <label>➕ افزودن عضو جدید</label>
-            <div class="ms-search-wrap">
-                <svg class="s-ico" width="16" height="16"><use href="#i-search"/></svg>
-                <input type="text" id="addMemberSearch" placeholder="جستجوی کاربر…" autocomplete="off">
-            </div>
-            <div class="ms-search-results" id="addMemberResults" style="position:static;box-shadow:none;border:1px dashed var(--ms-line);margin-top:8px"></div>
+        <section class="ms-group-card add-card">
+            <div class="ms-group-card-title"><span class="ms-card-icon">➕</span><div><b>افزودن مستقیم عضو</b><small>کاربر را جست‌وجو و انتخاب کن</small></div></div>
+            <div class="ms-search-wrap"><svg class="s-ico" width="16" height="16"><use href="#i-search"/></svg><input type="text" id="addMemberSearch" placeholder="نام کاربری…" autocomplete="off"></div>
+            <div class="ms-search-results" id="addMemberResults"></div>
             <div class="ms-chips" id="addChips"></div>
-            <button class="ms-btn primary" id="btnAddMembers" style="width:100%;margin-top:8px">افزودن به گروه</button>
-        </div>` : ''}
-        <div class="ms-field">
-            <label>اعضا (${faNum(state.participants.length)})</label>
-            <div>${members}</div>
-        </div>
-        <button class="ms-btn danger" id="btnLeaveGroup" style="width:100%">🚶 ترک گروه</button>
-    `;
+            <button class="ms-btn primary" id="btnAddMembers" style="width:100%;margin-top:9px">افزودن اعضای انتخاب‌شده</button>
+        </section>` : ''}
+        <section class="ms-group-card members-card">
+            <div class="ms-group-card-title"><span class="ms-card-icon">👤</span><div><b>اعضای گروه</b><small>${faNum(state.participants.length)} نفر در این گروه هستند</small></div></div>
+            <div class="ms-members-list">${members}</div>
+        </section>
+        <button class="ms-btn danger" id="btnLeaveGroup" style="width:100%;margin-top:12px">🚶 ترک گروه</button>`;
 
+    $('#btnShareInvite')?.addEventListener('click', async () => {
+        const shareData = { title: `دعوت به گروه ${c.username}`, text: `به گروه «${c.username}» در لرن‌کوئست بپیوند!`, url: c.invite_url };
+        try {
+            if (navigator.share) await navigator.share(shareData);
+            else {
+                await navigator.clipboard.writeText(c.invite_url);
+                toast('لینک دعوت کپی شد؛ حالا آن را هرجا خواستی بفرست 🔗', 'ok');
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') toast('ارسال لینک انجام نشد', 'error');
+        }
+    });
     $('#btnCopyInvite')?.addEventListener('click', async (e) => {
         try {
             await navigator.clipboard.writeText(c.invite_url);
