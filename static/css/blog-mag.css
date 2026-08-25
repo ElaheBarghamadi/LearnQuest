@@ -489,3 +489,38 @@
 .mg-comments { max-width:960px; margin:34px auto 0; border-radius:25px; box-shadow:0 18px 48px rgba(35,57,103,.10); }
 .mg-article > section { max-width:960px; margin-left:auto!important; margin-right:auto!important; }
 @media (max-width:640px){.mg-article > article{padding:24px 16px 28px;border-radius:20px}.mg-crumb{margin:5px auto 12px}.mg-art-title{font-size:26px;letter-spacing:-.5px}.mg-art-sub{font-size:14px}.mg-art-cover{margin:0 0 21px;border-radius:16px;min-height:170px}.mg-prose{font-size:15px;line-height:2.15}.mg-actions{margin-top:30px}.mg-comments{border-radius:19px}}
+
+/* =================================================================
+   COMMENTS — small-screen composition repair
+   The composer and nested replies need a real grid, not squeezed flex rows.
+   ================================================================= */
+@media (max-width: 640px) {
+    .mg-comments { padding: 18px 12px 15px; }
+    .c-form { background: #fff; border-color: #e4eaf3; box-shadow: 0 6px 18px rgba(35,57,103,.06); }
+    .c-form-row { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: start; }
+    .c-form textarea { min-width: 0; max-width: 100%; resize: none; }
+    .c-form-foot { padding-top: 9px; border-top: 1px solid #eef2f7; }
+    .c-item { display: grid; grid-template-columns: 34px minmax(0, 1fr); align-items: start; }
+    .c-main { width: 100%; min-width: 0; }
+    .c-replies { grid-column: 1 / -1; width: 100%; margin: 4px 0 0; padding-inline-start: 9px; }
+    .c-replies .c-item { display: grid; grid-template-columns: 30px minmax(0, 1fr); width: 100%; padding: 10px 8px; }
+    .c-replies .c-avatar { width: 30px; height: 30px; font-size: 11px; }
+    .c-inline-form { min-width: 0; }
+    .c-inline-form .c-form { margin-top: 10px; }
+}
+
+@media (max-width: 430px) {
+    .mg-comments { padding: 16px 10px 13px; }
+    .mg-comments-title { align-items: flex-start; line-height: 1.7; }
+    .c-form { padding: 11px; border-radius: 13px; }
+    .c-form-row { grid-template-columns: 29px minmax(0, 1fr); gap: 8px; }
+    .c-form-ava { width: 29px; height: 29px; font-size: 11px; }
+    .c-form textarea { min-height: 76px; font-size: 13px; line-height: 1.85; }
+    .c-form-foot { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; }
+    .btn-send { min-height: 37px; padding: 8px 12px; white-space: nowrap; }
+    .c-item { grid-template-columns: 30px minmax(0, 1fr); gap: 8px; padding: 11px 9px; }
+    .c-avatar { width: 30px; height: 30px; font-size: 11px; }
+    .c-head { gap: 4px 7px; }.c-date { font-size: 9.5px; }.c-text { font-size: 12.5px; }
+    .c-foot { gap: 4px; }.c-like, .c-reply-btn { padding: 4px 5px; }
+    .c-replies { padding-inline-start: 7px; }
+}
