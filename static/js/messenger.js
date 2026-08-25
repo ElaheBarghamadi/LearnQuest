@@ -687,20 +687,24 @@ function wireAddMember(c) {
 
 function renderUserInfo() {
     const c = state.active;
-    $('#infoTitle').textContent = `👤 ${c.username}`;
+    const initial = esc((c.username || '؟').charAt(0));
+    const stateText = c.online ? 'اکنون آنلاین است' : 'در حال حاضر آفلاین است';
+    $('#infoTitle').textContent = 'پروفایل گفتگو';
     $('#infoBody').innerHTML = `
-        <div class="ms-field" style="text-align:center;margin-bottom:14px">
-            <div class="ms-avatar" style="${avatarStyle(c.username + c.id)};width:72px;height:72px;border-radius:22px;margin:0 auto;font-size:1.8rem">
-                ${esc((c.username || '؟').charAt(0))}</div>
-            <h3 style="margin:10px 0 2px">${esc(c.username)}</h3>
-            <small style="color:${c.online ? '#16a34a' : 'var(--ms-muted)'}">
-                ${c.online ? '🟢 آنلاین' : 'آفلاین'}</small>
-        </div>
-        <a class="ms-btn primary" style="width:100%;display:block;text-align:center;text-decoration:none;margin-bottom:10px"
-           href="/u/${encodeURIComponent(c.username)}/">مشاهده پروفایل</a>
-        <button class="ms-btn ${c.blocked_by_me ? '' : 'danger'}" id="btnBlockToggle" style="width:100%">
-            ${c.blocked_by_me ? '✔ رفع بلاک' : '⛔ بلاک کردن کاربر'}</button>
-    `;
+        <section class="ms-profile-card">
+            <div class="ms-profile-glow"></div>
+            <div class="ms-profile-avatar" style="${avatarStyle(c.username + c.id)}">${initial}<span class="ms-profile-status ${c.online ? 'online' : ''}"></span></div>
+            <div class="ms-profile-name">${esc(c.username)}</div>
+            <div class="ms-profile-handle">@${esc(c.username)}</div>
+            <div class="ms-profile-presence ${c.online ? 'online' : ''}"><i></i>${stateText}</div>
+            <div class="ms-profile-divider"></div>
+            <div class="ms-profile-note">برای دیدن دستاوردها، سطح و اطلاعات بیشتر، صفحهٔ پروفایل کاربر را باز کن.</div>
+        </section>
+        <div class="ms-profile-actions">
+            <a class="ms-profile-primary" href="/u/${encodeURIComponent(c.username)}/">مشاهدهٔ پروفایل <span>←</span></a>
+            <button class="ms-profile-danger ${c.blocked_by_me ? 'undo' : ''}" id="btnBlockToggle">
+                ${c.blocked_by_me ? '✓ رفع بلاک کاربر' : '⛔ بلاک کردن کاربر'}</button>
+        </div>`;
     $('#btnBlockToggle').addEventListener('click', () => toggleBlock(c));
 }
 
