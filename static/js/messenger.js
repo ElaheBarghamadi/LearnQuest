@@ -71,6 +71,7 @@ const state = {
     groupMembers: [],      // انتخاب‌شده‌ها برای گروه جدید
     addMembers: [],        // انتخاب‌شده‌ها برای افزودن عضو
     replyingTo: null,
+    animatedConvs: new Set(), // فقط گفت‌وگوهای تازه ورود پلکانی دارند
 };
 
 function openModal(id) { $(id).classList.add('open'); }
@@ -102,8 +103,11 @@ function renderConvList() {
             هنوز گفت‌وگویی نداری!<br>با جستجوی کاربر یا ساخت گروه شروع کن.</div>`;
         return;
     }
-    box.innerHTML = state.convs.map((c) => `
-        <div class="ms-conv${c.id === state.activeId ? ' active' : ''}" data-id="${c.id}">
+    box.innerHTML = state.convs.map((c, i) => {
+        const isNew = !state.animatedConvs.has(c.id);
+        if (isNew) state.animatedConvs.add(c.id);
+        return `
+        <div class="ms-conv${c.id === state.activeId ? ' active' : ''}${isNew ? ' anim' : ''}" style="--i:${Math.min(i, 14)}" data-id="${c.id}">
             ${avatarHTML(c.username + c.id, convLabel(c), c.is_group ? undefined : c.online)}
             <div class="meta">
                 <div class="row1">
@@ -115,7 +119,8 @@ function renderConvList() {
                     ${c.unread_count ? `<span class="ms-badge">${faNum(c.unread_count)}</span>` : ''}
                 </div>
             </div>
-        </div>`).join('');
+        </div>`;
+    }).join('');
     $$('.ms-conv', box).forEach((el) =>
         el.addEventListener('click', () => openConv(+el.dataset.id)));
 }
@@ -206,7 +211,7 @@ function msgHTML(m) {
         ? `<a class="ms-message-avatar" href="/u/${encodeURIComponent(m.sender_username)}/" title="${esc(m.sender_username)}">${avatarHTML(m.sender_username + m.sender_id, (m.sender_username || '؟').charAt(0), undefined, m.sender_avatar || '')}</a>` : '';
     return `<div class="ms-msg ${m.is_mine ? 'mine' : 'theirs'}${groupIncoming ? ' group-incoming' : ''}" data-id="${m.id}">${avatar}
         <div class="bubble">${sender}
-            ${m.reply_to ? `<div class="ms-replied">↩ ${esc(m.reply_to.sender_username)}: ${esc(m.reply_to.content)}</div>` : ''}<div class="text">${esc(m.content)}</div>
+            ${m.reply_to ? `<div class="ms-replied"><b>${esc(m.reply_to.sender_username)}</b>${esc(m.reply_to.content)}</div>` : ''}<div class="text">${esc(m.content)}</div>
             <span class="b-foot">${faNum(m.created_at)} ${ticks}</span><div class="ms-msg-tools"><button data-reply="${m.id}" data-name="${esc(m.sender_username)}" data-text="${esc(m.content).slice(0,120)}">پاسخ</button>${m.is_mine ? `<button data-delete="${m.id}">حذف</button>` : ''}</div>
         </div></div>`;
 }
@@ -223,6 +228,7 @@ function renderMessages(messages) {
     }
     box.dataset.lastday = lastDay;
     box.innerHTML = html || `<div class="ms-convs-empty" style="margin:auto"><div class="big">🌱</div>اولین پیام را تو بفرست!</div>`;
+    $$('.ms-msg', box).slice(-6).forEach((n) => n.classList.add('ms-fresh'));
     scrollBottom(true);
 }
 function appendMessage(m) {
@@ -236,6 +242,7 @@ function appendMessage(m) {
         box.dataset.lastday = dl;
     }
     box.insertAdjacentHTML('beforeend', msgHTML(m));
+    box.querySelector(`[data-id="${m.id}"]`)?.classList.add('ms-fresh');
     const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 160;
     if (nearBottom || m.is_mine) scrollBottom();
     if (!m.is_mine) markRead();
@@ -396,10 +403,23 @@ async function sendCurrent() {
     }
 }
 
-function setReply(id, name, text) { state.replyingTo = {id, name, text}; $('#msReplyText').textContent = `پاسخ به ${name}: ${text}`; $('#msReplyBar').style.display = 'flex'; input.focus(); }
+function setReply(id, name, text) { state.replyingTo = {id, name, text}; $('#msReplyText').innerHTML = `پاسخ به <b>${esc(name)}</b> — ${esc(text)}`; $('#msReplyBar').style.display = 'flex'; input.focus(); }
 function clearReply() { state.replyingTo = null; $('#msReplyBar').style.display = 'none'; }
 $('#btnCancelReply').addEventListener('click', clearReply);
-$('#msMessages').addEventListener('click', async (e) => { const r=e.target.closest('[data-reply]'); if(r) return setReply(+r.dataset.reply,r.dataset.name,r.dataset.text); const d=e.target.closest('[data-delete]'); if(d && confirm('این پیام حذف شود؟')) { const x=await post(`/messenger/message/${d.dataset.delete}/delete/`); if(x.ok&&x.data?.success) document.querySelector(`#msMessages [data-id="${d.dataset.delete}"]`)?.remove(); else toast(x.data?.error||'حذف انجام نشد','error'); } });
+$('#msMessages').addEventListener('click', (e) => {
+    const r = e.target.closest('[data-reply]');
+    if (r) return setReply(+r.dataset.reply, r.dataset.name, r.dataset.text);
+    const d = e.target.closest('[data-delete]');
+    if (!d) return;
+    const mid = d.dataset.delete;
+    confirmDialog('حذف پیام', 'این پیام برای همیشه حذف شود؟', async () => {
+        const x = await post(`/messenger/message/${mid}/delete/`);
+        if (x.ok && x.data?.success) {
+            document.querySelector(`#msMessages [data-id="${mid}"]`)?.remove();
+            toast('پیام حذف شد 🗑', 'ok');
+        } else toast(x.data?.error || 'حذف انجام نشد', 'error');
+    });
+});
 
 const EMOJIS = ['😀','😂','🤣','😊','😍','😘','😉','😎','🤩','🥳','😢','😭','😡','🤔','👍','👎','🙏','👏','💪','🔥','❤️','💔','🎉','✨','💯','⚡','🌹','🤝','😴','🙃'];
 $('#btnEmoji').addEventListener('click', (e) => {
@@ -476,6 +496,11 @@ function openGroupModal() {
 }
 $('#btnNewGroup').addEventListener('click', openGroupModal);
 $('#btnNewGroupEmpty').addEventListener('click', openGroupModal);
+$('#btnNewMsg')?.addEventListener('click', () => {
+    const inp = $('#msSearchInput');
+    inp.focus();
+    inp.select();
+});
 
 function renderChips(containerSel, arr, removeFn) {
     const box = $(containerSel);

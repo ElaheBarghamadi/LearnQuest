@@ -585,5 +585,222 @@ html, body {
 .ms-group-card.add-card{position:relative}.ms-group-card.add-card .ms-search-results{position:static;right:auto;left:auto;display:none;margin-top:8px;border:1px dashed var(--ms-line);border-radius:12px;box-shadow:none;background:#fff;max-height:220px}.ms-group-card.add-card .ms-search-results.open{display:block}.ms-group-card.add-card .ms-search-hit{padding:9px 6px;border-bottom:1px solid #eff2f7}.ms-group-card.add-card .ms-search-hit:last-child{border-bottom:0}
 .ms-reply-bar{margin:0 14px;padding:8px 11px;align-items:center;justify-content:space-between;background:#eef2ff;border-radius:12px 12px 0 0;color:#4654a8;font-size:11px}.ms-reply-bar span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ms-reply-bar button,.ms-msg-tools button{border:0;background:transparent;color:inherit;cursor:pointer;font-family:inherit}.ms-msg-tools{display:flex;gap:6px;opacity:0;position:absolute;top:3px;left:4px}.ms-msg .bubble:hover .ms-msg-tools{opacity:1}.ms-msg-tools button{font-size:10px;background:rgba(255,255,255,.75);padding:2px 5px;border-radius:6px}.ms-replied{margin:0 0 5px;padding:4px 6px;border-right:2px solid #7182e0;background:rgba(113,130,224,.09);border-radius:5px;color:#66718d;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* Messenger redesign — unified glass workspace */
-.ms-app{max-width:1440px;margin:0 auto;border:1px solid rgba(255,255,255,.72);border-radius:28px;overflow:hidden;box-shadow:0 28px 72px rgba(39,52,112,.2);background:rgba(245,248,255,.65);backdrop-filter:blur(22px)}.ms-sidebar{background:rgba(255,255,255,.8);border-left:1px solid rgba(214,222,241,.78)}.ms-side-head{background:linear-gradient(135deg,rgba(66,82,187,.11),rgba(157,105,211,.08));border-bottom:1px solid rgba(214,222,241,.7)}.ms-nav-title{color:#263875}.ms-search-wrap{border-radius:14px;background:#f1f4fb;padding:9px 12px}.ms-conv{margin:3px 8px;border-radius:15px;border:1px solid transparent}.ms-conv:hover{background:#f2f4ff}.ms-conv.active{background:linear-gradient(135deg,#eef0ff,#f6efff);border-color:#d9d8fa;box-shadow:0 5px 14px rgba(76,75,180,.09)}.ms-chat{background:radial-gradient(circle at 18% 5%,rgba(151,187,255,.18),transparent 28%),radial-gradient(circle at 90% 88%,rgba(201,171,255,.15),transparent 29%),#f8faff}.ms-chat-head{margin:10px 12px 0;border:1px solid rgba(219,226,245,.8);border-radius:18px;background:rgba(255,255,255,.72);box-shadow:0 8px 24px rgba(43,57,108,.06)}.ms-messages{padding:25px 26px 15px}.ms-msg .bubble{box-shadow:0 5px 15px rgba(42,54,101,.1);border-radius:19px}.ms-msg.mine .bubble{background:linear-gradient(145deg,#e0ffc6,#c8f4a7)}.ms-msg.theirs .bubble{background:rgba(255,255,255,.94);border:1px solid rgba(224,230,242,.9)}.ms-composer{margin:0 14px 14px;padding:9px;border:1px solid rgba(219,226,245,.9);border-radius:19px;background:rgba(255,255,255,.82);box-shadow:0 10px 26px rgba(43,57,108,.08)}.ms-input-wrap{background:#f4f6fc;border-radius:14px}.ms-send-btn{border-radius:14px;background:linear-gradient(135deg,#495bd0,#7855cf);box-shadow:0 7px 15px rgba(70,77,190,.25)}.ms-modal{border-radius:26px;background:rgba(250,251,255,.94);border:1px solid rgba(255,255,255,.9);box-shadow:0 25px 65px rgba(32,42,95,.27)}.ms-modal-head{background:linear-gradient(135deg,#f2f3ff,#fbf7ff);border-radius:26px 26px 0 0}.ms-group-card{border-radius:18px}.ms-toast{border-radius:18px!important}@media(max-width:860px){.ms-app{margin:0;border-radius:0;border:0;min-height:100dvh}.ms-chat-head{margin:7px 8px 0;border-radius:15px}.ms-messages{padding:16px 11px 9px}.ms-composer{margin:0 8px calc(8px + env(safe-area-inset-bottom));border-radius:16px}.ms-sidebar{background:#fbfcff}.ms-conv{margin:3px 6px}}
+/* ═══════════════════════════════════════════════════════════════════
+   Messenger Pro — تمام‌صفحه، بدون حاشیه، حرفه‌ای + انیمیشن
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── تمام‌صفحه: بدون قاب، بدون حاشیه، بدون گوشه‌گرد ── */
+html, body {
+    height: 100dvh;
+    overflow: hidden;
+    background: #eef1f7;
+}
+.ms-app {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: hidden;
+}
+@media (min-width: 861px) {
+    .ms-sidebar {
+        width: 372px;
+        background: #fff;
+        border-left: 1px solid var(--ms-hairline);
+        box-shadow: 2px 0 18px rgba(30, 40, 80, .04);
+    }
+    .ms-messages { padding: 20px 22px 12px; }
+}
+
+/* ── انیمیشن‌ها ── */
+@keyframes ms-conv-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: none; } }
+@keyframes ms-msg-in { from { opacity: 0; transform: translateY(10px) scale(.97); } to { opacity: 1; transform: none; } }
+@keyframes ms-pop { 0% { transform: scale(.55); } 70% { transform: scale(1.14); } 100% { transform: scale(1); } }
+@keyframes ms-pulse { 0% { box-shadow: 0 0 0 0 rgba(75, 217, 100, .45); } 100% { box-shadow: 0 0 0 7px rgba(75, 217, 100, 0); } }
+@keyframes ms-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes ms-slide-down { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: none; } }
+@keyframes ms-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ms-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* ── هدر سایدبار: برندینگ ملایم ── */
+.ms-side-head {
+    background: linear-gradient(135deg, rgba(10, 132, 255, .09), rgba(124, 92, 224, .07) 60%, rgba(10, 132, 255, .04));
+    border-bottom: 1px solid rgba(229, 229, 234, .8);
+    padding: 12px 14px 10px;
+}
+.ms-nav-title {
+    font-size: 1.34rem;
+    background: linear-gradient(135deg, #0A84FF, #7C5CE0);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+}
+.ms-nav-sub { margin-top: 2px; }
+.ms-icon-btn { position: relative; overflow: hidden; }
+.ms-icon-btn::after {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background: radial-gradient(circle, rgba(10, 132, 255, .18), transparent 70%);
+    transform: scale(0); opacity: 0; transition: transform .4s, opacity .4s;
+}
+.ms-icon-btn:active::after { transform: scale(1.6); opacity: 1; transition: 0s; }
+
+/* جستجو — حلقهٔ فوکوس نرم */
+.ms-search-wrap { border-radius: 12px; transition: background .2s, box-shadow .2s; }
+.ms-search-wrap:focus-within { box-shadow: 0 0 0 2px rgba(10, 132, 255, .55), 0 4px 12px rgba(10, 132, 255, .12); }
+.ms-search-results { animation: ms-slide-down .18s ease; }
+
+/* ── ردیف‌های چت: ورود پلکانی + فعال‌گرادیان + نقطه‌نمای فعال ── */
+.ms-conv.anim { animation: ms-conv-in .36s cubic-bezier(.2, .9, .3, 1) both; animation-delay: calc(var(--i, 0) * 26ms); }
+.ms-conv { transition: background .16s, transform .16s; }
+.ms-conv:hover { transform: translateX(-2px); }
+.ms-conv.active {
+    background: linear-gradient(135deg, #e9f3ff 0%, #f1edff 100%);
+}
+.ms-conv.active::before {
+    content: ''; position: absolute; right: 0; top: 13px; bottom: 13px;
+    width: 3.5px; border-radius: 99px;
+    background: linear-gradient(180deg, #0A84FF, #7C5CE0);
+}
+.ms-conv.active .name { color: #1450a8; }
+.ms-badge { animation: ms-pop .3s ease; box-shadow: 0 3px 8px rgba(76, 205, 100, .5); }
+.ms-avatar .dot.on { animation: ms-pulse 2.6s infinite; }
+
+/* ── ناحیهٔ چت: والپیپر + هدر/کامپوزر تمام‌عرض ── */
+.ms-chat { background: #dcd7e6; }
+.ms-chat-head {
+    background: rgba(248, 248, 250, .92);
+    border-bottom: 1px solid var(--ms-hairline);
+    padding: 9px 16px;
+    transition: box-shadow .2s;
+}
+.ms-chat-head.group-profile-trigger:hover { box-shadow: inset 0 -2px 0 rgba(10, 132, 255, .35); }
+
+/* ── حباب‌ها: ورود پویا + هاور حرفه‌ای ── */
+.ms-msg { position: relative; }
+.ms-msg.ms-fresh { animation: ms-msg-in .3s cubic-bezier(.2, .9, .3, 1); }
+.ms-msg .bubble { transition: box-shadow .2s; }
+.ms-msg:hover .bubble { box-shadow: 0 6px 18px rgba(25, 35, 75, .18); }
+.ms-msg.mine .bubble {
+    background: linear-gradient(180deg, #e3fdc9, #c9f0a8);
+    box-shadow: 0 2px 5px rgba(35, 90, 30, .12);
+}
+.ms-msg.theirs .bubble { box-shadow: 0 2px 5px rgba(30, 35, 60, .10); }
+.ms-day-sep { animation: ms-fade .3s ease; box-shadow: 0 3px 8px rgba(30, 30, 60, .14); }
+.ms-msg .ticks.read { animation: ms-pop .35s ease; }
+
+/* ── ابزار پیام (پاسخ/حذف) — پیل شناور بالای حباب ── */
+.ms-msg-tools {
+    position: absolute; top: -11px; left: 10px;
+    display: flex; gap: 5px;
+    opacity: 0; transform: translateY(5px);
+    transition: opacity .18s, transform .18s;
+    pointer-events: none;
+}
+.ms-msg:hover .ms-msg-tools { opacity: 1; transform: none; pointer-events: auto; }
+.ms-msg-tools button {
+    border: none; cursor: pointer; font-family: inherit;
+    font-size: .68rem; font-weight: 800;
+    padding: 4px 11px; border-radius: 999px;
+    background: rgba(255, 255, 255, .97); color: #46557a;
+    box-shadow: 0 4px 12px rgba(25, 35, 75, .22);
+    display: inline-flex; align-items: center; gap: 4px;
+    transition: background .15s, color .15s, transform .15s;
+}
+.ms-msg-tools button:hover { background: #0A84FF; color: #fff; transform: translateY(-1.5px); }
+.ms-msg-tools button[data-delete]:hover { background: #FF3B30; }
+@media (hover: none), (max-width: 860px) {
+    .ms-msg-tools { opacity: 1; transform: none; pointer-events: auto; top: -12px; }
+    .ms-msg-tools button { font-size: .64rem; padding: 3.5px 9px; box-shadow: 0 3px 8px rgba(25, 35, 75, .18); }
+}
+
+/* ── پیش‌نمایش پاسخ داخل حباب ── */
+.ms-replied {
+    margin: 0 0 6px; padding: 5px 9px;
+    border-right: 3px solid #0A84FF;
+    background: rgba(10, 132, 255, .09);
+    border-radius: 8px;
+    color: #4a5a75; font-size: .72rem; line-height: 1.55;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.ms-replied b { color: #0A84FF; font-weight: 800; }
+
+/* ── نوار پاسخ: اسلاید-دان + آکسنت ── */
+.ms-reply-bar {
+    display: none; align-items: center; gap: 10px;
+    position: relative; z-index: 1; /* بالای والپیپر */
+    margin: 0 14px; padding: 9px 13px;
+    background: #eef4ff; border: 1px solid #d3e2ff; border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    color: #33559e; font-size: .78rem; font-weight: 600;
+    animation: ms-slide-down .22s cubic-bezier(.2, .9, .3, 1);
+}
+.ms-typing { position: relative; z-index: 1; }
+.ms-reply-bar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ms-reply-bar b { color: #0A84FF; font-weight: 800; }
+.ms-reply-bar button {
+    flex-shrink: 0; width: 24px; height: 24px; border: none; border-radius: 50%;
+    background: #d3e2ff; color: #33559e; cursor: pointer;
+    font-size: .7rem; display: grid; place-items: center; transition: .16s;
+}
+.ms-reply-bar button:hover { background: #0A84FF; color: #fff; transform: rotate(90deg); }
+
+/* ── کامپوزر: فوکوس + دکمهٔ ارسال پالس‌دار ── */
+.ms-input-wrap { border-radius: 16px; transition: border-color .2s, box-shadow .2s; }
+.ms-input-wrap:focus-within { border-color: #0A84FF; box-shadow: 0 0 0 3px rgba(10, 132, 255, .16), 0 6px 16px rgba(10, 132, 255, .1); }
+.ms-send-btn {
+    background: linear-gradient(135deg, #0A84FF, #2f7dff);
+    transition: transform .18s, box-shadow .18s, background .2s;
+}
+.ms-send-btn:hover:not(:disabled) {
+    transform: scale(1.08);
+    box-shadow: 0 7px 18px rgba(10, 132, 255, .5), 0 0 0 7px rgba(10, 132, 255, .13);
+}
+.ms-send-btn:active:not(:disabled) { transform: scale(.9); }
+.ms-composer-note { border-radius: 16px; animation: ms-fade .3s ease; }
+
+/* ── حالت‌های خالی: شناور ── */
+.ms-chat-empty .big { animation: ms-float 3.4s ease-in-out infinite; }
+.ms-convs-empty .big, .ms-loading .big { animation: ms-float 3s ease-in-out infinite; display: inline-block; }
+.ms-chat-empty .card { animation: ms-msg-in .4s cubic-bezier(.2, .9, .3, 1); }
+.ms-cta { animation: ms-fade .3s ease; }
+.ms-cta svg { transition: transform .2s; }
+.ms-cta:hover svg { transform: scale(1.15) rotate(-8deg); }
+
+/* ── مودال: محو پس‌زمینه + پاپ ── */
+.ms-modal-back { animation: ms-fade .18s ease; }
+.ms-modal-back.open .ms-modal { animation: mspop .28s cubic-bezier(.2, 1.3, .4, 1); }
+.ms-modal-body { animation: ms-slide-down .25s ease .05s both; }
+
+/* ── توست و اتصال ── */
+.ms-toast { animation: ms-msg-in .3s cubic-bezier(.2, 1.3, .4, 1); }
+.ms-conn { animation: ms-fade .25s ease; }
+
+/* ── گروه: هیرو با درامای ملایم ── */
+.ms-group-hero { background: linear-gradient(135deg, #2e3a94 0%, #5b48c4 55%, #8a5bd8 100%); transition: transform .2s; }
+.ms-group-hero:hover { transform: translateY(-2px); }
+.ms-member-row { transition: background .14s; border-radius: 9px; }
+.ms-member-row:hover { background: #f5f7fd; }
+.ms-row-btn { transition: background .16s, color .16s, transform .16s; }
+.ms-row-btn:hover { transform: translateY(-1px); }
+.ms-group-card { transition: box-shadow .2s, transform .2s; }
+.ms-group-card:hover { box-shadow: 0 8px 20px rgba(45, 61, 114, .1); transform: translateY(-1px); }
+
+/* ── اسکرول‌بارهای نرم ── */
+.ms-convs, .ms-messages, .ms-members-list, .ms-search-results, .ms-modal-body {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(10, 132, 255, .35) transparent;
+}
+
+/* ── احترام به prefers-reduced-motion ── */
+@media (prefers-reduced-motion: reduce) {
+    .ms-conv.anim, .ms-msg.ms-fresh, .ms-badge, .ms-avatar .dot.on,
+    .ms-chat-empty .big, .ms-convs-empty .big, .ms-loading .big,
+    .ms-day-sep, .ms-modal, .ms-modal-body, .ms-toast, .ms-conn,
+    .ms-reply-bar, .ms-search-results { animation: none !important; }
+    .ms-conv:hover, .ms-msg .bubble, .ms-send-btn:hover:not(:disabled),
+    .ms-group-hero:hover, .ms-group-card:hover { transform: none; }
+}
