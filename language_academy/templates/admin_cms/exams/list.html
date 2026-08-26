@@ -82,10 +82,13 @@
                             <a href="{% url 'admin_cms:exam_edit' exam.id %}" class="text-primary me-2" title="Edit Exam">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{% url 'admin_cms:exam_delete' exam.id %}" class="text-danger" title="Delete Exam"
-                               onclick="return confirm('Are you sure you want to delete "{{ exam.title }}"? This will delete all questions too!')">
-                                <i class="fas fa-trash"></i>
-                            </a>
+                            <form method="post" action="{% url 'admin_cms:exam_delete' exam.id %}" class="d-inline"
+                                  onsubmit="return confirm('Are you sure you want to delete \'{{ exam.title }}\'? This will delete all questions too!');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn p-0 border-0 bg-transparent text-danger" title="Delete Exam">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% empty %}

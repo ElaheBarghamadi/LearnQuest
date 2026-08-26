@@ -119,7 +119,16 @@
 <script>
 function deleteVocabulary(id) {
     if(confirm('Are you sure you want to delete this vocabulary item?')) {
-        window.location.href = '/academy/manage/vocabulary/' + id + '/delete/';
+        fetch('/academy/manage/vocabulary/' + id + '/delete/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        }).then(function(r) {
+            if (r.ok) { window.location.reload(); }
+            else { alert('Delete failed — are you sure you are staff?'); }
+        });
     }
 }
 function toggleVocab(id, btn) {

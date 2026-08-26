@@ -800,7 +800,7 @@ def create_lesson(chapter, name, lesson_type, order, grammar_key, vocab_key):
             # Only the very first lesson of the very first chapter of the very
             # first world is a free preview; everything else is progression-gated.
             "is_free_preview": bool(
-                world.order == 1 and chapter.order == 1 and order == 1
+                chapter.world.order == 1 and chapter.order == 1 and order == 1
             ),
         }
     )

@@ -410,6 +410,8 @@ def vocabulary_categories(request):
     })
 
 
+@staff_member_required
+@require_POST
 def exam_delete(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
     exam_title = exam.title
@@ -418,6 +420,8 @@ def exam_delete(request, exam_id):
     return redirect('admin_cms:exam_list')
 
 
+@staff_member_required
+@require_POST
 def vocabulary_delete(request, vocab_id):
     vocab = get_object_or_404(Vocabulary, id=vocab_id)
     word = vocab.word
@@ -426,6 +430,7 @@ def vocabulary_delete(request, vocab_id):
     return redirect('admin_cms:vocabulary_list')
 
 
+@staff_member_required
 def badge_delete(request, badge_id):
     badge = get_object_or_404(Badge, id=badge_id)
     badge_name = badge.name
@@ -434,6 +439,7 @@ def badge_delete(request, badge_id):
     return redirect('admin_cms:badge_list')
 
 
+@staff_member_required
 def badge_edit(request, badge_id):
     badge = get_object_or_404(Badge, id=badge_id)
 
@@ -654,6 +660,7 @@ def cms_settings(request):
 from ..models import ExamQuestion
 
 
+@staff_member_required
 def exam_question_list(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
     questions = exam.exam_questions.all().order_by('order')
@@ -666,6 +673,7 @@ def exam_question_list(request, exam_id):
     return render(request, 'admin_cms/exams/questions.html', context)
 
 
+@staff_member_required
 def exam_question_create(request, exam_id):
     exam = get_object_or_404(Exam, id=exam_id)
 
@@ -689,6 +697,7 @@ def exam_question_create(request, exam_id):
     return render(request, 'admin_cms/exams/question_form.html', context)
 
 
+@staff_member_required
 def exam_question_edit(request, question_id):
     question = get_object_or_404(ExamQuestion, id=question_id)
     exam = question.exam
@@ -711,6 +720,8 @@ def exam_question_edit(request, question_id):
     return render(request, 'admin_cms/exams/question_form.html', context)
 
 
+@staff_member_required
+@require_POST
 def exam_question_delete(request, question_id):
     question = get_object_or_404(ExamQuestion, id=question_id)
     exam_id = question.exam.id
