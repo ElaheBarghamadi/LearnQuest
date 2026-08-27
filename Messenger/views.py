@@ -260,11 +260,31 @@ def send_message(request) -> JsonResponse:
         msg.set_content(raw_content)
         msg.save()
         conv.save(update_fields=['updated_at'])
+        payload = _format_message(msg, request.user)
         try:
             broadcast_message_notification(conv, msg, request.user)
         except Exception:
             logger.error('خطا در پخش اعلان پیام', exc_info=True)
-        return JsonResponse({'success': True, 'message': _format_message(msg, request.user)}, status=201)
+        # Live update for web clients in this conversation (same event the
+        # WS path emits), so sends from other devices/tabs appear instantly.
+        try:
+            from channels.layers import get_channel_layer
+            from asgiref.sync import async_to_sync
+            async_to_sync(get_channel_layer().group_send)(f'chat_{conv.pk}', {
+                'type': 'new_message',
+                'message_id': payload['id'],
+                'sender_id': payload['sender_id'],
+                'sender_username': payload['sender_username'],
+                'sender_avatar': payload['sender_avatar'],
+                'content': payload['content'],
+                'created_at': payload['created_at'],
+                'created_at_day': payload['created_at_day'],
+                'conversation_id': conv.pk,
+                'reply_to': payload['reply_to'],
+            })
+        except Exception:
+            logger.error('خطا در پخش پیام جدید به گروه چت', exc_info=True)
+        return JsonResponse({'success': True, 'message': payload}, status=201)
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'فرمت JSON نامعتبر'}, status=400)
     except Exception as e:

@@ -804,3 +804,47 @@ html, body {
     .ms-conv:hover, .ms-msg .bubble, .ms-send-btn:hover:not(:disabled),
     .ms-group-hero:hover, .ms-group-card:hover { transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   Messenger Pro 2 — بهبودهای تجربهٔ کاربری
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── دکمهٔ شناور «برو به آخر» با شمارندهٔ پیام‌های جدید ── */
+.ms-jump-down {
+    position: absolute; bottom: 86px; inset-inline-start: 50%; transform: translateX(-50%);
+    z-index: 5; width: 42px; height: 42px; border-radius: 50%;
+    border: 1px solid var(--ms-hairline);
+    background: rgba(255, 255, 255, .97); color: #46557a;
+    box-shadow: 0 6px 18px rgba(25, 35, 75, .22);
+    display: none; align-items: center; justify-content: center; cursor: pointer;
+    transition: box-shadow .16s;
+}
+.ms-jump-down.show { display: flex; animation: ms-pop .3s cubic-bezier(.2, 1.3, .4, 1); }
+.ms-jump-down:hover { box-shadow: 0 9px 24px rgba(25, 35, 75, .32); }
+.jd-badge {
+    position: absolute; top: -5px; inset-inline-end: -5px;
+    min-width: 19px; height: 19px; padding: 0 5px; border-radius: 99px;
+    background: #4BCD66; color: #fff; font-size: .62rem; font-weight: 800;
+    display: grid; place-items: center; box-shadow: 0 3px 8px rgba(76, 205, 102, .5);
+}
+
+/* ── «در حال تایپ» در لیست گفت‌وگوها ── */
+.preview.typing { color: #0A84FF; font-weight: 700; }
+
+/* ── دکمهٔ کپی در ابزار پیام ── */
+.ms-msg-tools button[data-copy] { padding: 4px 8px; display: inline-flex; align-items: center; }
+.ms-msg-tools button[data-copy]:hover { background: #34C759; }
+
+/* ── دکمهٔ صدا در پایین سایدبار ── */
+#btnSound { display: grid; place-items: center; }
+#btnSound .ico-off { display: none; }
+#btnSound.muted .ico-on { display: none; }
+#btnSound.muted .ico-off { display: block; }
+#btnSound.muted { color: var(--ms-muted); }
+
+/* ── لمس: ابزارها با تپ روی پیام باز می‌شوند (مثل تلگرام) ── */
+@media (hover: none) and (pointer: coarse) {
+    .ms-msg-tools { opacity: 0; transform: translateY(5px); pointer-events: none; }
+    .ms-msg.show-tools .ms-msg-tools { opacity: 1; transform: none; pointer-events: auto; }
+    .ms-msg.show-tools .bubble { box-shadow: 0 6px 18px rgba(25, 35, 75, .25); }
+}

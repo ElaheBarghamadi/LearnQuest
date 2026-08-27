@@ -72,6 +72,9 @@ const state = {
     addMembers: [],        // انتخاب‌شده‌ها برای افزودن عضو
     replyingTo: null,
     animatedConvs: new Set(), // فقط گفت‌وگوهای تازه ورود پلکانی دارند
+    newCount: 0,             // پیام‌های جدید درحالی‌که کاربر بالا اسکرول کرده
+    typingList: {},          // convId -> {name, timer} برای «در حال تایپ» در لیست
+    soundOn: (localStorage.getItem('lqMsSound') ?? '1') === '1',
 };
 
 function openModal(id) { $(id).classList.add('open'); }
@@ -96,16 +99,45 @@ $('#confirmYes').addEventListener('click', () => {
 function convLabel(c) {
     return c.is_group ? '👥' : (c.username || '؟').trim().charAt(0);
 }
+// تعداد پیام‌های نخوانده در عنوان تب — وقتی کاربر تب را عوض می‌کند، ببیند چه شده
+function updateTitle() {
+    const total = state.convs.reduce((s, c) => s + (c.unread_count || 0), 0);
+    document.title = total ? `(${faNum(total)}) پیام‌رسان | لرن‌کوئست` : 'پیامرسان | لرن‌کوئست';
+}
+// صدای اعلان — کوتاه و ملایم (WebAudio، بدون فایل)
+let audioCtx = null;
+function ding() {
+    if (!state.soundOn) return;
+    try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') return; // پیش از اولین تعامل کاربر
+        const t0 = audioCtx.currentTime;
+        [[880, 0], [1318.5, 0.09]].forEach(([freq, dt]) => {
+            const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+            o.type = 'sine'; o.frequency.value = freq;
+            g.gain.setValueAtTime(0.0001, t0 + dt);
+            g.gain.exponentialRampToValueAtTime(0.1, t0 + dt + 0.02);
+            g.gain.exponentialRampToValueAtTime(0.0001, t0 + dt + 0.22);
+            o.connect(g).connect(audioCtx.destination);
+            o.start(t0 + dt); o.stop(t0 + dt + 0.26);
+        });
+    } catch (e) { /* بدون صدا */ }
+}
 function renderConvList() {
     const box = $('#msConvs');
     if (!state.convs.length) {
         box.innerHTML = `<div class="ms-convs-empty"><div class="big">📭</div>
             هنوز گفت‌وگویی نداری!<br>با جستجوی کاربر یا ساخت گروه شروع کن.</div>`;
+        updateTitle();
         return;
     }
     box.innerHTML = state.convs.map((c, i) => {
         const isNew = !state.animatedConvs.has(c.id);
         if (isNew) state.animatedConvs.add(c.id);
+        const typing = state.typingList[c.id];
+        const preview = typing
+            ? `<span class="preview typing">${esc(typing.name)} در حال تایپ…</span>`
+            : `<span class="preview">${esc(c.last_message || (c.is_group ? `${faNum(c.members_count)} عضو` : 'گفت‌وگوی جدید'))}</span>`;
         return `
         <div class="ms-conv${c.id === state.activeId ? ' active' : ''}${isNew ? ' anim' : ''}" style="--i:${Math.min(i, 14)}" data-id="${c.id}">
             ${avatarHTML(c.username + c.id, convLabel(c), c.is_group ? undefined : c.online)}
@@ -115,7 +147,7 @@ function renderConvList() {
                     <span class="time">${faNum(c.last_message_time || '')}</span>
                 </div>
                 <div class="row2">
-                    <span class="preview">${esc(c.last_message || (c.is_group ? `${faNum(c.members_count)} عضو` : 'گفت‌وگوی جدید'))}</span>
+                    ${preview}
                     ${c.unread_count ? `<span class="ms-badge">${faNum(c.unread_count)}</span>` : ''}
                 </div>
             </div>
@@ -123,6 +155,7 @@ function renderConvList() {
     }).join('');
     $$('.ms-conv', box).forEach((el) =>
         el.addEventListener('click', () => openConv(+el.dataset.id)));
+    updateTitle();
 }
 
 async function loadConversations() {
@@ -152,6 +185,13 @@ async function openConv(id) {
     renderHead();
     renderMessages(r.data.messages);
     renderComposer();
+
+    state.newCount = 0; updateJumpBtn();
+    $$('.ms-msg.show-tools').forEach((n) => n.classList.remove('show-tools'));
+    // پیش‌نویس هر گفت‌وگو جداگانه نگه داشته می‌شود — با جابه‌جایی از بین نمی‌رود
+    input.value = localStorage.getItem(`lqMsDraft${id}`) || '';
+    autosize();
+    if (!window.matchMedia('(hover: none) and (pointer: coarse)').matches) input.focus();
 
     const c = state.convs.find((x) => x.id === id);
     if (c) { c.unread_count = 0; renderConvList(); }
@@ -212,7 +252,7 @@ function msgHTML(m) {
     return `<div class="ms-msg ${m.is_mine ? 'mine' : 'theirs'}${groupIncoming ? ' group-incoming' : ''}" data-id="${m.id}">${avatar}
         <div class="bubble">${sender}
             ${m.reply_to ? `<div class="ms-replied"><b>${esc(m.reply_to.sender_username)}</b>${esc(m.reply_to.content)}</div>` : ''}<div class="text">${esc(m.content)}</div>
-            <span class="b-foot">${faNum(m.created_at)} ${ticks}</span><div class="ms-msg-tools"><button data-reply="${m.id}" data-name="${esc(m.sender_username)}" data-text="${esc(m.content).slice(0,120)}">پاسخ</button>${m.is_mine ? `<button data-delete="${m.id}">حذف</button>` : ''}</div>
+            <span class="b-foot">${faNum(m.created_at)} ${ticks}</span><div class="ms-msg-tools"><button data-reply="${m.id}" data-name="${esc(m.sender_username)}" data-text="${esc(m.content).slice(0,120)}">پاسخ</button><button data-copy="${m.id}" title="کپی متن"><svg width="12" height="12"><use href="#i-copy"/></svg></button>${m.is_mine ? `<button data-delete="${m.id}">حذف</button>` : ''}</div>
         </div></div>`;
 }
 function renderMessages(messages) {
@@ -230,6 +270,9 @@ function renderMessages(messages) {
     box.innerHTML = html || `<div class="ms-convs-empty" style="margin:auto"><div class="big">🌱</div>اولین پیام را تو بفرست!</div>`;
     $$('.ms-msg', box).slice(-6).forEach((n) => n.classList.add('ms-fresh'));
     scrollBottom(true);
+    // فونت فارسی ممکن است بعد از رندر جا به جا شود و ارتفاع محتوا را تغییر
+    // دهد؛ تا آخر بمانیم تا آخرین پیام پنهان نماند.
+    document.fonts?.ready?.then(() => scrollBottom(true)).catch(() => {});
 }
 function appendMessage(m) {
     const box = $('#msMessages');
@@ -244,13 +287,34 @@ function appendMessage(m) {
     box.insertAdjacentHTML('beforeend', msgHTML(m));
     box.querySelector(`[data-id="${m.id}"]`)?.classList.add('ms-fresh');
     const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 160;
-    if (nearBottom || m.is_mine) scrollBottom();
-    if (!m.is_mine) markRead();
+    if (nearBottom || m.is_mine) { state.newCount = 0; scrollBottom(); }
+    else if (!m.is_mine && !m.is_system) state.newCount++;
+    updateJumpBtn();
+    if (!m.is_mine) {
+        markRead();
+        if (!m.is_system) ding();
+    }
 }
 function scrollBottom(instant) {
     const box = $('#msMessages');
     box.scrollTo({ top: box.scrollHeight, behavior: instant ? 'auto' : 'smooth' });
 }
+// دکمهٔ شناور «برو به آخر» با شمارندهٔ پیام‌های جدید
+const jumpBtn = $('#msJumpDown');
+function updateJumpBtn() {
+    if (!jumpBtn) return;
+    jumpBtn.classList.toggle('show', Boolean(state.activeId && state.newCount > 0));
+    $('#msJumpCount').textContent = faNum(state.newCount);
+}
+jumpBtn?.addEventListener('click', () => {
+    state.newCount = 0; updateJumpBtn(); scrollBottom();
+});
+$('#msMessages').addEventListener('scroll', () => {
+    const box = $('#msMessages');
+    if (state.newCount && box.scrollHeight - box.scrollTop - box.clientHeight < 40) {
+        state.newCount = 0; updateJumpBtn();
+    }
+});
 function markRead() {
     if (state.ws?.readyState === 1) state.ws.send(JSON.stringify({ type: 'mark_read' }));
 }
@@ -322,6 +386,21 @@ function handleWSEvent(d) {
             break;
         case 'typing':
             showTyping(d.is_typing);
+            // «در حال تایپ» در لیست گفت‌وگوها هم دیده شود
+            if (state.activeId) {
+                if (d.is_typing) {
+                    const name = d.username || (state.active?.is_group ? 'همکار' : (state.active?.username || ''));
+                    if (state.typingList[state.activeId]) clearTimeout(state.typingList[state.activeId].timer);
+                    state.typingList[state.activeId] = {
+                        name: name,
+                        timer: setTimeout(() => { delete state.typingList[state.activeId]; renderConvList(); }, 3200),
+                    };
+                } else if (state.typingList[state.activeId]) {
+                    clearTimeout(state.typingList[state.activeId].timer);
+                    delete state.typingList[state.activeId];
+                }
+                renderConvList();
+            }
             break;
         case 'user_status':
             if (state.active && !state.active.is_group && d.user_id === state.active.user_id) {
@@ -363,6 +442,7 @@ function autosize() {
 input.addEventListener('input', () => {
     autosize();
     sendTyping();
+    if (state.activeId) localStorage.setItem(`lqMsDraft${state.activeId}`, input.value);
 });
 input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendCurrent(); }
@@ -387,6 +467,7 @@ async function sendCurrent() {
     const content = input.value.trim();
     if (!content || !state.activeId) return;
     input.value = ''; autosize(); input.focus();
+    localStorage.removeItem(`lqMsDraft${state.activeId}`);
 
     if (state.ws?.readyState === 1) {
         state.ws.send(JSON.stringify({ type: 'send_message', content, reply_to_id: state.replyingTo?.id || null }));
@@ -406,9 +487,22 @@ async function sendCurrent() {
 function setReply(id, name, text) { state.replyingTo = {id, name, text}; $('#msReplyText').innerHTML = `پاسخ به <b>${esc(name)}</b> — ${esc(text)}`; $('#msReplyBar').style.display = 'flex'; input.focus(); }
 function clearReply() { state.replyingTo = null; $('#msReplyBar').style.display = 'none'; }
 $('#btnCancelReply').addEventListener('click', clearReply);
+async function copyMsg(btn) {
+    const text = btn.closest('.ms-msg')?.querySelector('.text')?.textContent || '';
+    try {
+        await navigator.clipboard.writeText(text);
+    } catch (err) {
+        const tmp = document.createElement('textarea');
+        tmp.value = text; document.body.appendChild(tmp);
+        tmp.select(); document.execCommand('copy'); tmp.remove();
+    }
+    toast('پیام کپی شد 📋', 'ok');
+}
 $('#msMessages').addEventListener('click', (e) => {
     const r = e.target.closest('[data-reply]');
     if (r) return setReply(+r.dataset.reply, r.dataset.name, r.dataset.text);
+    const cp = e.target.closest('[data-copy]');
+    if (cp) return copyMsg(cp);
     const d = e.target.closest('[data-delete]');
     if (!d) return;
     const mid = d.dataset.delete;
@@ -839,6 +933,63 @@ setInterval(() => {
 document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') loadConversations();
 });
+
+// ── میان‌برهای صفحه‌کلید: Esc می‌بندد، Alt+↑/↓ بین گفت‌وگوها جابه‌جا می‌کند ──
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        $$('.ms-modal-back.open').forEach((m) => m.classList.remove('open'));
+        clearReply();
+        return;
+    }
+    if (e.altKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && state.convs.length
+        && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName || '')) {
+        e.preventDefault();
+        const idx = state.convs.findIndex((c) => c.id === state.activeId);
+        let next = e.key === 'ArrowUp' ? Math.max(0, idx - 1) : Math.min(state.convs.length - 1, idx + 1);
+        if (idx === -1) next = 0;
+        openConv(state.convs[next].id);
+    }
+});
+
+// ── صدا: دکمهٔ قطع/وصل در پایین سایدبار (به‌خاطر می‌ماند) ──
+const btnSound = $('#btnSound');
+function renderSoundBtn() { btnSound?.classList.toggle('muted', !state.soundOn); }
+btnSound?.addEventListener('click', () => {
+    state.soundOn = !state.soundOn;
+    localStorage.setItem('lqMsSound', state.soundOn ? '1' : '0');
+    renderSoundBtn();
+    toast(state.soundOn ? 'صدای اعلان روشن شد 🔔' : 'صدای اعلان خاموش شد 🔕');
+});
+renderSoundBtn();
+
+// ── لمس: تپ روی پیام، ابزارهایش را باز می‌کند (مثل تلگرام؛ بدون شلوغی) ──
+if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+    let tapStart = null;
+    const msgBox = $('#msMessages');
+    msgBox.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse') return;
+        tapStart = { x: e.clientX, y: e.clientY, t: Date.now() };
+    }, { passive: true });
+    msgBox.addEventListener('pointerup', (e) => {
+        if (e.pointerType === 'mouse' || !tapStart) return;
+        const dx = Math.abs(e.clientX - tapStart.x);
+        const dy = Math.abs(e.clientY - tapStart.y);
+        const dt = Date.now() - tapStart.t;
+        tapStart = null;
+        if (dx > 10 || dy > 10 || dt > 600) return; // اسکرول/نگه‌داشتن بود
+        const row = e.target.closest('.ms-msg');
+        if (!row || e.target.closest('a, button, textarea')) return;
+        const wasShown = row.classList.contains('show-tools');
+        $$('.ms-msg.show-tools', msgBox).forEach((n) => n.classList.remove('show-tools'));
+        if (!wasShown) {
+            row.classList.add('show-tools');
+            if (!localStorage.getItem('lqMsToolsHint')) {
+                localStorage.setItem('lqMsToolsHint', '1');
+                setTimeout(() => toast('💡 برای پاسخ یا حذف، روی هر پیام تپ کن'), 500);
+            }
+        }
+    });
+}
 
 (async function init() {
     $('#msMyAvatar').setAttribute('style', avatarStyle(state.meName));
