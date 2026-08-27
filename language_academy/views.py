@@ -24,6 +24,7 @@ from .models import (
     UserVocabularyProgress, Badge, UserBadge, Certificate,
     DailyGoal, CoinTransaction, WritingSubmission, SpeakingSubmission, QuizSession
 )
+from economy.services import get_or_create_safe
 
 
 def grammar_hub(request):
@@ -144,7 +145,7 @@ def world_map(request):
 
     today_goal = None
     if authed:
-        today_goal, _ = DailyGoal.objects.get_or_create(
+        today_goal, _ = get_or_create_safe(DailyGoal.objects, 
             user=request.user,
             goal_date=timezone.localdate(),
             defaults={'target_xp': 100, 'target_lessons': 2, 'target_vocabulary': 5}
@@ -230,7 +231,7 @@ def chapter_detail(request, chapter_id):
         # قفل پیشروی: هر درس بعد از تکمیل درس قبلی باز می‌شود
         lesson.is_locked = not lesson.is_unlocked_for_user(request.user)
 
-    chapter_progress, _ = UserChapterProgress.objects.get_or_create(user=request.user, chapter=chapter)
+    chapter_progress, _ = get_or_create_safe(UserChapterProgress.objects, user=request.user, chapter=chapter)
     chapter_progress.update_progress()
 
     chapter_exam = Exam.objects.filter(exam_type='chapter', chapter=chapter, is_published=True).first()
@@ -273,7 +274,7 @@ def lesson_detail(request, lesson_id):
                 return redirect('shop:product', slug=prod.slug)
             return redirect('shop:home')
 
-    progress, _ = UserLessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
+    progress, _ = get_or_create_safe(UserLessonProgress.objects, user=request.user, lesson=lesson)
     if progress.status == 'not_started':
         progress.status = 'in_progress'
         progress.save()
@@ -572,7 +573,7 @@ def submit_quiz(request, quiz_id):
     session.save()
 
     lesson = quiz.lesson
-    lesson_progress, _ = UserLessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
+    lesson_progress, _ = get_or_create_safe(UserLessonProgress.objects, user=request.user, lesson=lesson)
     lesson_progress.quiz_score = final_score
     lesson_progress.quiz_passed = passed
 
@@ -593,7 +594,7 @@ def submit_quiz(request, quiz_id):
         if not first_pass:
             messages.info(request, '🔁 You already passed this quiz — rewards are only for the first pass.')
 
-        daily_goal, _ = DailyGoal.objects.get_or_create(
+        daily_goal, _ = get_or_create_safe(DailyGoal.objects, 
             user=request.user,
             goal_date=timezone.localdate(),
             defaults={'target_xp': 100, 'target_lessons': 2, 'target_vocabulary': 5}
@@ -602,7 +603,7 @@ def submit_quiz(request, quiz_id):
         daily_goal.current_xp += lesson.xp_reward + quiz.xp_reward
         daily_goal.save()
 
-        chapter_progress, _ = UserChapterProgress.objects.get_or_create(
+        chapter_progress, _ = get_or_create_safe(UserChapterProgress.objects, 
             user=request.user,
             chapter=lesson.chapter
         )
@@ -742,7 +743,7 @@ def take_exam(request, exam_id):
 
         if passed:
             if exam.chapter:
-                chapter_progress, _ = UserChapterProgress.objects.get_or_create(
+                chapter_progress, _ = get_or_create_safe(UserChapterProgress.objects, 
                     user=request.user,
                     chapter=exam.chapter
                 )
@@ -751,7 +752,7 @@ def take_exam(request, exam_id):
                 chapter_progress.xp_earned += exam.xp_reward
                 chapter_progress.save()
 
-                world_progress, _ = UserWorldProgress.objects.get_or_create(
+                world_progress, _ = get_or_create_safe(UserWorldProgress.objects, 
                     user=request.user,
                     world=exam.chapter.world
                 )
@@ -764,7 +765,7 @@ def take_exam(request, exam_id):
                 world_progress.save()
 
             elif exam.world:
-                world_progress, _ = UserWorldProgress.objects.get_or_create(
+                world_progress, _ = get_or_create_safe(UserWorldProgress.objects, 
                     user=request.user,
                     world=exam.world
                 )
@@ -971,7 +972,7 @@ def submit_exam(request, exam_id):
         _grant_pass_rewards_once(request.user, exam, 'exam')
 
     if exam.chapter:
-        chapter_progress, _ = UserChapterProgress.objects.get_or_create(
+        chapter_progress, _ = get_or_create_safe(UserChapterProgress.objects, 
             user=request.user,
             chapter=exam.chapter
         )
@@ -981,7 +982,7 @@ def submit_exam(request, exam_id):
         if passed:
             lessons = Lesson.objects.filter(chapter=exam.chapter, is_published=True)
             for lesson in lessons:
-                lesson_progress, _ = UserLessonProgress.objects.get_or_create(
+                lesson_progress, _ = get_or_create_safe(UserLessonProgress.objects, 
                     user=request.user,
                     lesson=lesson
                 )
@@ -999,7 +1000,7 @@ def submit_exam(request, exam_id):
             messages.success(request, f'🎉 Chapter "{exam.chapter.name}" completed!')
 
             # به‌روزرسانی پیشرفت جهان
-            wp, _ = UserWorldProgress.objects.get_or_create(
+            wp, _ = get_or_create_safe(UserWorldProgress.objects, 
                 user=request.user, world=exam.chapter.world)
             wp.update_progress()
             if wp.is_completed:
@@ -1039,7 +1040,7 @@ def submit_exam(request, exam_id):
 
     elif exam.world and passed:
         # امتحان نهایی جهان پاس شد → جهان کامل می‌شود
-        wp, _ = UserWorldProgress.objects.get_or_create(
+        wp, _ = get_or_create_safe(UserWorldProgress.objects, 
             user=request.user, world=exam.world)
         wp.exam_score = final_score
         wp.exam_passed = True
@@ -1292,7 +1293,7 @@ def vocabulary_review(request):
 def vocabulary_mark_learned(request, word_id):
     word = get_object_or_404(Vocabulary, id=word_id)
 
-    progress, created = UserVocabularyProgress.objects.get_or_create(
+    progress, created = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={
@@ -1324,7 +1325,7 @@ def vocabulary_mark_learned(request, word_id):
 def vocabulary_add_to_practice(request, word_id):
     word = get_object_or_404(Vocabulary, id=word_id)
 
-    progress, created = UserVocabularyProgress.objects.get_or_create(
+    progress, created = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={
@@ -1348,7 +1349,7 @@ def vocabulary_add_to_practice(request, word_id):
 def vocabulary_add_to_review(request, word_id):
     word = get_object_or_404(Vocabulary, id=word_id)
 
-    progress, created = UserVocabularyProgress.objects.get_or_create(
+    progress, created = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={
@@ -1388,7 +1389,7 @@ def learner_dashboard(request):
     badges = UserBadge.objects.filter(user=request.user).select_related('badge').order_by('-earned_at')[:8]
     certificates = Certificate.objects.filter(user=request.user).order_by('-issued_at')[:5]
 
-    today_goal, _ = DailyGoal.objects.get_or_create(
+    today_goal, _ = get_or_create_safe(DailyGoal.objects, 
         user=request.user, goal_date=timezone.localdate(),
         defaults={'target_xp': 100, 'target_lessons': 2, 'target_vocabulary': 5}
     )
@@ -1551,10 +1552,10 @@ def _maybe_issue_certificate(user, world):
     if done < total:
         return None
     with transaction.atomic():
-        wp, _ = UserWorldProgress.objects.select_for_update().get_or_create(user=user, world=world)
+        wp, _ = get_or_create_safe(UserWorldProgress.objects.select_for_update(), user=user, world=world)
         if wp.certificate_issued:
             return None
-        cert, _created = Certificate.objects.get_or_create(user=user, world=world)
+        cert, _created = get_or_create_safe(Certificate.objects, user=user, world=world)
         wp.certificate_issued = True
         wp.save(update_fields=['certificate_issued'])
 
@@ -1584,7 +1585,7 @@ def update_lesson_progress(request, lesson_id):
     lesson = get_object_or_404(Lesson, id=lesson_id)
     progress_percentage = int(request.POST.get('progress', 0))
 
-    progress, _ = UserLessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
+    progress, _ = get_or_create_safe(UserLessonProgress.objects, user=request.user, lesson=lesson)
 
 
     has_quiz = Quiz.objects.filter(lesson=lesson, is_published=True).exists()
@@ -1600,14 +1601,14 @@ def update_lesson_progress(request, lesson_id):
         request.user.add_xp(lesson.xp_reward, 'lesson_completion', f'Completed: {lesson.name}')
         request.user.update_streak()
 
-        daily_goal, _ = DailyGoal.objects.get_or_create(user=request.user, goal_date=timezone.localdate())
+        daily_goal, _ = get_or_create_safe(DailyGoal.objects, user=request.user, goal_date=timezone.localdate())
         daily_goal.current_lessons += 1
         daily_goal.current_xp += lesson.xp_reward
         daily_goal.save()
 
     progress.save()
 
-    chapter_progress, _ = UserChapterProgress.objects.get_or_create(user=request.user, chapter=lesson.chapter)
+    chapter_progress, _ = get_or_create_safe(UserChapterProgress.objects, user=request.user, chapter=lesson.chapter)
     chapter_progress.update_progress()
 
     resp = {'success': True, 'status': progress.status}
@@ -1738,7 +1739,7 @@ def vocabulary_flashcard_action(request):
 
     word = get_object_or_404(Vocabulary, id=word_id)
 
-    progress, created = UserVocabularyProgress.objects.get_or_create(
+    progress, created = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={
@@ -1799,7 +1800,7 @@ def vocabulary_flashcard_action(request):
     progress.last_reviewed = timezone.now()
     progress.save()
 
-    daily_goal, _ = DailyGoal.objects.get_or_create(
+    daily_goal, _ = get_or_create_safe(DailyGoal.objects, 
         user=request.user,
         goal_date=timezone.localdate(),
         defaults={'target_xp': 100, 'target_lessons': 2, 'target_vocabulary': 5}
@@ -1859,7 +1860,7 @@ def vocabulary_matching_result(request):
 
     word = get_object_or_404(Vocabulary, id=word_id)
 
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
+    progress, _ = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={
@@ -1949,7 +1950,7 @@ def vocabulary_spaced_repetition_action(request):
     difficulty = data.get('difficulty', 'medium')
 
     word = get_object_or_404(Vocabulary, id=word_id)
-    progress, _ = UserVocabularyProgress.objects.get_or_create(
+    progress, _ = get_or_create_safe(UserVocabularyProgress.objects, 
         user=request.user,
         vocabulary=word,
         defaults={

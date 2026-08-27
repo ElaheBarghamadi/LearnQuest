@@ -13,7 +13,7 @@ from .jalali import jalali_date, jalali_date_long, jalali_human
 
 @login_required
 def index(request):
-    from economy.services import get_active_season
+    from economy.services import get_active_season, get_or_create_safe
     from economy.models import UserSeasonPass, UserPet, LeaderboardEntry, DailyRewardClaim
 
     recent_articles = Article.objects.filter(is_featured=True)[:3]
@@ -50,7 +50,7 @@ def index(request):
     season = get_active_season()
     season_info = None
     if season:
-        usp, _ = UserSeasonPass.objects.get_or_create(user=user, season=season)
+        usp, _ = get_or_create_safe(UserSeasonPass.objects, user=user, season=season)
         levels = list(season.levels.order_by('level_number'))
         cur = usp.current_level()
         nxt = next((l for l in levels if usp.season_xp < l.xp_required), None)

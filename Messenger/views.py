@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import transaction
+from economy.services import get_or_create_safe
 from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -482,7 +483,7 @@ def block_user(request, user_id: int) -> JsonResponse:
     target = get_object_or_404(User, pk=user_id)
     if target.pk == request.user.pk:
         return JsonResponse({'success': False, 'error': 'نمی‌توانید خودتان را بلاک کنید'}, status=400)
-    _, created = BlockedUser.objects.get_or_create(blocker=request.user, blocked=target)
+    _, created = get_or_create_safe(BlockedUser.objects, blocker=request.user, blocked=target)
     return JsonResponse({'success': True, 'blocked': True, 'created': created,
                          'username': target.username})
 

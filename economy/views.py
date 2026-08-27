@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from .models import (ActiveBoost, Transaction, Season, SeasonLevel,
                      UserSeasonPass, UserPet, PetSpecies)
 from .services import (get_wallet, claim_daily_login, get_active_season,
+                              get_or_create_safe,
                        claim_season_reward, grant_xp, audit, spend, InsufficientFunds)
 
 
@@ -84,7 +85,7 @@ def season_view(request):
     claimed_free, claimed_prem = [], []
     pass_product = None
     if season:
-        usp, _ = UserSeasonPass.objects.get_or_create(user=request.user, season=season)
+        usp, _ = get_or_create_safe(UserSeasonPass.objects, user=request.user, season=season)
         claimed_free, claimed_prem = usp.claimed_free, usp.claimed_premium
         from shop.models import Product
         pass_product = Product.objects.filter(effect_type='season_pass', is_active=True).first()
@@ -99,7 +100,7 @@ def season_view(request):
 @require_http_methods(['POST'])
 def season_pass_buy(request):
     season = get_active_season()
-    UserSeasonPass.objects.get_or_create(user=request.user, season=season) if season else None
+    get_or_create_safe(UserSeasonPass.objects, user=request.user, season=season) if season else None
     if not season:
         messages.error(request, 'فصل فعالی وجود ندارد.')
         return redirect('economy:season')

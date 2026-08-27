@@ -24,12 +24,26 @@ class RewardCapReached(Exception):
     pass
 
 
+def get_or_create_safe(queryset, **kwargs):
+    """get_or_create that is safe under concurrency.
+
+    Two simultaneous requests can both see 'no row' and both INSERT;
+    the second one then hits the UNIQUE constraint (IntegrityError).
+    The losing request simply reads the row the winner just created.
+    """
+    try:
+        return queryset.get_or_create(**kwargs)
+    except IntegrityError:
+        lookup = {k: v for k, v in kwargs.items() if k != 'defaults'}
+        return queryset.get(**lookup), False
+
+
 def _idem_key(*parts) -> str:
     return ':'.join(str(p) for p in parts if p is not None)[:100] or uuid.uuid4().hex[:32]
 
 
 def get_wallet(user) -> Wallet:
-    wallet, _ = Wallet.objects.get_or_create(user=user)
+    wallet, _ = get_or_create_safe(Wallet.objects, user=user)
     return wallet
 
 
@@ -81,7 +95,7 @@ def grant(user, currency: str, amount: int, *, source: str, source_id=None,
             rule = RewardRule.objects.filter(code=rule_code, is_active=True).first()
             if rule and rule.daily_limit:
                 today = timezone.localdate().isoformat()
-                counter, _ = RewardGrant.objects.get_or_create(
+                counter, _ = get_or_create_safe(RewardGrant.objects,
                     user=user, rule_code=rule_code, period_key=today)
                 bumped = (RewardGrant.objects
                           .filter(pk=counter.pk, times_used__lt=rule.daily_limit)
