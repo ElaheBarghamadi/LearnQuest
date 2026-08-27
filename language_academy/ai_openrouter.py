@@ -9,7 +9,9 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions'
-DEFAULT_MODEL = 'meta-llama/llama-3.3-70b-instruct:free'
+# مدل پیش‌فرض: رایگان و با پشتیبانی خوب از فارسی + خروجی JSON (۲۰۲۶-۰۸)
+# مدل قبلی (llama-3.3-70b:free) دیگر رایگان نیست و OpenRouter خطای 404 می‌دهد.
+DEFAULT_MODEL = 'minimax/minimax-m3:free'
 
 
 def api_key():

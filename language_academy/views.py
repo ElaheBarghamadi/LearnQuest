@@ -2031,7 +2031,8 @@ def idioms_hub(request):
     learned = UserIdiomProgress.objects.filter(user=request.user, mastery_level__gte=2, idiom__level=level).count()
     due = UserIdiomProgress.objects.filter(user=request.user, mastery_level__gte=1,
                                            next_review_date__lte=timezone.now()).count()
-    topics = (idioms.values_list('topic', flat=True).distinct())
+    # distinct() روی values_list به‌دلیل unique_together مودل، ستون‌های تکراری برمی‌گرداند؛ با set حل می‌شود
+    topics = set(idioms.values_list('topic', flat=True))
     topic_cards = []
     for t in sorted(topics):
         qs = idioms.filter(topic=t)
