@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 import urllib.request
 import urllib.error
 
@@ -35,16 +36,7 @@ def available():
     return bool(api_key())
 
 
-def chat(messages, temperature=0.4, max_tokens=1200, timeout=25):
-    key = api_key()
-    if not key:
-        return None
-    body = json.dumps({
-        'model': model_name(),
-        'messages': messages,
-        'temperature': temperature,
-        'max_tokens': max_tokens,
-    }).encode('utf-8')
+def _post_once(body, key, timeout):
     req = urllib.request.Request(
         OPENROUTER_URL,
         data=body,
@@ -56,11 +48,37 @@ def chat(messages, temperature=0.4, max_tokens=1200, timeout=25):
         },
         method='POST',
     )
-    try:
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            data = json.loads(resp.read().decode('utf-8'))
-    except (urllib.error.URLError, urllib.error.HTTPError, ValueError, OSError) as exc:
-        logger.warning('OpenRouter call failed: %s', exc)
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return json.loads(resp.read().decode('utf-8'))
+
+
+def chat(messages, temperature=0.4, max_tokens=1200, timeout=25, retries=2):
+    key = api_key()
+    if not key:
+        return None
+    body = json.dumps({
+        'model': model_name(),
+        'messages': messages,
+        'temperature': temperature,
+        'max_tokens': max_tokens,
+    }).encode('utf-8')
+    for attempt in range(retries + 1):
+        try:
+            data = _post_once(body, key, timeout)
+            break
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429 and attempt < retries:
+                # لایهٔ رایگان OpenRouter محدودیت ریکвест/دقیقه دارد؛ کمی صبر و تلاش دوباره
+                wait = 5 * (attempt + 1)
+                logger.warning('OpenRouter 429 rate limit - retrying in %ss', wait)
+                time.sleep(wait)
+                continue
+            logger.warning('OpenRouter call failed: %s', exc)
+            return None
+        except (urllib.error.URLError, ValueError, OSError) as exc:
+            logger.warning('OpenRouter call failed: %s', exc)
+            return None
+    else:
         return None
     try:
         return data['choices'][0]['message']['content']
