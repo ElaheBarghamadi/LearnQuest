@@ -4,50 +4,47 @@
 {% block title %}My Certificates | LearnQuest Academy{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-4 py-lg-5">
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold mb-3">
+        <h1 class="display-5 fw-bold mb-2 c-anim-head">
             <span class="text-gradient">🏆 Your Certificates</span>
         </h1>
-        <p class="lead text-muted">Proof of your achievements in learning English</p>
+        <p class="lead text-muted c-anim-sub">Proof of your achievements in learning English</p>
     </div>
 
     {% if certificates %}
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             {% for cert in certificates %}
-            <div class="col-md-6 col-lg-4">
-                <div class="certificate-card" data-cert-id="{{ cert.id }}">
-                    <div class="certificate-inner">
-                        <div class="certificate-icon">
-                            <i class="fas fa-certificate fa-3x text-success"></i>
-                        </div>
-                        <h3 class="h5 fw-bold mt-3">{{ cert.world.name }}</h3>
-                        <p class="text-muted small">Completion Certificate</p>
-                        <div class="certificate-details">
-                            <div class="detail-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <span>{{ cert.issued_at|jdatelong }}</span>
-                            </div>
-                            <div class="detail-item">
-                                <i class="fas fa-hashtag"></i>
-                                <span>{{ cert.certificate_number }}</span>
-                            </div>
-                        </div>
-                        <div class="certificate-badge">
-                            <i class="fas fa-check-circle"></i> Verified
-                        </div>
-                        <a href="{% url 'language_academy:certificate_detail' cert.id %}" class="btn-academy-outline btn-sm mt-3 w-100">
-                            <i class="fas fa-eye me-2"></i> View Certificate
-                        </a>
+            <div class="col-md-6 col-lg-4" style="--i: {{ forloop.counter0 }}">
+                <a href="{% url 'language_academy:certificate_detail' cert.id %}" class="cert-card" aria-label="Open certificate: {{ cert.world.name|default:'General' }}">
+                    <div class="cert-mini">
+                        <span class="mini-frame" aria-hidden="true"></span>
+                        <span class="mini-seal" aria-hidden="true">
+                            <svg viewBox="0 0 24 24"><path d="M4.5 12.8l4.6 4.6L19.5 7" fill="none" stroke="#7a5410" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span class="mini-title">{{ cert.world.name|default:'General' }}</span>
+                        <span class="mini-kind">Completion Certificate</span>
+                        <span class="mini-level">{% if cert.world %}{{ cert.world.get_difficulty_level_display }}{% endif %}</span>
+                        <span class="mini-shine" aria-hidden="true"></span>
                     </div>
-                </div>
+                    <div class="cert-card-body">
+                        <div class="cert-card-row">
+                            <span class="cc-date"><i class="far fa-calendar-alt me-1"></i>{{ cert.issued_at|jdatelong }}</span>
+                            <span class="cc-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                        </div>
+                        <div class="cert-card-row">
+                            <span class="cc-num mono">{{ cert.certificate_number }}</span>
+                            <span class="cc-view">View <i class="fas fa-arrow-left ms-1"></i></span>
+                        </div>
+                    </div>
+                </a>
             </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="academy-card text-center py-5">
+        <div class="academy-card text-center py-5 c-anim-empty">
             <div class="card-body">
-                <i class="fas fa-certificate fa-4x text-muted mb-3"></i>
+                <i class="fas fa-certificate fa-4x mb-3" style="color: var(--text-muted);"></i>
                 <h3>No Certificates Yet</h3>
                 <p class="text-muted mb-4">Complete worlds to earn certificates and showcase your achievements!</p>
                 <a href="{% url 'language_academy:world_map' %}" class="btn-academy">
@@ -57,20 +54,146 @@
         </div>
     {% endif %}
 
-    <div class="academy-card mt-5 bg-gradient-info">
-        <div class="card-body p-4 text-white">
-            <div class="d-flex align-items-center gap-3 flex-wrap">
-                <i class="fas fa-lightbulb fa-3x"></i>
-                <div>
-                    <h5 class="mb-1">Keep Learning!</h5>
-                    <p class="mb-0 opacity-90">Complete all chapters in a world to earn a certificate. Each certificate is unique and verifiable.</p>
-                </div>
-            </div>
+    <div class="c-tip c-anim-tip">
+        <span class="c-tip-ico">💡</span>
+        <div>
+            <h5 class="mb-1">Keep Learning!</h5>
+            <p class="mb-0">Complete all chapters in a world to earn a certificate. Each certificate is unique and verifiable — open one to see its official seal and verification code.</p>
         </div>
     </div>
 </div>
 
 <style>
+.c-anim-head { animation: c-rise .6s ease both; }
+.c-anim-sub  { animation: c-rise .6s ease .12s both; }
+.c-anim-empty{ animation: c-rise .6s ease .2s both; }
+.c-anim-tip  { animation: c-rise .6s ease .3s both; }
+@keyframes c-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ───────────────────── Certificate card ───────────────────── */
+.cert-card {
+    display: block;
+    background: var(--bg-card, rgba(255, 255, 255, .72));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color, rgba(232, 234, 246, .6));
+    border-radius: 22px;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: var(--shadow, 0 8px 32px rgba(59, 130, 246, .06));
+    transition: transform .3s cubic-bezier(.22, 1, .36, 1), box-shadow .3s ease, border-color .3s ease;
+    animation: card-in .65s cubic-bezier(.22, 1, .36, 1) both;
+    animation-delay: calc(var(--i, 0) * 120ms + .15s);
+}
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(26px) scale(.97); }
+    to   { opacity: 1; transform: none; }
+}
+.cert-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-hover, 0 16px 48px rgba(59, 130, 246, .16));
+    border-color: rgba(201, 166, 78, .65);
+}
+
+/* mini certificate paper */
+.cert-mini {
+    position: relative;
+    aspect-ratio: 16 / 9.2;
+    margin: 12px 12px 0;
+    padding: 18px 20px;
+    background:
+        radial-gradient(420px 200px at 15% -10%, #ffffff 0%, rgba(255, 255, 255, 0) 60%),
+        linear-gradient(150deg, #FFFEFA 0%, #FDF8EC 55%, #F8F0DA 100%);
+    border-radius: 10px;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 3px;
+    overflow: hidden;
+    transition: transform .35s cubic-bezier(.22, 1, .36, 1);
+}
+.cert-card:hover .cert-mini { transform: scale(1.025); }
+.mini-frame {
+    position: absolute; inset: 8px;
+    border: 1.5px solid #DCC689; border-radius: 7px;
+    pointer-events: none;
+}
+.mini-frame::before {
+    content: ''; position: absolute; inset: 4px;
+    border: 1px solid rgba(196, 163, 84, .5); border-radius: 5px;
+}
+.mini-seal {
+    position: absolute; top: 12px; right: 12px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #FFE9A8 0%, #F3CE6B 45%, #DFAE3C 80%);
+    box-shadow: 0 2px 6px rgba(150, 105, 20, .4), inset 0 -1.5px 3px rgba(120, 80, 10, .3);
+    display: flex; align-items: center; justify-content: center;
+}
+.mini-seal svg { width: 15px; height: 15px; }
+.mini-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700; font-size: 1.02rem; color: #22304E;
+    text-align: center; line-height: 1.3;
+    max-width: 88%;
+}
+.mini-kind {
+    font-size: .62rem; letter-spacing: 1.8px; text-transform: uppercase;
+    color: #9A8B62; font-weight: 700;
+}
+.mini-level {
+    position: absolute; bottom: 10px; left: 14px;
+    font-size: .62rem; font-weight: 800; letter-spacing: .6px;
+    color: #8A6D2F; background: rgba(201, 166, 78, .16);
+    border: 1px solid rgba(201, 166, 78, .45);
+    padding: 2px 9px; border-radius: 20px;
+}
+.mini-shine {
+    position: absolute; top: -40%; bottom: -40%; left: -45%; width: 60%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, .5), transparent);
+    transform: skewX(-18deg);
+    opacity: 0;
+    transition: none;
+    pointer-events: none;
+}
+.cert-card:hover .mini-shine {
+    animation: mini-sheen .9s ease .05s both;
+}
+@keyframes mini-sheen {
+    from { opacity: 1; transform: translateX(0) skewX(-18deg); }
+    to   { opacity: 0; transform: translateX(360%) skewX(-18deg); }
+}
+
+/* card body */
+.cert-card-body { padding: 14px 18px 16px; }
+.cert-card-row {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 10px; font-size: .82rem; color: var(--text-secondary, #4A4A6A);
+    padding: 3px 0;
+}
+.cert-card-row + .cert-card-row { border-top: 1px dashed var(--border-color, rgba(232, 234, 246, .8)); margin-top: 8px; padding-top: 10px; }
+.cc-date i { color: var(--text-muted, #8A8AA8); }
+.cc-verified { color: #2ECC71; font-weight: 700; font-size: .75rem; white-space: nowrap; }
+.cc-num { font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace; font-size: .75rem; color: var(--text-muted, #8A8AA8); letter-spacing: .4px; }
+.cc-view {
+    color: var(--primary, #3B82F6); font-weight: 800; font-size: .8rem; white-space: nowrap;
+    transition: transform .25s ease;
+}
+.cert-card:hover .cc-view { transform: translateX(-4px); }
+
+/* tip box */
+.c-tip {
+    margin-top: 34px;
+    display: flex; align-items: center; gap: 16px;
+    background: linear-gradient(120deg, rgba(99, 102, 241, .10), rgba(59, 130, 246, .10));
+    border: 1px solid rgba(99, 102, 241, .22);
+    border-radius: 20px;
+    padding: 18px 22px;
+}
+.c-tip-ico { font-size: 1.8rem; }
+.c-tip h5 { font-weight: 800; color: var(--text-primary, #1A1A2E); }
+.c-tip p { font-size: .9rem; color: var(--text-secondary, #4A4A6A); }
+
 .text-gradient {
     background: linear-gradient(135deg, #58CC71, #1CB0F6);
     -webkit-background-clip: text;
@@ -78,68 +201,11 @@
     color: transparent;
 }
 
-.certificate-card {
-    perspective: 1000px;
-    cursor: pointer;
-}
-
-.certificate-inner {
-    background: var(--duo-white);
-    border-radius: var(--duo-radius);
-    padding: 25px 20px;
-    text-align: center;
-    transition: var(--duo-transition);
-    border: 1px solid var(--duo-gray-200);
-    position: relative;
-    overflow: hidden;
-}
-
-.certificate-inner::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #58CC71, #1CB0F6);
-}
-
-.certificate-card:hover .certificate-inner {
-    transform: translateY(-5px);
-    box-shadow: var(--duo-shadow-lg);
-    border-color: var(--duo-green);
-}
-
-.certificate-icon i {
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-}
-
-.certificate-details {
-    margin: 15px 0;
-    font-size: 0.8rem;
-}
-
-.detail-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 5px;
-    color: var(--duo-gray-600);
-}
-
-.certificate-badge {
-    display: inline-block;
-    background: rgba(88, 204, 113, 0.1);
-    color: var(--duo-green);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
-
-.bg-gradient-info {
-    background: linear-gradient(135deg, #1CB0F6, #0B8FCC);
+@media (prefers-reduced-motion: reduce) {
+    .cert-card, .c-anim-head, .c-anim-sub, .c-anim-empty, .c-anim-tip { animation: none !important; }
+    .cert-card, .cert-mini, .cc-view { transition: none !important; }
 }
 </style>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 {% endblock %}
