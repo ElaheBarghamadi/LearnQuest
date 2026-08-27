@@ -123,6 +123,29 @@
         mountToast(el, 6000);
     };
 
+    LQ.notifyCertificate = function (d) {
+        if (!d || typeof d !== 'object' || !d.url) return;
+        const el = document.createElement('div');
+        el.className = 'lq-toast t-success';
+        el.innerHTML =
+            '<div class="lq-t-ico">🏆</div>' +
+            '<div class="lq-t-body">' +
+            '<div class="lq-t-title">گواهی شما صادر شد</div>' +
+            '<div class="lq-t-text">' + esc('گواهی «' + (d.world_name || '') + '» آماده است') + '</div>' +
+            '<div class="lq-t-meta">' + (d.certificate_number ? '<span>' + esc(d.certificate_number) + '</span>' : '') +
+            ' <a class="lq-t-chat" href="' + esc(d.url) + '">🎓 مشاهدهٔ گواهی</a></div>' +
+            '</div>' +
+            '<button type="button" class="lq-t-x" aria-label="بستن">✕</button>';
+        el.addEventListener('click', (ev) => {
+            if (ev.target.closest('.lq-t-x') || ev.target.closest('.lq-t-chat')) return;
+            dismiss(el);
+            window.location.href = d.url;
+        });
+        const link = el.querySelector('.lq-t-chat');
+        if (link) link.addEventListener('click', (ev) => ev.stopPropagation());
+        mountToast(el, 9000);
+    };
+
     let modalOverlay = null;
     let lastFocus = null;
 
@@ -445,6 +468,8 @@
             if (d && d.type === 'notify.message') {
                 d.conversation_url = '/messenger/?c=' + encodeURIComponent(d.conversation_id || '');
                 LQ.notify(d);
+            } else if (d && d.type === 'notify.certificate') {
+                LQ.notifyCertificate(d);
             }
         };
         ws.onclose = () => {

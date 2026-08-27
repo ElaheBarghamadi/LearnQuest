@@ -31,6 +31,7 @@ urlpatterns = [
 
     path('certificates/', views.my_certificates, name='my_certificates'),
     path('certificate/<int:certificate_id>/', views.certificate_detail, name='certificate_detail'),
+    path('certificate/<int:certificate_id>/pdf/', views.certificate_pdf, name='certificate_pdf'),
     path('certificate/verify/', views.certificate_verify, name='certificate_verify'),
     path('certificate/verify/<str:code>/', views.certificate_verify, name='certificate_verify'),
 

@@ -1,0 +1,146 @@
+{% load static jalali %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Certificate {{ certificate.certificate_number }}</title>
+<style>
+@font-face { font-family: 'Vazirmatn'; font-weight: 400; src: url("{% static 'fonts/academy/Vazirmatn-Regular.ttf' %}"); }
+@font-face { font-family: 'Vazirmatn'; font-weight: 700; src: url("{% static 'fonts/academy/Vazirmatn-Bold.ttf' %}"); }
+@font-face { font-family: 'PlayfairDisplay'; font-weight: 600; src: url("{% static 'fonts/academy/PlayfairDisplay-SemiBold.ttf' %}"); }
+
+@page { size: A4 landscape; margin: 0; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 297mm; height: 209mm; }
+body {
+    font-family: 'DejaVu Sans', 'Vazirmatn', sans-serif;
+    background:
+        radial-gradient(1400mm 700mm at 15% -20%, #ffffff 0%, rgba(255,255,255,0) 55%),
+        linear-gradient(160deg, #FFFEFA 0%, #FDF9EE 55%, #F9F1DC 100%);
+    color: #26304A;
+    position: relative;
+    padding: 12mm 16mm;
+}
+
+/* double gold frame + corners */
+.cert-frame { position: absolute; top: 7mm; left: 7mm; right: 7mm; bottom: 7mm; border: 0.6mm solid #DCC689; }
+.cert-frame::before { content: ''; position: absolute; top: 2mm; left: 2mm; right: 2mm; bottom: 2mm; border: 0.35mm solid rgba(196,163,84,.55); }
+.cft { position: absolute; width: 10mm; height: 10mm; border: 0.9mm solid #C9A64E; }
+.cft.tl { top: -0.8mm; left: -0.8mm; border-right: 0; border-bottom: 0; }
+.cft.tr { top: -0.8mm; right: -0.8mm; border-left: 0; border-bottom: 0; }
+.cft.bl { bottom: -0.8mm; left: -0.8mm; border-right: 0; border-top: 0; }
+.cft.br { bottom: -0.8mm; right: -0.8mm; border-left: 0; border-top: 0; }
+
+/* seal */
+.cert-seal { position: absolute; top: 15mm; right: 20mm; width: 30mm; height: 36mm; }
+.seal-disc {
+    position: absolute; top: 0; left: 50%; margin-left: -15mm;
+    width: 30mm; height: 30mm; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #FFE9A8 0%, #F3CE6B 42%, #DFAE3C 74%, #C8922B 100%);
+    display: flex; align-items: center; justify-content: center;
+}
+.seal-ring { position: absolute; top: 2.4mm; left: 2.4mm; right: 2.4mm; bottom: 2.4mm; border-radius: 50%; border: 0.5mm dashed rgba(122,84,16,.55); }
+.seal-check { width: 14mm; height: 14mm; }
+.seal-ribbon { position: absolute; top: 20mm; width: 7mm; height: 16mm; background: linear-gradient(180deg, #C8922B, #A9781F); }
+.seal-ribbon.r-left  { left: 9mm;   transform: rotate(9deg); }
+.seal-ribbon.r-right { left: 14mm;  transform: rotate(-9deg); }
+
+/* content */
+.cert-body { position: relative; text-align: center; max-width: 240mm; margin: 0 auto; padding-top: 8mm; }
+.cert-brand { font-size: 9pt; font-weight: 700; letter-spacing: 2.4pt; text-transform: uppercase; color: #8A6D2F; margin-bottom: 7mm; display: block; }
+.cert-brand .brand-cap { vertical-align: -1.2mm; margin-right: 1.5mm; }
+.cert-title { font-family: 'PlayfairDisplay', 'DejaVu Serif', serif; font-weight: 600; font-size: 34pt; letter-spacing: 2pt; color: #22304E; margin-bottom: 4mm; }
+.cert-rule { display: block; height: 0.4mm; width: 60mm; margin: 0 auto 6mm; background: linear-gradient(90deg, transparent, #C9A64E 30%, #C9A64E 70%, transparent); }
+.cert-sub { font-size: 11pt; color: #6B7280; margin-bottom: 3mm; }
+.cert-name {
+    font-family: 'Vazirmatn', 'DejaVu Sans', sans-serif;
+    font-size: 30pt; font-weight: 700; color: #1F2A44;
+    display: inline-block; padding: 0 8mm 4mm; margin-bottom: 6mm;
+    border-bottom: 1mm solid #C9A64E;
+}
+.cert-text { font-size: 10.5pt; line-height: 1.8; color: #4B5563; margin-bottom: 9mm; }
+.cert-text strong { color: #22304E; }
+
+.cert-meta { display: table; width: 100%; margin-bottom: 10mm; }
+.meta-item { display: table-cell; width: 50%; vertical-align: top; }
+.meta-item + .meta-item { border-left: 0.3mm solid #E3D5AC; }
+.meta-label { font-size: 7.5pt; letter-spacing: 1.4pt; text-transform: uppercase; color: #9A8B62; font-weight: 700; }
+.meta-value { font-size: 11pt; font-weight: 700; color: #22304E; margin-top: 1mm; }
+.mono { font-family: 'DejaVu Sans Mono', monospace; font-size: 10pt; }
+.fa-num { font-family: 'Vazirmatn', 'DejaVu Sans', sans-serif; }
+
+.cert-foot { display: table; width: 100%; border-top: 0.35mm solid rgba(201,166,78,.35); padding-top: 6mm; }
+.sig { display: table-cell; width: 50%; text-align: center; vertical-align: top; }
+.sig-name { font-family: 'PlayfairDisplay', 'DejaVu Serif', serif; font-style: italic; font-weight: 600; font-size: 15pt; color: #2C3A5C; margin-bottom: 2mm; }
+.sig-line { width: 56mm; height: 0.4mm; margin: 0 auto 2.5mm; background: #8A93A8; }
+.sig-title { font-size: 7.5pt; letter-spacing: 1.2pt; text-transform: uppercase; color: #8B93A7; }
+.verify-chip {
+    display: table-cell; width: 50%; vertical-align: top; text-align: center;
+    border: 0.5mm dashed #D8C58A; border-radius: 4mm;
+    padding: 3.5mm 5mm; background: rgba(255,253,246,.7);
+}
+.vc-label { font-size: 7pt; letter-spacing: 1.2pt; text-transform: uppercase; color: #9A8B62; font-weight: 700; }
+.vc-code { display: block; font-family: 'DejaVu Sans Mono', monospace; font-size: 11pt; font-weight: 700; color: #22304E; letter-spacing: 1.5pt; margin: 1.5mm 0; }
+.vc-url { font-size: 8pt; color: #3B82F6; font-weight: 700; }
+</style>
+</head>
+<body>
+    <div class="cert-frame">
+        <i class="cft tl"></i><i class="cft tr"></i><i class="cft bl"></i><i class="cft br"></i>
+    </div>
+
+    <div class="cert-seal">
+        <span class="seal-ribbon r-left"></span>
+        <span class="seal-ribbon r-right"></span>
+        <span class="seal-disc">
+            <span class="seal-ring"></span>
+            <svg class="seal-check" viewBox="0 0 24 24"><path d="M4.5 12.8l4.6 4.6L19.5 7" fill="none" stroke="#7a5410" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+    </div>
+
+    <div class="cert-body">
+        <div class="cert-brand">
+            <svg class="brand-cap" viewBox="0 0 24 24" width="13" height="13"><path fill="#C9A64E" d="M12 3 1 8.5 12 14l9-4.5V16h2V8.5L12 3zM5 12.6V16c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.4l-7 3.5-7-3.5z"/></svg>
+            LearnQuest Academy
+        </div>
+        <h1 class="cert-title">Certificate of Completion</h1>
+        <span class="cert-rule"></span>
+        <p class="cert-sub">This certificate is proudly presented to</p>
+        <h2 class="cert-name">{{ certificate.user.username }}</h2>
+        <p class="cert-text">
+            {% if certificate.world %}
+            for successfully completing the <strong>{{ certificate.world.name }}</strong> world
+            in the LearnQuest Language Academy,
+            demonstrating proficiency in English at the
+            <strong>{{ certificate.world.get_difficulty_level_display }}</strong> level.
+            {% else %}
+            for outstanding achievement in the LearnQuest Language Academy.
+            {% endif %}
+        </p>
+
+        <div class="cert-meta">
+            <div class="meta-item">
+                <div class="meta-label">Date of Issue</div>
+                <div class="meta-value fa-num">{{ certificate.issued_at|jdatelong }}</div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Certificate No.</div>
+                <div class="meta-value mono">{{ certificate.certificate_number }}</div>
+            </div>
+        </div>
+
+        <div class="cert-foot">
+            <div class="sig">
+                <div class="sig-name">LearnQuest Academy</div>
+                <div class="sig-line"></div>
+                <div class="sig-title">Director of Education</div>
+            </div>
+            <div class="verify-chip">
+                <span class="vc-label">Verification code</span>
+                <span class="vc-code">{{ certificate.verification_code }}</span>
+                <span class="vc-url">verify at: {{ verify_url }}</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

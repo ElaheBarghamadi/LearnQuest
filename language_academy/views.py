@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -9,7 +10,10 @@ from django.db.models import Q, Sum
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 import json
+import logging
 import uuid
+
+logger = logging.getLogger(__name__)
 
 from .models import (
     World, Chapter, Lesson, LessonContent, Vocabulary, GrammarPoint,
@@ -1000,6 +1004,7 @@ def submit_exam(request, exam_id):
             wp.update_progress()
             if wp.is_completed:
                 messages.success(request, f'🎉 World "{exam.chapter.world.name}" completed!')
+                _maybe_issue_certificate(request.user, exam.chapter.world)
         else:
             # Chapter-level exam failed → check attempts and possibly reset the
             # whole chapter so the learner has to redo every lesson + its quiz.
@@ -1419,6 +1424,29 @@ def certificate_detail(request, certificate_id):
     return render(request, 'language_academy/certificate_detail.html', {'certificate': certificate})
 
 
+@login_required
+def certificate_pdf(request, certificate_id):
+    """ساخت PDF رسمی گواهی (همان طرح صفحهٔ نمایش) برای دانلود و اشتراک‌گذاری."""
+    certificate = get_object_or_404(Certificate, id=certificate_id, user=request.user)
+    verify_url = (f"{request.scheme}://{request.get_host()}"
+                  + reverse('language_academy:certificate_verify', args=[certificate.verification_code]))
+    html = render_to_string('language_academy/certificate_pdf.html', {
+        'certificate': certificate,
+        'verify_url': verify_url,
+    })
+    try:
+        from weasyprint import HTML
+        pdf = HTML(string=html, base_url=request.build_absolute_uri('/')).write_pdf()
+    except Exception:
+        logger.exception('خطا در ساخت PDF گواهی %s', certificate.pk)
+        return HttpResponse('ساخت PDF در حال حاضر ممکن نیست. لطفاً دوباره تلاش کنید.', status=500)
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = (
+        f'attachment; filename="LearnQuest-Certificate-{certificate.certificate_number}.pdf"'
+    )
+    return response
+
+
 def certificate_verify(request, code=None):
     certificate = None
     searched = False
@@ -1529,6 +1557,24 @@ def _maybe_issue_certificate(user, world):
         cert, _created = Certificate.objects.get_or_create(user=user, world=world)
         wp.certificate_issued = True
         wp.save(update_fields=['certificate_issued'])
+
+    # اعلان «گواهی صادر شد» روی WebSocket اعلان‌ها (در همهٔ تب‌های کاربر)
+    try:
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
+        from Messenger.services import notify_group_name
+        async_to_sync(get_channel_layer().group_send)(
+            notify_group_name(user.pk),
+            {'type': 'certificate_issued', 'payload': {
+                'type': 'notify.certificate',
+                'certificate_id': cert.pk,
+                'world_name': world.name if world else 'General',
+                'certificate_number': cert.certificate_number,
+                'url': reverse('language_academy:certificate_detail', args=[cert.pk]),
+            }},
+        )
+    except Exception:
+        logger.exception('خطا در ارسال اعلان صدور گواهی به کاربر %s', user.pk)
     return cert
 
 

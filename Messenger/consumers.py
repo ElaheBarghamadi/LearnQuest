@@ -350,3 +350,6 @@ class NotificationConsumer(AsyncWebsocketConsumer):
 
     async def notify_message(self, event):
         await self.send(text_data=json.dumps(event['payload'], ensure_ascii=False))
+
+    async def certificate_issued(self, event):
+        await self.send(text_data=json.dumps(event['payload'], ensure_ascii=False))

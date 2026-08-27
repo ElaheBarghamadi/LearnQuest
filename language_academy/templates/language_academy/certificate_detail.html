@@ -76,6 +76,9 @@
         <button onclick="window.print()" class="btn-academy">
             <i class="fas fa-print me-2"></i> Print Certificate
         </button>
+        <a href="{% url 'language_academy:certificate_pdf' certificate.id %}" class="btn-academy-outline" download>
+            <i class="fas fa-file-pdf me-2"></i> Download PDF
+        </a>
         <a href="{% url 'language_academy:my_certificates' %}" class="btn-academy-outline">
             <i class="fas fa-arrow-left me-2"></i> Back to Certificates
         </a>

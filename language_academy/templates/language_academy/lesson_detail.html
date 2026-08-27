@@ -721,6 +721,75 @@
 
 </style>
 
+<style>
+    /* ───────── Certificate issuance ceremony ───────── */
+    .cert-cel-overlay {
+        position: fixed; inset: 0; z-index: 10001;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(20, 24, 40, .55);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        opacity: 0; transition: opacity .35s ease;
+        padding: 24px;
+    }
+    .cert-cel-overlay.show { opacity: 1; }
+    .cert-cel-card {
+        position: relative;
+        background: linear-gradient(160deg, #FFFEFA 0%, #FDF8EC 60%, #F8F0DA 100%);
+        border: 1.5px solid #DCC689;
+        border-radius: 22px;
+        box-shadow: 0 30px 80px rgba(15, 20, 40, .45), 0 0 0 6px rgba(201, 166, 78, .12);
+        max-width: 460px; width: 100%;
+        padding: 40px 34px 34px;
+        text-align: center;
+        color: #26304A;
+        transform: translateY(26px) scale(.94);
+        transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+    }
+    .cert-cel-overlay.show .cert-cel-card { transform: none; }
+    .cert-cel-seal {
+        width: 74px; height: 74px; margin: 0 auto 16px;
+        border-radius: 50%;
+        background: radial-gradient(circle at 32% 28%, #FFE9A8 0%, #F3CE6B 45%, #DFAE3C 80%);
+        box-shadow: 0 8px 22px rgba(150, 105, 20, .4), inset 0 -3px 6px rgba(120, 80, 10, .3);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2.1rem;
+        animation: cert-cel-pop .7s cubic-bezier(.34, 1.56, .64, 1) .25s both;
+    }
+    @keyframes cert-cel-pop {
+        from { transform: scale(2.4) rotate(24deg); opacity: 0; }
+        to   { transform: none; opacity: 1; }
+    }
+    .cert-cel-card h2 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: 1.7rem; letter-spacing: .5px; color: #22304E; margin-bottom: 10px;
+    }
+    .cert-cel-card p { font-size: .92rem; line-height: 1.7; color: #4B5563; margin-bottom: 22px; }
+    .cert-cel-card p b { color: #22304E; }
+    .cert-cel-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .cert-cel-primary {
+        display: inline-block;
+        background: linear-gradient(135deg, #C9A64E, #A9822A);
+        color: #fff; font-weight: 800; font-size: .95rem;
+        padding: 12px 26px; border-radius: 14px; text-decoration: none;
+        box-shadow: 0 6px 18px rgba(169, 130, 42, .4);
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .cert-cel-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(169, 130, 42, .5); }
+    .cert-cel-secondary {
+        background: transparent; border: 1.5px solid rgba(169, 130, 42, .4);
+        color: #8A6D2F; font-weight: 700; font-size: .88rem;
+        padding: 12px 20px; border-radius: 14px; cursor: pointer;
+        transition: background .2s ease;
+    }
+    .cert-cel-secondary:hover { background: rgba(201, 166, 78, .12); }
+    .cert-cel-confetti { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; }
+    @media (prefers-reduced-motion: reduce) {
+        .cert-cel-overlay, .cert-cel-card, .cert-cel-seal { transition: none !important; animation: none !important; }
+    }
+
+</style>
+
 {% endblock %}
 
 {% block content %}
@@ -1345,12 +1414,77 @@
             .then(data => {
                 console.log('✅ Server response:', data);
                 showXPPopup({{ lesson.xp_reward }}, '🎉 Lesson Complete!');
+                if (data.certificate_url) {
+                    setTimeout(() => showCertificateCelebration(data.certificate_url), 900);
+                }
             })
             .catch(err => {
                 console.warn('⚠️ Server update failed:', err);
             });
         }
     };
+
+    function showCertificateCelebration(certUrl) {
+        if (document.querySelector('.cert-cel-overlay')) return;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'cert-cel-overlay';
+        overlay.innerHTML = `
+            <div class="cert-cel-card">
+                <div class="cert-cel-seal">🏅</div>
+                <h2>World Complete!</h2>
+                <p>Your official certificate of completion has been <b>issued</b>.
+                   You can view, print or download it anytime from your certificates page.</p>
+                <div class="cert-cel-actions">
+                    <a class="cert-cel-primary" href="${certUrl}">🎓 View Your Certificate</a>
+                    <button class="cert-cel-secondary" type="button">Stay Here</button>
+                </div>
+            </div>`;
+        document.body.appendChild(overlay);
+        requestAnimationFrame(() => overlay.classList.add('show'));
+
+        overlay.querySelector('.cert-cel-secondary').addEventListener('click', () => {
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.remove(), 350);
+        });
+
+        // بارش کاغذرنگی پشت کارت
+        const cv = document.createElement('canvas');
+        cv.className = 'cert-cel-confetti';
+        overlay.appendChild(cv);
+        cv.width = window.innerWidth; cv.height = window.innerHeight;
+        const ctx = cv.getContext('2d');
+        const colors = ['#F5C542', '#58CC71', '#1CB0F6', '#8B5CF6', '#FF6584', '#FFD166'];
+        const pieces = [];
+        for (let i = 0; i < 130; i++) {
+            const a = Math.random() * Math.PI * 2, sp = 3 + Math.random() * 9;
+            pieces.push({ x: cv.width / 2, y: cv.height * .42,
+                vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 5,
+                g: .16 + Math.random() * .12, s: 4 + Math.random() * 6,
+                r: Math.random() * Math.PI, vr: (Math.random() - .5) * .3,
+                c: colors[i % colors.length], life: 110 + Math.random() * 70,
+                circ: Math.random() < .35 });
+        }
+        let t = 0;
+        (function frame() {
+            t++; ctx.clearRect(0, 0, cv.width, cv.height);
+            let alive = false, p;
+            for (let j = 0; j < pieces.length; j++) {
+                p = pieces[j];
+                if (p.life <= 0) continue;
+                alive = true; p.life--;
+                p.vy += p.g; p.x += p.vx; p.y += p.vy; p.vx *= .992; p.r += p.vr;
+                ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r);
+                ctx.globalAlpha = Math.max(0, Math.min(1, p.life / 45));
+                ctx.fillStyle = p.c;
+                if (p.circ) { ctx.beginPath(); ctx.arc(0, 0, p.s / 2, 0, 7); ctx.fill(); }
+                else ctx.fillRect(-p.s / 2, -p.s / 2, p.s, p.s * .62);
+                ctx.restore();
+            }
+            if (alive && t < 320) requestAnimationFrame(frame);
+            else cv.remove();
+        })();
+    }
 
     function showXPPopup(xp, message) {
         const popup = document.createElement('div');
@@ -1727,6 +1861,7 @@
         .ve-bar { bottom: 0; left: 0; right: 0; transform: none; border-radius: 18px 18px 0 0; padding: 8px 10px; gap: 7px; max-width: 100vw; }
         .ve-rail { bottom: 150px; }
     }
+
 </style>
 
 <div class="ve-rail" id="veRail">
