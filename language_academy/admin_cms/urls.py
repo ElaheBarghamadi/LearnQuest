@@ -96,4 +96,7 @@ urlpatterns += [
     path('blog/articles/<int:article_id>/delete/', views.blog_article_delete, name='blog_article_delete'),
     path('blog/upload-image/', views.blog_image_upload, name='blog_image_upload'),
     path('blog/categories/quick-create/', views.blog_category_quick_create, name='blog_category_quick_create'),
+    path('blog/articles/<int:article_id>/toggle-feature/', views.blog_article_toggle_feature, name='blog_article_toggle_feature'),
+    path('blog/articles/<int:article_id>/toggle-publish/', views.blog_article_toggle_publish, name='blog_article_toggle_publish'),
+    path('blog/articles/<int:article_id>/duplicate/', views.blog_article_duplicate, name='blog_article_duplicate'),
 ]

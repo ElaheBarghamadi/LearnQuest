@@ -1,3 +1,4 @@
+import re
 import time
 
 from django.contrib.auth.decorators import login_required
@@ -5,12 +6,26 @@ from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.defaultfilters import linebreaks as _linebreaks
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from .forms import CommentForm
 from .models import Article, Category, Comment
+
+_BLOCK_HTML_RE = re.compile(
+    r'<\s*(/?\s*)(p|h[1-6]|ul|ol|li|div|blockquote|table|pre|section|figure|hr)\b', re.I)
+
+
+def _article_content_html(content):
+    """متن‌های HTML (تولیدشده با نوار ابزار مدیر) بدون linebreaks رندر می‌شوند —
+    وگرنه هر خط‌تجدید داخل <ul>/<h2>… به <br> اضافه تبدیل می‌شد.
+    برای متن‌های ساده (بدون تگ بلوکی) linebreaks اعمال می‌شود."""
+    content = content or ''
+    if _BLOCK_HTML_RE.search(content):
+        return content
+    return _linebreaks(content)
 
 COMMENT_MIN_LEN = 3
 COMMENT_MAX_LEN = 1000
@@ -20,7 +35,7 @@ PAGE_SIZE = 9
 
 def _published_articles():
     return (Article.objects
-            .filter(published_at__lte=timezone.now())
+            .filter(published_at__lte=timezone.now(), is_published=True)
             .select_related('category')
             .annotate(comments_count=Count('comments', filter=Q(comments__is_approved=True))))
 
@@ -82,6 +97,7 @@ def article_detail(request, article_id):
 
     context = {
         'article': article,
+        'content_html': _article_content_html(article.content),
         'comments': comments,
         'comments_count': article.comments.filter(is_approved=True).count(),
         'comment_form': CommentForm() if request.user.is_authenticated else None,
@@ -108,7 +124,7 @@ def add_comment(request):
                              'error': f'نظر نمی‌تواند بیش از {COMMENT_MAX_LEN} حرف باشد.'}, status=400)
 
     article = get_object_or_404(Article, pk=request.POST.get('article_id'),
-                                published_at__lte=timezone.now())
+                                published_at__lte=timezone.now(), is_published=True)
 
     parent = None
     parent_id = request.POST.get('parent_id')

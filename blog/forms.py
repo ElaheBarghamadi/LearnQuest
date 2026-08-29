@@ -7,7 +7,8 @@ from .models import Article, Category
 class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
-        fields = ['title', 'slug', 'excerpt', 'content', 'image', 'category', 'published_at', 'is_featured']
+        fields = ['title', 'slug', 'excerpt', 'content', 'image', 'category',
+                  'published_at', 'is_published', 'is_featured', 'meta_description']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 250}),
             'slug': forms.TextInput(attrs={'class': 'form-control', 'maxlength': 250, 'placeholder': 'اختیاری — خودکار ساخته می‌شود'}),
@@ -15,7 +16,10 @@ class ArticleForm(forms.ModelForm):
             'content': forms.Textarea(attrs={'rows': 14, 'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-select'}),
             'published_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}, format='%Y-%m-%dT%H:%M'),
+            'is_published': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'is_featured': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'meta_description': forms.Textarea(attrs={'rows': 2, 'class': 'form-control', 'maxlength': 300,
+                                                      'placeholder': 'اختیاری — نمایش در گوگل؛ اگر خالی باشد از خلاصه استفاده می‌شود'}),
             'image': forms.FileInput(attrs={'class': 'form-control', 'accept': 'image/*'}),
         }
 

@@ -1427,18 +1427,27 @@ from blog.forms import ArticleForm as BlogArticleForm, CategoryQuickForm as Blog
 
 @staff_member_required
 def blog_article_list(request):
-    qs = BlogArticle.objects.select_related('category').order_by('-published_at', '-id')
+    qs = (BlogArticle.objects.select_related('category')
+          .annotate(comments_count=Count('comments'))
+          .order_by('-published_at', '-id'))
     q = request.GET.get('q', '').strip()
     cat = request.GET.get('cat', '').strip()
+    status = request.GET.get('st', '').strip()
     if q:
         qs = qs.filter(Q(title__icontains=q) | Q(excerpt__icontains=q))
     if cat and cat.isdigit():
         qs = qs.filter(category_id=int(cat))
+    if status == 'draft':
+        qs = qs.filter(is_published=False)
+    elif status == 'published':
+        qs = qs.filter(is_published=True)
     return render(request, 'admin_cms/blog/list.html', {
         'articles': Paginator(qs, 20).get_page(request.GET.get('page', 1)),
         'categories': BlogCategory.objects.all().order_by('name'),
-        'q': q, 'cat': cat,
+        'q': q, 'cat': cat, 'status': status,
+        'now': timezone.now(),
         'total': BlogArticle.objects.count(),
+        'draft_total': BlogArticle.objects.filter(is_published=False).count(),
     })
 
 
@@ -1520,3 +1529,50 @@ def blog_category_quick_create(request):
     else:
         messages.error(request, 'ساخت دسته نامعتبر بود.')
     return redirect(request.POST.get('next') or 'admin_cms:blog_article_list')
+
+
+@staff_member_required
+@require_POST
+def blog_article_toggle_feature(request, article_id):
+    article = get_object_or_404(BlogArticle, id=article_id)
+    article.is_featured = not article.is_featured
+    article.save(update_fields=['is_featured'])
+    messages.success(request, f'مقاله «{article.title[:40]}» {"ویژه شد ⭐" if article.is_featured else "از حالت ویژه خارج شد."}')
+    return redirect('admin_cms:blog_article_list')
+
+
+@staff_member_required
+@require_POST
+def blog_article_toggle_publish(request, article_id):
+    article = get_object_or_404(BlogArticle, id=article_id)
+    article.is_published = not article.is_published
+    if not article.is_published and article.is_featured:
+        article.is_featured = False
+    article.save(update_fields=['is_published', 'is_featured'])
+    messages.success(request, f'مقاله «{article.title[:40]}» {"منتشر شد ✅" if article.is_published else "به حالت پیش‌نویس برگشت 📝"}.')
+    return redirect('admin_cms:blog_article_list')
+
+
+@staff_member_required
+@require_POST
+def blog_article_duplicate(request, article_id):
+    article = get_object_or_404(BlogArticle, id=article_id)
+    base = article.slug
+    i = 2
+    while BlogArticle.objects.filter(slug=base).exists():
+        base = f'{article.slug}-{i}'
+        i += 1
+    copy = BlogArticle.objects.create(
+        title=f'{article.title} (کپی)',
+        slug=base,
+        excerpt=article.excerpt,
+        content=article.content,
+        image=article.image,
+        category=article.category,
+        published_at=timezone.now(),
+        is_published=False,
+        is_featured=False,
+        meta_description=article.meta_description,
+    )
+    messages.success(request, f'کپی مقاله ساخته شد (به‌عنوان پیش‌نویس): «{copy.title[:50]}»')
+    return redirect('admin_cms:blog_article_edit', article_id=copy.id)

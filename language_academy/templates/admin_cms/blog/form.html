@@ -31,6 +31,28 @@
     .be-hint code { background: #eef0fa; color: #4F46E5; padding: 1px 6px; border-radius: 5px; font-size: .85em; }
     .be-prev { border: 1.5px dashed #e2e8f0; border-radius: 12px; padding: 8px; text-align: center; background: #f8fafc; margin-top: 8px; }
     .be-prev img { max-height: 130px; border-radius: 8px; max-width: 100%; }
+    .be-stats { display: flex; gap: 16px; margin-top: 8px; font-size: .75rem; color: #64748b; font-weight: 600; }
+    .be-stats b { color: #0f172a; }
+    .be-preview-toggle { display: none; }
+    .be-liveprev { margin-top: 14px; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: none; }
+    .be-liveprev.open { display: block; }
+    .be-liveprev-bar { display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 8px 14px; border-bottom: 1px solid #e2e8f0; }
+    .be-liveprev-bar span { font-size: .75rem; font-weight: 700; color: #64748b; }
+    .be-liveprev-body { padding: 22px clamp(16px, 4vw, 40px); background: linear-gradient(180deg, #fff 0%, #fcfdff 100%); font-size: .95rem; line-height: 2.1; color: #2d3445; max-height: 520px; overflow-y: auto; }
+    .be-liveprev-body h2 { font-size: 1.25rem; font-weight: 800; margin: 22px 0 10px; color: #1e293b; }
+    .be-liveprev-body h3 { font-size: 1.05rem; font-weight: 700; margin: 18px 0 8px; color: #1e293b; }
+    .be-liveprev-body blockquote { border-inline-start: 4px solid #1ea89a; background: rgba(30,168,154,.07); border-radius: 0 12px 12px 0; padding: 12px 16px; margin: 16px 0; color: #475569; }
+    .be-liveprev-body .tip, .be-liveprev-body .note, .be-liveprev-body .warn { border-inline-start: 4px solid #1ea89a; background: rgba(30,168,154,.08); border-radius: 0 14px 14px 0; padding: 12px 16px; margin: 18px 0; }
+    .be-liveprev-body .note { border-color: #3b82f6; background: rgba(59,130,246,.07); }
+    .be-liveprev-body .warn { border-color: #e8a33d; background: rgba(232,163,61,.09); }
+    .be-liveprev-body img { max-width: 100%; border-radius: 12px; }
+    .be-liveprev-body ul, .be-liveprev-body ol { padding-inline-start: 24px; }
+    .be-liveprev-body table { width: 100%; border-collapse: collapse; } .be-liveprev-body th { background: #f1f5f9; padding: 8px; } .be-liveprev-body td { padding: 8px; border-bottom: 1px solid #eef0f8; }
+    .be-liveprev-body code { background: rgba(30,168,154,.1); color: #0f766e; padding: 1px 6px; border-radius: 5px; direction: ltr; display: inline-block; font-size: .85em; }
+    .be-liveprev-body pre { background: #0f172a; color: #e2e8f0; border-radius: 12px; padding: 14px; direction: ltr; text-align: left; font-size: .85em; overflow-x: auto; }
+    .be-liveprev-body pre code { background: none; color: inherit; padding: 0; }
+    .be-liveprev-empty { color: #94a3b8; text-align: center; padding: 30px; font-size: .8rem; }
+    .form-check { position: relative; }
 </style>
 {% endblock %}
 
@@ -57,9 +79,28 @@
                             {{ form.published_at }}
                         </div>
                     </div>
-                    <div class="mb-3 mt-3">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.is_published }}
+                                <label class="form-check-label">✅ منتشر شده <small class="text-muted">(خاموش = پیش‌نویس، در سایت نمایش داده نمی‌شود)</small></label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check">
+                                {{ form.is_featured }}
+                                <label class="form-check-label">⭐ مقالهٔ ویژه <small class="text-muted">(در بالای بلاگ و لندینگ نمایش داده می‌شود)</small></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">خلاصه *</label>
                         {{ form.excerpt }}{{ form.excerpt.errors }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">توضیح سئو <small class="text-muted">(Meta Description — نمایش در گوگل)</small></label>
+                        {{ form.meta_description }}{{ form.meta_description.errors }}
+                        <div class="be-stats"><span id="metaDescCount">0</span> / 300 کاراکتر</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">تصویر شاخص</label>
@@ -96,6 +137,15 @@
                             <input type="file" id="beImgInput" accept="image/*" style="display:none">
                         </div>
                         <div class="be-area">{{ form.content }}</div>
+                        <div class="be-stats">
+                            <span>📝 <b id="wordCount">0</b> کلمه</span>
+                            <span>⏱ حدود <b id="readTime">1</b> دقیقه مطالعه</span>
+                            <span><a href="#" id="bePrevToggle" style="color:#6C63FF; font-weight:700;">👁 پیش‌نمایش زندهٔ محتوا</a></span>
+                        </div>
+                        <div class="be-liveprev" id="beLivePrev">
+                            <div class="be-liveprev-bar"><span>پیش‌نمایش — دقیقاً همین‌طور در سایت نمایش داده می‌شود</span></div>
+                            <div class="be-liveprev-body" id="beLivePrevBody"><div class="be-liveprev-empty">برای دیدن پیش‌نمایش، کمی در کادر بالا بنویس.</div></div>
+                        </div>
                         <div class="be-hint">
                             دکمه‌ها تگ آماده می‌سازند. نمونه: <code>&lt;h2&gt;تیتر&lt;/h2&gt;</code> ·
                             <code>&lt;b&gt;متن ضخیم&lt;/b&gt;</code> · <code>&lt;mark&gt;هایلایت&lt;/mark&gt;</code> ·
@@ -105,10 +155,6 @@
                         {{ form.content.errors }}
                     </div>
 
-                    <div class="form-check mb-3">
-                        {{ form.is_featured }}
-                        <label class="form-check-label">⭐ مقالهٔ ویژه (در بالای بلاگ و لندینگ نمایش داده می‌شود)</label>
-                    </div>
                     <hr>
                     <div class="d-flex justify-content-between">
                         <a href="{% url 'admin_cms:blog_article_list' %}" class="btn btn-secondary">انصراف</a>
@@ -205,6 +251,56 @@
         })
         .catch(function () { alert('خطای اتصال'); });
     });
+
+    // شمارندهٔ کلمه + زمان مطالعه + پیش‌نمایش زنده + شمارندهٔ سئو
+    var wcEl = document.getElementById('wordCount');
+    var rtEl = document.getElementById('readTime');
+    var mdEl = document.getElementById('metaDescCount');
+    var prevBox = document.getElementById('beLivePrev');
+    var prevBody = document.getElementById('beLivePrevBody');
+    var prevToggle = document.getElementById('bePrevToggle');
+    var mdInput = document.getElementById('id_meta_description');
+
+    function stripTags(html) {
+        var d = document.createElement('div');
+        d.innerHTML = html;
+        return (d.textContent || '').replace(/\s+/g, ' ').trim();
+    }
+    function updateStats() {
+        var plain = stripTags(area.value);
+        var words = plain ? plain.split(' ').filter(Boolean).length : 0;
+        wcEl.textContent = words.toLocaleString('fa-IR');
+        rtEl.textContent = Math.max(1, Math.round(words / 200)).toLocaleString('fa-IR');
+    }
+    function updatePrev() {
+        if (!prevBox.classList.contains('open')) return;
+        var html = (area.value || '').trim();
+        if (!html) { prevBody.innerHTML = '<div class="be-liveprev-empty">برای دیدن پیش‌نمایش، کمی در کادر بالا بنویس.</div>'; return; }
+        // sanitize: remove script/style/event handlers
+        var tmp = document.createElement('div');
+        tmp.innerHTML = html;
+        tmp.querySelectorAll('script, style, iframe, object, embed').forEach(function (n) { n.remove(); });
+        tmp.querySelectorAll('*').forEach(function (el) {
+            for (var i = el.attributes.length - 1; i >= 0; i--) {
+                var a = el.attributes[i].name.toLowerCase();
+                if (a.indexOf('on') === 0) el.removeAttribute(el.attributes[i].name);
+                if (a === 'href' && (el.getAttribute('href') || '').trim().toLowerCase().indexOf('javascript:') === 0) el.removeAttribute('href');
+            }
+        });
+        prevBody.innerHTML = tmp.innerHTML;
+    }
+    area.addEventListener('input', function () { updateStats(); updatePrev(); });
+    if (mdInput) mdInput.addEventListener('input', function () { mdEl.textContent = mdInput.value.length; });
+    if (prevToggle) prevToggle.addEventListener('click', function (e) {
+        e.preventDefault();
+        prevBox.classList.toggle('open');
+        if (prevBox.classList.contains('open')) {
+            updatePrev();
+            prevBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    });
+    updateStats();
+    if (mdInput) mdEl.textContent = mdInput.value.length;
 })();
 </script>
 {% endblock %}

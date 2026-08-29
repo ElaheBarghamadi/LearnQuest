@@ -4,13 +4,19 @@
 
 {% block content %}
 <div class="row mb-4">
-    <div class="col-md-3"><div class="card text-center p-3"><h3 class="mb-0 text-primary">{{ total }}</h3><small class="text-muted">همهٔ مقالات</small></div></div>
-    <div class="col-md-9">
-        <form method="get" class="d-flex gap-2">
-            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="جستجو در عنوان/خلاصه…">
-            <select name="cat" class="form-select" style="max-width: 200px;">
+    <div class="col-md-2"><div class="card text-center p-3"><h3 class="mb-0 text-primary">{{ total }}</h3><small class="text-muted">همهٔ مقالات</small></div></div>
+    <div class="col-md-2"><div class="card text-center p-3"><h3 class="mb-0 text-secondary">{{ draft_total }}</h3><small class="text-muted">پیش‌نویس</small></div></div>
+    <div class="col-md-8">
+        <form method="get" class="d-flex gap-2 flex-wrap">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="جستجو در عنوان/خلاصه…" style="min-width:180px">
+            <select name="cat" class="form-select" style="max-width: 180px;">
                 <option value="">همهٔ دسته‌ها</option>
                 {% for c in categories %}<option value="{{ c.id }}" {% if cat == c.id|stringformat:'i' %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+            </select>
+            <select name="st" class="form-select" style="max-width: 150px;">
+                <option value="">همهٔ وضعیت‌ها</option>
+                <option value="published" {% if status == 'published' %}selected{% endif %}>✅ منتشر شده</option>
+                <option value="draft" {% if status == 'draft' %}selected{% endif %}>📝 پیش‌نویس</option>
             </select>
             <button class="btn btn-primary">فیلتر</button>
             <a href="{% url 'admin_cms:blog_article_create' %}" class="btn btn-success"><i class="fas fa-plus"></i> مقالهٔ جدید</a>
@@ -21,19 +27,46 @@
 <div class="card">
     <div class="card-body p-0">
         <table class="table table-hover align-middle mb-0">
-            <thead><tr><th>#</th><th>عکس</th><th>عنوان</th><th>دسته</th><th>انتشار</th><th>👁</th><th>❤</th><th>ویژه</th><th></th></tr></thead>
+            <thead><tr><th>#</th><th>عکس</th><th>عنوان</th><th>دسته</th><th>وضعیت</th><th>انتشار</th><th>👁</th><th>❤</th><th>💬</th><th>عملیات</th></tr></thead>
             <tbody>
                 {% for a in articles %}
-                <tr>
+                <tr {% if not a.is_published %}style="background:#f8fafc; opacity:.92"{% endif %}>
                     <td>{{ a.id }}</td>
                     <td>{% if a.image %}<img src="{{ a.image.url }}" style="width:56px;height:40px;object-fit:cover;border-radius:8px;">{% else %}<span class="text-muted">—</span>{% endif %}</td>
-                    <td><a href="/blog/article/{{ a.id }}/" target="_blank" class="fw-bold text-decoration-none">{{ a.title|truncatechars:60 }}</a><br><small class="text-muted">/{{ a.slug|truncatechars:40 }}</small></td>
+                    <td>
+                        <a href="/blog/article/{{ a.id }}/" target="_blank" class="fw-bold text-decoration-none">{{ a.title|truncatechars:56 }}</a>
+                        {% if a.is_featured %}<span class="badge bg-warning text-dark" title="مقالهٔ ویژه">⭐ ویژه</span>{% endif %}<br>
+                        <small class="text-muted">/{{ a.slug|truncatechars:36 }}</small>
+                    </td>
                     <td><span class="badge bg-light text-dark border">{{ a.category.name }}</span></td>
+                    <td>
+                        {% if not a.is_published %}
+                            <span class="badge bg-secondary">📝 پیش‌نویس</span>
+                        {% elif a.published_at > now %}
+                            <span class="badge bg-info text-dark">🕒 زمان‌بندی‌شده</span>
+                        {% else %}
+                            <span class="badge bg-success">✅ منتشر شده</span>
+                        {% endif %}
+                    </td>
                     <td><small>{{ a.published_at|date:'Y-m-d H:i' }}</small></td>
                     <td>{{ a.views }}</td><td>{{ a.likes }}</td>
-                    <td>{% if a.is_featured %}<span class="text-warning">⭐</span>{% endif %}</td>
-                    <td class="text-nowrap">
-                        <a href="{% url 'admin_cms:blog_article_edit' a.id %}" class="btn btn-sm btn-outline-primary"><i class="fas fa-edit"></i></a>
+                    <td>{% with cc=a.comments_count %}{% if cc %}{{ cc }}{% else %}—{% endif %}{% endwith %}</td>
+                    <td class="text-nowrap" style="min-width:150px">
+                        <a href="{% url 'admin_cms:blog_article_edit' a.id %}" class="btn btn-sm btn-outline-primary" title="ویرایش"><i class="fas fa-edit"></i></a>
+                        <form method="post" action="{% url 'admin_cms:blog_article_toggle_publish' a.id %}" class="d-inline" title="{% if a.is_published %}برگرداندن به پیش‌نویس{% else %}منتشر کن{% endif %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if a.is_published %}btn-outline-warning{% else %}btn-outline-success{% endif %}">
+                                <i class="fas {% if a.is_published %}fa-eye-slash{% else %}fa-eye{% endif %}"></i>
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'admin_cms:blog_article_toggle_feature' a.id %}" class="d-inline" title="{% if a.is_featured %}حذف ویژه{% else %}ویژه کن{% endif %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if a.is_featured %}btn-warning{% else %}btn-outline-secondary{% endif %}">⭐</button>
+                        </form>
+                        <form method="post" action="{% url 'admin_cms:blog_article_duplicate' a.id %}" class="d-inline" title="کپی به‌عنوان پیش‌نویس" onsubmit="return confirm('یک کپی به‌عنوان پیش‌نویس ساخته شود؟')">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-clone"></i></button>
+                        </form>
                         <form method="post" action="{% url 'admin_cms:blog_article_delete' a.id %}" class="d-inline" onsubmit="return confirm('مقاله «{{ a.title|truncatechars:30 }}» حذف شود؟')">
                             {% csrf_token %}
                             <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
@@ -41,7 +74,7 @@
                     </td>
                 </tr>
                 {% empty %}
-                <tr><td colspan="9" class="text-center py-5">هنوز مقاله‌ای نیست — <a href="{% url 'admin_cms:blog_article_create' %}">اولین مقاله را بنویس ✍️</a></td></tr>
+                <tr><td colspan="10" class="text-center py-5">هنوز مقاله‌ای نیست — <a href="{% url 'admin_cms:blog_article_create' %}">اولین مقاله را بنویس ✍️</a></td></tr>
                 {% endfor %}
             </tbody>
         </table>

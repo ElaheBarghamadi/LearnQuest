@@ -30,7 +30,10 @@ class Article(models.Model):
     likes = models.PositiveIntegerField(default=0, verbose_name="تعداد لایک")
 
     published_at = models.DateTimeField(default=timezone.now, verbose_name="تاریخ انتشار")
+    is_published = models.BooleanField(default=True, verbose_name="منتشر شده")
     is_featured = models.BooleanField(default=False, verbose_name="مقاله ویژه")
+    meta_description = models.CharField(max_length=300, blank=True, default='',
+                                        verbose_name="توضیح سئو (Meta Description)")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
