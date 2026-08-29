@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="{% static 'css/cosmetics.css' %}?v=20260824b">
-<link rel="stylesheet" href="{% static 'css/shop3.css' %}?v=6">
+<link rel="stylesheet" href="{% static 'css/shop3.css' %}?v=7">
 <style>
     /* tile background per tint */
     .sh3-tint-0 { --tile-bg: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); }
@@ -80,7 +80,7 @@
     {% endif %}
 
     {# ============================ CATEGORIES ============================ #}
-    <div class="sh3-sec">
+    <div class="sh3-sec sh3-sec-cats">
         <h2>دسته‌بندی‌ها <small>Categories</small></h2>
     </div>
     <div class="sh3-catbar">
@@ -110,6 +110,61 @@
                 <option value="cheap"    {% if sort == 'cheap'    %}selected{% endif %}>ارزان‌ترین</option>
                 <option value="expensive" {% if sort == 'expensive' %}selected{% endif %}>گران‌ترین</option>
             </select>
+        </div>
+    </div>
+
+    {# ============================ MOBILE FILTER BAR (≤900px) ============================ #}
+    <div class="sh3-mbar">
+        <button type="button" class="sh3-mbar-btn" id="sh3FiltBtn" aria-haspopup="dialog" aria-controls="sh3Sheet">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+            فیلترها
+            <span class="sh3-mbar-badge" id="sh3FiltBadge" hidden>۱</span>
+        </button>
+        <span class="sh3-mbar-label" id="sh3FiltLabel"></span>
+        <span class="sh3-mbar-count"><b>{{ page.paginator.count }}</b> محصول</span>
+    </div>
+
+    {# ============================ MOBILE FILTER SHEET ============================ #}
+    <div class="sh3-sheet-o" id="sh3Sheet">
+        <div class="sh3-sheet" role="dialog" aria-modal="true" aria-label="فیلتر محصولات">
+            <div class="sh3-sheet-head">
+                <span class="sh3-sheet-grip" aria-hidden="true"></span>
+                <h3>فیلتر محصولات</h3>
+                <button type="button" class="sh3-sheet-x" id="sh3SheetX" aria-label="بستن">✕</button>
+            </div>
+            <div class="sh3-sheet-body">
+                <div class="sh3-f-group">
+                    <span class="sh3-f-label">جستجو</span>
+                    <div class="sh3-f-search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+                        <input type="text" id="sh3fQ" value="{{ search }}" placeholder="دنبال چی می‌گردی؟ مثلاً «قاب طلایی»...">
+                    </div>
+                </div>
+                <div class="sh3-f-group">
+                    <span class="sh3-f-label">دسته‌بندی</span>
+                    <div class="sh3-f-cats" id="sh3fCats">
+                        <button type="button" data-cat="" class="{% if not cat %}on{% endif %}">🛒 همه</button>
+                        {% for c in categories %}
+                        <button type="button" data-cat="{{ c.slug }}" class="{% if cat == c.slug %}on{% endif %}">{{ c.emoji }} {{ c.name }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="sh3-f-group">
+                    <span class="sh3-f-label">مرتب‌سازی</span>
+                    <div class="sh3-f-sort" id="sh3fSort">
+                        <button type="button" data-sort="featured" class="{% if sort == 'featured' %}on{% endif %}">⭐ پیشنهاد ویژه</button>
+                        <button type="button" data-sort="new" class="{% if sort == 'new' %}on{% endif %}">🆕 جدیدترین</button>
+                        <button type="button" data-sort="popular" class="{% if sort == 'popular' %}on{% endif %}">🔥 پرفروش‌ترین</button>
+                        <button type="button" data-sort="discount" class="{% if sort == 'discount' %}on{% endif %}">🏷️ بیشترین تخفیف</button>
+                        <button type="button" data-sort="cheap" class="{% if sort == 'cheap' %}on{% endif %}">💰 ارزان‌ترین</button>
+                        <button type="button" data-sort="expensive" class="{% if sort == 'expensive' %}on{% endif %}">💎 گران‌ترین</button>
+                    </div>
+                </div>
+            </div>
+            <div class="sh3-sheet-foot">
+                <button type="button" class="sh3-f-ghost" id="sh3fClear">پاک کردن فیلترها</button>
+                <button type="button" class="sh3-f-pri" id="sh3fApply">اعمال و نمایش</button>
+            </div>
         </div>
     </div>
 
@@ -149,7 +204,6 @@
     </div>
 
 </div>
-</div>
 
 {# ============================ MODAL ============================ #}
 <div class="sh3-modal-o" id="sh3Modal">
@@ -174,6 +228,7 @@
 </div>
 
 <div class="sh3-toast" id="sh3Toast"></div>
+</div>
 
 <script>
 /* --- URL helper --- */
@@ -275,5 +330,82 @@ document.addEventListener('click', async e => {
         else { w.classList.remove('on'); sh3ShowToast('💔 از علاقه‌مندی‌ها حذف شد'); }
     } catch (e) { sh3ShowToast('❌ خطای شبکه', 'err'); }
 });
+
+/* --- Mobile filter sheet (≤900px: فیلترها داخل دکمه، با کلیک مودال باز می‌شود) --- */
+(function () {
+    const btn   = document.getElementById('sh3FiltBtn');
+    if (!btn) return;
+    const sheet = document.getElementById('sh3Sheet');
+    const badge = document.getElementById('sh3FiltBadge');
+    const label = document.getElementById('sh3FiltLabel');
+    const xBtn  = document.getElementById('sh3SheetX');
+    const qIn   = document.getElementById('sh3fQ');
+    const cats  = document.getElementById('sh3fCats');
+    const sortD = document.getElementById('sh3fSort');
+    const clear = document.getElementById('sh3fClear');
+    const apply = document.getElementById('sh3fApply');
+    const fa = n => Number(n).toLocaleString('fa-IR');
+
+    function syncBar() {
+        const u = new URL(window.location);
+        const c = u.searchParams.get('cat');
+        const q = u.searchParams.get('q');
+        const s = u.searchParams.get('sort') || 'featured';
+        const n = (c ? 1 : 0) + (q ? 1 : 0) + (s !== 'featured' ? 1 : 0);
+        badge.hidden = n === 0;
+        badge.textContent = fa(n);
+        let txt = '';
+        if (q) txt = '«' + q + '»';
+        else if (c) {
+            const b = cats.querySelector('button[data-cat="' + c + '"]');
+            if (b) txt = b.textContent.trim();
+        }
+        label.textContent = txt;
+    }
+    function openSheet() {
+        const u = new URL(window.location);
+        qIn.value = u.searchParams.get('q') || '';
+        const c = u.searchParams.get('cat') || '';
+        cats.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.cat === c));
+        const s = u.searchParams.get('sort') || 'featured';
+        sortD.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.sort === s));
+        sheet.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeSheet() {
+        sheet.classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    btn.addEventListener('click', openSheet);
+    xBtn.addEventListener('click', closeSheet);
+    sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && sheet.classList.contains('open')) closeSheet();
+    });
+    cats.addEventListener('click', e => {
+        const b = e.target.closest('button[data-cat]');
+        if (!b) return;
+        cats.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+    });
+    sortD.addEventListener('click', e => {
+        const b = e.target.closest('button[data-sort]');
+        if (!b) return;
+        sortD.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+    });
+    clear.addEventListener('click', () => { window.location = window.location.pathname; });
+    apply.addEventListener('click', () => {
+        const u = new URL(window.location.pathname, window.location.origin);
+        const cb = cats.querySelector('button.on');
+        if (cb && cb.dataset.cat) u.searchParams.set('cat', cb.dataset.cat);
+        const q = qIn.value.trim();
+        if (q) u.searchParams.set('q', q);
+        const sb = sortD.querySelector('button.on');
+        if (sb && sb.dataset.sort && sb.dataset.sort !== 'featured') u.searchParams.set('sort', sb.dataset.sort);
+        window.location = u.toString();
+    });
+    syncBar();
+})();
 </script>
 {% endblock %}

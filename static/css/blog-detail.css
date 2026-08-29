@@ -457,12 +457,32 @@
 
     .bd-endmark { margin-top: 26px; letter-spacing: 10px; text-indent: 10px; }
 
-    .bd-comments { margin-top: 26px; padding: 20px 14px 18px; border-radius: 20px; }
-    .bd-comments-title { font-size: 16px; }
+    /* ---------- comments (mobile-first) ---------- */
+    .bd-comments { margin-top: 26px; padding: 18px 14px 16px; border-radius: 20px; }
+    .bd-comments-title { font-size: 16px; margin-bottom: 14px; }
+    .c-form { padding: 13px 14px; margin-bottom: 16px; border-radius: 16px; }
     .c-form-row { gap: 9px; }
     .c-form-ava { width: 34px; height: 34px; font-size: 13px; }
+    .c-form textarea { min-height: 58px; font-size: 14px; line-height: 1.85; }
+    .c-form-foot { margin-top: 10px; }
+    .c-counter { font-size: 11px; }
+    .btn-send { font-size: 13.5px; padding: 10px 26px; min-height: 40px; }
     .c-item { gap: 10px; padding: 13px 13px; border-radius: 15px; }
     .c-avatar { width: 36px; height: 36px; font-size: 14px; }
+    .c-head { gap: 6px; }
+    .c-date { flex-basis: 100%; margin-top: 1px; }
+    .c-text { font-size: 13.5px; line-height: 1.95; }
+    .c-foot { gap: 4px; margin-top: 2px; }
+    .c-like, .c-reply-btn { padding: 6px 12px; min-height: 32px; font-size: 12.5px; }
+    .login-hint { padding: 13px 14px; font-size: 13px; }
+}
+@media (max-width: 380px) {
+    .bd-shell { padding: 0 10px 40px; }
+    .bd-comments { padding: 15px 12px 14px; }
+    .c-item { padding: 11px 11px; gap: 9px; }
+    .c-avatar { width: 32px; height: 32px; font-size: 12.5px; }
+    .c-form-ava { width: 30px; height: 30px; font-size: 12px; }
+}
 
     .bd-related { margin-top: 34px; }
     .bd-sec { font-size: 17px; }
